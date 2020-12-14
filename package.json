@@ -1,0 +1,9 @@
+{
+  "name": "lantern",
+  "version": "0.0.0",
+  "description": "Lantern Chat Frontend",
+  "main": "index.js",
+  "author": "Nova <fpnova@pm.me>",
+  "license": "MIT",
+  "private": true
+}
