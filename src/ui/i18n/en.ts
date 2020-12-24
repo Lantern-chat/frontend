@@ -1,2 +1,3 @@
 import {createTranslation} from "./_base";
-export default createTranslation(require("./en.json"));
+import translations from "./en.json";
+export default createTranslation(translations);

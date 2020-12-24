@@ -1,5 +1,6 @@
 import React from "react";
 import { TransLangProps } from "./i18n/_base";
+export { Translation } from "./i18n/_base";
 
 type Loader = () => Promise<{default: React.ExoticComponent<TransLangProps>}>;
 
@@ -15,10 +16,10 @@ export function preload(lang: Language) {
 }
 
 export interface TranslationProps extends TransLangProps {
-    lang: Language
+    lang: Language,
 }
 
-export class Translation extends React.PureComponent<TranslationProps> {
+export class I18N extends React.PureComponent<TranslationProps> {
     lang: React.ExoticComponent<TransLangProps>;
 
     constructor(props: TranslationProps) {
