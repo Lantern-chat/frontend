@@ -1,12 +1,13 @@
-import * as React from "react";
+import React from "react";
 
-export interface HelloWorldProps {
-    userName: string;
-    lang: string;
+import "./styles/root.scss";
+
+import Avatar from "./components/common/avatar";
+
+export interface AppProps { }
+
+export default class App extends React.Component<AppProps> {
+    render() {
+        return (<Avatar url="test" username="Nova" />);
+    }
 }
-
-export const App = (props: HelloWorldProps) => (
-    <h1>
-        Hi {props.userName} from React! Welcome to {props.lang}!
-    </h1>
-);

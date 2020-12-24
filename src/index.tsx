@@ -1,9 +1,11 @@
-import * as React from "react";
-import * as ReactDOM from "react-dom";
+import React from "react";
+import ReactDOM from "react-dom";
 
-import { App } from "./App";
+const App = React.lazy(() => import(/* webpackChunkName: 'App' */'./App'));
 
 ReactDOM.render(
-    <App userName="Beveloper" lang="TypeScript" />,
+    <React.Suspense fallback={<div />}>
+        <App />
+    </React.Suspense>,
     document.body
 );

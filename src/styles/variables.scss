@@ -1,0 +1,24 @@
+$ln-primary-surface-color: hsl(240, 4%, 20%);
+$ln-secondary-surface-color: darken($ln-primary-surface-color, 5%);
+$ln-primary-text-color: change-color(
+    $ln-primary-surface-color,
+    $saturation: 0,
+    $lightness: 110% - lightness($ln-primary-surface-color)
+);
+
+// See `root.scss` for CSS variables.
+
+@function varx($first, $x...) {
+    @if length($x) >= 1 {
+        @return var($first, varx($x...));
+    }
+    @return $first;
+}
+
+$lnx-primary-surface-color: varx(--lnx-primary-surface-color, --ln-primary-surface-color, $ln-primary-surface-color);
+$lnx-secondary-surface-color: varx(
+    --lnx-secondary-surface-color,
+    --ln-secondary-surface-color,
+    $ln-secondary-surface-color
+);
+$lnx-primary-text-color: varx(--lnx-primary-text-color, --ln-primary-text-color, $ln-primary-text-color);

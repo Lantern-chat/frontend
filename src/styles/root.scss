@@ -1,0 +1,13 @@
+@import "variables";
+
+:root {
+    --ln-primary-surface-color: #{$ln-primary-surface-color};
+    --ln-secondary-surface-color: #{$ln-secondary-surface-color};
+    --ln-primary-text-color: #{$ln-primary-text-color};
+}
+
+@import "reset";
+
+body {
+    background-color: $lnx-primary-surface-color;
+}
