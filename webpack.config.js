@@ -23,6 +23,7 @@ module.exports = (env, argv) => {
             filename: '[name].js',
             chunkFilename: `${CHUNK_NAME}.js`,
             path: distPath,
+            publicPath: 'static/',
         },
 
         // Enable sourcemaps for debugging webpack's output.
