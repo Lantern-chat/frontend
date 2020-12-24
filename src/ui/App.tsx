@@ -4,10 +4,12 @@ import "./styles/root.scss";
 
 import Avatar from "./components/common/avatar";
 
+import { Translation } from "./i18n";
+
 export interface AppProps { }
 
 export default class App extends React.Component<AppProps> {
     render() {
-        return (<Avatar url="test" username="Nova" />);
+        return (<Translation lang="en">Test_Avatar</Translation>);
     }
 }
