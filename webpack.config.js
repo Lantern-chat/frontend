@@ -25,6 +25,17 @@ module.exports = (env, argv) => {
             path: distPath,
             publicPath: 'static/',
         },
+        optimization: {
+            minimize: IS_PRODUCTION,
+            minimizer: [new TerserPlugin({
+                terserOptions: {
+                    compress: {
+                        passes: 3,
+                        unsafe_math: true,
+                    }
+                }
+            })],
+        },
 
         // Enable sourcemaps for debugging webpack's output.
         devtool: "source-map",
