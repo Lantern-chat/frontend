@@ -8,6 +8,19 @@
 
 @import "reset";
 
+html,
+body {
+    height: 100%;
+}
+
 body {
     background-color: $lnx-primary-surface-color;
+}
+
+.center {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

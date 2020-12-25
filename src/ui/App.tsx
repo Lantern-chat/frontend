@@ -7,7 +7,7 @@ import {
     Link
 } from "react-router-dom";
 
-import Avatar from "./components/common/avatar";
+import Avatar from "./components/common/avatar/avatar";
 
 export interface AppProps { }
 

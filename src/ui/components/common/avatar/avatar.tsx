@@ -1,6 +1,6 @@
 import React from "react";
 
-import "./styles/avatar.scss";
+import "./avatar.scss";
 
 export interface TagProps {
     rounded?: boolean,

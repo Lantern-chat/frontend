@@ -13,13 +13,13 @@ const App = React.lazy(() => import(
     './ui/App'
 ));
 
-class Loading extends React.PureComponent {
-    render() {
-        return (
-            <div>Loading...</div>
-        )
-    }
-}
+import { Ripple } from "./ui/components/common/spinners/spinners";
+
+const Loading = React.memo(() => (
+    <div className="center">
+        <Ripple size={160} />
+    </div>
+));
 
 ReactDOM.render(
     <React.Suspense fallback={<Loading />}>

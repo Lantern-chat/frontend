@@ -1,13 +1,13 @@
 import React from "react";
-import { TransLangProps } from "./i18n/_base";
-export { Translation } from "./i18n/_base";
+import { TransLangProps } from "./createTranslation";
+export { Translation } from "./createTranslation";
 
 type Loader = () => Promise<{default: React.ExoticComponent<TransLangProps>}>;
 
 // TODO: More translations...
 export type Language = "en";
 const LANG_INIT: Record<Language, Loader> = {
-    "en": () => import(/* webpackChunkName: 'i18n.en' */ "./i18n/en"),
+    "en": () => import(/* webpackChunkName: 'i18n.en' */ "./lang/en"),
 };
 
 export function preload(lang: Language) {
