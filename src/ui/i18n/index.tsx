@@ -43,7 +43,7 @@ export function preload(lang: Language): Lazy {
  * ```
  * */
 export function i18n(t: Translation, count?: number): React.FunctionComponentElement<LangItemProps> {
-    return React.createElement(I18N, { t, count })
+    return <I18N t={t} count={count} />;
 };
 
 /**
@@ -51,6 +51,10 @@ export function i18n(t: Translation, count?: number): React.FunctionComponentEle
  * and the props to select which translation string to render.
  * */
 export const I18N: React.FunctionComponent<LangItemProps> = function(props: LangItemProps) {
+    // https://github.com/facebook/react/issues/15156
     let lang = React.useContext(LocaleContext);
-    return React.useMemo(() => React.createElement(preload(lang), props), [lang]);
+    return React.useMemo(() => {
+        let Lang = preload(lang);
+        return <Lang {...props} />
+    }, [lang]);
 };
