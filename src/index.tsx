@@ -7,11 +7,14 @@ import "./ui/styles/root.scss";
 
 import * as i18n from "./ui/i18n";
 
+/** Get language from `localStorage` or default to English */
 function getLanguage(): i18n.Language {
     return (localStorage.getItem("lang") as i18n.Language | null) || "en";
 }
 i18n.preload(getLanguage());
 
+// Begin fetching App immediately, but split
+// it to lessen immediate chunk size.
 const App = React.lazy(() => import(
     /* webpackChunkName: 'App' */
     /* webpackPrefetch: true */
@@ -21,16 +24,15 @@ const App = React.lazy(() => import(
 
 import { Ripple } from "./ui/components/common/spinners/spinners";
 
-const Loading = React.memo(() => (
-    <div className="center">
-        <Ripple size={160} />
-    </div>
-));
+// Simple full-screen loader icon
+const Loading = React.memo(() => (<div className="center"><Ripple size={160} /></div>));
 
+// Setup concurrent root
 ReactDOM.unstable_createRoot(document.getElementById("ln-root")!).render(
-    <i18n.LocaleContext.Provider value={getLanguage()}>
-        <React.Suspense fallback={<Loading />}>
+    // Place entire up under the `Suspense` and `LocaleContext` providers
+    <React.Suspense fallback={<Loading />}>
+        <i18n.LocaleContext.Provider value={getLanguage()}>
             <App />
-        </React.Suspense>
-    </i18n.LocaleContext.Provider>,
+        </i18n.LocaleContext.Provider>
+    </React.Suspense>,
 );

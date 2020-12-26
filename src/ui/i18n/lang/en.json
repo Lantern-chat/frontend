@@ -1,3 +1,6 @@
 {
-    "Test_Avatar": "Testing_Avatar_localization"
+    "CHANNEL": "Channel",
+    "PARTY": "Party",
+    "DIRECT_MESSAGE": "Direct Message",
+    "CREATE_DIRECT_MESSAGE": "Create Direct Message"
 }

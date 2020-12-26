@@ -12,5 +12,8 @@ function makeSpinnerStyle(props: SpinnerProps): React.CSSProperties {
 }
 
 export const Ripple = React.memo((props: SpinnerProps) => (
-    <div className="ln-ripple" style={makeSpinnerStyle(props)}><div></div><div></div></div>
+    <div className="ln-ripple" style={makeSpinnerStyle(props)}>
+        <div />
+        <div />
+    </div>
 ));
