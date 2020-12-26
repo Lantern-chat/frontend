@@ -32,5 +32,5 @@ export function preload(lang: Language): Lazy {
  * */
 export const I18N = function(props: LangItemProps) {
     let lang = React.useContext(LocaleContext);
-    return React.useMemo(() => React.createElement(preload(lang), props), [lang, props]);
+    return React.useMemo(() => React.createElement(preload(lang), props), [lang]);
 };
