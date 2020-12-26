@@ -4,8 +4,8 @@ export { Translation } from "./createTranslation";
 
 export const LocaleContext: React.Context<Language> = React.createContext('en');
 
-type Loader = () => Promise<{ default: React.ExoticComponent<LangItemProps> }>;
-type Lazy = React.LazyExoticComponent<React.ExoticComponent<LangItemProps>>;
+type Loader = () => Promise<{ default: React.FunctionComponent<LangItemProps> }>;
+type Lazy = React.LazyExoticComponent<React.FunctionComponent<LangItemProps>>;
 
 type LazyLoader = Loader | Lazy;
 
@@ -30,5 +30,7 @@ export function preload(lang: Language): Lazy {
  * Memoized component that uses the LocaleContext to select a language,
  * and the props to select which translation string to render.
  * */
-export const I18N = React.memo((props: LangItemProps) =>
-    React.createElement(preload(React.useContext(LocaleContext)), props));
+export const I18N = function(props: LangItemProps) {
+    let lang = React.useContext(LocaleContext);
+    return React.useMemo(() => React.createElement(preload(lang), props), [lang, props]);
+};

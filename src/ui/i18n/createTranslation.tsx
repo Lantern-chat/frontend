@@ -6,9 +6,9 @@ export interface LangItemProps {
 
 export type TranslationTable = { [P in keyof typeof Translation]: string };
 
-export function createTranslation(table: TranslationTable): React.ExoticComponent<LangItemProps> {
+export function createTranslation(table: TranslationTable): React.FunctionComponent<LangItemProps> {
     // return as a fragment that doesn't generate any additional DOM nodes
-    return React.memo((props) => (<>{table[Translation[props.t]]}</>));
+    return (props) => (<>{table[Translation[props.t]]}</>);
 }
 
 export enum Translation {
