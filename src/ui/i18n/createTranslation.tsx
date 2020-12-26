@@ -1,12 +1,12 @@
 import React from "react";
 
-export interface TransLangProps {
+export interface LangItemProps {
     t: Translation,
 }
 
 export type TranslationTable = { [P in keyof typeof Translation]: string };
 
-export function createTranslation(table: TranslationTable): React.ExoticComponent<TransLangProps> {
+export function createTranslation(table: TranslationTable): React.ExoticComponent<LangItemProps> {
     // return as a fragment that doesn't generate any additional DOM nodes
     return React.memo((props) => (<>{table[Translation[props.t]]}</>));
 }

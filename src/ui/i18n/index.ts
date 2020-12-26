@@ -1,31 +1,34 @@
 import React from "react";
-import { TransLangProps } from "./createTranslation";
+import { LangItemProps } from "./createTranslation";
 export { Translation } from "./createTranslation";
 
-type Loader = () => Promise<{default: React.ExoticComponent<TransLangProps>}>;
+export const LocaleContext: React.Context<Language> = React.createContext('en');
+
+type Loader = () => Promise<{ default: React.ExoticComponent<LangItemProps> }>;
+type Lazy = React.LazyExoticComponent<React.ExoticComponent<LangItemProps>>;
+
+type LazyLoader = Loader | Lazy;
 
 // TODO: More translations...
 export type Language = "en";
-const LANG_INIT: Record<Language, Loader> = {
+const LANG_INIT: Record<Language, LazyLoader> = {
     "en": () => import(/* webpackChunkName: 'i18n.en' */ "./lang/en"),
 };
 
-export function preload(lang: Language) {
-    let promise = LANG_INIT[lang]();
-    LANG_INIT[lang] = () => promise;
-}
+export function preload(lang: Language): Lazy {
+    let loader = LANG_INIT[lang];
 
-export interface TranslationProps extends TransLangProps {
-    lang: Language,
-}
-
-export class I18N extends React.PureComponent<TranslationProps> {
-    lang: React.ExoticComponent<TransLangProps>;
-
-    constructor(props: TranslationProps) {
-        super(props);
-        this.lang = React.lazy(LANG_INIT[props.lang]);
+    if(loader instanceof Function) {
+        let promise = loader(); // start loading now, as the language pack is needed ASAP
+        loader = LANG_INIT[lang] = React.lazy(() => promise);
     }
 
-    render() { return React.createElement(this.lang, this.props); }
+    return loader as Lazy;
 }
+
+/**
+ * Memoized component that uses the LocaleContext to select a language,
+ * and the props to select which translation string to render.
+ * */
+export const I18N = React.memo((props: LangItemProps) =>
+    React.createElement(preload(React.useContext(LocaleContext)), props));

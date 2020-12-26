@@ -1,10 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { } from 'react-dom/experimental'
+import { } from 'react/experimental';
 
 import "./ui/styles/root.scss";
 
 import * as i18n from "./ui/i18n";
-i18n.preload("en"); // TODO: Change this based on cookies
+
+function getLanguage(): i18n.Language {
+    return (localStorage.getItem("lang") as i18n.Language | null) || "en";
+}
+i18n.preload(getLanguage());
 
 const App = React.lazy(() => import(
     /* webpackChunkName: 'App' */
@@ -21,9 +27,10 @@ const Loading = React.memo(() => (
     </div>
 ));
 
-ReactDOM.render(
-    <React.Suspense fallback={<Loading />}>
-        <App />
-    </React.Suspense>,
-    document.body
+ReactDOM.unstable_createRoot(document.getElementById("ln-root")!).render(
+    <i18n.LocaleContext.Provider value={getLanguage()}>
+        <React.Suspense fallback={<Loading />}>
+            <App />
+        </React.Suspense>
+    </i18n.LocaleContext.Provider>,
 );
