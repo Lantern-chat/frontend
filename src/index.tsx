@@ -30,9 +30,11 @@ const Loading = React.memo(() => (<div className="center"><Ripple size={160} /><
 // Setup concurrent root
 ReactDOM.unstable_createRoot(document.getElementById("ln-root")!).render(
     // Place entire up under the `Suspense` and `LocaleContext` providers
-    <React.Suspense fallback={<Loading />}>
-        <i18n.LocaleContext.Provider value={getLanguage()}>
-            <App />
-        </i18n.LocaleContext.Provider>
-    </React.Suspense>,
+    <React.StrictMode>
+        <React.Suspense fallback={<Loading />}>
+            <i18n.LocaleContext.Provider value={getLanguage()}>
+                <App />
+            </i18n.LocaleContext.Provider>
+        </React.Suspense>
+    </React.StrictMode>,
 );
