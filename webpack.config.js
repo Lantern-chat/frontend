@@ -83,10 +83,6 @@ module.exports = (env, argv) => {
                     ],
                 },
                 {
-                    test: /\.modernizrrc$/,
-                    loader: "modernizr-loader",
-                },
-                {
                     test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
                     use: [
                         {
