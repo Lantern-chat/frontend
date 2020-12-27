@@ -22,3 +22,12 @@ export interface UserPreferences {
      */
     messageChunkSize: number,
 }
+
+export interface BuildConfig {
+    server: string,
+    target: string,
+    debug: boolean,
+    time: string,
+    commit?: string,
+    authors: string,
+}
