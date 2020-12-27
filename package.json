@@ -13,6 +13,7 @@
     "doc": "typedoc --entryPoints src --hideGenerator --theme minimal"
   },
   "dependencies": {
+    "dayjs": "^1.9.8",
     "react": "^0.0.0-experimental-3310209d0",
     "react-dom": "^0.0.0-experimental-3310209d0",
     "react-markdown": "^5.0.3",
@@ -30,7 +31,6 @@
     "html-webpack-plugin": "^4.5.0",
     "json-loader": "^0.5.7",
     "mini-css-extract-plugin": "^1.3.3",
-    "modernizr-loader": "^1.0.1",
     "postcss-loader": "^4.1.0",
     "sass": "^1.30.0",
     "sass-loader": "^10.1.0",
