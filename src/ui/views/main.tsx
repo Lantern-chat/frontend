@@ -3,7 +3,7 @@ import { fetch } from "../../client/fetch";
 import { delay, wrapPromise } from "../../client/util";
 import { i18n, Translation as T } from "../i18n";
 import { Timestamp } from "../components/common/timestamp";
-import { BuildConfig } from "src/client/interfaces";
+import { IBuildConfig } from "src/client/interfaces";
 
 //function fetchBuild() {
 //    return fetch("/api/v1/build").then((xhr) => (
@@ -11,7 +11,7 @@ import { BuildConfig } from "src/client/interfaces";
 //    ));
 //}
 
-function displayBuild(build: BuildConfig | null) {
+function displayBuild(build: IBuildConfig | null) {
     if(build) {
         return <>{JSON.stringify(build)}</>;
     } else {
