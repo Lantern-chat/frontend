@@ -27,9 +27,12 @@ module.exports = (env, argv) => {
             publicPath: 'static/',
         },
         optimization: {
+            mangleExports: IS_PRODUCTION ? 'size' : 'deterministic',
             minimize: IS_PRODUCTION,
             minimizer: [new TerserPlugin({
+                parallel: true,
                 terserOptions: {
+                    sourceMap: !IS_PRODUCTION,
                     compress: {
                         passes: 3,
                         unsafe_math: true,
