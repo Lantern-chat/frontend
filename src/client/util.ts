@@ -15,31 +15,31 @@ export function delay(ms: number): CancellablePromise<void> {
 }
 
 enum Res {
-    Pending = 0,
-    Success,
-    Error,
+    PENDING,
+    SUCCESS,
+    ERROR,
 }
 
 // TODO: Improve?
 export function wrapPromise<T>(promise: Promise<T>) {
-    let status = Res.Pending;
+    let status = Res.PENDING;
     let result: any;
     let suspender = promise.then(
         r => {
-            status = Res.Success;
+            status = Res.SUCCESS;
             result = r;
         },
         e => {
-            status = Res.Error;
+            status = Res.ERROR;
             result = e;
         }
     );
     return {
         read(): T {
             switch(status) {
-                case Res.Pending: throw suspender;
-                case Res.Error: throw result;
-                case Res.Success: return result;
+                case Res.PENDING: throw suspender;
+                case Res.ERROR: throw result;
+                case Res.SUCCESS: return result;
             }
         }
     };
