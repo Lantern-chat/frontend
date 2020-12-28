@@ -14,16 +14,18 @@
   },
   "dependencies": {
     "dayjs": "^1.9.8",
-    "react": "^0.0.0-experimental-3310209d0",
-    "react-dom": "^0.0.0-experimental-3310209d0",
+    "react": "0.0.0-experimental-3310209d0",
+    "react-dom": "0.0.0-experimental-3310209d0",
     "react-markdown": "^5.0.3",
     "react-router-dom": "^5.2.0",
-    "remark-gfm": "^1.0.0"
+    "remark-gfm": "^1.0.0",
+    "scheduler": "0.0.0-experimental-3310209d0"
   },
   "devDependencies": {
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/react-router-dom": "^5.1.6",
+    "@types/scheduler": "^0.16.1",
     "autoprefixer": "^10.1.0",
     "awesome-typescript-loader": "^5.2.1",
     "css-loader": "^5.0.1",

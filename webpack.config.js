@@ -1,4 +1,5 @@
 const path = require("path");
+const webpack = require("webpack");
 const packageJson = require("./package.json");
 
 const { LoaderOptionsPlugin } = require('webpack');
@@ -97,6 +98,10 @@ module.exports = (env, argv) => {
             ],
         },
         plugins: [
+            new webpack.DefinePlugin({
+                "typeof window": '"object"',
+                "typeof MessageChannel": '"function"',
+            }),
             new HtmlWebpackPlugin({
                 template: path.resolve(__dirname, "src", "index.html"),
             }),
