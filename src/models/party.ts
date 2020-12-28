@@ -1,15 +1,25 @@
 import React from "react";
-import { Channel } from "./channel";
+import { ChannelModel } from "./channel";
+import { TinyEventEmitter } from "./_event";
 
-export interface Host {
+
+export class PartyModel extends TinyEventEmitter {
+    data: IParty;
+    channels: ChannelModel[];
+
+    getChannels(): ChannelModel[] {
+        return this.channels;
+    }
+}
+
+export interface IHost {
     username: string,
     url: string,
     auth: string,
 }
 
-export interface Party {
-    host: Host,
-    channels: Channel[],
+export interface IParty {
+    host: IHost,
 }
 
-export const PartyContext = React.createContext<Party>(null!);
+export const PartyContext = React.createContext<IParty>(null!);

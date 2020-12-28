@@ -1,9 +1,9 @@
 import React from "react";
 
-import { Party } from "./party";
+import { IParty } from "./party";
 
 export interface Client {
-    parties: Array<Party>,
+    parties: Array<IParty>,
 }
 
 export const ClientContext = React.createContext<Client>(null!);
