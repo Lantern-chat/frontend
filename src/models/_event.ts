@@ -8,8 +8,13 @@ export class TinyEventEmitter {
     subs: Record<string, ISubscriber<this>[]> = {};
 
     sub(event: string, subscriber: ISubscriber<this>) {
-        let events = this.subs[event] ||= [];
-        events.push(subscriber.bind(this));
+        let cb = subscriber.bind(this);
+        let events = this.subs[event];
+        if(events) {
+            events.push(cb);
+        } else {
+            this.subs[event] = [cb];
+        }
     }
 
     unsub(event: string, subscriber: ISubscriber<this>) {
