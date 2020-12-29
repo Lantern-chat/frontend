@@ -12,6 +12,7 @@ type LazyLoader = Loader | Lazy;
 
 /** Composite type of all possible languages */
 export type Language = "en"; // "en" | "es" | "de" | etc.
+export const LANGS: Language[] = ["en"];
 
 const LANG_INIT: Record<Language, LazyLoader> = {
     "en": () => import(/* webpackChunkName: 'i18n.en' */ "./lang/en"),

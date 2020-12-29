@@ -27,6 +27,12 @@ export default class App extends React.Component<AppProps> {
                     <Route path="/">
                         <Main />
                     </Route>
+                    <Route path="/login">
+                        <Login />
+                    </Route>
+                    <Route path="/admin">
+                        <Admin />
+                    </Route>
                 </Switch>
             </Router>
         );
