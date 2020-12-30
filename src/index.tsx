@@ -7,6 +7,9 @@ import * as i18n from "./ui/i18n";
 
 import "./ui/styles/root.scss";
 
+// TODO: Hook this up to the client
+import Worker from "worker-loader!./worker";
+
 import { ClientModel, ClientContext } from "./models/client";
 const CLIENT = new ClientModel();
 
