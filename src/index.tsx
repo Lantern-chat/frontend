@@ -57,10 +57,10 @@ WORKER.postMessage({
     data: {
         host: "ws://localhost:3030/gateway",
         name: "test",
-        compress: false,
+        compress: true,
     }
 });
 
 WORKER.addEventListener('message', (msg) => {
-    console.log(msg);
+    console.log(msg.data);
 });
