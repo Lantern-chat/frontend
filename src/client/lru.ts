@@ -9,6 +9,7 @@ export interface LRUOptions {
     limit: number,
 }
 
+// Based on https://github.com/facebook/react/blob/master/packages/react-cache/src/LRU.js
 export interface LRUCache<T> {
     first: Entry<T> | null,
     size: number,

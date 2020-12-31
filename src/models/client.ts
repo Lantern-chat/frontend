@@ -11,6 +11,7 @@ const LANG_LOCALSTORAGE_KEY = "lang";
 
 export class ClientModel extends TinyEventEmitter {
     currentLanguage: i18n.Language = "en"; // default to English
+    worker: Worker;
 
     constructor() {
         super();

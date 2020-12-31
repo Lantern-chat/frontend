@@ -9,6 +9,7 @@ import "./ui/styles/root.scss";
 
 // TODO: Hook this up to the client
 import Worker from "worker-loader!./worker";
+const WORKER = new Worker();
 
 import { ClientModel, ClientContext } from "./models/client";
 const CLIENT = new ClientModel();
@@ -24,6 +25,7 @@ const App = React.lazy(() => import(
 
 // Simple full-screen loader icon
 import { Ripple } from "./ui/components/common/spinners/spinners";
+import { MessageOp } from "./client/worker";
 const Loading = React.memo(() => (<div className="center"><Ripple size={160} /></div>));
 
 let root = (
@@ -44,5 +46,21 @@ if(process.env.NODE_ENV !== 'production') {
 // Setup concurrent root
 ReactDOM.unstable_createRoot(document.getElementById("ln-root")!).render(root);
 
+CLIENT.worker = WORKER;
+
 // Do this after React startup so it can display the spinner
 CLIENT.start();
+
+// TESTING
+WORKER.postMessage({
+    op: MessageOp.Connect,
+    data: {
+        host: "ws://localhost:3030/gateway",
+        name: "test",
+        compress: false,
+    }
+});
+
+WORKER.addEventListener('message', (msg) => {
+    console.log(msg);
+});
