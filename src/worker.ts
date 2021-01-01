@@ -8,6 +8,21 @@ interface Stream {
     connect: IConnect,
 }
 
+function wrap(fn: (...args: any) => any): (...args: any) => any {
+    return function(...args: any): any {
+        try {
+            return fn(...args);
+        } catch(e) {
+            ctx.postMessage({
+                msg: 'ws_error',
+                data: e,
+            });
+
+            throw e;
+        }
+    };
+}
+
 class StreamManager {
     streams: Stream[] = [];
 
@@ -24,7 +39,7 @@ class StreamManager {
             ctx.postMessage({ msg: 'ws_open', from: connect });
         }
 
-        socket.onmessage = (ev) => {
+        socket.onmessage = wrap((ev) => {
             let data = ev.data;
 
             if(typeof data !== 'string') {
@@ -37,7 +52,7 @@ class StreamManager {
             }
 
             ctx.postMessage({ msg: 'ws_message', from: connect, data: JSON.parse(data) });
-        };
+        });
 
         socket.onerror = (ev) => {
             ctx.postMessage({ msg: 'ws_error', from: connect, data: ev.toString() });
