@@ -1,0 +1,127 @@
+@import "./variables.scss";
+@import "./temperature.scss";
+
+$day-temp: 7500;
+$night-temp: 5000;
+
+//$ln-primary-dark-surface-color: hsl(240, 4%, 20%);
+$ln-primary-dark-surface-color: change-color(kelvin($day-temp), $lightness: 20%, $saturation: 5%);
+$ln-secondary-dark-surface-color: darken($ln-primary-dark-surface-color, 5%);
+$ln-primary-dark-text-color: change-color(
+    $ln-primary-dark-surface-color,
+    $saturation: 0,
+    $lightness: 110% - lightness($ln-primary-dark-surface-color)
+);
+
+$ln-primary-nightlight-surface-color: change-color(kelvin($night-temp), $saturation: 80%, $lightness: 95%);
+$ln-secondary-nightlight-surface-color: darken($ln-primary-nightlight-surface-color, 5%);
+$ln-primary-nightlight-text-color: black;
+
+$ln-primary-light-surface-color: change-color(kelvin($day-temp), $saturation: 70%, $lightness: 99%);
+$ln-secondary-light-surface-color: desaturate(darken($ln-primary-light-surface-color, 5%), 60%);
+$ln-primary-light-text-color: black;
+
+@mixin color_theme(
+    $primary-surface,
+    $primary-surface-backup,
+    $secondary-surface,
+    $secondary-surface-backup,
+    $primary-text,
+    $primary-text-backup
+) {
+    .ln-primary-surface-background {
+        background-color: $primary-surface-backup;
+        background-color: $primary-surface;
+    }
+
+    // TODO: Change border colors
+    .ln-primary-surface-border {
+        border-color: $primary-surface-backup;
+        border-color: $primary-surface;
+    }
+
+    .ln-secondary-surface-background {
+        background-color: $secondary-surface-backup;
+        background-color: $secondary-surface;
+    }
+    .ln-secondary-surface-border {
+        border-color: $secondary-surface-backup;
+        border-color: $secondary-surface;
+    }
+
+    .ln-primary-text-color {
+        color: $primary-text-backup;
+        color: $primary-text;
+    }
+}
+
+@function varx($first, $x...) {
+    @if length($x) >= 1 {
+        @return var($first, varx($x...));
+    }
+    @return $first;
+}
+
+:root {
+    --ln-primary-dark-surface-color: #{$ln-primary-dark-surface-color};
+    --ln-secondary-dark-surface-color: #{$ln-secondary-dark-surface-color};
+    --ln-primary-dark-text-color: #{$ln-primary-dark-text-color};
+
+    --ln-primary-light-surface-color: #{$ln-primary-light-surface-color};
+    --ln-secondary-light-surface-color: #{$ln-secondary-light-surface-color};
+    --ln-primary-light-text-color: #{$ln-primary-light-text-color};
+}
+
+$lnx-primary-dark-surface-color: varx(
+    --lnx-primary-dark-surface-color,
+    --ln-primary-dark-surface-color,
+    $ln-primary-dark-surface-color
+);
+$lnx-secondary-dark-surface-color: varx(
+    --lnx-secondary-dark-surface-color,
+    --ln-secondary-dark-surface-color,
+    $ln-secondary-dark-surface-color
+);
+$lnx-primary-dark-text-color: varx(
+    --lnx-primary-dark-text-color,
+    --ln-primary-dark-text-color,
+    $ln-primary-dark-text-color
+);
+
+$lnx-primary-light-surface-color: varx(
+    --lnx-primary-light-surface-color,
+    --ln-primary-light-surface-color,
+    $ln-primary-light-surface-color
+);
+$lnx-secondary-light-surface-color: varx(
+    --lnx-secondary-light-surface-color,
+    --ln-secondary-light-surface-color,
+    $ln-secondary-light-surface-color
+);
+$lnx-primary-light-text-color: varx(
+    --lnx-primary-light-text-color,
+    --ln-primary-light-text-color,
+    $ln-primary-light-text-color
+);
+
+.ln-dark-theme {
+    @include color_theme(
+        $lnx-primary-dark-surface-color,
+        $ln-primary-dark-surface-color,
+        $lnx-secondary-dark-surface-color,
+        $ln-secondary-dark-surface-color,
+        $lnx-primary-dark-text-color,
+        $ln-primary-dark-text-color
+    );
+}
+
+.ln-light-theme {
+    @include color_theme(
+        $lnx-primary-light-surface-color,
+        $ln-primary-light-surface-color,
+        $lnx-secondary-light-surface-color,
+        $ln-secondary-light-surface-color,
+        $lnx-primary-light-text-color,
+        $ln-primary-light-text-color
+    );
+}

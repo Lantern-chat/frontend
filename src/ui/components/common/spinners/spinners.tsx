@@ -1,5 +1,7 @@
 import React from "react";
 
+import "../../../styles/root.scss";
+import "../../../styles/layout.scss";
 import "./spinners.scss";
 
 interface SpinnerProps {
@@ -12,7 +14,7 @@ function makeSpinnerStyle(props: SpinnerProps): React.CSSProperties {
 }
 
 export const Ripple = React.memo((props: SpinnerProps) => (
-    <div className="ln-ripple" style={makeSpinnerStyle(props)}>
+    <div className="ln-ripple ln-primary-text-color" style={makeSpinnerStyle(props)}>
         <div />
         <div />
     </div>

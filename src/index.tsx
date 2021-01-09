@@ -6,6 +6,7 @@ import { } from 'react/experimental';
 import * as i18n from "./ui/i18n";
 
 import "./ui/styles/root.scss";
+import "./ui/styles/theme.scss";
 
 // TODO: Hook this up to the client
 import Worker from "worker-loader!./worker";
@@ -26,7 +27,7 @@ const App = React.lazy(() => import(
 // Simple full-screen loader icon
 import { Ripple } from "./ui/components/common/spinners/spinners";
 import { MessageOp } from "./client/worker";
-const Loading = React.memo(() => (<div className="center"><Ripple size={160} /></div>));
+const Loading = React.memo(() => (<div className="ln-center"><Ripple size={160} /></div>));
 
 let root = (
     <React.Suspense fallback={<Loading />}>
