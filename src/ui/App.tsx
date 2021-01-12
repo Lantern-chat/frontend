@@ -16,25 +16,27 @@ const Main = React.lazy(() => import(
     /* webpackPrefetch: true */
     "./views/main"
 ));
-const Login = React.lazy(() => import(/* webpackChunkName: 'LoginView' */ "./views/login"));
-const Admin = React.lazy(() => import(/* webpackChunkName: 'AdminView' */ "./views/admin"));
+const Login = React.lazy(() => import(      /* webpackChunkName: 'LoginView'    */  "./views/login"));
+const Register = React.lazy(() => import(   /* webpackChunkName: 'RegisterView' */  "./views/register"));
+const Admin = React.lazy(() => import(      /* webpackChunkName: 'AdminView'    */  "./views/admin"));
 
-export default class App extends React.Component<AppProps> {
-    render() {
-        return (
-            <Router>
-                <Switch>
-                    <Route path="/">
-                        <Main />
-                    </Route>
-                    <Route path="/login">
-                        <Login />
-                    </Route>
-                    <Route path="/admin">
-                        <Admin />
-                    </Route>
-                </Switch>
-            </Router>
-        );
-    }
-}
+export const App = (props: AppProps) => (
+    <Router>
+        <Switch>
+            <Route path="/login">
+                <Login />
+            </Route>
+            <Route path="/register">
+                <Register />
+            </Route>
+            <Route path="/admin">
+                <Admin />
+            </Route>
+            <Route path="/">
+                <Main />
+            </Route>
+        </Switch>
+    </Router>
+);
+
+export default App;

@@ -65,3 +65,5 @@ WORKER.postMessage({
 WORKER.addEventListener('message', (msg) => {
     console.log(msg.data);
 });
+
+// https://github.com/nuxodin/ie11CustomProperties/blob/master/ie11CustomProperties.js
