@@ -64,3 +64,59 @@
 
     @return $result + $ten-exp * $ln-ten;
 }
+
+@function factorial($endAt, $startAt: 1, $currentVal: 1) {
+    $accVal: $currentVal;
+
+    @for $i from $startAt + 1 to $endAt + 1 {
+        $accVal: $i * $accVal;
+    }
+
+    @return $accVal;
+}
+
+$PI: 3.14159265358979323846;
+$TWO_PI: $PI * 2;
+$HALF_PI: $PI / 2;
+$QUARTER_PI: $PI / 4;
+$SIN_ITERATION: 10;
+
+@function sin($rad) {
+    // Ensure value is between 0 to TWO_PI
+    $normalisedRad: $rad % $TWO_PI;
+    @if $normalisedRad < 0 {
+        $normalisedRad: $normalisedRad + $TWO_PI;
+    }
+
+    // Known whole numbers to return without computing
+    @if $normalisedRad == 0 or $normalisedRad == $PI {
+        @return 0;
+    }
+    @if $normalisedRad == $HALF_PI {
+        @return 1;
+    }
+
+    // Memorise squared rad val to reduce recomputation
+    $radSquare: $normalisedRad * $normalisedRad;
+    $radPowAccVal: $normalisedRad;
+
+    $factorialCounter: 1;
+    $factorialAccVal: 1;
+
+    $totalVal: $normalisedRad;
+
+    // Iteratively compute an approx value
+    @for $i from 0 to $SIN_ITERATION {
+        $radPowAccVal: $radPowAccVal * -$radSquare;
+        $factorialAccVal: factorial($factorialCounter + 2, $factorialCounter, $factorialAccVal);
+        $factorialCounter: $factorialCounter + 2;
+
+        $totalVal: $totalVal + ($radPowAccVal / $factorialAccVal);
+    }
+
+    @return $totalVal;
+}
+
+@function cos($rad) {
+    @return sin($rad + $HALF_PI);
+}

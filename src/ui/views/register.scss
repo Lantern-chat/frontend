@@ -1,0 +1,113 @@
+@import "../styles/math.scss";
+
+form {
+    width: 40em;
+    display: grid;
+}
+
+label {
+    display: inline-block;
+}
+
+.form-label {
+    margin-bottom: 0.5rem;
+}
+
+form > div {
+    margin: 1em;
+}
+
+input {
+    max-width: 100%;
+    padding: 0.8em 1em;
+    width: 100%;
+    border-radius: 0.3em;
+}
+
+.ln-form-control-wrapper {
+    display: flex;
+
+    &:focus,
+    &:focus-within,
+    &:active {
+        &::before {
+            content: ">";
+            position: absolute;
+            margin-left: -1em;
+            font-size: 2em;
+        }
+    }
+}
+
+a {
+    color: hsl(240, 100, 70);
+}
+
+.ln-register-container {
+    border-radius: 1em;
+    padding: 0 2em 2em 2em;
+    box-shadow: 0.5em 0.5em 0.5em black;
+}
+
+.ln-register {
+    display: flex;
+
+    > div {
+        display: flex;
+    }
+}
+
+.ln-logo {
+    width: 15em;
+    align-items: center;
+    display: flex;
+
+    img {
+        padding: 2em;
+        width: 100%;
+        height: 500px;
+
+        filter: drop-shadow(0 0 0.6em rgba(0, 0, 0, 0.7));
+    }
+
+    &::before {
+        content: "";
+        width: 15em;
+        height: 50%;
+        position: absolute;
+        z-index: auto;
+        background: radial-gradient(
+                14em circle,
+                rgba(252, 217, 142, 0.7) 0%,
+                rgba(109, 104, 63, 0.5) 24%,
+                rgba(0, 0, 0, 0) 50%,
+                rgba(0, 0, 0, 0) 100%
+            )
+            no-repeat;
+
+        .ln-enable-motion & {
+            animation: pulse_flame 60s infinite alternate;
+
+            @media (prefers-reduced-motion) {
+                animation: none;
+                transform: translateY(4.5em);
+            }
+        }
+    }
+}
+
+@keyframes pulse_flame {
+    @for $i from 0 through 100 {
+        $rng: 1 - random() * 0.2;
+        $a: random() * $TWO_PI;
+        $scale: $rng + 0.4;
+
+        $s: sin($a) * 3;
+        $c: cos($a) * 3;
+
+        #{$i}% {
+            transform: translateY(4.5em) scale($scale) translateY(#{$s}px) translateX(#{$c}px);
+            opacity: $rng;
+        }
+    }
+}

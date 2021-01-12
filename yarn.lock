@@ -35,6 +35,11 @@
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.2.tgz#8f03a22a04de437254e8ce8cc84ba39689288752"
   integrity sha512-HyYEUDeIj5rRQU2Hk5HTB2uHsbRQpF70nvMhVzi+VJR0X+xNEhjPui4/kBf3VeH/wqD28PT4sVOm8qqLjBrSZg==
 
+"@hcaptcha/react-hcaptcha@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@hcaptcha/react-hcaptcha/-/react-hcaptcha-0.2.2.tgz#84e475e4147877053fc5a2e40fd1434f10aaa49f"
+  integrity sha512-tAi0IPLvQCEwQVU238AWbdRiPRc+F195nyfptS2E6qI87k+2vadjjxekseLlQfRgMFmZXxMcFuRYgo5r54yRJw==
+
 "@polka/url@^1.0.0-next.9":
   version "1.0.0-next.11"
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.11.tgz#aeb16f50649a91af79dbe36574b66d0f9e4d9f71"
@@ -73,6 +78,13 @@
   dependencies:
     "@types/minimatch" "*"
     "@types/node" "*"
+
+"@types/hcaptcha__react-hcaptcha@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@types/hcaptcha__react-hcaptcha/-/hcaptcha__react-hcaptcha-0.1.4.tgz#145cab4f0ac29fe8925dc98ab16cf2dffacad7d5"
+  integrity sha512-eqEIBR7yn4Y1fRtxPnFlEP8SAHwX762Z27s/ifd5wfJicviz6HynF8gHCgUPPtfYlaQFHa/A0NkwBA5YNmNCmQ==
+  dependencies:
+    "@types/react" "*"
 
 "@types/history@*":
   version "4.7.8"

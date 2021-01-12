@@ -7,6 +7,7 @@ $night-temp: 5000;
 //$ln-primary-dark-surface-color: hsl(240, 4%, 20%);
 $ln-primary-dark-surface-color: change-color(kelvin($day-temp), $lightness: 20%, $saturation: 5%);
 $ln-secondary-dark-surface-color: darken($ln-primary-dark-surface-color, 5%);
+$ln-tertiary-dark-surface-color: lighten($ln-primary-dark-surface-color, 5%);
 $ln-primary-dark-text-color: change-color(
     $ln-primary-dark-surface-color,
     $saturation: 0,
@@ -26,6 +27,8 @@ $ln-primary-light-text-color: black;
     $primary-surface-backup,
     $secondary-surface,
     $secondary-surface-backup,
+    $tertiary-surface,
+    $tertiary-surface-backup,
     $primary-text,
     $primary-text-backup
 ) {
@@ -52,6 +55,16 @@ $ln-primary-light-text-color: black;
     .ln-primary-text-color {
         color: $primary-text-backup;
         color: $primary-text;
+
+        ::placeholder {
+            color: $primary-text-backup;
+            color: $primary-text;
+        }
+    }
+
+    .ln-tertiary-surface-background {
+        background-color: $tertiary-surface-backup;
+        background-color: $tertiary-surface;
     }
 }
 
@@ -82,6 +95,11 @@ $lnx-secondary-dark-surface-color: varx(
     --ln-secondary-dark-surface-color,
     $ln-secondary-dark-surface-color
 );
+$lnx-tertiary-dark-surface-color: varx(
+    --lnx-tertiary-dark-surface-color,
+    --ln-tertiary-dark-surface-color,
+    $ln-tertiary-dark-surface-color
+);
 $lnx-primary-dark-text-color: varx(
     --lnx-primary-dark-text-color,
     --ln-primary-dark-text-color,
@@ -110,6 +128,8 @@ $lnx-primary-light-text-color: varx(
         $ln-primary-dark-surface-color,
         $lnx-secondary-dark-surface-color,
         $ln-secondary-dark-surface-color,
+        $lnx-tertiary-dark-surface-color,
+        $ln-tertiary-dark-surface-color,
         $lnx-primary-dark-text-color,
         $ln-primary-dark-text-color
     );
@@ -119,6 +139,8 @@ $lnx-primary-light-text-color: varx(
     @include color_theme(
         $lnx-primary-light-surface-color,
         $ln-primary-light-surface-color,
+        $lnx-secondary-light-surface-color,
+        $ln-secondary-light-surface-color,
         $lnx-secondary-light-surface-color,
         $ln-secondary-light-surface-color,
         $lnx-primary-light-text-color,
