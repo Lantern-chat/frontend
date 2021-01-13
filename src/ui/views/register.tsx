@@ -2,33 +2,13 @@ import React from "react";
 
 import { Link } from "react-router-dom";
 
+import { Fireflies } from "../components/login/firefly_background";
+
 import "./register.scss";
 
-import lantern from "../assets/lantern_wax.svg";
-
-const Firefly = React.memo(() => {
-    let offset_x = Math.random() * 100;
-    let offset_y = Math.random() * 100;
-    let offset_a = Math.random() * 360;
-
-    let idx = Math.floor(Math.random() * 2);
-    let className = "ln-random-walk-" + idx;
-
-    let style = {
-        position: "absolute" as any, // TypeScript is bugged
-        left: offset_x + '%',
-        top: offset_y + '%',
-        animationDuration: (Math.random() + 1) + 's',
-        transform: `rotate(${offset_a}deg)`,
-        animationDelay: (Math.random() * 2) + 's',
-    };
-
-    return (<span className={"ln-firefly ln-blinking " + className} style={style} />)
-});
-
+import lantern from "../assets/lantern.svg";
 
 // TODO: Abstract form groups and inputs into components
-
 export const RegisterView = () => {
     let [offset, setOffset] = React.useState({ x: 0, y: 0 });
 
@@ -44,23 +24,8 @@ export const RegisterView = () => {
     return (
         <>
             <div className="ln-center ln-register">
-                <div style={{
-                    right: `${offset.x / 10}px`,
-                    bottom: `${offset.y / 10}px`,
-                    position: 'absolute',
-                    width: '100%',
-                    height: '100%',
-                }}>
-                    {(() => {
-                        let children = [];
-                        for(let i = 0; i < 20; i++) {
-                            children.push(<Firefly key={i} />);
-                        }
-                        return children;
-                    })()}
-                </div>
+                <Fireflies count={20} />
                 <div className="ln-secondary-surface-background ln-register-container" style={{ zIndex: 1 }}>
-
                     <form className="ln-primary-text-color">
                         <div className="ln-center">
                             <h2>Register</h2>
