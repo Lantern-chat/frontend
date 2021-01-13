@@ -111,3 +111,71 @@ a {
         }
     }
 }
+
+@mixin random_walk_mixin {
+    $x: 0;
+    $y: 0;
+    $a: 0;
+    $d: 20;
+    @for $i from 0 through 100 {
+        $dx: (random() + 1) * $d;
+        $a: $a + (random() * 2 - 0.8) * $TWO_PI * 0.1;
+        $x: $x + sin($a) * $dx;
+        $y: $y + cos($a) * $dx;
+
+        #{$i}% {
+            transform: translateX(#{$x}px) translateY(#{$y}px);
+        }
+    }
+}
+
+@keyframes random_walk_1 {
+    @include random_walk_mixin();
+}
+
+@keyframes random_walk_2 {
+    @include random_walk_mixin();
+}
+
+@keyframes blinking {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.3;
+    }
+}
+
+.ln-blinking {
+    animation: blinking 3s infinite alternate;
+}
+
+.ln-random-walk-0::before {
+    .ln-enable-motion & {
+        animation: random_walk_1 60s infinite alternate;
+        animation-timing-function: linear;
+
+        @media (prefers-reduced-motion) {
+            animation: none;
+        }
+    }
+}
+
+.ln-random-walk-1::before {
+    .ln-enable-motion & {
+        animation: random_walk_2 60s infinite alternate;
+        animation-timing-function: linear;
+
+        @media (prefers-reduced-motion) {
+            animation: none;
+        }
+    }
+}
+
+.ln-firefly::before {
+    content: "";
+    position: absolute;
+    background: radial-gradient(0.5em circle, hsla(60, 100%, 50%, 1) 0%, hsla(60, 100%, 50%, 0) 100%) no-repeat;
+    width: 1em;
+    height: 1em;
+}
