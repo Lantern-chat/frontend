@@ -27,7 +27,7 @@ function init_fireflies(props: IFireflyProps): IFireflyState {
         let angle = Math.random() * Math.PI * 2.0;
         fireflies.push({
             offset: Math.random(),
-            size: Math.random(),
+            size: Math.random() * 0.7 + 0.3,
             angle,
             target_angle: angle,
             pos: [Math.random() * window.innerWidth, Math.random() * window.innerHeight],
@@ -90,22 +90,24 @@ function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObje
         if(firefly.pos[1] === 0) { firefly.vel[1] += EJECT; }
         else if(firefly.pos[1] === canvas.height) { firefly.vel[1] -= EJECT; }
     }
-
+    ctx.resetTransform();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    let gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, 12);
+
+    gradient.addColorStop(0, 'rgba(255, 255, 0, 0.9)');
+    gradient.addColorStop(0.2, 'rgba(255, 255, 0, 0.5)');
+    gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+    ctx.fillStyle = gradient;
+
     for(let firefly of state.fireflies) {
-        let gradient = ctx.createRadialGradient(firefly.pos[0], firefly.pos[1], 0, firefly.pos[0], firefly.pos[1], 12);
-
-        gradient.addColorStop(0, 'rgba(255, 255, 0, 0.9)');
-        gradient.addColorStop(0.2, 'rgba(255, 255, 0, 0.5)');
-        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-
         let s = Math.sin((firefly.offset * 3 + time) * Math.PI * 0.5);
         let s2 = s * s;
         ctx.globalAlpha = s2 * 0.7 + 0.3;
 
-        ctx.fillStyle = gradient;
-        ctx.fillRect(firefly.pos[0] - 12, firefly.pos[1] - 12, 24, 24);
+        ctx.setTransform(firefly.size, 0, 0, firefly.size, firefly.pos[0], firefly.pos[1]);
+        ctx.fillRect(-12 * firefly.size, -12 * firefly.size, 24 * firefly.size, 24 * firefly.size);
     }
 
     state.time = time;
@@ -117,7 +119,6 @@ export const Fireflies = React.memo((props: IFireflyProps) => {
     let canvas_ref = React.useRef(null);
 
     React.useEffect(() => {
-        console.log("HERE");
         let state = init_fireflies(props);
         let interval = setInterval(() => {
             for(let firefly of state.fireflies) {
