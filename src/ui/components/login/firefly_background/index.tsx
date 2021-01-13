@@ -107,7 +107,7 @@ function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObje
         ctx.globalAlpha = s2 * 0.7 + 0.3;
 
         ctx.setTransform(firefly.size, 0, 0, firefly.size, firefly.pos[0], firefly.pos[1]);
-        ctx.fillRect(-12 * firefly.size, -12 * firefly.size, 24 * firefly.size, 24 * firefly.size);
+        ctx.fillRect(-12, -12, 24, 24);
     }
 
     state.time = time;
