@@ -24,7 +24,7 @@ export const RegisterView = () => {
     return (
         <>
             <div className="ln-center ln-register">
-                <Fireflies count={20} />
+                <Fireflies count={40} />
                 <div className="ln-secondary-surface-background ln-register-container" style={{ zIndex: 1 }}>
                     <form className="ln-primary-text-color">
                         <div className="ln-center">

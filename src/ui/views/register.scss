@@ -84,10 +84,9 @@ a {
                 rgba(0, 0, 0, 0) 100%
             )
             no-repeat;
-        transform: translateY(4.5em);
 
         .ln-enable-motion & {
-            //animation: pulse_flame 60s infinite alternate;
+            animation: pulse_flame 60s infinite alternate;
 
             @media (prefers-reduced-motion) {
                 animation: none;
