@@ -100,7 +100,9 @@ function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObje
         gradient.addColorStop(0.2, 'rgba(255, 255, 0, 0.5)');
         gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
 
-        ctx.globalAlpha = Math.abs(Math.sin((firefly.offset + time) * Math.PI * 0.5)) * 0.7 + 0.3;
+        let s = Math.sin((firefly.offset + time) * Math.PI * 0.5);
+        let s2 = s * s;
+        ctx.globalAlpha = s2 * 0.7 + 0.3;
 
         ctx.fillStyle = gradient;
         ctx.fillRect(firefly.pos[0] - 12, firefly.pos[1] - 12, 24, 24);
