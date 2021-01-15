@@ -89,7 +89,7 @@ function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObje
         canvas.height = window.innerHeight;
     }
 
-    time /= 1000;
+    time /= 1000; // we want to work in seconds, not milliseconds
 
     if(!state.paused && !state.just_unpaused) {
         let dt = 0;
@@ -106,6 +106,7 @@ function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObje
             firefly.vel[0] += sin(firefly.a) * v;
             firefly.vel[1] += cos(firefly.a) * v;
 
+            // for every 0.4% of particles, apply some repulsion effects
             if(random() < 0.004) {
                 for(let other of state.ff) {
                     let dx = firefly.pos[0] - other.pos[0];
@@ -113,13 +114,14 @@ function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObje
                     let d = sqrt(dx * dx + dy * dy);
 
                     // Smoothstep falloff
-                    let repulse = smoothstep((100 - d) / 100);
+                    let repulse = smoothstep((40 - d) / 40);
 
                     // computes a tiny parabola where the repulsive effect is propertional
                     // to difference in sizes, with max repulsion at equal sizes
                     let ds = 2 * abs(firefly.size - other.size);
                     repulse *= repulse * max(0, 1 - ds * ds) * dt * 666 * random();
 
+                    // 20% of the time, attract them instead for a bit of unpredictability
                     if(random() < 0.2) {
                         repulse *= -1;
                     }
@@ -159,6 +161,8 @@ function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObje
         ctx.fillStyle = gradient;
 
         for(let firefly of state.ff) {
+            // opacity is a squine function to give a smooth "blinking" effect, with an irrational time offset
+            // to avoid overlapping blinks with others
             ctx.globalAlpha = min(1, 0.1 + 0.45 * squine3((firefly.offset * 15.61803398 + time) * 0.5));
 
             ctx.setTransform(firefly.size, 0, 0, firefly.size, firefly.pos[0], firefly.pos[1]);
