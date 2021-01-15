@@ -75,6 +75,7 @@
     @return $accVal;
 }
 
+$PHI: 1.6180339887498948482045868343656381177203091798057628621354486227;
 $PI: 3.14159265358979323846;
 $TWO_PI: $PI * 2;
 $HALF_PI: $PI / 2;
@@ -119,4 +120,10 @@ $SIN_ITERATION: 10;
 
 @function cos($rad) {
     @return sin($rad + $HALF_PI);
+}
+
+@function golden_ratio($base, $unit) {
+    $other: $base * $PHI;
+
+    @return $base + $unit $other + $unit;
 }

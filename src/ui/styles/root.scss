@@ -37,3 +37,13 @@ h2 {
 h3 {
     font-size: 2em;
 }
+
+a {
+    color: hsl(240, 100, 70);
+    text-decoration: none;
+
+    &:hover,
+    &:active {
+        text-decoration: underline;
+    }
+}
