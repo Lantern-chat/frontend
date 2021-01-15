@@ -2,7 +2,7 @@ import React from "react";
 
 import { Link } from "react-router-dom";
 
-import { Fireflies } from "../components/login/firefly_background";
+import { Fireflies } from "../components/login/fireflies";
 
 import "./register.scss";
 
