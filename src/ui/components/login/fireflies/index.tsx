@@ -94,6 +94,15 @@ function gaussian2(x: number, c: number): number {
     return Math.pow(2, (x * x) / (-2 * c * c));
 }
 
+function mix(a: number, b: number, t: number): number {
+    return (1 - t) * a + t * b;
+}
+
+function smin(a: number, b: number, k: number): number {
+    let h = min(1, max(0, 0.5 + 0.5 * (a - b) / k));
+    return mix(a, b, h) - k * h * (1.0 - h);
+}
+
 interface GradientStop {
     x: number,
     v: string,
@@ -210,7 +219,11 @@ function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObje
         for(let firefly of state.ff) {
             // opacity is a squine function to give a smooth "blinking" effect, with an irrational time offset
             // to avoid overlapping blinks with others
-            ctx.globalAlpha = min(1, 0.1 + 0.45 * squine3((firefly.offset * 15.61803398 + time) * 0.5));
+            let x = (firefly.offset * 15.61803398 + time) * 0.5;
+            let u = 0.1 + 0.45 * squine3(x);
+            let w = sin((x - 1) * PI / 2);
+            let a = sign(w) >= 0 ? u : smin(w * 0.5 + 0.5, u, 0.2);
+            ctx.globalAlpha = min(1, max(0, a));
 
             ctx.setTransform(firefly.size, 0, 0, firefly.size, firefly.px, firefly.py);
             ctx.fillRect(-FIREFLY_RADIUS, -FIREFLY_RADIUS, FIREFLY_WIDTH, FIREFLY_WIDTH);
