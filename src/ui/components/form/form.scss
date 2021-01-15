@@ -1,0 +1,102 @@
+@import "../../styles/math.scss";
+
+.ln-form {
+    width: 45em;
+    display: flex;
+    flex-wrap: wrap;
+
+    #title {
+        text-align: center;
+        padding: 1em;
+    }
+}
+
+.ln-form-inner {
+    flex: 1 auto;
+}
+
+.ln-form-label {
+    margin-bottom: 0.5rem;
+    display: inline-block;
+}
+
+.ln-form-group {
+    margin: 1em;
+}
+
+input {
+    max-width: 100%;
+    padding: 0.8em 1em;
+    width: 100%;
+    border-radius: 0.3em;
+}
+
+.ln-form-control {
+    .ln-error & {
+        outline: 1px solid red;
+    }
+
+    .ln-success & {
+        &:focus,
+        &:active,
+        &:focus-within {
+            outline: 1px solid green;
+        }
+    }
+}
+
+.ln-form-control-wrapper {
+    display: flex;
+
+    &::before {
+        position: absolute;
+        margin-left: -1em;
+        font-size: 2em;
+    }
+
+    &:focus,
+    &:focus-within,
+    &:active {
+        &::before {
+            content: ">";
+        }
+    }
+
+    &.ln-error::before {
+        color: red;
+    }
+
+    &.ln-success::before {
+        color: green;
+    }
+}
+
+.ln-form-text {
+    font-size: 0.7em;
+    margin: 1em 1em 0 1em;
+}
+
+.ln-btn {
+    display: inline-block;
+    line-height: 1em;
+    font-size: 1em;
+    padding: golden_ratio(1, em);
+    background-color: change-color(purple, $saturation: 20%, $lightness: 40%);
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 0.2em black;
+    border-radius: 0.5em;
+
+    &:hover,
+    &:active {
+        text-decoration: underline;
+        background-color: change-color(purple, $saturation: 25%, $lightness: 45%);
+        box-shadow: 0 0 0.2em #333;
+    }
+
+    &:active,
+    &:focus,
+    &:focus-visible {
+        outline: 3px solid change-color(purple, $saturation: 55%, $lightness: 65%);
+    }
+}
