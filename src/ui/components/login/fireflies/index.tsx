@@ -4,14 +4,15 @@ import "./firefly.scss";
 
 import { isPageHidden, visibilityChange } from "../../../utils";
 
-const { sqrt, cbrt, sin, cos, random, abs, sign, PI, min, max } = Math;
+import { smoothstep, squine3, gaussian2, smin } from "../../../../client/math";
+import * as color from "../../../../client/color";
+
+const { sqrt, cbrt, sin, cos, random, abs, sign, PI, min, max, floor } = Math;
 
 interface IFireflyProps {
     count: number,
 }
 
-const FIREFLY_RADIUS: number = 16;
-const FIREFLY_WIDTH: number = FIREFLY_RADIUS * 2;
 
 interface IFirefly {
     offset: number,
@@ -56,32 +57,33 @@ function init_fireflies(props: IFireflyProps): IFireflyState {
     return { ff, paused: false, m: [1e9, 1e9, false] };
 }
 
+const FIREFLY_RADIUS: number = 16;
+const FIREFLY_WIDTH: number = FIREFLY_RADIUS * 2;
+
 const MAX_SPEED = 100;
 const EJECT = MAX_SPEED * 2;
 const ANGLE_INTERVAL: number = 5;
 
-function smoothstep(x: number): number {
-    if(x <= 0) return 0;
-    if(x >= 1) return 1;
-
-    let x2 = x * x;
-    let x3 = x2 * x;
-
-    return 6 * x3 * x2 - 15 * x2 * x2 + 10 * x3;
+interface GradientStop {
+    x: number,
+    v: string,
 }
 
-function squine3(x0: number): number {
-    let quad = (x: number) => (1 + cbrt(x * x * x - 1));
-    let semi = (x: number) => (x <= 1 ? quad(x) : (2 - quad(-x + 2)));
-    let full = (x: number) => (x <= 2 ? semi(x) : semi(-x + 4));
-
-    return full(x0 % 4.0);
+function gen_gradient([r, g, b]: number[], stops: number): GradientStop[] {
+    let gradient = [];
+    for(let i = 0; i < stops; i++) { // Note this is not inclusive
+        let x = i / stops;
+        gradient.push({ x, v: `rgba(${r}, ${g}, ${b}, ${gaussian2(x, 0.25)})` });
+    }
+    gradient.push({ x: 1, v: 'rgba(0, 0, 0, 0)' }); // ensure it ends in black/transparent
+    return gradient;
 }
 
-function broad_sine5(x: number): number {
-    let s = sin((x - 1) * PI * 0.5);
-    return 1 + cbrt(abs(s)) * sign(s);
-}
+const DARK_PALETTE_HUES: number[] = [50, 60, 70];
+const DARK_PALETTE: GradientStop[][] = DARK_PALETTE_HUES.map(hue => gen_gradient(color.linear2srgb(color.hsv2rgb([hue, 1, 1])), 8));
+
+//const LIGHT_PALETTE_HUES: number[] = [0, 40, 80, 120, 160, 200, 240, 280];
+//const LIGHT_PALETTE: GradientStop[][] = LIGHT_PALETTE_HUES.map(hue => gen_gradient(color.linear2srgb(color.hsl2rgb([hue, 0.7, 0.5])), 8));
 
 function repulse(x0: number, y0: number, x1: number, y1: number, w: number): [number, number, number] {
     let dx = x0 - x1;
@@ -89,34 +91,6 @@ function repulse(x0: number, y0: number, x1: number, y1: number, w: number): [nu
     let d = sqrt(dx * dx + dy * dy);
     return [smoothstep((w - d) / w), dx, dy];
 }
-
-function gaussian2(x: number, c: number): number {
-    return Math.pow(2, (x * x) / (-2 * c * c));
-}
-
-function mix(a: number, b: number, t: number): number {
-    return (1 - t) * a + t * b;
-}
-
-function smin(a: number, b: number, k: number): number {
-    let h = min(1, max(0, 0.5 + 0.5 * (a - b) / k));
-    return mix(a, b, h) - k * h * (1.0 - h);
-}
-
-interface GradientStop {
-    x: number,
-    v: string,
-}
-
-// The radial gradient uses a Gaussian function for smoothness
-const GRADIENT: GradientStop[] = [];
-const NUM_STOPS: number = 8;
-for(let i = 0; i < NUM_STOPS; i++) { // Note this is not inclusive
-    let x = i / NUM_STOPS;
-    GRADIENT.push({ x, v: `rgba(255, 255, 0, ${gaussian2(x, 0.25)})` });
-}
-GRADIENT.push({ x: 1, v: 'rgba(0, 0, 0, 0)' }); // ensure it ends in black/transparent
-
 
 function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObject<HTMLCanvasElement | null>, time: number) {
     if(!canvas_ref.current) { return; }
@@ -204,17 +178,15 @@ function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObje
         ctx.resetTransform();
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        let gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, FIREFLY_RADIUS);
-
-        for(let g of GRADIENT) {
-            gradient.addColorStop(g.x, g.v);
-        }
+        let palette: CanvasGradient[] = DARK_PALETTE.map((p) => {
+            let gradient = ctx!.createRadialGradient(0, 0, 0, 0, 0, FIREFLY_RADIUS);
+            for(let g of p) { gradient.addColorStop(g.x, g.v); }
+            return gradient;
+        });
 
         //gradient.addColorStop(0, 'rgba(255, 255, 0, 0.9)');
         //gradient.addColorStop(0.2, 'rgba(255, 255, 0, 0.5)');
         //gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-
-        ctx.fillStyle = gradient;
 
         for(let firefly of state.ff) {
             // opacity is a squine function to give a smooth "blinking" effect, with an irrational time offset
@@ -224,6 +196,8 @@ function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObje
             let w = sin((x - 1) * PI / 2);
             let a = sign(w) >= 0 ? u : smin(w * 0.5 + 0.5, u, 0.2);
             ctx.globalAlpha = min(1, max(0, a));
+
+            ctx.fillStyle = palette[floor(firefly.offset * palette.length)];
 
             ctx.setTransform(firefly.size, 0, 0, firefly.size, firefly.px, firefly.py);
             ctx.fillRect(-FIREFLY_RADIUS, -FIREFLY_RADIUS, FIREFLY_WIDTH, FIREFLY_WIDTH);
