@@ -1,4 +1,4 @@
-import { visibilityChange } from "src/ui/utils";
+import { visibilityChange } from "ui/utils";
 
 const BLACK: number[] = [0, 0, 0];
 

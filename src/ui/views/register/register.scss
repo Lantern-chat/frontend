@@ -1,9 +1,11 @@
-@import "../styles/math.scss";
+@import "lib/math.scss";
+@import "lib/theme.scss";
 
 .ln-register-container {
     border-radius: 1em;
     padding: 0 2em 2em 2em;
     box-shadow: -0.1em 0 0.8em black;
+    background-color: $lnx-secondary-surface-color;
 }
 
 .ln-register {

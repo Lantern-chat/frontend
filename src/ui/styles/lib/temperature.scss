@@ -1,4 +1,4 @@
-@import "./math.scss";
+@import "lib/math.scss";
 
 @function kelvin($temp) {
     $temp: $temp * 0.01;

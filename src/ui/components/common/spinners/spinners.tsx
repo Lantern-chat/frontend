@@ -1,7 +1,5 @@
 import React from "react";
 
-import "../../../styles/root.scss";
-import "../../../styles/layout.scss";
 import "./spinners.scss";
 
 interface SpinnerProps {

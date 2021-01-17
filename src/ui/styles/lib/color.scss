@@ -1,0 +1,19 @@
+@function mix($t, $a, $b) {
+    $it: 1 - $t;
+    $red: red($a) * $it + red($b) * $t;
+    $green: green($a) * $it + green($b) * $t;
+    $blue: blue($a) * $it + blue($b) * $t;
+    $opacity: opacity($a) * $it + opacity($b) * $t;
+
+    @return rgba($red, $green, $blue, $opacity);
+}
+
+@function blend-normal($foreground, $background) {
+    $opacity: opacity($foreground);
+    $background-opacity: opacity($background);
+
+    $bm-red: red($foreground) * $opacity + red($background) * $background-opacity * (1 - $opacity);
+    $bm-green: green($foreground) * $opacity + green($background) * $background-opacity * (1 - $opacity);
+    $bm-blue: blue($foreground) * $opacity + blue($background) * $background-opacity * (1 - $opacity);
+    @return rgb($bm-red, $bm-green, $bm-blue);
+}

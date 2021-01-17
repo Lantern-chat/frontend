@@ -17,6 +17,7 @@ interface IFormInputProps {
     placeholder?: string,
     required?: boolean,
     validator?: (value: string) => boolean,
+    validateOnRender?: boolean,
 }
 
 export function FormGroup(props: IFormGroupProps) {
@@ -39,7 +40,7 @@ export function FormInput(props: IFormInputProps) {
         if(props.validator) isValid = props.validator(value);
     }
 
-    if(isValid != null) {
+    if(isValid != null || props.validateOnRender) {
         if(isValid) {
             classNames += ' ln-success';
         } else {
@@ -49,7 +50,7 @@ export function FormInput(props: IFormInputProps) {
 
     return (
         <span className={classNames}>
-            <input className="ln-form-control ln-tertiary-surface-background ln-secondary-surface-border ln-primary-text-color"
+            <input className="ln-form-control"
                 ref={input}
                 type={props.type}
                 name={props.name}
@@ -59,3 +60,11 @@ export function FormInput(props: IFormInputProps) {
         </span>
     );
 };
+
+export interface IFormProps {
+    children: React.ReactNode
+}
+
+export function Form(props: IFormProps) {
+
+}

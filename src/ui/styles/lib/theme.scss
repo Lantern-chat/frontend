@@ -1,0 +1,40 @@
+@import "lib/temperature.scss";
+@import "lib/color.scss";
+
+$day-temp: 7500;
+$night-temp: 5000;
+
+$ln-transition-timing: 0.05s;
+
+$ln-primary-surface-color: change-color(kelvin($day-temp), $lightness: 20%, $saturation: 5%);
+$ln-secondary-surface-color: darken($ln-primary-surface-color, 5%);
+$ln-tertiary-surface-color: lighten($ln-primary-surface-color, 5%);
+$ln-primary-text-color: change-color(
+    $ln-primary-surface-color,
+    $saturation: 0,
+    $lightness: 110% - lightness($ln-primary-surface-color)
+);
+$ln-secondary-text-color: darken($ln-primary-text-color, 20%);
+$ln-success-color: green;
+$ln-warning-color: orange;
+$ln-failure-color: red;
+
+@function varx($first, $x...) {
+    @if length($x) >= 1 {
+        @return var($first, varx($x...));
+    }
+    @return $first;
+}
+
+// See root.scss for the :root {}
+
+$lnx-transition-timing: varx(--ln-transition-timing, $ln-transition-timing);
+
+$lnx-primary-surface-color: varx(--ln-primary-surface-color, $ln-primary-surface-color);
+$lnx-secondary-surface-color: varx(--ln-secondary-surface-color, $ln-secondary-surface-color);
+$lnx-tertiary-surface-color: varx(--ln-tertiary-surface-color, $ln-tertiary-surface-color);
+$lnx-primary-text-color: varx(--ln-primary-text-color, $ln-primary-text-color);
+$lnx-secondary-text-color: varx(--ln-secondary-text-color, $ln-secondary-text-color);
+$lnx-success-color: varx(--ln-success-color, $ln-success-color);
+$lnx-warning-color: varx(--ln-warning-color, $ln-warning-color);
+$lnx-failure-color: varx(--ln-failure-color, $ln-failure-color);

@@ -6,7 +6,7 @@ import { } from 'react/experimental';
 import * as i18n from "./ui/i18n";
 
 import "./ui/styles/root.scss";
-import "./ui/styles/theme.scss";
+import "./ui/styles/layout.scss";
 
 // TODO: Hook this up to the client
 import Worker from "worker-loader!./worker";

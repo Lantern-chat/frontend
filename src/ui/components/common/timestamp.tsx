@@ -1,6 +1,6 @@
-import dayjs from "../../../client/time";
+import dayjs from "client/time";
 import React, { useContext } from "react";
-import { LocaleContext } from "../../i18n";
+import { LocaleContext } from "ui/i18n";
 
 export interface TimestampProps {
     time: dayjs.ConfigType,

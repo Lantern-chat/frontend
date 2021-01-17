@@ -2,10 +2,9 @@ import React from "react";
 
 import "./firefly.scss";
 
-import { isPageHidden, visibilityChange } from "../../../utils";
-
-import { smoothstep, squine3, gaussian2, smin } from "../../../../client/math";
-import * as color from "../../../../client/color";
+import { isPageHidden, visibilityChange } from "ui/utils";
+import { smoothstep, squine3, gaussian2, smin } from "client/math";
+import * as color from "client/color";
 
 const { sqrt, cbrt, sin, cos, random, abs, sign, PI, min, max, floor } = Math;
 

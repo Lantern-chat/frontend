@@ -1,4 +1,5 @@
-@import "variables";
+@import "lib/variables";
+@import "lib/theme";
 
 @import "reset";
 
@@ -24,6 +25,9 @@ body {
     height: 100%;
     max-height: 100%;
     overflow: hidden;
+
+    background-color: $lnx-primary-surface-color;
+    color: $lnx-primary-text-color;
 }
 
 h1 {
@@ -39,11 +43,23 @@ h3 {
 }
 
 a {
-    color: hsl(240, 100, 70);
     text-decoration: none;
 
     &:hover,
     &:active {
         text-decoration: underline;
     }
+}
+
+:root {
+    --ln-transition-timing: #{$ln-transition-timing};
+
+    --ln-primary-surface-color: #{$ln-primary-surface-color};
+    --ln-secondary-surface-color: #{$ln-secondary-surface-color};
+    --ln-tertiary-surface-color: #{$ln-tertiary-surface-color};
+    --ln-primary-text-color: #{$ln-primary-text-color};
+    --ln-secondary-text-color: #{$ln-secondary-text-color};
+    --ln-success-color: #{$ln-success-color};
+    --ln-warning-color: #{$ln-warning-color};
+    --ln-failure-color: #{$ln-failure-color};
 }

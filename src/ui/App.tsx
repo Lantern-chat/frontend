@@ -7,7 +7,7 @@ import {
     Link
 } from "react-router-dom";
 
-import Avatar from "./components/common/avatar/avatar";
+import Avatar from "ui/components/common/avatar/avatar";
 
 export interface AppProps { }
 
@@ -17,7 +17,7 @@ const Main = React.lazy(() => import(
     "./views/main"
 ));
 const Login = React.lazy(() => import(      /* webpackChunkName: 'LoginView'    */  "./views/login"));
-const Register = React.lazy(() => import(   /* webpackChunkName: 'RegisterView' */  "./views/register"));
+const Register = React.lazy(() => import(   /* webpackChunkName: 'RegisterView' */  "./views/register/register"));
 const Admin = React.lazy(() => import(      /* webpackChunkName: 'AdminView'    */  "./views/admin"));
 
 export const App = (props: AppProps) => (

@@ -7,6 +7,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const TerserPlugin = require('terser-webpack-plugin');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 const distPath = path.join(__dirname, 'dist');
 
@@ -53,19 +54,20 @@ module.exports = (env, argv) => {
             hints: false
         },
         resolve: {
+            roots: [path.resolve("./src"), __dirname],
             extensions: [".ts", ".jsx", ".tsx", ".js", ".json"],
             alias: {
                 //"react": "preact-compat",
                 //"react-dom": "preact-compat",
                 modernizr$: path.resolve(__dirname, 'src/.modernizrrc'),
-            }
+            },
+            plugins: [
+                new TsconfigPathsPlugin({ configFile: "./tsconfig.json" }),
+            ]
         },
         module: {
             rules: [
-                {
-                    test: /\.(ts|tsx)$/,
-                    loader: "awesome-typescript-loader",
-                },
+                { test: /\.tsx?$/, loader: "ts-loader" },
 
                 // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
                 { enforce: "pre", test: /\.js$/, loader: "source-map-loader" },
@@ -83,7 +85,14 @@ module.exports = (env, argv) => {
                         },
                         'css-loader',
                         'postcss-loader',
-                        'sass-loader',
+                        {
+                            loader: "sass-loader",
+                            options: {
+                                sassOptions: {
+                                    includePaths: ["src/ui/styles"],
+                                },
+                            },
+                        },
                     ],
                 },
                 {
@@ -120,10 +129,10 @@ module.exports = (env, argv) => {
             new HtmlWebpackPlugin({
                 template: path.resolve(__dirname, "src", "index.html"),
             }),
-            new BundleAnalyzerPlugin({
-                analyzerMode: 'server',
-                openAnalyzer: true,
-            }),
+            //new BundleAnalyzerPlugin({
+            //    analyzerMode: 'server',
+            //    openAnalyzer: true,
+            //}),
             new MiniCssExtractPlugin({
                 // Options similar to the same options in webpackOptions.output
                 // both options are optional
