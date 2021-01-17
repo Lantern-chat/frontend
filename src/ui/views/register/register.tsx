@@ -14,7 +14,7 @@ function hasLength(length: number): (value: string) => boolean {
 }
 
 function validateEmail(value: string): boolean {
-    return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value);
+    return /^[^@\s]+@[^@\s]+\.[^.@\s]+$/.test(value);
 }
 
 function validatePass(value: string): boolean {
