@@ -27,7 +27,7 @@ const App = React.lazy(() => import(
 // Simple full-screen loader icon
 import { Ripple } from "./ui/components/common/spinners/spinners";
 import { MessageOp } from "./client/worker";
-const Loading = React.memo(() => (<div className="ln-center"><Ripple size={160} /></div>));
+const Loading = React.memo(() => (<div className="ln-center-standalone"><Ripple size={160} /></div>));
 
 let root = (
     <React.Suspense fallback={<Loading />}>

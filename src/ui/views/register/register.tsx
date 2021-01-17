@@ -3,7 +3,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 import { Fireflies } from "ui/components/login/fireflies";
-import { FormGroup, FormLabel, FormInput } from "ui/components/form";
+import { FormGroup, FormLabel, FormInput, FormText } from "ui/components/form";
 
 import "./register.scss";
 
@@ -27,8 +27,8 @@ export const RegisterView = () => {
     return (
         <>
             <Fireflies count={80} />
-            <div className="ln-center ln-register">
-                <div className="ln-register-container" style={{ zIndex: 1 }}>
+            <div className="ln-box ln-register">
+                <div className="ln-register-container ln-centered" style={{ zIndex: 1 }}>
                     <form className="ln-form">
                         <div id="title">
                             <h2>Register</h2>
@@ -48,9 +48,9 @@ export const RegisterView = () => {
                         <FormGroup>
                             <FormLabel htmlFor="email">Password</FormLabel>
                             <FormInput type="password" name="password" placeholder="password" required validator={validatePass} />
-                            <p className="ln-form-text">
-                                Password must be at least 8 characters long and containing at least one number or special character.
-                                </p>
+                            <FormText>
+                                Password must be at least 8 characters long and contain at least one number or one special character.
+                            </FormText>
                         </FormGroup>
                         <hr />
                         <FormGroup>
@@ -60,16 +60,16 @@ export const RegisterView = () => {
                             </div>
                         </FormGroup>
                         <FormGroup>
-                            <p className="ln-form-text">
+                            <FormText>
                                 By registering, you agree to our
-                            </p>
+                            </FormText>
                         </FormGroup>
                     </form>
                     <div className="ln-logo" >
                         <img src={lantern}></img>
                     </div>
                 </div>
-            </div>
+            </div >
         </>
     );
 }

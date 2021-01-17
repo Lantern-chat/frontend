@@ -11,6 +11,10 @@ interface IFormLabelProps {
     htmlFor: string,
 }
 
+interface IFormTextProps {
+    children: React.ReactNode,
+}
+
 interface IFormInputProps {
     type: string,
     name: string,
@@ -20,13 +24,17 @@ interface IFormInputProps {
     validateOnRender?: boolean,
 }
 
-export function FormGroup(props: IFormGroupProps) {
+export const FormGroup = React.memo((props: IFormGroupProps) => {
     return <div className="ln-form-group" {...props} />
-};
+});
 
-export function FormLabel(props: IFormLabelProps) {
+export const FormLabel = React.memo((props: IFormLabelProps) => {
     return <label className="ln-form-label" {...props} />;
-};
+});
+
+export const FormText = React.memo((props: IFormTextProps) => {
+    return <p className="ln-form-text" {...props} />;
+});
 
 export function FormInput(props: IFormInputProps) {
     let input: React.RefObject<HTMLInputElement> = useRef(null);

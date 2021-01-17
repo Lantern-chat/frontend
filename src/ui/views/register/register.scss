@@ -2,6 +2,8 @@
 @import "lib/theme.scss";
 
 .ln-register-container {
+    flex-wrap: wrap;
+    display: flex;
     border-radius: 1em;
     padding: 0 2em 2em 2em;
     box-shadow: -0.1em 0 0.8em black;
@@ -9,11 +11,6 @@
 }
 
 .ln-register {
-    display: flex;
-
-    > div {
-        display: flex;
-    }
 }
 
 .ln-logo {
@@ -21,6 +18,10 @@
     align-items: center;
     display: flex;
     //flex: 1;
+
+    @media (max-width: 49em) {
+        display: none;
+    }
 
     img {
         padding: 2em;

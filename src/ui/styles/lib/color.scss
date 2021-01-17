@@ -8,6 +8,7 @@
     @return rgba($red, $green, $blue, $opacity);
 }
 
+// https://github.com/heygrady/scss-blend-modes/blob/master/stylesheets/_blend-modes.scss
 @function blend-normal($foreground, $background) {
     $opacity: opacity($foreground);
     $background-opacity: opacity($background);
