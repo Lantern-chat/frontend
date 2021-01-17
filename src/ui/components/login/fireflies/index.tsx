@@ -59,7 +59,7 @@ function init_fireflies(props: IFireflyProps): IFireflyState {
 const FIREFLY_RADIUS: number = 16;
 const FIREFLY_WIDTH: number = FIREFLY_RADIUS * 2;
 
-const MAX_SPEED = 100;
+const MAX_SPEED = 60;
 const EJECT = MAX_SPEED * 2;
 const ANGLE_INTERVAL: number = 5;
 
