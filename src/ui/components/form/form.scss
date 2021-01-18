@@ -147,3 +147,86 @@ $control-border-radius: 0.3em;
         outline: 3px solid change-color(purple, $saturation: 55%, $lightness: 65%);
     }
 }
+
+.ln-form-select-wrapper {
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    margin-right: 1em;
+}
+
+select.ln-form-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: 1px solid transparent;
+    width: 100%;
+    padding: golden_ratio(0.35, em);
+    padding-right: 3em;
+    background: $lnx-tertiary-surface-color;
+    color: $lnx-primary-text-color;
+    outline: none;
+
+    border-radius: $control-border-radius;
+
+    &:focus,
+    &:active,
+    &:focus-within {
+        border-color: $lnx-primary-text-color;
+
+        ~ .ln-form-select-arrow {
+            border-color: $lnx-primary-text-color;
+        }
+    }
+
+    &:required:invalid {
+        color: $lnx-secondary-text-color;
+    }
+
+    option {
+        color: $lnx-primary-text-color;
+    }
+}
+
+$ptr-size: 0.4em;
+
+.ln-form-select-arrow {
+    display: block;
+    background: $lnx-primary-surface-color;
+    border: 1px solid $lnx-primary-surface-color;
+    border-left: none;
+    position: absolute;
+    height: 100%;
+    width: 2em;
+    top: 0;
+    right: 0;
+    pointer-events: none;
+
+    border-top-right-radius: $control-border-radius;
+    border-bottom-right-radius: $control-border-radius;
+
+    &::before,
+    &::after {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-left: $ptr-size solid transparent;
+        border-right: $ptr-size solid transparent;
+
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    &::before {
+        border-bottom: $ptr-size solid $lnx-primary-text-color;
+        top: 32%;
+    }
+
+    &::after {
+        border-top: $ptr-size solid $lnx-primary-text-color;
+        top: 68%;
+    }
+}

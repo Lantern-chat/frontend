@@ -1,9 +1,10 @@
 import React from "react";
+import * as dayjs from "dayjs";
 
 import { Link } from "react-router-dom";
 
 import { Fireflies } from "ui/components/login/fireflies";
-import { FormGroup, FormLabel, FormInput, FormText } from "ui/components/form";
+import { FormGroup, FormLabel, FormInput, FormText, FormSelect, FormSelectOption } from "ui/components/form";
 
 import "./register.scss";
 
@@ -20,6 +21,12 @@ function validateEmail(value: string): boolean {
 function validatePass(value: string): boolean {
     // TODO: Set this with server-side options
     return value.length > 8 && /[^\w]|\d/.test(value);
+}
+
+const YEARS: string[] = [];
+const CURRENT_YEAR = dayjs().year();
+for(let i = 0; i < 100; i++) {
+    YEARS.push((CURRENT_YEAR - 13 - i).toString());
 }
 
 // TODO: Abstract form groups and inputs into components
@@ -39,7 +46,7 @@ export const RegisterView = () => {
                         </FormGroup>
                         <FormGroup>
                             <FormLabel htmlFor="email">Username</FormLabel>
-                            <FormInput type="text" name="username" placeholder="username" required validator={hasLength(6)} />
+                            <FormInput type="text" name="username" placeholder="username" required validator={hasLength(3)} />
                         </FormGroup>
                         <FormGroup>
                             <FormLabel htmlFor="email">Nickname</FormLabel>
@@ -51,6 +58,26 @@ export const RegisterView = () => {
                             <FormText>
                                 Password must be at least 8 characters long and contain at least one number or one special character.
                             </FormText>
+                        </FormGroup>
+                        <FormGroup>
+                            <FormLabel>Date of Birth</FormLabel>
+                            <div className="ln-box">
+                                <FormSelect required>
+                                    <FormSelectOption disabled hidden selected>Year</FormSelectOption>
+
+                                    {YEARS.map((year, i) => (
+                                        <FormSelectOption value={year} key={i}>{year}</FormSelectOption>
+                                    ))}
+                                </FormSelect>
+                                <FormSelect required>
+                                    <FormSelectOption disabled hidden selected>Month</FormSelectOption>
+                                    <FormSelectOption value="test">Test</FormSelectOption>
+                                </FormSelect>
+                                <FormSelect required>
+                                    <FormSelectOption disabled hidden selected>Day</FormSelectOption>
+                                    <FormSelectOption value="test">Test</FormSelectOption>
+                                </FormSelect>
+                            </div>
                         </FormGroup>
                         <hr />
                         <FormGroup>

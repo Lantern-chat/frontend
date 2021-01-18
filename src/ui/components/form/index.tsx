@@ -8,7 +8,7 @@ interface IFormGroupProps {
 
 interface IFormLabelProps {
     children: React.ReactNode,
-    htmlFor: string,
+    htmlFor?: string,
 }
 
 interface IFormTextProps {
@@ -69,10 +69,33 @@ export function FormInput(props: IFormInputProps) {
     );
 };
 
-export interface IFormProps {
-    children: React.ReactNode
+interface IFormSelectOptionProps {
+    children: React.ReactNode,
+    value?: string,
+    disabled?: boolean,
+    selected?: boolean,
+    hidden?: boolean,
 }
 
-export function Form(props: IFormProps) {
+export const FormSelectOption = React.memo((props: IFormSelectOptionProps) => {
+    return (
+        <option {...props} />
+    );
+});
 
+type FormSelectOptionChild = React.ReactElement<(typeof FormSelectOption)>;
+
+interface IFormSelectProps {
+    children: React.ReactNode,
+    required?: boolean,
+    onChange?: (opt: React.ChangeEvent<HTMLSelectElement>) => void,
 }
+
+export const FormSelect = React.memo((props: IFormSelectProps) => {
+    return (
+        <div className="ln-form-select-wrapper">
+            <select className="ln-form-select" {...props} />
+            <span className="ln-form-select-arrow" />
+        </div>
+    );
+});
