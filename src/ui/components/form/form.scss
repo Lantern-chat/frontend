@@ -32,26 +32,6 @@ $control-border-radius: 0.3em;
             border-color: $lnx-primary-text-color;
         }
     }
-
-    .ln-form-control {
-        box-shadow: none;
-
-        .ln-error & {
-            border-color: $lnx-failure-color;
-            //border-style: solid;
-            //box-shadow: inset 0 0 0.2em $lnx-failure-color;
-        }
-
-        .ln-success & {
-            &:focus,
-            &:active,
-            &:focus-within {
-                border-color: $lnx-success-color;
-                //border-style: solid;
-                //box-shadow: inset 0 0 0.2em $lnx-success-color;
-            }
-        }
-    }
 }
 
 .ln-form-inner {
@@ -90,6 +70,30 @@ $control-border-radius: 0.3em;
 
     &.ln-success::before {
         color: $lnx-success-color;
+    }
+}
+
+.ln-form-control {
+    .ln-error & {
+        border-color: $lnx-failure-color;
+
+        &:focus,
+        &:active,
+        &:focus-within {
+            border-color: $lnx-failure-color;
+        }
+        //border-style: solid;
+        //box-shadow: inset 0 0 0.2em $lnx-failure-color;
+    }
+
+    .ln-success & {
+        &:focus,
+        &:active,
+        &:focus-within {
+            border-color: $lnx-success-color;
+            //border-style: solid;
+            //box-shadow: inset 0 0 0.2em $lnx-success-color;
+        }
     }
 }
 
