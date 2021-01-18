@@ -45,15 +45,11 @@ export const RegisterView = () => {
                             <FormInput type="email" name="email" placeholder="example@example.com" required validator={validateEmail} />
                         </FormGroup>
                         <FormGroup>
-                            <FormLabel htmlFor="email">Username</FormLabel>
+                            <FormLabel htmlFor="username">Username</FormLabel>
                             <FormInput type="text" name="username" placeholder="username" required validator={hasLength(3)} />
                         </FormGroup>
                         <FormGroup>
-                            <FormLabel htmlFor="email">Nickname</FormLabel>
-                            <FormInput type="text" name="nickname" placeholder="nickname" />
-                        </FormGroup>
-                        <FormGroup>
-                            <FormLabel htmlFor="email">Password</FormLabel>
+                            <FormLabel htmlFor="password">Password</FormLabel>
                             <FormInput type="password" name="password" placeholder="password" required validator={validatePass} />
                             <FormText>
                                 Password must be at least 8 characters long and contain at least one number or one special character.
