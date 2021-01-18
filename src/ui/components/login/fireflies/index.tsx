@@ -195,7 +195,15 @@ function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObje
             //let w = sin((x - 1) * PI / 2);
             //let a = sign(w) >= 0 ? u : smin(w * 0.5 + 0.5, u, 0.35);
             //ctx.globalAlpha = min(1, max(0, a));
-            ctx.globalAlpha = broad_sine2(x) * 0.5;
+            let a: number;
+            if(firefly.offset < 0.5) {
+                a = broad_sine2(x) * 0.5;
+            } else {
+                a = sin(PI * 0.6 * x);
+                a *= a;
+            }
+
+            ctx.globalAlpha = a;
 
             ctx.fillStyle = palette[floor(firefly.offset * palette.length)];
 
