@@ -3,7 +3,7 @@ import React from "react";
 import "./firefly.scss";
 
 import { isPageHidden, visibilityChange } from "ui/utils";
-import { smoothstep, squine3, gaussian2, smin } from "client/math";
+import { smoothstep, squine3, gaussian2, smin, broad_sine2 } from "client/math";
 import * as color from "client/color";
 
 const { sqrt, cbrt, sin, cos, random, abs, sign, PI, min, max, floor } = Math;
@@ -61,7 +61,7 @@ const FIREFLY_WIDTH: number = FIREFLY_RADIUS * 2;
 
 const MAX_SPEED = 60;
 const EJECT = MAX_SPEED * 2;
-const ANGLE_INTERVAL: number = 5;
+const ANGLE_INTERVAL: number = 1;
 
 interface GradientStop {
     x: number,
@@ -191,10 +191,11 @@ function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObje
             // opacity is a squine function to give a smooth "blinking" effect, with an irrational time offset
             // to avoid overlapping blinks with others
             let x = (firefly.offset * 15.61803398 + time) * 0.5;
-            let u = 0.1 + 0.45 * squine3(x);
-            let w = sin((x - 1) * PI / 2);
-            let a = sign(w) >= 0 ? u : smin(w * 0.5 + 0.5, u, 0.2);
-            ctx.globalAlpha = min(1, max(0, a));
+            //let u = 0.1 + 0.45 * squine3(x);
+            //let w = sin((x - 1) * PI / 2);
+            //let a = sign(w) >= 0 ? u : smin(w * 0.5 + 0.5, u, 0.35);
+            //ctx.globalAlpha = min(1, max(0, a));
+            ctx.globalAlpha = broad_sine2(x) * 0.5;
 
             ctx.fillStyle = palette[floor(firefly.offset * palette.length)];
 

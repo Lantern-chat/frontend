@@ -1,4 +1,4 @@
-const { sqrt, cbrt, sin, cos, random, abs, sign, PI, min, max } = Math;
+const { sqrt, cbrt, sin, abs, sign, PI, min, max } = Math;
 
 export function saturate(x: number): number {
     return min(1, max(0, x));
@@ -22,9 +22,9 @@ export function squine3(x0: number): number {
     return full(x0 % 4.0);
 }
 
-export function broad_sine5(x: number): number {
+export function broad_sine2(x: number): number {
     let s = sin((x - 1) * PI * 0.5);
-    return 1 + cbrt(abs(s)) * sign(s);
+    return 1 + sqrt(abs(s)) * sign(s);
 }
 
 export function gaussian2(x: number, c: number): number {
