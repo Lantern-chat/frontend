@@ -71,7 +71,7 @@ export function FormInput(props: IFormInputProps) {
 
 interface IFormSelectOptionProps {
     children: React.ReactNode,
-    value?: string,
+    value?: string | number,
     disabled?: boolean,
     selected?: boolean,
     hidden?: boolean,
@@ -87,6 +87,8 @@ type FormSelectOptionChild = React.ReactElement<(typeof FormSelectOption)>;
 
 interface IFormSelectProps {
     children: React.ReactNode,
+    value?: string | number,
+    defaultValue?: string | number,
     required?: boolean,
     onChange?: (opt: React.ChangeEvent<HTMLSelectElement>) => void,
 }

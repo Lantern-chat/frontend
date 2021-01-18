@@ -250,5 +250,5 @@ export const Fireflies = React.memo((props: IFireflyProps) => {
         }
     }, [props.count])
 
-    return (<canvas id="ln-fireflies" ref={canvas_ref}></canvas>);
+    return (<canvas id="ln-fireflies" ref={canvas_ref} />);
 });

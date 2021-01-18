@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import * as dayjs from "dayjs";
 
 import { Link } from "react-router-dom";
@@ -28,9 +28,35 @@ const CURRENT_YEAR = dayjs().year();
 for(let i = 0; i < 100; i++) {
     YEARS.push((CURRENT_YEAR - 13 - i).toString());
 }
+const MONTHS: string[] = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+];
 
-// TODO: Abstract form groups and inputs into components
+interface IDob {
+    y?: number,
+    m?: number,
+    d?: number,
+}
+
+function calculateDays(dob: IDob): number {
+    return dayjs(0).year(dob.y || 1970).month(dob.m || 11).daysInMonth();
+}
+
 export const RegisterView = () => {
+    let [dob, setDob] = useState<IDob>({});
+    let num_days = useMemo(() => calculateDays(dob), [dob.y, dob.m]);
+
     return (
         <>
             <Fireflies count={80} />
@@ -58,20 +84,20 @@ export const RegisterView = () => {
                         <FormGroup>
                             <FormLabel>Date of Birth</FormLabel>
                             <div className="ln-box">
-                                <FormSelect required>
-                                    <FormSelectOption disabled hidden selected>Year</FormSelectOption>
-
-                                    {YEARS.map((year, i) => (
-                                        <FormSelectOption value={year} key={i}>{year}</FormSelectOption>
+                                <FormSelect required defaultValue="" onChange={e => setDob({ ...dob, y: parseInt(e.target.value) })}>
+                                    <FormSelectOption disabled hidden value="">Year</FormSelectOption>
+                                    {YEARS.map((year, i) => <FormSelectOption value={year} key={i}>{year}</FormSelectOption>)}
+                                </FormSelect>
+                                <FormSelect required defaultValue="" onChange={e => setDob({ ...dob, m: parseInt(e.target.value) })}>
+                                    <FormSelectOption disabled hidden value="">Month</FormSelectOption>
+                                    {MONTHS.map((month, i) => <FormSelectOption value={i} key={i}>{month}</FormSelectOption>)}
+                                </FormSelect>
+                                <FormSelect required onChange={e => setDob({ ...dob, d: parseInt(e.target.value) })}
+                                    value={(dob.d == null || num_days <= dob.d) ? "" : dob.d}>
+                                    <FormSelectOption disabled hidden value="">Day</FormSelectOption>
+                                    {(new Array(num_days)).fill(undefined).map((_, i) => (
+                                        <FormSelectOption value={i} key={i}>{(i + 1).toString()}</FormSelectOption>
                                     ))}
-                                </FormSelect>
-                                <FormSelect required>
-                                    <FormSelectOption disabled hidden selected>Month</FormSelectOption>
-                                    <FormSelectOption value="test">Test</FormSelectOption>
-                                </FormSelect>
-                                <FormSelect required>
-                                    <FormSelectOption disabled hidden selected>Day</FormSelectOption>
-                                    <FormSelectOption value="test">Test</FormSelectOption>
                                 </FormSelect>
                             </div>
                         </FormGroup>

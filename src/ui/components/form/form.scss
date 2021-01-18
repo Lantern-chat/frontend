@@ -32,6 +32,26 @@ $control-border-radius: 0.3em;
             border-color: $lnx-primary-text-color;
         }
     }
+
+    .ln-form-control {
+        box-shadow: none;
+
+        .ln-error & {
+            border-color: $lnx-failure-color;
+            //border-style: solid;
+            //box-shadow: inset 0 0 0.2em $lnx-failure-color;
+        }
+
+        .ln-success & {
+            &:focus,
+            &:active,
+            &:focus-within {
+                border-color: $lnx-success-color;
+                //border-style: solid;
+                //box-shadow: inset 0 0 0.2em $lnx-success-color;
+            }
+        }
+    }
 }
 
 .ln-form-inner {
@@ -45,24 +65,6 @@ $control-border-radius: 0.3em;
 
 .ln-form-group {
     margin: 1em;
-}
-
-.ln-form-control {
-    .ln-form .ln-error & {
-        border-color: $lnx-failure-color;
-        //border-style: solid;
-        //box-shadow: inset 0 0 0.2em $lnx-failure-color;
-    }
-
-    .ln-form .ln-success & {
-        &:focus,
-        &:active,
-        &:focus-within {
-            border-color: $lnx-success-color;
-            //border-style: solid;
-            //box-shadow: inset 0 0 0.2em $lnx-success-color;
-        }
-    }
 }
 
 .ln-form-control-wrapper {
@@ -109,43 +111,24 @@ $control-border-radius: 0.3em;
     font-size: 1em;
     padding: golden_ratio(1, em);
     background-color: change-color(purple, $saturation: 20%, $lightness: 40%);
-    border: none;
+    border: 1px solid transparent;
     cursor: pointer;
     box-shadow: 0 0 0.2em black;
     border-radius: 0.5em;
     position: relative;
     transition: background-color $lnx-transition-timing ease;
 
-    // https://tobiasahlin.com/blog/how-to-animate-box-shadow/
-    &::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        box-shadow: 0 0 1em black;
-        opacity: 0;
-
-        .ln-enable-motion & {
-            transition: opacity $lnx-transition-timing ease;
-        }
-    }
-
     &:hover,
     &:active {
         text-decoration: underline;
         background-color: change-color(purple, $saturation: 25%, $lightness: 45%);
-
-        &::after {
-            opacity: 1;
-        }
     }
 
     &:active,
     &:focus,
     &:focus-visible {
-        outline: 3px solid change-color(purple, $saturation: 55%, $lightness: 65%);
+        outline: none;
+        border-color: change-color(purple, $saturation: 55%, $lightness: 65%);
     }
 }
 
@@ -167,6 +150,7 @@ $control-border-radius: 0.3em;
 }
 
 select.ln-form-select {
+    box-shadow: none;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -174,6 +158,8 @@ select.ln-form-select {
     width: 100%;
     height: 100%;
     padding: golden_ratio(0.8, em);
+    padding-left: 0.6em;
+    text-align: center;
     padding-right: 3em;
     background: $lnx-tertiary-surface-color;
     color: $lnx-primary-text-color;
@@ -197,6 +183,7 @@ select.ln-form-select {
 
     option {
         color: $lnx-primary-text-color;
+        text-align: center;
     }
 }
 
