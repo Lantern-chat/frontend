@@ -53,7 +53,7 @@ function calculateDays(dob: IDob): number {
     return dayjs(0).year(dob.y || 1970).month(dob.m || 11).daysInMonth();
 }
 
-export const RegisterView = () => {
+export function RegisterView() {
     let [dob, setDob] = useState<IDob>({});
     let num_days = useMemo(() => calculateDays(dob), [dob.y, dob.m]);
 
@@ -93,7 +93,8 @@ export const RegisterView = () => {
                                     {MONTHS.map((month, i) => <FormSelectOption value={i} key={i}>{month}</FormSelectOption>)}
                                 </FormSelect>
                                 <FormSelect required onChange={e => setDob({ ...dob, d: parseInt(e.target.value) })}
-                                    value={(dob.d == null || num_days <= dob.d) ? "" : dob.d}>
+                                    value={(/* Reset to default if invalid day, or use the valid day */
+                                        dob.d == null || num_days <= dob.d) ? "" : dob.d}>
                                     <FormSelectOption disabled hidden value="">Day</FormSelectOption>
                                     {(new Array(num_days)).fill(undefined).map((_, i) => (
                                         <FormSelectOption value={i} key={i}>{(i + 1).toString()}</FormSelectOption>
@@ -123,3 +124,6 @@ export const RegisterView = () => {
     );
 }
 export default RegisterView;
+if(process.env.NODE_ENV !== 'production') {
+    RegisterView.displayName = "RegisterView";
+}

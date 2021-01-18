@@ -13,3 +13,7 @@ export const Timestamp = React.memo((props: TimestampProps) => (
     <>{dayjs(props.time).locale(useContext(LocaleContext))
         .format(props.format || DEFAULT_FORMAT)}</>
 ));
+
+if(process.env.NODE_ENV !== 'production') {
+    Timestamp.displayName = "Timestamp";
+}

@@ -17,3 +17,7 @@ export const Ripple = React.memo((props: SpinnerProps) => (
         <div />
     </div>
 ));
+
+if(process.env.NODE_ENV !== 'production') {
+    Ripple.displayName = "RippleSpinner";
+}

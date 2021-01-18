@@ -252,3 +252,7 @@ export const Fireflies = React.memo((props: IFireflyProps) => {
 
     return (<canvas id="ln-fireflies" ref={canvas_ref} />);
 });
+
+if(process.env.NODE_ENV !== 'production') {
+    Fireflies.displayName = "Fireflies";
+}

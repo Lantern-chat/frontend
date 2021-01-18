@@ -36,7 +36,7 @@ export const FormText = React.memo((props: IFormTextProps) => {
     return <p className="ln-form-text" {...props} />;
 });
 
-export function FormInput(props: IFormInputProps) {
+export const FormInput = React.memo((props: IFormInputProps) => {
     let input: React.RefObject<HTMLInputElement> = useRef(null);
     let [value, setValue] = useState<string | null>(null);
 
@@ -49,11 +49,7 @@ export function FormInput(props: IFormInputProps) {
     }
 
     if(isValid != null || props.validateOnRender) {
-        if(isValid) {
-            classNames += ' ln-success';
-        } else {
-            classNames += ' ln-error';
-        }
+        classNames += isValid ? ' ln-success' : ' ln-error';
     }
 
     return (
@@ -67,7 +63,8 @@ export function FormInput(props: IFormInputProps) {
                 onChange={(e) => setValue(e.target.value)} />
         </span>
     );
-};
+});
+
 
 interface IFormSelectOptionProps {
     children: React.ReactNode,
@@ -101,3 +98,12 @@ export const FormSelect = React.memo((props: IFormSelectProps) => {
         </div>
     );
 });
+
+if(process.env.NODE_ENV !== 'production') {
+    FormGroup.displayName = "FormGroup";
+    FormLabel.displayName = "FormLabel";
+    FormText.displayName = "FormText";
+    FormSelect.displayName = "FormSelect";
+    FormSelectOption.displayName = "FormSelectOption";
+    FormInput.displayName = "FormInput";
+}
