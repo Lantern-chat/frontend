@@ -46,6 +46,10 @@ module.exports = (env, argv) => {
                     }
                 }
             })],
+            splitChunks: {
+                chunks: 'all',
+                minChunks: 3,
+            }
         },
 
         // Enable sourcemaps for debugging webpack's output.
@@ -140,20 +144,20 @@ module.exports = (env, argv) => {
                 "typeof window": '"object"',
                 "typeof MessageChannel": '"function"',
             }),
+            new webpack.ProvidePlugin({ Buffer: ['buffer', 'Buffer'] }),
             new HtmlWebpackPlugin({
                 template: path.resolve(__dirname, "src", "index.html"),
             }),
-            //new BundleAnalyzerPlugin({
-            //    analyzerMode: 'server',
-            //    openAnalyzer: true,
-            //}),
+            new BundleAnalyzerPlugin({
+                analyzerMode: 'server',
+                openAnalyzer: true,
+            }),
             new MiniCssExtractPlugin({
                 // Options similar to the same options in webpackOptions.output
                 // both options are optional
                 filename: "[name].css",
                 chunkFilename: `${CHUNK_NAME}.css`,
             }),
-            new webpack.ProvidePlugin({ Buffer: ['buffer', 'Buffer'] })
         ],
     }
 };
