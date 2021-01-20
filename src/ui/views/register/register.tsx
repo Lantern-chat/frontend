@@ -1,10 +1,14 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useReducer } from "react";
 import * as dayjs from "dayjs";
 
 import { Link } from "react-router-dom";
 
 import { Fireflies } from "ui/components/login/fireflies";
 import { FormGroup, FormLabel, FormInput, FormText, FormSelect, FormSelectOption } from "ui/components/form";
+
+//import { calcPasswordStrength } from "./password";
+
+import zxcvbn from 'zxcvbn';
 
 import "./register.scss";
 
@@ -20,8 +24,30 @@ function validateEmail(value: string): boolean {
 
 function validatePass(value: string): boolean {
     // TODO: Set this with server-side options
-    return value.length > 8 && /[^\w]|\d/.test(value);
+    return value.length >= 8 && /[^\w]|\d/.test(value);
 }
+
+/*
+function chunkString(str: string, length: number) {
+    return str.match(new RegExp('.{1,' + length + '}', 'g'));
+}
+
+const PASSWORDS = require("../../../../data/filter.json");
+
+const fingerprint_length = PASSWORDS._fingerprintLength;
+const chars_per_entry = fingerprint_length * PASSWORDS._element_size;
+PASSWORDS._filter = chunkString(PASSWORDS._filter, chars_per_entry)?.map((e) => {
+    let _elements = chunkString(e, fingerprint_length)?.map((f) => f.charAt(0) === '.' ? null : f);
+    return {
+        type: "Bucket",
+        _size: PASSWORDS._element_size,
+        _elements,
+    }
+});
+
+import { CuckooFilter } from "bloom-filters";
+const PASSWORD_FILTER: CuckooFilter = (CuckooFilter as any).fromJSON(PASSWORDS);
+*/
 
 const YEARS: string[] = [];
 const CURRENT_YEAR = dayjs().year();
@@ -46,16 +72,97 @@ const MONTHS: string[] = [
 interface IDob {
     y?: number,
     m?: number,
-    d?: number,
+    d?: number | null,
+}
+
+interface RegisterState {
+    dob: IDob,
+    days: number,
+    email?: string,
+    user?: string,
+    pass?: string,
+    pass_strength: number,
+    valid_email: boolean | null,
+    valid_user: boolean | null,
+    valid_pass: boolean | null,
+}
+
+const DEFAULT_REGISTER_STATE: RegisterState = {
+    dob: {},
+    days: 31,
+    pass_strength: 0,
+    valid_email: null,
+    valid_user: null,
+    valid_pass: null,
+}
+
+enum RegisterActionType {
+    UpdateEmail,
+    UpdateUser,
+    UpdatePass,
+    UpdateYear,
+    UpdateMonth,
+    UpdateDay,
+}
+
+interface RegisterAction {
+    value: string,
+    type: RegisterActionType,
 }
 
 function calculateDays(dob: IDob): number {
-    return dayjs(0).year(dob.y || 1970).month(dob.m || 11).daysInMonth();
+    let num_days = dayjs(0).year(dob.y || 1970).month(dob.m || 11).daysInMonth();
+    dob.d = (dob.d == null || num_days <= dob.d) ? null : dob.d;
+    return num_days;
+}
+
+function register_state_reducer(state: RegisterState, { value, type }: RegisterAction): RegisterState {
+    switch(type) {
+        case RegisterActionType.UpdateEmail: {
+            return { ...state, email: value, valid_email: validateEmail(value) };
+        }
+        case RegisterActionType.UpdateUser: {
+            return { ...state, user: value, valid_user: value.length >= 3 };
+        }
+        case RegisterActionType.UpdatePass: {
+            let valid_pass = validatePass(value);
+            return {
+                ...state,
+                pass: value,
+                valid_pass,
+                pass_strength: valid_pass ? Math.max(zxcvbn(value).score, 1) : 0,
+            };
+        }
+        case RegisterActionType.UpdateYear: {
+            let dob = { ...state.dob, y: parseInt(value) };
+            return { ...state, dob, days: calculateDays(dob) };
+        }
+        case RegisterActionType.UpdateMonth: {
+            let dob = { ...state.dob, m: parseInt(value) };
+            return { ...state, dob, days: calculateDays(dob) };
+        }
+        case RegisterActionType.UpdateDay: {
+            let dob = { ...state.dob, d: parseInt(value) };
+            return { ...state, dob };
+        }
+        default: return state;
+    }
 }
 
 export function RegisterView() {
-    let [dob, setDob] = useState<IDob>({});
-    let num_days = useMemo(() => calculateDays(dob), [dob.y, dob.m]);
+    let [state, dispatch] = useReducer(register_state_reducer, DEFAULT_REGISTER_STATE);
+
+    let passwordClass = useMemo(() => {
+        let passwordClass: string = 'ln-password-';
+        switch(state.pass_strength) {
+            case 1: { passwordClass += 'weak'; break; }
+            case 2: { passwordClass += 'mid'; break; }
+            case 3: { passwordClass += 'strong'; break; }
+            case 4: { passwordClass += 'vstrong'; break; }
+            default: passwordClass += 'none';
+        }
+        return passwordClass;
+    }, [state.pass_strength]);
 
     return (
         <>
@@ -68,15 +175,18 @@ export function RegisterView() {
                         </div>
                         <FormGroup>
                             <FormLabel htmlFor="email">Email Address</FormLabel>
-                            <FormInput type="email" name="email" placeholder="example@example.com" required validator={validateEmail} />
+                            <FormInput type="email" name="email" placeholder="example@example.com" required isValid={state.valid_email}
+                                onChange={e => dispatch({ type: RegisterActionType.UpdateEmail, value: e.target.value })} />
                         </FormGroup>
                         <FormGroup>
                             <FormLabel htmlFor="username">Username</FormLabel>
-                            <FormInput type="text" name="username" placeholder="username" required validator={hasLength(3)} />
+                            <FormInput type="text" name="username" placeholder="username" required isValid={state.valid_user}
+                                onChange={e => dispatch({ type: RegisterActionType.UpdateUser, value: e.target.value })} />
                         </FormGroup>
                         <FormGroup>
                             <FormLabel htmlFor="password">Password</FormLabel>
-                            <FormInput type="password" name="password" placeholder="password" required validator={validatePass} />
+                            <FormInput type="password" name="password" placeholder="password" required isValid={state.valid_pass}
+                                classNames={passwordClass} onChange={(e) => dispatch({ type: RegisterActionType.UpdatePass, value: e.target.value })} />
                             <FormText>
                                 Password must be at least 8 characters long and contain at least one number or one special character.
                             </FormText>
@@ -84,21 +194,20 @@ export function RegisterView() {
                         <FormGroup>
                             <FormLabel>Date of Birth</FormLabel>
                             <div className="ln-box">
-                                <FormSelect required defaultValue="" onChange={e => setDob({ ...dob, y: parseInt(e.target.value) })}>
+                                <FormSelect required defaultValue="" onChange={e => dispatch({ type: RegisterActionType.UpdateYear, value: e.target.value })}>
                                     <FormSelectOption disabled hidden value="">Year</FormSelectOption>
-                                    {YEARS.map((year, i) => <FormSelectOption value={year} key={i}>{year}</FormSelectOption>)}
+                                    {useMemo(() => YEARS.map((year, i) => <FormSelectOption value={year} key={i}>{year}</FormSelectOption>), [])}
                                 </FormSelect>
-                                <FormSelect required defaultValue="" onChange={e => setDob({ ...dob, m: parseInt(e.target.value) })}>
+                                <FormSelect required defaultValue="" onChange={e => dispatch({ type: RegisterActionType.UpdateMonth, value: e.target.value })}>
                                     <FormSelectOption disabled hidden value="">Month</FormSelectOption>
-                                    {MONTHS.map((month, i) => <FormSelectOption value={i} key={i}>{month}</FormSelectOption>)}
+                                    {useMemo(() => MONTHS.map((month, i) => <FormSelectOption value={i} key={i}>{month}</FormSelectOption>), [])}
                                 </FormSelect>
-                                <FormSelect required onChange={e => setDob({ ...dob, d: parseInt(e.target.value) })}
-                                    value={(/* Reset to default if invalid day, or use the valid day */
-                                        dob.d == null || num_days <= dob.d) ? "" : dob.d}>
+                                <FormSelect required onChange={e => dispatch({ type: RegisterActionType.UpdateDay, value: e.target.value })}
+                                    value={state.dob.d == null ? "" : state.dob.d}>
                                     <FormSelectOption disabled hidden value="">Day</FormSelectOption>
-                                    {(new Array(num_days)).fill(undefined).map((_, i) => (
+                                    {useMemo(() => (new Array(state.days)).fill(undefined).map((_, i) => (
                                         <FormSelectOption value={i} key={i}>{(i + 1).toString()}</FormSelectOption>
-                                    ))}
+                                    )), [state.days])}
                                 </FormSelect>
                             </div>
                         </FormGroup>

@@ -1,7 +1,5 @@
 @import "lib/math.scss";
-@import "lib/theme.scss";
-
-$control-border-radius: 0.3em;
+@import "lib/variables.scss";
 
 .ln-form {
     color: $lnx-primary-text-color;
