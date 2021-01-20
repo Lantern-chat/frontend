@@ -27,6 +27,11 @@ module.exports = (env, argv) => {
             path: distPath,
             publicPath: 'static/',
         },
+        node: {
+            global: true,
+            __filename: false,
+            __dirname: false,
+        },
         optimization: {
             mangleExports: IS_PRODUCTION ? 'size' : 'deterministic',
             minimize: IS_PRODUCTION,
@@ -129,16 +134,17 @@ module.exports = (env, argv) => {
             new HtmlWebpackPlugin({
                 template: path.resolve(__dirname, "src", "index.html"),
             }),
-            //new BundleAnalyzerPlugin({
-            //    analyzerMode: 'server',
-            //    openAnalyzer: true,
-            //}),
+            new BundleAnalyzerPlugin({
+                analyzerMode: 'server',
+                openAnalyzer: true,
+            }),
             new MiniCssExtractPlugin({
                 // Options similar to the same options in webpackOptions.output
                 // both options are optional
                 filename: "[name].css",
                 chunkFilename: `${CHUNK_NAME}.css`,
             }),
+            new webpack.ProvidePlugin({ Buffer: ['buffer', 'Buffer'] })
         ],
     }
 };

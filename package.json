@@ -14,6 +14,9 @@
   },
   "dependencies": {
     "@hcaptcha/react-hcaptcha": "^0.2.2",
+    "@types/zxcvbn": "^4.4.0",
+    "bloom-filters": "^1.3.1",
+    "buffer": "^6.0.3",
     "dayjs": "^1.9.8",
     "dummyjs": "^1.1.7",
     "pako": "^2.0.2",
@@ -22,10 +25,12 @@
     "react-markdown": "^5.0.3",
     "react-router-dom": "^5.2.0",
     "remark-gfm": "^1.0.0",
-    "scheduler": "0.0.0-experimental-3310209d0"
+    "scheduler": "0.0.0-experimental-3310209d0",
+    "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
     "@types/hcaptcha__react-hcaptcha": "^0.1.4",
+    "@types/lodash": "^4.14.168",
     "@types/pako": "^1.0.1",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
