@@ -43,8 +43,12 @@ export function preload(lang: Language): Lazy {
  * </span>
  * ```
  * */
-export function i18n(t: Translation, count?: number): React.FunctionComponentElement<LangItemProps> {
-    return <I18N t={t} count={count} />;
+export function i18n(
+    t: Translation,
+    count?: number,
+    render?: (text: string) => React.ReactNode
+): React.FunctionComponentElement<LangItemProps> {
+    return <I18N t={t} count={count} render={render} />;
 };
 
 /**
@@ -57,5 +61,5 @@ export const I18N: React.FunctionComponent<LangItemProps> = function(props: Lang
     return React.useMemo(() => {
         let Lang = preload(lang);
         return <Lang {...props} />
-    }, [lang]);
+    }, [lang, props]);
 };

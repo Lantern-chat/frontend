@@ -1,6 +1,10 @@
 import React, { useState, useMemo, useReducer } from "react";
 import * as dayjs from "dayjs";
 
+import * as i18n from "ui/i18n";
+import { I18N, Translation } from "ui/i18n";
+
+
 import { Link } from "react-router-dom";
 
 import { Fireflies } from "ui/components/login/fireflies";
@@ -54,20 +58,7 @@ const CURRENT_YEAR = dayjs().year();
 for(let i = 0; i < 100; i++) {
     YEARS.push((CURRENT_YEAR - 13 - i).toString());
 }
-const MONTHS: string[] = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-];
+const MONTHS: string = "January,February,March,April,May,June,July,August,September,October,November,December";
 
 interface IDob {
     y?: number,
@@ -171,53 +162,64 @@ export function RegisterView() {
                 <div className="ln-register-container ln-centered" style={{ zIndex: 1 }}>
                     <form className="ln-form">
                         <div id="title">
-                            <h2>Register</h2>
+                            <h2><I18N t={Translation.REGISTER} /></h2>
                         </div>
+
                         <FormGroup>
-                            <FormLabel htmlFor="email">Email Address</FormLabel>
+                            <FormLabel htmlFor="email"><I18N t={Translation.EMAIL_ADDRESS} /></FormLabel>
                             <FormInput type="email" name="email" placeholder="example@example.com" required isValid={state.valid_email}
                                 onChange={e => dispatch({ type: RegisterActionType.UpdateEmail, value: e.target.value })} />
                         </FormGroup>
+
                         <FormGroup>
-                            <FormLabel htmlFor="username">Username</FormLabel>
+                            <FormLabel htmlFor="username"><I18N t={Translation.USERNAME} /></FormLabel>
                             <FormInput type="text" name="username" placeholder="username" required isValid={state.valid_user}
                                 onChange={e => dispatch({ type: RegisterActionType.UpdateUser, value: e.target.value })} />
                         </FormGroup>
+
                         <FormGroup>
-                            <FormLabel htmlFor="password">Password</FormLabel>
+                            <FormLabel htmlFor="password"><I18N t={Translation.PASSWORD} /></FormLabel>
                             <FormInput type="password" name="password" placeholder="password" required isValid={state.valid_pass}
-                                classNames={passwordClass} onChange={(e) => dispatch({ type: RegisterActionType.UpdatePass, value: e.target.value })} />
+                                classNames={passwordClass} onChange={e => dispatch({ type: RegisterActionType.UpdatePass, value: e.target.value })} />
                             <FormText>
                                 Password must be at least 8 characters long and contain at least one number or one special character.
                             </FormText>
                         </FormGroup>
+
                         <FormGroup>
-                            <FormLabel>Date of Birth</FormLabel>
+                            <FormLabel><I18N t={Translation.DATE_OF_BIRTH} /></FormLabel>
                             <div className="ln-box">
                                 <FormSelect required defaultValue="" onChange={e => dispatch({ type: RegisterActionType.UpdateYear, value: e.target.value })}>
-                                    <FormSelectOption disabled hidden value="">Year</FormSelectOption>
-                                    {useMemo(() => YEARS.map((year, i) => <FormSelectOption value={year} key={i}>{year}</FormSelectOption>), [])}
+                                    <I18N t={Translation.YEAR} render={value => <option disabled hidden value="">{value}</option>} />
+                                    {useMemo(() => YEARS.map((year, i) => <option value={year} key={i}>{year}</option>), [])}
                                 </FormSelect>
+
                                 <FormSelect required defaultValue="" onChange={e => dispatch({ type: RegisterActionType.UpdateMonth, value: e.target.value })}>
-                                    <FormSelectOption disabled hidden value="">Month</FormSelectOption>
-                                    {useMemo(() => MONTHS.map((month, i) => <FormSelectOption value={i} key={i}>{month}</FormSelectOption>), [])}
+                                    <I18N t={Translation.MONTH} render={value => <option disabled hidden value="">{value}</option>} />
+                                    <I18N t={Translation.MONTHS} render={(months: string) => (
+                                        months.split(',').map((month, i) => <option value={i} key={i}>{month}</option>)
+                                    )} />
                                 </FormSelect>
+
                                 <FormSelect required onChange={e => dispatch({ type: RegisterActionType.UpdateDay, value: e.target.value })}
                                     value={state.dob.d == null ? "" : state.dob.d}>
-                                    <FormSelectOption disabled hidden value="">Day</FormSelectOption>
+                                    <I18N t={Translation.DAY} render={value => <option disabled hidden value="">{value}</option>} />
                                     {useMemo(() => (new Array(state.days)).fill(undefined).map((_, i) => (
-                                        <FormSelectOption value={i} key={i}>{(i + 1).toString()}</FormSelectOption>
+                                        <option value={i} key={i}>{(i + 1).toString()}</option>
                                     )), [state.days])}
                                 </FormSelect>
                             </div>
                         </FormGroup>
+
                         <hr />
+
                         <FormGroup>
                             <div style={{ display: 'flex', padding: '0 1em' }}>
                                 <button className="ln-btn" style={{ marginRight: 'auto' }}>Submit</button>
                                 <Link to={"/login"} className="ln-btn" >Go to Login</Link>
                             </div>
                         </FormGroup>
+
                         <FormGroup>
                             <FormText>
                                 By registering, you agree to our

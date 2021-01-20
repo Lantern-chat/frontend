@@ -2,5 +2,16 @@
     "CHANNEL": "Channel",
     "PARTY": "Party",
     "DIRECT_MESSAGE": "Direct Message",
-    "CREATE_DIRECT_MESSAGE": "Create Direct Message"
+    "CREATE_DIRECT_MESSAGE": "Create Direct Message",
+    "YEAR": "Year",
+    "MONTH": "Month",
+    "DAY": "Day",
+    "MONTHS": "January,February,March,April,May,June,July,August,September,October,November,December",
+    "REGISTER": "Register",
+    "EMAIL_ADDRESS": "Email Address",
+    "USERNAME": "Username",
+    "NICKNAME": "Nickname",
+    "PASSWORD": "Password",
+    "RESET": "Reset",
+    "DATE_OF_BIRTH": "Date of Birth"
 }
