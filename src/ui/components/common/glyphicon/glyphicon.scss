@@ -1,0 +1,17 @@
+@import "lib/variables.scss";
+
+.ln-glyphicon-wrapper {
+    position: relative;
+}
+
+.ln-glyphicon {
+    position: absolute;
+    display: inline-block;
+    vertical-align: middle;
+    height: 1em;
+    fill: $lnx-primary-text-color;
+
+    svg {
+        height: 100%;
+    }
+}

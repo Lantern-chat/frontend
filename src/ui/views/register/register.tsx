@@ -17,6 +17,7 @@ import zxcvbn from 'zxcvbn';
 import "./register.scss";
 
 import lantern from "/ui/assets/lantern.svg";
+import { Glyphicon } from "ui/components/common/glyphicon/";
 
 function hasLength(length: number): (value: string) => boolean {
     return (value: string) => value.length > length;
@@ -178,7 +179,12 @@ export function RegisterView() {
                         </FormGroup>
 
                         <FormGroup>
-                            <FormLabel htmlFor="password"><I18N t={Translation.PASSWORD} /></FormLabel>
+                            <FormLabel htmlFor="password">
+                                <I18N t={Translation.PASSWORD} />
+                                <span style={{ paddingLeft: '0.2em' }}>
+                                    <Glyphicon import={() => import("icons/glyphicons-pro/glyphicons-basic-2-3/svg/individual-svg/glyphicons-basic-196-circle-empty-info.svg")} />
+                                </span>
+                            </FormLabel>
                             <FormInput type="password" name="password" placeholder="password" required isValid={state.valid_pass}
                                 classNames={passwordClass} onChange={e => dispatch({ type: RegisterActionType.UpdatePass, value: e.target.value })} />
                             <FormText>

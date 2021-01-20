@@ -8,6 +8,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const TerserPlugin = require('terser-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const svgToMiniDataURI = require('mini-svg-data-uri');
 
 const distPath = path.join(__dirname, 'dist');
 
@@ -101,7 +102,27 @@ module.exports = (env, argv) => {
                     ],
                 },
                 {
-                    test: /\.(jpg|jpeg|png)(\?v=\d+\.\d+\.\d+)?$/,
+                    test: /fonts.*\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+                    use: [
+                        {
+                            loader: 'file-loader',
+                            options: {
+                                name: '[name].[ext]',
+                                outputPath: 'fonts/'
+                            }
+                        }
+                    ]
+                },
+                {
+                    test: /icons.*\.svg$/,
+                    type: 'asset/inline',
+                    generator: {
+                        dataUrl: content => content.toString()
+                    }
+                },
+                {
+                    test: /\.(jpg|jpeg|png|svg)(\?v=\d+\.\d+\.\d+)?$/,
+                    exclude: /(icons|fonts)/,
                     use: [
                         {
                             loader: 'file-loader',
@@ -112,18 +133,6 @@ module.exports = (env, argv) => {
                         }
                     ]
                 },
-                {
-                    test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-                    use: [
-                        {
-                            loader: 'file-loader',
-                            options: {
-                                name: '[name].[ext]',
-                                outputPath: 'fonts/'
-                            }
-                        }
-                    ]
-                }
             ],
         },
         plugins: [
@@ -134,10 +143,10 @@ module.exports = (env, argv) => {
             new HtmlWebpackPlugin({
                 template: path.resolve(__dirname, "src", "index.html"),
             }),
-            new BundleAnalyzerPlugin({
-                analyzerMode: 'server',
-                openAnalyzer: true,
-            }),
+            //new BundleAnalyzerPlugin({
+            //    analyzerMode: 'server',
+            //    openAnalyzer: true,
+            //}),
             new MiniCssExtractPlugin({
                 // Options similar to the same options in webpackOptions.output
                 // both options are optional
