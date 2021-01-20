@@ -17,59 +17,49 @@
 .ln-form-control-wrapper {
     position: relative;
 
-    &.ln-password-none,
-    &.ln-password-weak,
-    &.ln-password-mid,
-    &.ln-password-strong,
-    &.ln-password-vstrong {
-        &::after {
-            content: "";
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 100%;
-            position: absolute;
-            width: 0;
-            height: 5px;
-            background-color: red;
-            border-top-left-radius: $control-border-radius;
+    &.ln-password-none::after,
+    &.ln-password-weak::after,
+    &.ln-password-mid::after,
+    &.ln-password-strong::after,
+    &.ln-password-vstrong::after {
+        content: "";
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 100%;
+        position: absolute;
+        width: 0;
+        height: 5px;
+        background-color: red;
+        border-top-left-radius: $control-border-radius;
 
-            .ln-enable-motion & {
-                transition-property: width, background-color;
-                transition-timing-function: ease-in;
-                transition-duration: 0.25s;
-            }
+        .ln-enable-motion & {
+            transition-property: width, background-color;
+            transition-timing-function: ease-in;
+            transition-duration: 0.25s;
         }
     }
 
-    &.ln-password-weak {
-        &::after {
-            width: 25%;
-            //background-color: red;
-        }
+    &.ln-password-weak::after {
+        width: 25%;
+        //background-color: red;
     }
 
-    &.ln-password-mid {
-        &::after {
-            width: 50%;
-            background-color: orange;
-        }
+    &.ln-password-mid::after {
+        width: 50%;
+        background-color: orange;
     }
 
-    &.ln-password-strong {
-        &::after {
-            width: 75%;
-            background-color: green;
-        }
+    &.ln-password-strong::after {
+        width: 75%;
+        background-color: green;
     }
 
-    &.ln-password-vstrong {
-        &::after {
-            width: 100%;
-            background-color: lime;
+    &.ln-password-vstrong::after {
+        width: 100%;
+        background-color: lime;
 
-            border-top-right-radius: $control-border-radius;
-        }
+        border-top-right-radius: $control-border-radius;
     }
 }
 
