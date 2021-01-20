@@ -182,7 +182,7 @@ export function RegisterView() {
                             <FormLabel htmlFor="password">
                                 <I18N t={Translation.PASSWORD} />
                                 <span style={{ paddingLeft: '0.2em' }}>
-                                    <Glyphicon import={() => import("icons/glyphicons-pro/glyphicons-basic-2-3/svg/individual-svg/glyphicons-basic-196-circle-empty-info.svg")} />
+                                    <Glyphicon import={() => import(/* webpackPreload: true */ "icons/glyphicons-pro/glyphicons-basic-2-3/svg/individual-svg/glyphicons-basic-196-circle-empty-info.svg")} />
                                 </span>
                             </FormLabel>
                             <FormInput type="password" name="password" placeholder="password" required isValid={state.valid_pass}

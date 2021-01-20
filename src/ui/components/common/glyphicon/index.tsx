@@ -15,3 +15,7 @@ export const Glyphicon = React.memo((props: IGlyphiconProps) => {
         </span>
     );
 });
+
+if(process.env.NODE_ENV !== 'production') {
+    Glyphicon.displayName = "Glyphicon";
+}
