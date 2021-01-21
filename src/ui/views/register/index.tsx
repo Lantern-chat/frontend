@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useReducer } from "react";
+import React, { useState, useMemo, useReducer, useEffect } from "react";
 import * as dayjs from "dayjs";
 
 import * as i18n from "ui/i18n";
@@ -15,9 +15,19 @@ import { FormGroup, FormLabel, FormInput, FormText, FormSelect, FormSelectOption
 
 //import { calcPasswordStrength } from "./password";
 
-import zxcvbn from 'zxcvbn';
+type zxcvbn_fn = (input: string) => zxcvbn.ZXCVBNResult;
+
+var zxcvbn: zxcvbn_fn | Promise<{ default: zxcvbn_fn }> = import('zxcvbn');
 
 import "./register.scss";
+
+var PRELOADED: boolean = false;
+function preloadLogin() {
+    if(!PRELOADED) {
+        import(/* webpackChunkName: 'LoginView' */ "../login");
+        PRELOADED = true;
+    }
+}
 
 function validateEmail(value: string): boolean {
     return /^[^@\s]+@[^@\s]+\.[^.@\s]+$/.test(value);
@@ -55,7 +65,6 @@ const CURRENT_YEAR = dayjs().year();
 for(let i = 0; i < 100; i++) {
     YEARS.push((CURRENT_YEAR - 13 - i).toString());
 }
-const MONTHS: string = "January,February,March,April,May,June,July,August,September,October,November,December";
 
 interface IDob {
     y?: number,
@@ -88,6 +97,7 @@ enum RegisterActionType {
     UpdateEmail,
     UpdateUser,
     UpdatePass,
+    UpdatePassStrength,
     UpdateYear,
     UpdateMonth,
     UpdateDay,
@@ -104,6 +114,10 @@ function calculateDays(dob: IDob): number {
     return num_days;
 }
 
+function calc_pass_strength(pwd: string): number {
+    return typeof zxcvbn === 'function' ? Math.max(zxcvbn(pwd).score, 1) : 0;
+}
+
 function register_state_reducer(state: RegisterState, { value, type }: RegisterAction): RegisterState {
     switch(type) {
         case RegisterActionType.UpdateEmail: {
@@ -114,12 +128,16 @@ function register_state_reducer(state: RegisterState, { value, type }: RegisterA
         }
         case RegisterActionType.UpdatePass: {
             let valid_pass = validatePass(value);
+
             return {
                 ...state,
                 pass: value,
                 valid_pass,
-                pass_strength: valid_pass ? Math.max(zxcvbn(value).score, 1) : 0,
+                pass_strength: valid_pass ? calc_pass_strength(value) : 0,
             };
+        }
+        case RegisterActionType.UpdatePassStrength: {
+            return { ...state, pass_strength: state.pass && state.valid_pass ? calc_pass_strength(state.pass) : 0 };
         }
         case RegisterActionType.UpdateYear: {
             let dob = { ...state.dob, y: parseInt(value) };
@@ -137,8 +155,20 @@ function register_state_reducer(state: RegisterState, { value, type }: RegisterA
     }
 }
 
+var SETUP_THEN = false;
+
 export function RegisterView() {
     let [state, dispatch] = useReducer(register_state_reducer, DEFAULT_REGISTER_STATE);
+
+    useEffect(() => {
+        if(!SETUP_THEN && typeof zxcvbn !== 'function') {
+            zxcvbn.then(mod => {
+                zxcvbn = mod.default;
+                dispatch({ type: RegisterActionType.UpdatePassStrength, value: "" });
+            });
+            SETUP_THEN = true;
+        }
+    }, []);
 
     let passwordClass = useMemo(() => {
         let passwordClass: string = 'ln-password-';
@@ -214,7 +244,7 @@ export function RegisterView() {
             <FormGroup>
                 <div style={{ display: 'flex', padding: '0 1em' }}>
                     <button className="ln-btn" style={{ marginRight: 'auto' }}>Register</button>
-                    <Link to={"/login"} className="ln-btn" >Go to Login</Link>
+                    <Link to={"/login"} className="ln-btn" onMouseOver={() => preloadLogin()} >Go to Login</Link>
                 </div>
             </FormGroup>
 

@@ -15,6 +15,7 @@ import "./login.scss";
 function validateEmail(value: string): boolean {
     return /^[^@\s]+@[^@\s]+\.[^.@\s]+$/.test(value);
 }
+
 var PRELOADED: boolean = false;
 function preloadRegister() {
     if(!PRELOADED) {
