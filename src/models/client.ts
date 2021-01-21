@@ -11,7 +11,7 @@ const LANG_LOCALSTORAGE_KEY = "lang";
 
 export class ClientModel extends TinyEventEmitter {
     currentLanguage: i18n.Language = "en"; // default to English
-    worker: Worker;
+    gateway: Worker;
 
     constructor() {
         super();
@@ -19,7 +19,6 @@ export class ClientModel extends TinyEventEmitter {
     }
 
     setup_i18n() {
-        // TODO: Use Cookie instead?
         let savedLang = localStorage.getItem(LANG_LOCALSTORAGE_KEY) as i18n.Language | null;
 
         // if there is no saved language or the saved language isn't available

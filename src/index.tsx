@@ -9,8 +9,8 @@ import "ui/styles/root.scss";
 import "ui/styles/layout.scss";
 
 // TODO: Hook this up to the client
-import Worker from "worker-loader!worker";
-const WORKER = new Worker();
+import Gateway from "worker-loader!gateway";
+const GATEWAY = new Gateway();
 
 import { ClientModel, ClientContext } from "models/client";
 const CLIENT = new ClientModel();
@@ -47,13 +47,13 @@ if(process.env.NODE_ENV !== 'production') {
 // Setup concurrent root
 ReactDOM.unstable_createRoot(document.getElementById("ln-root")!).render(root);
 
-CLIENT.worker = WORKER;
+CLIENT.gateway = GATEWAY;
 
 // Do this after React startup so it can display the spinner
 CLIENT.start();
 
 // TESTING
-WORKER.postMessage({
+GATEWAY.postMessage({
     op: MessageOp.Connect,
     data: {
         host: "ws://localhost:3030/gateway",
@@ -62,7 +62,7 @@ WORKER.postMessage({
     }
 });
 
-WORKER.addEventListener('message', (msg) => {
+GATEWAY.addEventListener('message', (msg) => {
     console.log(msg.data);
 });
 
