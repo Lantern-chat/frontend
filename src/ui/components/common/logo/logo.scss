@@ -1,0 +1,66 @@
+@import "lib/variables";
+
+.ln-login-form {
+    width: 30em;
+}
+
+.ln-logo {
+    contain: layout;
+    pointer-events: none;
+    width: 15em;
+    align-items: center;
+    display: flex;
+    //flex: 1;
+
+    @media (max-width: 49em) {
+        display: none;
+    }
+
+    img {
+        padding: 2em;
+        width: 100%;
+
+        filter: drop-shadow(0 0 0.6em rgba(0, 0, 0, 0.7));
+    }
+
+    &::before {
+        content: "";
+        width: 15em;
+        height: 50%;
+        position: absolute;
+        z-index: 2;
+        background: radial-gradient(
+                14em circle,
+                rgba(252, 217, 142, 0.7) 0%,
+                rgba(109, 104, 63, 0.5) 24%,
+                rgba(0, 0, 0, 0) 50%,
+                rgba(0, 0, 0, 0) 100%
+            )
+            no-repeat;
+
+        .ln-enable-motion & {
+            animation: pulse_flame 60s infinite alternate;
+
+            @media (prefers-reduced-motion) {
+                animation: none;
+                transform: translateY(4.5em);
+            }
+        }
+    }
+}
+
+@keyframes pulse_flame {
+    @for $i from 0 through 100 {
+        $rng: 1 - random() * 0.2;
+        $a: random() * $TWO_PI;
+        $scale: $rng + 0.4;
+
+        $s: sin($a) * 3;
+        $c: cos($a) * 3;
+
+        #{$i}% {
+            transform: translateY(4.5em) scale($scale) translateY(#{$s}px) translateX(#{$c}px);
+            opacity: $rng;
+        }
+    }
+}

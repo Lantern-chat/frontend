@@ -213,7 +213,7 @@ export function RegisterView() {
 
             <FormGroup>
                 <div style={{ display: 'flex', padding: '0 1em' }}>
-                    <button className="ln-btn" style={{ marginRight: 'auto' }}>Submit</button>
+                    <button className="ln-btn" style={{ marginRight: 'auto' }}>Register</button>
                     <Link to={"/login"} className="ln-btn" >Go to Login</Link>
                 </div>
             </FormGroup>

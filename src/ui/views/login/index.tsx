@@ -35,7 +35,7 @@ export default class LoginView extends React.Component {
                     </FormLabel>
                     <FormInput type="password" name="password" placeholder="password" />
                 </FormGroup>
-
+                <hr />
                 <FormGroup>
                     <div style={{ display: 'flex', padding: '0 1em' }}>
                         <button className="ln-btn" style={{ marginRight: 'auto' }}>Login</button>

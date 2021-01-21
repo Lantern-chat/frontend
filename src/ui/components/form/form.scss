@@ -4,6 +4,9 @@
 .ln-form {
     color: $lnx-primary-text-color;
     max-width: 30em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 
     #title {
         text-align: center;
@@ -12,6 +15,7 @@
 
     hr {
         color: black;
+        width: 100%;
     }
 
     input {
@@ -42,7 +46,7 @@
 }
 
 .ln-form-group {
-    margin: 1em;
+    margin: 0.5em 1em;
 }
 
 .ln-form-control-wrapper {
@@ -134,6 +138,11 @@
     }
 }
 
+.ln-select-group {
+    display: flex;
+    width: 100%;
+}
+
 .ln-form-select-wrapper {
     margin: 0 auto;
     width: 100%;
@@ -152,13 +161,14 @@
 }
 
 select.ln-form-select {
+    display: inline-block;
     box-shadow: none;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
     border: 1px solid #111;
     width: 100%;
-    height: 100%;
+    //height: 100%;
     padding: golden_ratio(0.8, em);
     padding-left: 0.6em;
     text-align: center;

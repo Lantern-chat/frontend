@@ -23,30 +23,19 @@ const Login = React.lazy(() => import(      /* webpackChunkName: 'LoginView'    
 const Register = React.lazy(() => import(   /* webpackChunkName: 'RegisterView' */  "./views/register"));
 const Admin = React.lazy(() => import(      /* webpackChunkName: 'AdminView'    */  "./views/admin"));
 
-const TestA = () => {
-    console.log("TEST A");
-    return <span />;
-};
-
-const TestB = () => {
-    console.log("TEST B");
-    return <span />;
-};
-
 export const App = (props: AppProps) => (
     <Router>
         <Switch>
+            {/* Both login and register will have the same parent layout, so reuse where possible */}
             <Route path={["/login", "/register"]}>
                 <Fireflies count={80} />
                 <div className="ln-box">
                     <React.Suspense fallback={<div className="ln-center-standalone"><Ripple size={120} /></div>}>
                         <div className="ln-login-container ln-centered" style={{ zIndex: 1 }}>
                             <Route path="/login">
-                                <TestA />
                                 <Login />
                             </Route>
                             <Route path="/register">
-                                <TestB />
                                 <Register />
                             </Route>
                             <Logo />
