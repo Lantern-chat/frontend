@@ -20,6 +20,7 @@
     "dayjs": "^1.9.8",
     "dummyjs": "^1.1.7",
     "pako": "^2.0.2",
+    "preact": "^10.5.11",
     "react": "0.0.0-experimental-3310209d0",
     "react-dom": "0.0.0-experimental-3310209d0",
     "react-markdown": "^5.0.3",

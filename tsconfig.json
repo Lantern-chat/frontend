@@ -2,7 +2,8 @@
   "compilerOptions": {
     "baseUrl": "src",
     "outDir": "build/dist",
-    "module": "esnext",
+    //"module": "commonjs",
+    "module": "ESNext",
     "target": "es5",
     "lib": [
       "es6",
@@ -11,6 +12,7 @@
     "sourceMap": true,
     "allowJs": true,
     "jsx": "react-jsx",
+    //"jsxImportSource": "preact",
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,

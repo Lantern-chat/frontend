@@ -67,9 +67,10 @@ module.exports = (env, argv) => {
             roots: [path.resolve("./src"), __dirname],
             extensions: [".ts", ".jsx", ".tsx", ".js", ".json"],
             alias: {
-                //"react": "preact-compat",
-                //"react-dom": "preact-compat",
                 modernizr$: path.resolve(__dirname, 'src/.modernizrrc'),
+                //"react": "preact/compat",
+                //"react-dom/test-utils": "preact/test-utils",
+                //"react-dom": "preact/compat",
             },
             plugins: [
                 new TsconfigPathsPlugin({ configFile: "./tsconfig.json" }),
