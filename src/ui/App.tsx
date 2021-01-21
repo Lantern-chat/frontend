@@ -19,7 +19,11 @@ const Main = React.lazy(() => import(
     /* webpackPrefetch: true */
     "./views/main"
 ));
-const Login = React.lazy(() => import(      /* webpackChunkName: 'LoginView'    */  "./views/login"));
+const Login = React.lazy(() => import(
+    /* webpackChunkName: 'LoginView' */
+    /* webpackPreload: true */
+    "./views/login"
+));
 const Register = React.lazy(() => import(   /* webpackChunkName: 'RegisterView' */  "./views/register"));
 const Admin = React.lazy(() => import(      /* webpackChunkName: 'AdminView'    */  "./views/admin"));
 

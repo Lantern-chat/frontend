@@ -221,12 +221,13 @@ export function RegisterView() {
             <FormGroup>
                 <FormText>
                     By registering, you agree to our
-                            </FormText>
+                </FormText>
             </FormGroup>
         </form>
     );
 }
 export default RegisterView;
+
 if(process.env.NODE_ENV !== 'production') {
     RegisterView.displayName = "RegisterView";
 }

@@ -15,6 +15,13 @@ import "./login.scss";
 function validateEmail(value: string): boolean {
     return /^[^@\s]+@[^@\s]+\.[^.@\s]+$/.test(value);
 }
+var PRELOADED: boolean = false;
+function preloadRegister() {
+    if(!PRELOADED) {
+        import(/* webpackChunkName: 'RegisterView' */ "../register");
+        PRELOADED = true;
+    }
+}
 
 export default class LoginView extends React.Component {
     render() {
@@ -39,7 +46,7 @@ export default class LoginView extends React.Component {
                 <FormGroup>
                     <div style={{ display: 'flex', padding: '0 1em' }}>
                         <button className="ln-btn" style={{ marginRight: 'auto' }}>Login</button>
-                        <Link className="ln-btn" to={"/register"}>Register</Link>
+                        <Link className="ln-btn" to={"/register"} onMouseOver={() => preloadRegister()}>Register</Link>
                     </div>
                 </FormGroup>
             </form>
