@@ -1,0 +1,12 @@
+@import "lib/variables";
+
+.ln-login-container {
+    flex-wrap: wrap;
+    display: flex;
+    border-radius: 1em;
+    padding: 0 2em 2em 2em;
+    box-shadow: -0.1em 0 0.8em black;
+    background-color: $lnx-secondary-surface-color;
+    //max-height: 60em;
+    //transition: max-height 0.5s ease;
+}

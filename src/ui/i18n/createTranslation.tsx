@@ -40,6 +40,7 @@ export enum Translation {
     DAY,
     MONTHS,
     REGISTER,
+    LOGIN,
     EMAIL_ADDRESS,
     USERNAME,
     NICKNAME,
