@@ -33,8 +33,8 @@ export default class LoginView extends React.Component {
                 </div>
 
                 <FormGroup>
-                    <FormLabel htmlFor="username"><I18N t={Translation.USERNAME} /></FormLabel>
-                    <FormInput type="text" name="username" placeholder="username" required />
+                    <FormLabel htmlFor="username"><I18N t={Translation.USERNAME_OR_EMAIL} /></FormLabel>
+                    <FormInput type="text" name="username" placeholder="username or email" required />
                 </FormGroup>
 
                 <FormGroup>

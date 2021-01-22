@@ -43,6 +43,7 @@ export enum Translation {
     LOGIN,
     EMAIL_ADDRESS,
     USERNAME,
+    USERNAME_OR_EMAIL,
     NICKNAME,
     PASSWORD,
     RESET,
