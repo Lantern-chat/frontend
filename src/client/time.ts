@@ -9,4 +9,7 @@ dayjs.extend(advancedFormat);
 import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 
+import localeData from 'dayjs/plugin/localeData';
+dayjs.extend(localeData);
+
 export default dayjs;

@@ -1,5 +1,5 @@
 import Preact, { useState, useMemo, useReducer, useEffect } from "preact/compat";
-import * as dayjs from "dayjs";
+import dayjs from "client/time";
 
 import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
@@ -238,9 +238,7 @@ export function RegisterView() {
 
                     <FormSelect name="month" required value={state.dob.m || ""} onChange={e => dispatch({ type: RegisterActionType.UpdateMonth, value: e.currentTarget.value })}>
                         <I18N t={Translation.MONTH} render={value => <option disabled hidden value="">{value}</option>} />
-                        <I18N t={Translation.MONTHS} render={(months: string) => (
-                            months.split(',').map((month, i) => <option value={i} key={i}>{month}</option>)
-                        )} />
+                        {useMemo(() => dayjs.months().map((month: string, i: number) => <option value={i} key={i}>{month}</option>), [dayjs.locale()])}
                     </FormSelect>
 
                     <FormSelect name="day" required onChange={e => dispatch({ type: RegisterActionType.UpdateDay, value: e.currentTarget.value })}
