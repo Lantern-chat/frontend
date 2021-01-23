@@ -1,11 +1,11 @@
-import React, { useState, useMemo, useReducer, useEffect } from "react";
+import Preact, { useState, useMemo, useReducer, useEffect } from "preact/compat";
 import * as dayjs from "dayjs";
 
 import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
 
 
-import { Link } from "react-router-dom";
+import { Link } from "wouter-preact";
 
 import { Fireflies } from "ui/components/login/fireflies";
 import { Logo } from "ui/components/common/logo";
@@ -21,6 +21,7 @@ var zxcvbn: zxcvbn_fn | Promise<{ default: zxcvbn_fn }> = import('zxcvbn');
 
 import "./register.scss";
 import { fetch, XHRMethod } from "client/fetch";
+import { JSXInternal } from "preact/src/jsx";
 
 var PRELOADED: boolean = false;
 function preloadLogin() {
@@ -183,7 +184,7 @@ export function RegisterView() {
         return passwordClass;
     }, [state.pass_strength]);
 
-    let on_submit = (e: React.FormEvent<HTMLFormElement>) => {
+    let on_submit = (e: JSXInternal.TargetedEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         fetch.submitFormUrlEncoded({
@@ -204,13 +205,13 @@ export function RegisterView() {
             <FormGroup>
                 <FormLabel htmlFor="email"><I18N t={Translation.EMAIL_ADDRESS} /></FormLabel>
                 <FormInput type="email" name="email" placeholder="example@example.com" required isValid={state.valid_email}
-                    onChange={e => dispatch({ type: RegisterActionType.UpdateEmail, value: e.target.value })} />
+                    onChange={e => dispatch({ type: RegisterActionType.UpdateEmail, value: e.currentTarget.value })} />
             </FormGroup>
 
             <FormGroup>
                 <FormLabel htmlFor="username"><I18N t={Translation.USERNAME} /></FormLabel>
                 <FormInput type="text" name="username" placeholder="username" required isValid={state.valid_user}
-                    onChange={e => dispatch({ type: RegisterActionType.UpdateUser, value: e.target.value })} />
+                    onChange={e => dispatch({ type: RegisterActionType.UpdateUser, value: e.currentTarget.value })} />
             </FormGroup>
 
             <FormGroup>
@@ -221,7 +222,7 @@ export function RegisterView() {
                     </span>
                 </FormLabel>
                 <FormInput type="password" name="password" placeholder="password" required isValid={state.valid_pass}
-                    classNames={passwordClass} onChange={e => dispatch({ type: RegisterActionType.UpdatePass, value: e.target.value })} />
+                    classNames={passwordClass} onChange={e => dispatch({ type: RegisterActionType.UpdatePass, value: e.currentTarget.value })} />
                 <FormText>
                     Password must be at least 8 characters long and contain at least one number or one special character.
                 </FormText>
@@ -230,19 +231,19 @@ export function RegisterView() {
             <FormGroup>
                 <FormLabel><I18N t={Translation.DATE_OF_BIRTH} /></FormLabel>
                 <div className="ln-select-group">
-                    <FormSelect name="year" required defaultValue="" onChange={e => dispatch({ type: RegisterActionType.UpdateYear, value: e.target.value })}>
+                    <FormSelect name="year" required value={state.dob.y || ""} onChange={e => dispatch({ type: RegisterActionType.UpdateYear, value: e.currentTarget.value })}>
                         <I18N t={Translation.YEAR} render={value => <option disabled hidden value="">{value}</option>} />
                         {useMemo(() => YEARS.map((year, i) => <option value={year} key={i}>{year}</option>), [])}
                     </FormSelect>
 
-                    <FormSelect name="month" required defaultValue="" onChange={e => dispatch({ type: RegisterActionType.UpdateMonth, value: e.target.value })}>
+                    <FormSelect name="month" required value={state.dob.m || ""} onChange={e => dispatch({ type: RegisterActionType.UpdateMonth, value: e.currentTarget.value })}>
                         <I18N t={Translation.MONTH} render={value => <option disabled hidden value="">{value}</option>} />
                         <I18N t={Translation.MONTHS} render={(months: string) => (
                             months.split(',').map((month, i) => <option value={i} key={i}>{month}</option>)
                         )} />
                     </FormSelect>
 
-                    <FormSelect name="day" required onChange={e => dispatch({ type: RegisterActionType.UpdateDay, value: e.target.value })}
+                    <FormSelect name="day" required onChange={e => dispatch({ type: RegisterActionType.UpdateDay, value: e.currentTarget.value })}
                         value={state.dob.d == null ? "" : state.dob.d}>
                         <I18N t={Translation.DAY} render={value => <option disabled hidden value="">{value}</option>} />
                         {useMemo(() => (new Array(state.days)).fill(undefined).map((_, i) => (

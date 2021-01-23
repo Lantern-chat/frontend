@@ -1,4 +1,4 @@
-import React from "react";
+import Preact, { useRef, useEffect } from "preact/compat";
 
 import "./firefly.scss";
 
@@ -91,7 +91,7 @@ function repulse(x0: number, y0: number, x1: number, y1: number, w: number): [nu
     return [smoothstep((w - d) / w), dx, dy];
 }
 
-function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObject<HTMLCanvasElement | null>, time: number) {
+function render_fireflies(state: IFireflyState, canvas_ref: Preact.Ref<HTMLCanvasElement | null>, time: number) {
     if(!canvas_ref.current) { return; }
     let canvas = canvas_ref.current;
 
@@ -221,10 +221,10 @@ function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObje
 const MOUSE_EVENTS = ['mousemove', 'movedown', 'mouseup'];
 
 // TODO: Check for reduce-motion
-export const Fireflies = React.memo((props: IFireflyProps) => {
-    let canvas_ref = React.useRef(null);
+export const Fireflies: Preact.FunctionComponent<IFireflyProps> = Preact.memo((props: IFireflyProps) => {
+    let canvas_ref = useRef(null);
 
-    React.useEffect(() => {
+    useEffect(() => {
         let state = init_fireflies(props);
         let interval = setInterval(() => {
             if(state.paused) return;

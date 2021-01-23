@@ -1,60 +1,60 @@
-import React from "react";
+import Preact from "preact/compat";
 
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    Link
-} from "react-router-dom";
+import { Router, Route, Link, useRoute } from "wouter-preact";
+
+import useLocation from "wouter/use-location";
+
+import makeMatcher, { Match, MatcherFn, MatchWithParams, NoMatch } from "wouter/matcher";
+
+const defaultMatcher = makeMatcher();
+
+/*
+ * A custom routing matcher function that supports multipath routes
+ */
+const multipathMatcher: MatcherFn = (patterns, path): Match => {
+    for(let pattern of patterns) {
+        const [match, params] = defaultMatcher(pattern, path);
+        if(match) {
+            return [match, params] as MatchWithParams;
+        }
+    }
+
+    return [false, null] as NoMatch;
+};
+
 
 import { Fireflies } from "ui/components/login/fireflies";
-import Avatar from "ui/components/common/avatar/avatar";
 import { Ripple } from "./components/common/spinners/spinners";
 import { Logo } from "./components/common/logo";
 
-export interface AppProps { }
+const Login: Preact.FunctionComponent = Preact.lazy(() => import(      /* webpackChunkName: 'LoginView'    */ "./views/login"));
+const Register: Preact.FunctionComponent = Preact.lazy(() => import(   /* webpackChunkName: 'RegisterView' */ "./views/register"));
 
-const Main = React.lazy(() => import(
-    /* webpackChunkName: 'MainView' */
-    /* webpackPrefetch: true */
-    "./views/main"
-));
-const Login = React.lazy(() => import(
-    /* webpackChunkName: 'LoginView' */
-    /* webpackPreload: true */
-    "./views/login"
-));
-const Register = React.lazy(() => import(   /* webpackChunkName: 'RegisterView' */  "./views/register"));
-const Admin = React.lazy(() => import(      /* webpackChunkName: 'AdminView'    */  "./views/admin"));
+const Fallback = <div className="ln-center-standalone"><Ripple size={120} /></div>;
 
-export const App = (props: AppProps) => (
-    <Router>
-        <Switch>
-            {/* Both login and register will have the same parent layout, so reuse where possible */}
-            <Route path={["/login", "/register"]}>
-                <Fireflies count={80} />
-                <div className="ln-box">
-                    <React.Suspense fallback={<div className="ln-center-standalone"><Ripple size={120} /></div>}>
-                        <div className="ln-login-container ln-centered" style={{ zIndex: 1 }}>
-                            <Route path="/login">
-                                <Login />
-                            </Route>
-                            <Route path="/register">
-                                <Register />
-                            </Route>
-                            <Logo />
-                        </div>
-                    </React.Suspense>
+export const App = () => (
+    <Router matcher={multipathMatcher}>
+        <Route path={["/login", "/register"] as any}>
+            <Fireflies count={80} />
+            <div className="ln-box">
+                <div className="ln-login-container ln-centered" style={{ zIndex: 1 }}>
+                    <Route path={["/login"] as any} >
+                        <Preact.Suspense fallback={Fallback}>
+                            <Login />
+                        </Preact.Suspense>
+                    </Route>
+
+                    <Route path={["/register"] as any}>
+                        <Preact.Suspense fallback={Fallback}>
+                            <Register />
+                        </Preact.Suspense>
+                    </Route>
+
+                    <Logo />
                 </div>
-            </Route>
-            <Route path="/admin">
-                <Admin />
-            </Route>
-            <Route path="/">
-                <Main />
-            </Route>
-        </Switch>
-    </Router>
+            </div>
+        </Route >
+    </Router >
 );
 
 export default App;

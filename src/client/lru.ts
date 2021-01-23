@@ -1,11 +1,5 @@
-import * as Scheduler from 'scheduler';
 
-const {
-    unstable_scheduleCallback: scheduleCallback,
-    unstable_IdlePriority: IdlePriority,
-} = Scheduler;
-
-export interface LRUOptions {
+/*export interface LRUOptions {
     limit: number,
 }
 
@@ -164,4 +158,4 @@ export default function createLRU<T>(options?: Partial<LRUOptions>): LRUCache<T>
     }
 
     return lru;
-}
+}*/

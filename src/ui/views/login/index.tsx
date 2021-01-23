@@ -1,10 +1,9 @@
-import React, { useState, useMemo, useReducer, MouseEvent } from "react";
+import Preact, { useState, useMemo, useReducer } from "preact/compat";
 
 import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
 
-
-import { Link } from "react-router-dom";
+import { Link } from "wouter-preact";
 
 import { Logo } from "ui/components/common/logo";
 import { Glyphicon } from "ui/components/common/glyphicon/";

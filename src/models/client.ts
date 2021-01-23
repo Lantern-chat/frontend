@@ -1,10 +1,10 @@
-import React from "react";
+import Preact, { createContext } from "preact/compat";
 import { TinyEventEmitter } from "./_event";
-import * as i18n from "../ui/i18n";
+import * as i18n from "ui/i18n";
 
 // The "Context" here is a single function that doesn't change
 // Instead, client users are expected to subscribe to changes via `.sub()`
-export const ClientContext = React.createContext<() => ClientModel>(null!);
+export const ClientContext = createContext<() => ClientModel>(null!);
 ClientContext.displayName = "ClientContext";
 
 const LANG_LOCALSTORAGE_KEY = "lang";

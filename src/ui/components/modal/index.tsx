@@ -1,15 +1,14 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import Preact from "preact/compat";
 
 import "./modal.scss";
 
 interface ModalProps {
-    children: React.ReactNode,
+    children: preact.VNode,
 }
 
 const MODAL_ROOT = document.getElementById("ln-modal-root")!;
 
-export class Modal extends React.Component<ModalProps> {
+export class Modal extends Preact.Component<ModalProps> {
     e: HTMLDivElement;
 
     constructor(props: ModalProps) {
@@ -26,6 +25,6 @@ export class Modal extends React.Component<ModalProps> {
     }
 
     render() {
-        return ReactDOM.createPortal(this.props.children, this.e);
+        return Preact.createPortal(this.props.children, this.e);
     }
 }

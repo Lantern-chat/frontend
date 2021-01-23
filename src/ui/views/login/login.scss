@@ -1,5 +1,13 @@
 @import "lib/variables";
 
+.ln-login-form {
+    width: 30em;
+
+    @media (max-width: 49em) {
+        width: auto;
+    }
+}
+
 .ln-login-container {
     flex-wrap: wrap;
     display: flex;
@@ -7,6 +15,15 @@
     padding: 0 2em 2em 2em;
     box-shadow: -0.1em 0 0.8em black;
     background-color: $lnx-secondary-surface-color;
+
+    @media (max-width: 49em) {
+        padding: 0 0.5em 2em 0.5em;
+    }
+
+    .ln-enable-motion & {
+        transition: padding 300ms ease;
+    }
+
     //max-height: 60em;
     //transition: max-height 0.5s ease;
 }

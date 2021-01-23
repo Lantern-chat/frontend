@@ -1,7 +1,8 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { } from 'react-dom/experimental'
-import { } from 'react/experimental';
+import Preact from "preact/compat";
+
+if(process.env.NODE_ENV !== 'production') {
+    require("preact/debug");
+}
 
 import * as i18n from "ui/i18n";
 
@@ -17,7 +18,7 @@ const CLIENT = new ClientModel();
 
 // Begin fetching App immediately, but split
 // it to lessen immediate chunk size.
-const App = React.lazy(() => import(
+const App = Preact.lazy(() => import(
     /* webpackChunkName: 'App' */
     /* webpackPrefetch: true */
     /* webpackPreload: true */
@@ -27,25 +28,24 @@ const App = React.lazy(() => import(
 // Simple full-screen loader icon
 import { Ripple } from "ui/components/common/spinners/spinners";
 import { MessageOp } from "client/worker";
-const Loading = React.memo(() => (<div className="ln-center-standalone"><Ripple size={160} /></div>));
+const Loading = Preact.memo(() => (<div className="ln-center-standalone"><Ripple size={160} /></div>));
 
 let root = (
-    <React.Suspense fallback={<Loading />}>
-        <i18n.LocaleContext.Provider value={CLIENT.currentLanguage}>
-            <ClientContext.Provider value={() => CLIENT}>
+    <Preact.Suspense fallback={<Loading />}>
+        <ClientContext.Provider value={() => CLIENT}>
+            <i18n.LocaleContext.Provider value={CLIENT.currentLanguage}>
                 <App />
-            </ClientContext.Provider>
-        </i18n.LocaleContext.Provider>
-    </React.Suspense>
+            </i18n.LocaleContext.Provider>
+        </ClientContext.Provider>
+    </Preact.Suspense>
 );
 
 // don't need strict checking in prod
 if(process.env.NODE_ENV !== 'production') {
-    root = (<React.StrictMode>{root}</React.StrictMode>);
+    root = (<Preact.StrictMode>{root}</Preact.StrictMode>);
 }
 
-// Setup concurrent root
-ReactDOM.unstable_createRoot(document.getElementById("ln-root")!).render(root);
+Preact.render(root, document.getElementById('ln-root')!);
 
 CLIENT.gateway = GATEWAY;
 
