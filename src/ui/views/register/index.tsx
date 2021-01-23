@@ -20,6 +20,7 @@ type zxcvbn_fn = (input: string) => zxcvbn.ZXCVBNResult;
 var zxcvbn: zxcvbn_fn | Promise<{ default: zxcvbn_fn }> = import('zxcvbn');
 
 import "./register.scss";
+import { fetch, XHRMethod } from "client/fetch";
 
 var PRELOADED: boolean = false;
 function preloadLogin() {
@@ -124,7 +125,7 @@ function register_state_reducer(state: RegisterState, { value, type }: RegisterA
             return { ...state, email: value, valid_email: validateEmail(value) };
         }
         case RegisterActionType.UpdateUser: {
-            return { ...state, user: value, valid_user: value.length >= 3 };
+            return { ...state, user: value, valid_user: value.length >= 3 && value.length < 64 };
         }
         case RegisterActionType.UpdatePass: {
             let valid_pass = validatePass(value);
@@ -182,8 +183,20 @@ export function RegisterView() {
         return passwordClass;
     }, [state.pass_strength]);
 
+    let on_submit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        fetch.submitFormUrlEncoded({
+            url: "/api/v1/user/register",
+            method: XHRMethod.POST,
+            body: new FormData(e.currentTarget),
+        }).then((req) => {
+            console.log(req);
+        });
+    };
+
     return (
-        <form className="ln-form ln-login-form ln-register-form">
+        <form className="ln-form ln-login-form ln-register-form" onSubmit={on_submit}>
             <div id="title">
                 <h2><I18N t={Translation.REGISTER} /></h2>
             </div>
@@ -211,25 +224,25 @@ export function RegisterView() {
                     classNames={passwordClass} onChange={e => dispatch({ type: RegisterActionType.UpdatePass, value: e.target.value })} />
                 <FormText>
                     Password must be at least 8 characters long and contain at least one number or one special character.
-                    </FormText>
+                </FormText>
             </FormGroup>
 
             <FormGroup>
                 <FormLabel><I18N t={Translation.DATE_OF_BIRTH} /></FormLabel>
                 <div className="ln-select-group">
-                    <FormSelect required defaultValue="" onChange={e => dispatch({ type: RegisterActionType.UpdateYear, value: e.target.value })}>
+                    <FormSelect name="year" required defaultValue="" onChange={e => dispatch({ type: RegisterActionType.UpdateYear, value: e.target.value })}>
                         <I18N t={Translation.YEAR} render={value => <option disabled hidden value="">{value}</option>} />
                         {useMemo(() => YEARS.map((year, i) => <option value={year} key={i}>{year}</option>), [])}
                     </FormSelect>
 
-                    <FormSelect required defaultValue="" onChange={e => dispatch({ type: RegisterActionType.UpdateMonth, value: e.target.value })}>
+                    <FormSelect name="month" required defaultValue="" onChange={e => dispatch({ type: RegisterActionType.UpdateMonth, value: e.target.value })}>
                         <I18N t={Translation.MONTH} render={value => <option disabled hidden value="">{value}</option>} />
                         <I18N t={Translation.MONTHS} render={(months: string) => (
                             months.split(',').map((month, i) => <option value={i} key={i}>{month}</option>)
                         )} />
                     </FormSelect>
 
-                    <FormSelect required onChange={e => dispatch({ type: RegisterActionType.UpdateDay, value: e.target.value })}
+                    <FormSelect name="day" required onChange={e => dispatch({ type: RegisterActionType.UpdateDay, value: e.target.value })}
                         value={state.dob.d == null ? "" : state.dob.d}>
                         <I18N t={Translation.DAY} render={value => <option disabled hidden value="">{value}</option>} />
                         {useMemo(() => (new Array(state.days)).fill(undefined).map((_, i) => (

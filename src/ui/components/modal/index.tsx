@@ -1,48 +1,31 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
+import "./modal.scss";
+
 interface ModalProps {
     children: React.ReactNode,
 }
 
-interface IModal {
-    e: HTMLDivElement,
-
-    /// In use
-    u: boolean,
-}
-
-const MODALS: IModal[] = [];
+const MODAL_ROOT = document.getElementById("ln-modal-root")!;
 
 export class Modal extends React.Component<ModalProps> {
-    m: IModal;
+    e: HTMLDivElement;
 
     constructor(props: ModalProps) {
         super(props);
-
-        let available_modal = MODALS.find((m) => !m.u);
-
-        if(!available_modal) {
-            available_modal = { e: document.createElement('div'), u: false };
-            available_modal.e.className = "ln-modal";
-            available_modal.e.style.zIndex = (MODALS.length + 500).toString();
-            document.body.appendChild(available_modal.e);
-
-            MODALS.push(available_modal);
-        }
-
-        this.m = available_modal;
+        this.e = document.createElement('div');
     }
 
     componentDidMount() {
-        this.m.u = true;
+        MODAL_ROOT.appendChild(this.e);
     }
 
     componentWillUnmount() {
-        this.m.u = false;
+        MODAL_ROOT.removeChild(this.e);
     }
 
     render() {
-        return ReactDOM.createPortal(this.props.children, this.m.e);
+        return ReactDOM.createPortal(this.props.children, this.e);
     }
 }
