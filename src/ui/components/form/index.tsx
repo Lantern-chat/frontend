@@ -79,6 +79,7 @@ export const FormSelectOption = React.memo((props: IFormSelectOptionProps) => {
 interface IFormSelectProps {
     children: React.ReactNode,
     value?: string | number,
+    name?: string,
     defaultValue?: string | number,
     required?: boolean,
     onChange?: (opt: React.ChangeEvent<HTMLSelectElement>) => void,
