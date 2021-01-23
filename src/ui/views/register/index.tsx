@@ -22,6 +22,7 @@ var zxcvbn: zxcvbn_fn | Promise<{ default: zxcvbn_fn }> = import('zxcvbn');
 import "./register.scss";
 import { fetch, XHRMethod } from "client/fetch";
 import { JSXInternal } from "preact/src/jsx";
+import { useTitle } from "ui/hooks";
 
 var PRELOADED: boolean = false;
 function preloadLogin() {
@@ -159,7 +160,9 @@ function register_state_reducer(state: RegisterState, { value, type }: RegisterA
 
 var SETUP_THEN = false;
 
-export function RegisterView() {
+export default function RegisterView() {
+    useTitle("Register");
+
     let [state, dispatch] = useReducer(register_state_reducer, DEFAULT_REGISTER_STATE);
 
     useEffect(() => {
@@ -268,7 +271,6 @@ export function RegisterView() {
         </form>
     );
 }
-export default RegisterView;
 
 if(process.env.NODE_ENV !== 'production') {
     RegisterView.displayName = "RegisterView";

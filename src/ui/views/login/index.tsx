@@ -1,4 +1,4 @@
-import Preact, { useState, useMemo, useReducer } from "preact/compat";
+import Preact, { useState, useMemo, useReducer, useEffect } from "preact/compat";
 
 import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
@@ -11,6 +11,7 @@ import { FormGroup, FormLabel, FormInput, FormText, FormSelect, FormSelectOption
 
 import "./login.scss";
 import { Modal } from "ui/components/modal";
+import { useTitle } from "ui/hooks";
 
 function validateEmail(value: string): boolean {
     return /^[^@\s]+@[^@\s]+\.[^.@\s]+$/.test(value);
@@ -24,7 +25,9 @@ function preloadRegister() {
     }
 }
 
-export function LoginView() {
+export default function LoginView() {
+    useTitle("Login");
+
     let [showModal, setShowModal] = useState(false);
 
     let toggleModal = (e: any) => {
@@ -73,4 +76,3 @@ export function LoginView() {
         </>
     );
 }
-export default LoginView;
