@@ -19,10 +19,10 @@ type zxcvbn_fn = (input: string) => zxcvbn.ZXCVBNResult;
 
 var zxcvbn: zxcvbn_fn | Promise<{ default: zxcvbn_fn }> = import('zxcvbn');
 
-import "./register.scss";
+
 import { fetch, XHRMethod } from "client/fetch";
 import { JSXInternal } from "preact/src/jsx";
-import { useTitle } from "ui/hooks";
+import { useTitle } from "ui/hooks/useTitle";
 
 var PRELOADED: boolean = false;
 function preloadLogin() {
@@ -32,13 +32,17 @@ function preloadLogin() {
     }
 }
 
+function validateUsername(value: string): boolean {
+    return /^[^\s].{1,62}[^\s]$/u.test(value);
+}
+
 function validateEmail(value: string): boolean {
     return /^[^@\s]+@[^@\s]+\.[^.@\s]+$/.test(value);
 }
 
 function validatePass(value: string): boolean {
     // TODO: Set this with server-side options
-    return value.length >= 8 && /[^\w]|\d/.test(value);
+    return value.length >= 8 && /[^\p{L}]|\p{N}/u.test(value);
 }
 
 /*
@@ -127,7 +131,8 @@ function register_state_reducer(state: RegisterState, { value, type }: RegisterA
             return { ...state, email: value, valid_email: validateEmail(value) };
         }
         case RegisterActionType.UpdateUser: {
-            return { ...state, user: value, valid_user: value.length >= 3 && value.length < 64 };
+            value = value.trimStart();
+            return { ...state, user: value, valid_user: validateUsername(value) };
         }
         case RegisterActionType.UpdatePass: {
             let valid_pass = validatePass(value);
@@ -160,6 +165,9 @@ function register_state_reducer(state: RegisterState, { value, type }: RegisterA
 
 var SETUP_THEN = false;
 
+import "../login/login.scss";
+import "./register.scss";
+import { Modal } from "ui/components/modal";
 export default function RegisterView() {
     useTitle("Register");
 
@@ -207,13 +215,13 @@ export default function RegisterView() {
 
             <FormGroup>
                 <FormLabel htmlFor="email"><I18N t={Translation.EMAIL_ADDRESS} /></FormLabel>
-                <FormInput type="email" name="email" placeholder="example@example.com" required isValid={state.valid_email}
+                <FormInput value={state.email} type="email" name="email" placeholder="example@example.com" required isValid={state.valid_email}
                     onChange={e => dispatch({ type: RegisterActionType.UpdateEmail, value: e.currentTarget.value })} />
             </FormGroup>
 
             <FormGroup>
                 <FormLabel htmlFor="username"><I18N t={Translation.USERNAME} /></FormLabel>
-                <FormInput type="text" name="username" placeholder="username" required isValid={state.valid_user}
+                <FormInput value={state.user} type="text" name="username" placeholder="username" required isValid={state.valid_user}
                     onChange={e => dispatch({ type: RegisterActionType.UpdateUser, value: e.currentTarget.value })} />
             </FormGroup>
 
