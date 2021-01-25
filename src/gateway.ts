@@ -1,6 +1,6 @@
 const ctx: Worker = self as any;
 
-import { Message, MessageOp, IConnect, ISendMessage } from "./client/worker";
+import { GatewayCommand, GatewayCommandOp, IConnect, ISendMessage } from "client/worker";
 import * as pako from "pako";
 
 interface Stream {
@@ -26,7 +26,7 @@ function wrap(fn: (...args: any) => any): (...args: any) => any {
 class StreamManager {
     streams: Stream[] = [];
 
-    connect(msg: Message<MessageOp.Connect>) {
+    connect(msg: GatewayCommand<GatewayCommandOp.Connect>) {
         let connect = msg.data;
 
         let host = connect.host;
@@ -69,7 +69,7 @@ class StreamManager {
         this.streams.push({ socket, connect });
     }
 
-    sendMessage(send_message: Message<MessageOp.SendMessage>) {
+    sendMessage(send_message: GatewayCommand<GatewayCommandOp.SendMessage>) {
         let ws = this.streams.find((value) => value.connect.name == send_message.data.to);
 
         if(ws) {
@@ -94,11 +94,11 @@ class StreamManager {
 
 const MANAGER = new StreamManager();
 
-ctx.addEventListener('message', (ev) => {
-    let msg = ev.data as Message<any>;
+ctx.addEventListener('message', (ev: MessageEvent<GatewayCommand<any>>) => {
+    let msg = ev.data;
 
     switch(msg.op) {
-        case MessageOp.Connect: { return MANAGER.connect(msg); }
-        case MessageOp.SendMessage: { return MANAGER.sendMessage(msg) }
+        case GatewayCommandOp.Connect: { return MANAGER.connect(msg); }
+        case GatewayCommandOp.SendMessage: { return MANAGER.sendMessage(msg) }
     }
 });

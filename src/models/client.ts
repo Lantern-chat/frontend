@@ -9,6 +9,8 @@ ClientContext.displayName = "ClientContext";
 
 const LANG_LOCALSTORAGE_KEY = "lang";
 
+import { GatewayCommandOp } from "client/worker";
+
 export class ClientModel extends TinyEventEmitter {
     currentLanguage: i18n.Language = "en"; // default to English
     gateway: Worker;
@@ -16,6 +18,24 @@ export class ClientModel extends TinyEventEmitter {
     constructor() {
         super();
         this.setup_i18n();
+
+        import(/* webpackPreload: true */ "worker-loader!gateway").then(({ default: Gateway }) => {
+            const GATEWAY = new Gateway();
+
+            // TESTING
+            GATEWAY.postMessage({
+                op: GatewayCommandOp.Connect,
+                data: {
+                    host: `wss://${window.location.hostname}/gateway`,
+                    name: "test",
+                    compress: true,
+                }
+            });
+
+            GATEWAY.addEventListener('message', (msg) => {
+                console.log(msg.data);
+            });
+        });
     }
 
     setup_i18n() {

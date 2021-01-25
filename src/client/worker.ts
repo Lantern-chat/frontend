@@ -1,4 +1,4 @@
-export enum MessageOp {
+export enum GatewayCommandOp {
     Connect,
     SendMessage,
 }
@@ -14,12 +14,12 @@ export interface ISendMessage {
     msg: string,
 }
 
-export interface MessageOpMap {
-    [MessageOp.Connect]: IConnect,
-    [MessageOp.SendMessage]: ISendMessage,
+export interface GatewayOpMap {
+    [GatewayCommandOp.Connect]: IConnect,
+    [GatewayCommandOp.SendMessage]: ISendMessage,
 }
 
-export interface Message<K extends keyof MessageOpMap> {
+export interface GatewayCommand<K extends keyof GatewayOpMap> {
     op: K,
-    data: MessageOpMap[K],
+    data: GatewayOpMap[K],
 }
