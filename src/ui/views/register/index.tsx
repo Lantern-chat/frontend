@@ -172,6 +172,7 @@ export default function RegisterView() {
     useTitle("Register");
 
     let [state, dispatch] = useReducer(register_state_reducer, DEFAULT_REGISTER_STATE);
+    let [errorMsg, setErrorMsg] = useState(null);
 
     useEffect(() => {
         if(!SETUP_THEN && typeof zxcvbn !== 'function') {
@@ -204,14 +205,33 @@ export default function RegisterView() {
             body: new FormData(e.currentTarget),
         }).then((req) => {
             console.log(req);
+        }).catch((e: XMLHttpRequest) => {
+            setErrorMsg(e.response.message);
         });
     };
+
+    let errorModal;
+
+    if(errorMsg != null) {
+        errorModal = (
+            <Modal>
+                <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, zIndex: 'inherit', backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
+                    <div className="ln-center-standalone" style={{ color: 'white' }}>
+                        {errorMsg}
+                        <button onClick={() => setErrorMsg(null)}>Close</button>
+                    </div>
+                </div>
+            </Modal>
+        )
+    }
 
     return (
         <form className="ln-form ln-login-form ln-register-form" onSubmit={on_submit}>
             <div id="title">
                 <h2><I18N t={Translation.REGISTER} /></h2>
             </div>
+
+            {errorModal}
 
             <FormGroup>
                 <FormLabel htmlFor="email"><I18N t={Translation.EMAIL_ADDRESS} /></FormLabel>
@@ -247,7 +267,7 @@ export default function RegisterView() {
                         {useMemo(() => YEARS.map((year, i) => <option value={year} key={i}>{year}</option>), [])}
                     </FormSelect>
 
-                    <FormSelect name="month" required value={state.dob.m || ""} onChange={e => dispatch({ type: RegisterActionType.UpdateMonth, value: e.currentTarget.value })}>
+                    <FormSelect name="month" required value={state.dob.m != null ? state.dob.m : ""} onChange={e => dispatch({ type: RegisterActionType.UpdateMonth, value: e.currentTarget.value })}>
                         <I18N t={Translation.MONTH} render={value => <option disabled hidden value="">{value}</option>} />
                         {useMemo(() => dayjs.months().map((month: string, i: number) => <option value={i} key={i}>{month}</option>), [dayjs.locale()])}
                     </FormSelect>
