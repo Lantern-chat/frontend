@@ -21,7 +21,7 @@ module.exports = (env, argv) => {
         entry: "./src/index.tsx",
         target: "web",
         mode: MODE,
-        watch: !IS_PRODUCTION,
+        watch: true,
         output: {
             filename: '[name].js',
             chunkFilename: `${CHUNK_NAME}.js`,
@@ -92,6 +92,7 @@ module.exports = (env, argv) => {
                                 // you can specify a publicPath here
                                 // by default it use publicPath in webpackOptions.output
                                 //publicPath: '../'
+                                esModule: true,
                             }
                         },
                         'css-loader',
