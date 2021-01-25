@@ -8,60 +8,8 @@ import * as color from "client/color";
 
 const { sqrt, cbrt, sin, cos, random, abs, sign, PI, min, max, floor } = Math;
 
-interface IFireflyProps {
-    count: number,
-}
-
-
-interface IFirefly {
-    offset: number,
-    size: number,
-    // Current angle trajectory
-    a: number,
-    // Target angle
-    ta: number,
-    px: number,
-    py: number,
-    vx: number,
-    vy: number,
-}
-
-interface IFireflyState {
-    // If we just unpaused, run a single frame without changes to update the time delta
-    just_unpaused?: boolean,
-    paused: boolean,
-    frame?: number,
-    time?: number,
-    // Array of fireflies
-    ff: IFirefly[],
-    // mouse position
-    m: [number, number, boolean],
-}
-
-function init_fireflies(props: IFireflyProps): IFireflyState {
-    let ff: IFirefly[] = [];
-    for(let i = 0; i < props.count; i++) {
-        let a = random() * PI * 2.0;
-        ff.push({
-            offset: random(),
-            size: random() * 0.7 + 0.3,
-            a,
-            ta: a,
-            px: random() * window.innerWidth,
-            py: random() * window.innerHeight,
-            vx: 0, vy: 0,
-        });
-    }
-
-    return { ff, paused: false, m: [1e9, 1e9, false] };
-}
-
 const FIREFLY_RADIUS: number = 16;
 const FIREFLY_WIDTH: number = FIREFLY_RADIUS * 2;
-
-const MAX_SPEED = 60;
-const EJECT = MAX_SPEED * 2;
-const ANGLE_INTERVAL: number = 1;
 
 interface GradientStop {
     x: number,
@@ -84,11 +32,64 @@ const DARK_PALETTE: GradientStop[][] = DARK_PALETTE_HUES.map(hue => gen_gradient
 //const LIGHT_PALETTE_HUES: number[] = [0, 40, 80, 120, 160, 200, 240, 280];
 //const LIGHT_PALETTE: GradientStop[][] = LIGHT_PALETTE_HUES.map(hue => gen_gradient(color.linear2srgb(color.hsl2rgb([hue, 0.7, 0.5])), 8));
 
+
+interface IFireflyProps {
+    density?: number,
+}
+
+interface IFirefly {
+    offset: number,
+    size: number,
+    // Current angle trajectory
+    a: number,
+    // Target angle
+    ta: number,
+    px: number,
+    py: number,
+    vx: number,
+    vy: number,
+}
+
+interface IFireflyState {
+    density: number,
+    // If we just unpaused, run a single frame without changes to update the time delta
+    just_unpaused?: boolean,
+    paused: boolean,
+    frame?: number,
+    time?: number,
+    // Array of fireflies
+    ff: IFirefly[],
+    // mouse position
+    m: [number, number, boolean],
+}
+
+const MAX_SPEED = 60;
+const EJECT = MAX_SPEED * 2;
+const ANGLE_INTERVAL: number = 1;
+
+function gen_firefly(min_x: number, max_x: number, min_y: number, max_y: number): IFirefly {
+    let a = random() * PI * 2.0;
+
+    return {
+        offset: random(),
+        size: random() * 0.7 + 0.3,
+        a,
+        ta: a,
+        px: min_x + random() * (max_x - min_x),
+        py: min_y + random() * (max_y - min_y),
+        vx: 0, vy: 0,
+    };
+}
+
 function repulse(x0: number, y0: number, x1: number, y1: number, w: number): [number, number, number] {
     let dx = x0 - x1;
     let dy = y0 - y1;
     let d = sqrt(dx * dx + dy * dy);
     return [smoothstep((w - d) / w), dx, dy];
+}
+
+function desiredCount(w: number, h: number, density: number): number {
+    return (w * h) / (density * density);
 }
 
 function render_fireflies(state: IFireflyState, canvas_ref: Preact.Ref<HTMLCanvasElement | null>, time: number) {
@@ -98,11 +99,43 @@ function render_fireflies(state: IFireflyState, canvas_ref: Preact.Ref<HTMLCanva
     let ctx = canvas.getContext("2d");
     if(!ctx) { return; }
 
+    let previous_canvas_size = { w: canvas.width, h: canvas.height };
+
+    let size_changed = 0;
     if(canvas.width !== window.innerWidth) {
-        canvas.width = window.innerWidth;
+        size_changed |= canvas.width = window.innerWidth;
     }
     if(canvas.height !== window.innerHeight) {
-        canvas.height = window.innerHeight;
+        size_changed |= canvas.height = window.innerHeight;
+    }
+
+    let cnt = desiredCount(canvas.width, canvas.height, state.density);
+
+    if(size_changed) {
+        let { w, h } = previous_canvas_size;
+
+        let dx = canvas.width - w;
+        let dy = canvas.height - h;
+
+        let dead: number[] = [];
+        for(let idx = 0; idx < state.ff.length; idx++) {
+            let ff = state.ff[idx];
+
+            ff.px += dx * 0.5;
+            ff.py += dy * 0.5;
+
+            if(ff.px < 0 || ff.px > canvas.width || ff.py < 0 || ff.py > canvas.height) {
+                dead.push(idx);
+            }
+        }
+
+        for(let idx = dead.length; idx--;) {
+            state.ff.splice(dead[idx], 1);
+        }
+    }
+
+    while(state.ff.length < cnt) {
+        state.ff.push(gen_firefly(0, canvas.width, 0, canvas.height));
     }
 
     time /= 1000; // we want to work in seconds, not milliseconds
@@ -187,7 +220,10 @@ function render_fireflies(state: IFireflyState, canvas_ref: Preact.Ref<HTMLCanva
         //gradient.addColorStop(0.2, 'rgba(255, 255, 0, 0.5)');
         //gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
 
-        for(let firefly of state.ff) {
+        let dying: number[] = [];
+        let len = state.ff.length;
+        for(let idx = 0; idx < len; idx++) {
+            let firefly = state.ff[idx];
             // opacity is a squine function to give a smooth "blinking" effect, with an irrational time offset
             // to avoid overlapping blinks with others
             let x = (firefly.offset * 15.61803398 + time) * 0.5;
@@ -203,12 +239,20 @@ function render_fireflies(state: IFireflyState, canvas_ref: Preact.Ref<HTMLCanva
                 a *= a;
             }
 
+            if(random() < 0.01 && a < 0.01 && cnt < (len - dying.length - 1)) {
+                dying.push(idx);
+            }
+
             ctx.globalAlpha = a;
 
             ctx.fillStyle = palette[floor(firefly.offset * palette.length)];
 
             ctx.setTransform(firefly.size, 0, 0, firefly.size, firefly.px, firefly.py);
             ctx.fillRect(-FIREFLY_RADIUS, -FIREFLY_RADIUS, FIREFLY_WIDTH, FIREFLY_WIDTH);
+        }
+
+        for(let idx = dying.length; idx--;) {
+            state.ff.splice(dying[idx], 1);
         }
     }
 
@@ -225,7 +269,7 @@ export const Fireflies: Preact.FunctionComponent<IFireflyProps> = Preact.memo((p
     let canvas_ref = useRef(null);
 
     useEffect(() => {
-        let state = init_fireflies(props);
+        let state: IFireflyState = { ff: [], paused: false, m: [1e9, 1e9, false], density: props.density || 175 };
         let interval = setInterval(() => {
             if(state.paused) return;
             for(let firefly of state.ff) {
@@ -248,7 +292,7 @@ export const Fireflies: Preact.FunctionComponent<IFireflyProps> = Preact.memo((p
                 window.removeEventListener(e, mouse_listener);
             }
         }
-    }, [props.count])
+    }, [props.density])
 
     return (<canvas id="ln-fireflies" ref={canvas_ref} />);
 });

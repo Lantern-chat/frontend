@@ -35,7 +35,7 @@ const Fallback = <div className="ln-center-standalone"><Ripple size={120} /></di
 export const App = () => (
     <Router matcher={multipathMatcher}>
         <Route path={["/login", "/register"] as any}>
-            <Fireflies count={80} />
+            <Fireflies density={175} />
             <div className="ln-box">
                 <div className="ln-login-container ln-centered" style={{ zIndex: 1 }}>
                     <Route path={["/login"] as any} >
