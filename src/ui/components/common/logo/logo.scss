@@ -9,7 +9,9 @@
     //flex: 1;
 
     @media (max-width: 49em) {
-        display: none;
+        position: absolute;
+        z-index: -2;
+        height: 100%;
     }
 
     img {

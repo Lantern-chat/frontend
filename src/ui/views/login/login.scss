@@ -4,26 +4,40 @@
     width: 30em;
 
     @media (max-width: 49em) {
-        width: auto;
+        width: 100%;
     }
 }
 
 .ln-login-container {
-    flex-wrap: wrap;
     display: flex;
-    border-radius: 1em;
-    padding: 0 2em 2em 2em;
-    box-shadow: -0.1em 0 0.8em black;
+    position: relative;
     background-color: $lnx-secondary-surface-color;
+
+    @media (min-width: 49em) {
+        border-radius: 1em;
+        padding: 0 2em 2em 2em;
+        box-shadow: -0.1em 0 0.8em black;
+    }
 
     @media (max-width: 49em) {
         padding: 0 0.5em 2em 0.5em;
-    }
+        width: 100%;
+        justify-content: center;
+        min-height: 100%;
 
-    .ln-enable-motion & {
-        transition: padding 300ms ease;
-    }
+        background-color: transparent;
 
-    //max-height: 60em;
-    //transition: max-height 0.5s ease;
+        &::before {
+            z-index: -1;
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+
+            opacity: 0.8;
+            background-color: $lnx-secondary-surface-color;
+        }
+    }
 }

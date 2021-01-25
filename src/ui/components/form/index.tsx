@@ -31,6 +31,7 @@ export const FormText: Preact.FunctionComponent<IFormTextProps> = Preact.memo((p
 interface IFormInputProps {
     type: string,
     name: string,
+    value?: string,
     placeholder?: string,
     required?: boolean,
     classNames?: string,
@@ -56,6 +57,7 @@ export const FormInput: Preact.FunctionComponent<IFormInputProps> = Preact.memo(
                 name={props.name}
                 placeholder={props.placeholder}
                 required={props.required}
+                value={props.value}
                 onChange={props.onChange} />
         </span>
     );

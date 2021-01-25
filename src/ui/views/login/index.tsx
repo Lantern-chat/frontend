@@ -8,10 +8,8 @@ import { Link } from "wouter-preact";
 import { Logo } from "ui/components/common/logo";
 import { Glyphicon } from "ui/components/common/glyphicon/";
 import { FormGroup, FormLabel, FormInput, FormText, FormSelect, FormSelectOption } from "ui/components/form";
-
-import "./login.scss";
 import { Modal } from "ui/components/modal";
-import { useTitle } from "ui/hooks";
+import { useTitle } from "ui/hooks/useTitle";
 
 function validateEmail(value: string): boolean {
     return /^[^@\s]+@[^@\s]+\.[^.@\s]+$/.test(value);
@@ -25,6 +23,7 @@ function preloadRegister() {
     }
 }
 
+import "./login.scss";
 export default function LoginView() {
     useTitle("Login");
 
