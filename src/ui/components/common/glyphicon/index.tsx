@@ -1,4 +1,4 @@
-import Preact, { useState, useEffect } from "preact/compat";
+import React, { useState, useEffect } from "react";
 
 import "./glyphicon.scss";
 
@@ -6,7 +6,7 @@ interface IGlyphiconProps {
     import: () => Promise<{ default: string }>,
 }
 
-export const Glyphicon: Preact.FunctionComponent<IGlyphiconProps> = Preact.memo((props: IGlyphiconProps) => {
+export const Glyphicon: React.FunctionComponent<IGlyphiconProps> = React.memo((props: IGlyphiconProps) => {
     let [data, setData] = useState<string>("");
     useEffect(() => { props.import().then(data => setData(data.default)); }, []);
     return (

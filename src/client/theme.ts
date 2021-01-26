@@ -1,4 +1,6 @@
-import { change_color, kelvin, darken, lighten, lightness, RGBColor, desaturate, adjust_color, kelvin2 } from "./color";
+import { createContext } from "react";
+
+import { change_color, kelvin, darken, lighten, lightness, RGBColor, desaturate, formatRGB, adjust_color, kelvin2 } from "./color";
 
 const { min, max, round } = Math;
 
@@ -16,6 +18,16 @@ const MAX_TEMP: number = 12000;
 let clamp_temp = (temp: number): number => min(MAX_TEMP, max(MIN_TEMP, temp));
 
 export var LIGHT_THEME: boolean = false;
+
+export interface IThemeContext {
+    is_light: boolean,
+    temperature: number,
+}
+
+export const Theme = createContext<IThemeContext>({
+    is_light: false,
+    temperature: 7500,
+});
 
 export function genDarkTheme(temperature: number): ITheme {
 
@@ -83,31 +95,32 @@ export function genLightTheme(temperature: number): ITheme {
     }
 }
 
-export function setTheme(theme: ITheme, animate: boolean) {
+export function setTheme(theme: ITheme, animate: boolean, is_light: boolean) {
+    let de = document.documentElement;
+
     if(animate) {
-        document.documentElement.classList.add("ln-theme-transition");
+        de.classList.add("ln-theme-transition");
+    }
+
+    if(is_light) {
+        de.classList.remove('ln-dark-theme');
+        de.classList.add('ln-light-theme');
+    } else {
+        de.classList.add('ln-dark-theme');
+        de.classList.remove('ln-light-theme');
     }
 
     for(let key in theme) {
         let varname = "--ln-" + key.replace(/_/g, '-');
-        let { r, g, b } = theme[key];
-        let value = `rgb(${round(r * 255)}, ${round(g * 255)}, ${round(b * 255)})`;
+        let value = formatRGB(theme[key]);
 
         console.log("Setting %s to %s", varname, value);
-        document.documentElement.style.setProperty(varname, value);
+        de.style.setProperty(varname, value);
     }
 
     if(animate) {
         setTimeout(() => {
-            document.documentElement.classList.remove("ln-theme-transition");
+            de.classList.remove("ln-theme-transition");
         }, 2000);
     }
 }
-
-(window as any).setDarkTheme = function(temperature: number) {
-    setTheme(genDarkTheme(temperature), true);
-};
-
-(window as any).setLightTheme = function(temperature: number) {
-    setTheme(genLightTheme(temperature), true);
-};

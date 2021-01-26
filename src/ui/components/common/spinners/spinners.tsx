@@ -1,4 +1,4 @@
-import Preact from "preact/compat";
+import React from "react";
 
 import "./spinners.scss";
 
@@ -11,7 +11,7 @@ function makeSpinnerStyle(props: SpinnerProps) {
     return { width: size, height: size };
 }
 
-export const Ripple: Preact.FunctionComponent<SpinnerProps> = Preact.memo((props: SpinnerProps) => (
+export const Ripple: React.FunctionComponent<SpinnerProps> = React.memo((props: SpinnerProps) => (
     <div className="ln-ripple ln-primary-text-color" style={makeSpinnerStyle(props)}>
         <div />
         <div />

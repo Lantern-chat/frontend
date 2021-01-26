@@ -1,4 +1,4 @@
-import Preact, { createContext } from "preact/compat";
+import React, { createContext } from "react";
 import { TinyEventEmitter } from "./_event";
 import * as i18n from "ui/i18n";
 
@@ -10,17 +10,22 @@ ClientContext.displayName = "ClientContext";
 const LANG_LOCALSTORAGE_KEY = "lang";
 
 import { GatewayCommandOp } from "client/worker";
-import { genDarkTheme, setTheme } from "client/theme";
+import { genDarkTheme, IThemeContext, setTheme } from "client/theme";
 
 export class ClientModel extends TinyEventEmitter {
     currentLanguage: i18n.Language = "en"; // default to English
     gateway: Worker;
+    theme: IThemeContext;
 
     constructor() {
         super();
         this.setup_i18n();
+        this.theme = {
+            is_light: false,
+            temperature: 7500,
+        };
 
-        setTheme(genDarkTheme(7500), false);
+        setTheme(genDarkTheme(this.theme.temperature), false, false);
 
         import(/* webpackPreload: true */ "worker-loader!gateway").then(({ default: Gateway }) => {
             const GATEWAY = new Gateway();

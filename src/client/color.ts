@@ -1,4 +1,4 @@
-const { min, max } = Math;
+const { min, max, round } = Math;
 
 const clamp01 = (x: number) => min(1, max(0, x));
 
@@ -135,20 +135,34 @@ export function rgb2hsv(rgb: RGBColor): HSVColor {
 
 export function change_color(rgb: RGBColor, { hue, saturation, lightness }: IChangeColorOptions): RGBColor {
     let { h, s, l } = rgb2hsl(rgb);
+
+    let k = (v: number, s: number | undefined) => s != undefined ? clamp01(s) : v;
     return hsl2rgb({
-        h: hue != undefined ? clamp01(hue) : h,
-        s: saturation != undefined ? clamp01(saturation) : s,
-        l: lightness != undefined ? clamp01(lightness) : l
+        h: k(h, hue),
+        s: k(s, saturation),
+        l: k(l, lightness),
     });
 }
 
 export function adjust_color(rgb: RGBColor, { hue, saturation, lightness }: IChangeColorOptions): RGBColor {
     let { h, s, l } = rgb2hsl(rgb);
 
+    let k = (v: number, s: number | undefined) => s != undefined ? clamp01(s + v) : v;
     return hsl2rgb({
-        h: hue != undefined ? clamp01(hue + h) : h,
-        s: saturation != undefined ? clamp01(saturation + s) : s,
-        l: lightness != undefined ? clamp01(lightness + l) : l,
+        h: k(h, hue),
+        s: k(s, saturation),
+        l: k(l, lightness),
+    });
+}
+
+export function scale_color(rgb: RGBColor, { hue, saturation, lightness }: IChangeColorOptions): RGBColor {
+    let { h, s, l } = rgb2hsl(rgb);
+
+    let k = (v: number, s: number | undefined) => s != undefined ? clamp01(v + s * (s > 0 ? 1 - s : s)) : v;
+    return hsl2rgb({
+        h: k(h, hue),
+        s: k(s, saturation),
+        l: k(l, lightness),
     });
 }
 
@@ -277,4 +291,20 @@ export function kelvin2(t: number): RGBColor {
         g[0] * t_inv + g[1] * t + g[2],
         ((b[0] * t + b[1]) * t + b[2]) * t + b[3]
     ));
+}
+
+export function formatRGB({ r, g, b }: RGBColor, alpha?: number): string {
+    if(process.env.NODE_ENV !== 'production') {
+        let l = (v: number): boolean => v < 0 || v > 1;
+        if(l(r) || l(g) || l(b)) console.log("Invalid color: ", { r, g, b });
+    }
+
+    let rgb = [r, g, b];
+    let prefix = 'rgb';
+    if(alpha !== undefined) {
+        rgb.push(alpha);
+        prefix += 'a';
+    }
+
+    return prefix + `(${rgb.map(x => round(x * 255)).join(',')})`;
 }

@@ -1,17 +1,19 @@
-import Preact, { useState, useMemo, useReducer, useEffect } from "preact/compat";
+import React, { useState, useMemo, useReducer, useEffect } from "react";
 import dayjs from "client/time";
 
 import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
 
 
-import { Link } from "wouter-preact";
+import { Link } from "react-router-dom";
 
 import { Fireflies } from "ui/components/login/fireflies";
 import { Logo } from "ui/components/common/logo";
 import { Glyphicon } from "ui/components/common/glyphicon/";
 
 import { FormGroup, FormLabel, FormInput, FormText, FormSelect, FormSelectOption } from "ui/components/form";
+
+import { validateUsername, validatePass, validateEmail } from "client/validation";
 
 //import { calcPasswordStrength } from "./password";
 
@@ -21,7 +23,6 @@ var zxcvbn: zxcvbn_fn | Promise<{ default: zxcvbn_fn }> = import('zxcvbn');
 
 
 import { fetch, XHRMethod } from "client/fetch";
-import { JSXInternal } from "preact/src/jsx";
 import { useTitle } from "ui/hooks/useTitle";
 
 var PRELOADED: boolean = false;
@@ -32,18 +33,6 @@ function preloadLogin() {
     }
 }
 
-function validateUsername(value: string): boolean {
-    return /^[^\s].{1,62}[^\s]$/u.test(value);
-}
-
-function validateEmail(value: string): boolean {
-    return /^[^@\s]+@[^@\s]+\.[^.@\s]+$/.test(value);
-}
-
-function validatePass(value: string): boolean {
-    // TODO: Set this with server-side options
-    return value.length >= 8 && /[^\p{L}]|\p{N}/u.test(value);
-}
 
 /*
 function chunkString(str: string, length: number) {
@@ -82,9 +71,9 @@ interface IDob {
 interface RegisterState {
     dob: IDob,
     days: number,
-    email?: string,
-    user?: string,
-    pass?: string,
+    email: string,
+    user: string,
+    pass: string,
     pass_strength: number,
     valid_email: boolean | null,
     valid_user: boolean | null,
@@ -92,6 +81,9 @@ interface RegisterState {
 }
 
 const DEFAULT_REGISTER_STATE: RegisterState = {
+    email: "",
+    user: "",
+    pass: "",
     dob: {},
     days: 31,
     pass_strength: 0,
@@ -196,7 +188,7 @@ export default function RegisterView() {
         return passwordClass;
     }, [state.pass_strength]);
 
-    let on_submit = (e: JSXInternal.TargetedEvent<HTMLFormElement>) => {
+    let on_submit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         fetch.submitFormUrlEncoded({
