@@ -22,7 +22,8 @@
         width: 0;
         height: 5px;
         background-color: red;
-        border-top-left-radius: $control-border-radius;
+        border-top-left-radius: $control-border-radius * 0.7;
+        pointer-events: none;
 
         .ln-enable-motion & {
             transition-property: width, background-color;
@@ -50,7 +51,7 @@
         width: 100%;
         background-color: lime;
 
-        border-top-right-radius: $control-border-radius;
+        border-top-right-radius: $control-border-radius * 0.7;
     }
 }
 
