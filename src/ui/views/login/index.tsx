@@ -54,8 +54,8 @@ export default function LoginView() {
                 </div>
 
                 <FormGroup>
-                    <FormLabel htmlFor="username"><I18N t={Translation.USERNAME_OR_EMAIL} /></FormLabel>
-                    <FormInput type="text" name="username" placeholder="username or email" required />
+                    <FormLabel htmlFor="email"><I18N t={Translation.EMAIL_ADDRESS} /></FormLabel>
+                    <FormInput type="text" name="email" placeholder="example@example.com" required />
                 </FormGroup>
 
                 <FormGroup>
@@ -64,7 +64,9 @@ export default function LoginView() {
                     </FormLabel>
                     <FormInput type="password" name="password" placeholder="password" />
                 </FormGroup>
+
                 <hr />
+
                 <FormGroup>
                     <div style={{ display: 'flex', padding: '0 1em' }}>
                         <button className="ln-btn" style={{ marginRight: 'auto' }} onClick={toggleModal}>Login</button>
