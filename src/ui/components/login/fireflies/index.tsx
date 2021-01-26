@@ -5,6 +5,7 @@ import "./firefly.scss";
 import { isPageHidden, visibilityChange } from "ui/utils";
 import { smoothstep, squine3, gaussian2, smin, broad_sine2 } from "client/math";
 import * as color from "client/color";
+import { LIGHT_THEME } from "client/theme";
 
 const { sqrt, cbrt, sin, cos, random, abs, sign, PI, min, max, floor } = Math;
 
@@ -16,7 +17,7 @@ interface GradientStop {
     v: string,
 }
 
-function gen_gradient([r, g, b]: number[], stops: number): GradientStop[] {
+function gen_gradient({ r, g, b }: color.RGBColor, stops: number): GradientStop[] {
     let gradient = [];
     for(let i = 0; i < stops; i++) { // Note this is not inclusive
         let x = i / stops;
@@ -27,10 +28,10 @@ function gen_gradient([r, g, b]: number[], stops: number): GradientStop[] {
 }
 
 const DARK_PALETTE_HUES: number[] = [50, 60, 70];
-const DARK_PALETTE: GradientStop[][] = DARK_PALETTE_HUES.map(hue => gen_gradient(color.linear2srgb(color.hsv2rgb([hue, 1, 1])), 8));
+const DARK_PALETTE: GradientStop[][] = DARK_PALETTE_HUES.map(hue => gen_gradient(color.linear2srgb(color.hsv2rgb({ h: hue, s: 1, v: 1 })), 8));
 
-//const LIGHT_PALETTE_HUES: number[] = [0, 40, 80, 120, 160, 200, 240, 280];
-//const LIGHT_PALETTE: GradientStop[][] = LIGHT_PALETTE_HUES.map(hue => gen_gradient(color.linear2srgb(color.hsl2rgb([hue, 0.7, 0.5])), 8));
+const LIGHT_PALETTE_HUES: number[] = [0, 40, 80, 120, 160, 200, 240, 280];
+const LIGHT_PALETTE: GradientStop[][] = LIGHT_PALETTE_HUES.map(hue => gen_gradient(color.linear2srgb(color.hsl2rgb({ h: hue, s: 0.7, l: 0.5 })), 8));
 
 
 interface IFireflyProps {
@@ -210,7 +211,9 @@ function render_fireflies(state: IFireflyState, canvas_ref: Preact.Ref<HTMLCanva
         ctx.resetTransform();
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        let palette: CanvasGradient[] = DARK_PALETTE.map((p) => {
+
+
+        let palette: CanvasGradient[] = (LIGHT_THEME ? LIGHT_PALETTE : DARK_PALETTE).map((p) => {
             let gradient = ctx!.createRadialGradient(0, 0, 0, 0, 0, FIREFLY_RADIUS);
             for(let g of p) { gradient.addColorStop(g.x, g.v); }
             return gradient;

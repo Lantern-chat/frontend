@@ -66,3 +66,9 @@ a {
     --ln-warning-color: #{$ln-warning-color};
     --ln-failure-color: #{$ln-failure-color};
 }
+
+.ln-theme-transition * {
+    transition-property: background-color, color !important;
+    transition-duration: 2s !important;
+    transition-timing-function: ease-in !important;
+}

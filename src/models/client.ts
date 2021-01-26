@@ -10,6 +10,7 @@ ClientContext.displayName = "ClientContext";
 const LANG_LOCALSTORAGE_KEY = "lang";
 
 import { GatewayCommandOp } from "client/worker";
+import { genDarkTheme, setTheme } from "client/theme";
 
 export class ClientModel extends TinyEventEmitter {
     currentLanguage: i18n.Language = "en"; // default to English
@@ -18,6 +19,8 @@ export class ClientModel extends TinyEventEmitter {
     constructor() {
         super();
         this.setup_i18n();
+
+        setTheme(genDarkTheme(7500), false);
 
         import(/* webpackPreload: true */ "worker-loader!gateway").then(({ default: Gateway }) => {
             const GATEWAY = new Gateway();
