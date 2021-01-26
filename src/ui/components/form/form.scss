@@ -57,6 +57,10 @@
         margin-left: -1em;
         font-size: 2em;
         line-height: 1;
+
+        @media (max-width: 49em) {
+            margin-left: -5%;
+        }
     }
 
     &:focus,
