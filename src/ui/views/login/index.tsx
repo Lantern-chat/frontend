@@ -1,9 +1,9 @@
-import React, { useState, useMemo, useReducer, useEffect } from "react";
+import React, { useState, useMemo, useReducer, useEffect } from "preact/compat";
 
 import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
 
-import { Link } from "react-router-dom";
+import { Link } from "wouter-preact";
 
 import { useTitle } from "ui/hooks/useTitle";
 import { Glyphicon } from "ui/components/common/glyphicon/";

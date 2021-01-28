@@ -1,14 +1,29 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "preact/compat";
 
 import "./glyphicon.scss";
 
-interface IGlyphiconProps {
+interface IStaticGlyphiconProps {
+    src: string,
+}
+
+interface IAsyncGlyphiconProps {
     import: () => Promise<{ default: string }>,
 }
 
+type IGlyphiconProps = IStaticGlyphiconProps | IAsyncGlyphiconProps;
+
 export const Glyphicon: React.FunctionComponent<IGlyphiconProps> = React.memo((props: IGlyphiconProps) => {
     let [data, setData] = useState<string>("");
-    useEffect(() => { props.import().then(data => setData(data.default)); }, []);
+
+    useEffect(() => {
+        let static_props = props as IStaticGlyphiconProps;
+        if(static_props.src !== undefined) {
+            return setData(static_props.src);
+        }
+        let async_props = props as IAsyncGlyphiconProps;
+        async_props.import().then(data => setData(data.default));
+    }, [props]);
+
     return (
         <span className="ln-glyphicon-wrapper">
             <span className="ln-glyphicon" dangerouslySetInnerHTML={{ __html: data }} />

@@ -1,14 +1,14 @@
-import React, { useState, useMemo, useReducer, useEffect } from "react";
+import React, { useState, useMemo, useReducer, useEffect } from "preact/compat";
 import dayjs from "client/time";
 
 import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
 
 
-import { Link } from "react-router-dom";
+import { Link } from "wouter-preact";
 
 import { Fireflies } from "ui/components/login/fireflies";
-import { Logo } from "ui/components/common/logo";
+import { Logo } from "ui/components/login/logo";
 import { Glyphicon } from "ui/components/common/glyphicon/";
 
 import { FormGroup, FormLabel, FormInput, FormText, FormSelect, FormSelectOption } from "ui/components/form";
@@ -160,6 +160,7 @@ var SETUP_THEN = false;
 import "../login/login.scss";
 import "./register.scss";
 import { Modal } from "ui/components/modal";
+import { JSXInternal } from "preact/src/jsx";
 export default function RegisterView() {
     useTitle("Register");
 
@@ -188,7 +189,7 @@ export default function RegisterView() {
         return passwordClass;
     }, [state.pass_strength]);
 
-    let on_submit = (e: React.FormEvent<HTMLFormElement>) => {
+    let on_submit = (e: JSXInternal.TargetedEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         fetch.submitFormUrlEncoded({

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import Preact, { useRef, useEffect } from "preact/compat";
 
 import "./firefly.scss";
 
@@ -30,7 +30,7 @@ function gen_gradient({ r, g, b }: color.RGBColor, stops: number): GradientStop[
 const DARK_PALETTE_HUES: number[] = [50, 60, 70];
 const DARK_PALETTE: GradientStop[][] = DARK_PALETTE_HUES.map(hue => gen_gradient(color.linear2srgb(color.hsv2rgb({ h: hue, s: 1, v: 1 })), 8));
 
-const LIGHT_PALETTE_HUES: number[] = [0, 40, 80, 120, 160, 200, 240, 280];
+const LIGHT_PALETTE_HUES: number[] = [0, 40, 80, 120, 160, 200, 240, 280, 320];
 const LIGHT_PALETTE: GradientStop[][] = LIGHT_PALETTE_HUES.map(hue => gen_gradient(color.linear2srgb(color.hsl2rgb({ h: hue, s: 0.7, l: 0.5 })), 8));
 
 
@@ -93,7 +93,7 @@ function desiredCount(w: number, h: number, density: number): number {
     return (w * h) / (density * density);
 }
 
-function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObject<HTMLCanvasElement | null>, time: number) {
+function render_fireflies(state: IFireflyState, canvas_ref: Preact.Ref<HTMLCanvasElement | null>, time: number) {
     if(!canvas_ref.current) { return; }
     let canvas = canvas_ref.current;
 
@@ -268,7 +268,7 @@ function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObje
 const MOUSE_EVENTS = ['mousemove', 'movedown', 'mouseup'];
 
 // TODO: Check for reduce-motion
-export const Fireflies: React.FunctionComponent<IFireflyProps> = React.memo((props: IFireflyProps) => {
+export const Fireflies: Preact.FunctionComponent<IFireflyProps> = Preact.memo((props: IFireflyProps) => {
     let canvas_ref = useRef(null);
 
     useEffect(() => {

@@ -67,8 +67,12 @@ a {
     --ln-failure-color: #{$ln-failure-color};
 }
 
-.ln-theme-transition * {
-    transition-property: background-color, color !important;
-    transition-duration: 2s !important;
-    transition-timing-function: ease-in !important;
+.ln-theme-transition {
+    *,
+    *::before,
+    *::after {
+        transition-property: background, background-color, color, fill, border, filter, box-shadow, opacity !important;
+        transition-duration: 1s !important;
+        transition-timing-function: ease-in !important;
+    }
 }

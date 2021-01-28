@@ -1,4 +1,4 @@
-import React, { createContext } from "react";
+import React, { createContext } from "preact/compat";
 import { TinyEventEmitter } from "./_event";
 import * as i18n from "ui/i18n";
 
@@ -10,7 +10,7 @@ ClientContext.displayName = "ClientContext";
 const LANG_LOCALSTORAGE_KEY = "lang";
 
 import { GatewayCommandOp } from "client/worker";
-import { genDarkTheme, IThemeContext, setTheme } from "client/theme";
+import { genDarkTheme, genLightTheme, IThemeContext, setTheme as setRealTheme } from "client/theme";
 
 export class ClientModel extends TinyEventEmitter {
     currentLanguage: i18n.Language = "en"; // default to English
@@ -23,9 +23,10 @@ export class ClientModel extends TinyEventEmitter {
         this.theme = {
             is_light: false,
             temperature: 7500,
+            setTheme: (theme: IThemeContext) => { }
         };
 
-        setTheme(genDarkTheme(this.theme.temperature), false, false);
+        setRealTheme(genDarkTheme(this.theme.temperature), false, false);
 
         import(/* webpackPreload: true */ "worker-loader!gateway").then(({ default: Gateway }) => {
             const GATEWAY = new Gateway();
@@ -44,6 +45,15 @@ export class ClientModel extends TinyEventEmitter {
                 console.log(msg.data);
             });
         });
+    }
+
+    setTheme(theme: IThemeContext) {
+        this.theme = theme;
+        if(!this.theme.is_light) {
+            setRealTheme(genDarkTheme(this.theme.temperature), true, this.theme.is_light);
+        } else {
+            setRealTheme(genLightTheme(this.theme.temperature), true, this.theme.is_light);
+        }
     }
 
     setup_i18n() {

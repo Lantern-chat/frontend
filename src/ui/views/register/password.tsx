@@ -1,4 +1,4 @@
-import React from "react";
+import React from "preact/compat";
 
 import { FormGroup, FormLabel, FormInput, FormText, FormSelect, FormSelectOption } from "ui/components/form";
 

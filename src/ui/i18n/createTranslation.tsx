@@ -1,4 +1,4 @@
-import React from "react";
+import Preact from "preact/compat";
 
 export interface LangItemProps {
     /** Phrase being translated */
@@ -7,16 +7,16 @@ export interface LangItemProps {
     /** Number of things */
     count?: number,
 
-    render?: (text: string) => React.ReactNode,
+    render?: (text: string) => preact.ComponentChildren,
 }
 
 /** Type given to the translation JSON files */
 export type TranslationTable = { [P in keyof typeof Translation]: string };
 
 /** Creates a simple anonymous React.Component that looks up the given item in the translation table */
-export function createTranslation(table: TranslationTable): React.FunctionComponent<LangItemProps> {
+export function createTranslation(table: TranslationTable): Preact.FunctionComponent<LangItemProps> {
     // return as a fragment that doesn't generate any additional DOM nodes
-    let renderer: React.FunctionComponent<LangItemProps> = (props: LangItemProps) => {
+    let renderer: Preact.FunctionComponent<LangItemProps> = (props: LangItemProps) => {
         let text = table[Translation[props.t]];
         if(props.render !== undefined) {
             return <>{props.render(text)}</>;

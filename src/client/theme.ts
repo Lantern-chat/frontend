@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext } from "preact/compat";
 
 import { change_color, kelvin, darken, lighten, lightness, RGBColor, desaturate, formatRGB, adjust_color, kelvin2 } from "./color";
 
@@ -12,8 +12,8 @@ export interface ITheme {
     secondary_text_color: RGBColor,
 }
 
-const MIN_TEMP: number = 965.0;
-const MAX_TEMP: number = 12000;
+export const MIN_TEMP: number = 965.0;
+export const MAX_TEMP: number = 12000;
 
 let clamp_temp = (temp: number): number => min(MAX_TEMP, max(MIN_TEMP, temp));
 
@@ -22,15 +22,18 @@ export var LIGHT_THEME: boolean = false;
 export interface IThemeContext {
     is_light: boolean,
     temperature: number,
+    setTheme: (theme: IThemeContext) => void,
 }
 
-export const Theme = createContext<IThemeContext>({
+export const DEFAULT_THEME: IThemeContext = {
     is_light: false,
     temperature: 7500,
-});
+    setTheme: (theme: IThemeContext) => { }
+};
+
+export const Theme = createContext<IThemeContext>(DEFAULT_THEME);
 
 export function genDarkTheme(temperature: number): ITheme {
-
     LIGHT_THEME = false;
 
     temperature = clamp_temp(temperature);
@@ -121,6 +124,6 @@ export function setTheme(theme: ITheme, animate: boolean, is_light: boolean) {
     if(animate) {
         setTimeout(() => {
             de.classList.remove("ln-theme-transition");
-        }, 2000);
+        }, 1000);
     }
 }

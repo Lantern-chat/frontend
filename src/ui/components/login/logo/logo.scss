@@ -18,7 +18,13 @@
         padding: 2em;
         width: 100%;
 
-        filter: drop-shadow(0 0 0.6em rgba(0, 0, 0, 0.7));
+        .ln-dark-theme & {
+            filter: drop-shadow(0 0 0.6em rgba(0, 0, 0, 0.7));
+        }
+
+        .ln-light-theme & {
+            filter: drop-shadow(0 1em 1em rgba(128, 128, 128, 0.6));
+        }
     }
 
     &::before {
@@ -30,11 +36,22 @@
         background: radial-gradient(
                 14em circle,
                 rgba(252, 217, 142, 0.7) 0%,
-                rgba(109, 104, 63, 0.5) 24%,
+                rgba(199, 193, 144, 0.2) 24%,
                 rgba(0, 0, 0, 0) 50%,
-                rgba(0, 0, 0, 0) 100%
+                rgba(0, 0, 0, 0) 100% /* rgba(109, 104, 63, 0.5) 24%, */
             )
             no-repeat;
+
+        .ln-light-theme & {
+            background: radial-gradient(
+                    14em circle,
+                    rgba(252, 217, 142, 0.7) 0%,
+                    rgba(199, 193, 144, 0.5) 24%,
+                    rgba(255, 255, 255, 0) 50%,
+                    rgba(255, 255, 255, 0) 100%
+                )
+                no-repeat;
+        }
 
         .ln-enable-motion & {
             animation: pulse_flame 60s infinite alternate;

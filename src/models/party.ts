@@ -1,4 +1,4 @@
-import React from "react";
+import React from "preact/compat";
 import { ChannelModel } from "./channel";
 import { TinyEventEmitter } from "./_event";
 

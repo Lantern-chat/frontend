@@ -6,15 +6,20 @@ $night-temp: 5000;
 
 $ln-transition-timing: 0.05s;
 
-$ln-primary-surface-color: change-color(kelvin($day-temp), $lightness: 20%, $saturation: 5%);
+$ln-primary-surface-color: change-color(kelvin2($day-temp), $lightness: 20%, $saturation: 5%);
 $ln-secondary-surface-color: darken($ln-primary-surface-color, 5%);
 $ln-tertiary-surface-color: lighten($ln-primary-surface-color, 5%);
 $ln-primary-text-color: change-color(
     $ln-primary-surface-color,
-    $saturation: 0,
+    $saturation: 0%,
     $lightness: 110% - lightness($ln-primary-surface-color)
 );
 $ln-secondary-text-color: darken($ln-primary-text-color, 20%);
+
+$ln-info-btn-color: change-color(purple, $saturation: 20%, $lightness: 40%);
+$ln-info-btn-hover: change-color(purple, $saturation: 25%, $lightness: 45%);
+$ln-info-btn-activ: change-color(purple, $saturation: 55%, $lightness: 65%);
+
 $ln-success-color: green;
 $ln-warning-color: orange;
 $ln-failure-color: red;

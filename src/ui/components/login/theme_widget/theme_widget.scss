@@ -4,4 +4,121 @@
     position: absolute;
     top: 1em;
     left: 1em;
+    background-color: $lnx-secondary-surface-color;
+    border-radius: 1em;
+    padding: 0.2em;
+    z-index: 100;
+    height: 2.9em;
+
+    .ln-enable-motion {
+        transition: width 500ms ease-in;
+    }
+
+    &::before,
+    &::after {
+        opacity: 0;
+        border-radius: 1em;
+        z-index: -1;
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        transition: opacity 1s ease-in;
+    }
+
+    &::before {
+        box-shadow: 0 0.05em 0.8em black;
+        .ln-dark-theme & {
+            opacity: 1;
+        }
+    }
+
+    &::after {
+        box-shadow: 0 0.05em 0.4em #aaa;
+        .ln-light-theme & {
+            opacity: 1;
+        }
+    }
+}
+
+.ln-theme-widget {
+    position: relative;
+    display: flex;
+}
+
+.ln-theme-widget-icon {
+    display: block;
+    font-size: 2.5em;
+    cursor: pointer;
+    fill: $lnx-primary-text-color;
+}
+
+.ln-theme-widget-options {
+    position: relative;
+    width: 0;
+    padding: 0;
+
+    transition: all 0.1s ease-in !important;
+}
+
+.ln-theme-widget:hover {
+    .ln-theme-widget-options {
+        //@at-root: 0;
+        padding: 0 0.4em;
+        width: min(15em, 50vw);
+    }
+}
+
+.ln-theme-widget-slider {
+    height: 100%;
+}
+
+@function gen_temp_gradient($stops) {
+    $gradient: (to right, #000 0%);
+
+    @for $i from 0 through $stops {
+        $t: $i / $stops;
+        $temp: (1 - $t) * 965 + $t * 12000;
+        $color: kelvin2($temp);
+        $stop: $t * 100%;
+        $gradient: append($gradient, $color #{$stop});
+    }
+
+    @return $gradient;
+}
+
+.ln-theme-widget {
+    input[type="range"].slider {
+        -webkit-appearance: none;
+        appearance: none;
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        outline: none;
+        border-radius: 0.3em;
+        border: none;
+
+        $kelvin_gradient: gen_temp_gradient(20);
+
+        //@debug $kelvin_gradient;
+
+        background: linear-gradient($kelvin_gradient);
+
+        &::-webkit-slider-thumb,
+        &::-moz-range-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            max-width: 0.4em;
+            height: 100%;
+            background: linear-gradient(to right, transparent 0%, #000 40%, #000 60%, transparent 100%);
+            //background: black;
+            cursor: pointer;
+            outline: none;
+            border: none;
+            border-radius: 0;
+        }
+    }
 }

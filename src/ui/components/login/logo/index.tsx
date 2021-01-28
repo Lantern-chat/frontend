@@ -1,4 +1,4 @@
-import React from "react";
+import React from "preact/compat";
 
 import lantern from "/ui/assets/lantern.svg";
 
