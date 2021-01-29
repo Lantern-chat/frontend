@@ -18,9 +18,18 @@
         width: 100%;
     }
 
+    input,
+    select {
+        border: 1px solid #111;
+
+        .ln-light-theme & {
+            border-color: #aaa;
+        }
+    }
+
     input {
         outline: none;
-        border: 1px solid #111;
+
         max-width: 100%;
         padding: 0.8em 1em;
         width: 100%;
@@ -121,7 +130,7 @@
     height: 100%;
     font-size: 1em;
     padding: golden_ratio(1, em);
-    background-color: change-color(purple, $saturation: 20%, $lightness: 40%);
+    background-color: $ln-info-btn-color;
     border: 1px solid transparent;
     cursor: pointer;
     box-shadow: 0 0 0.2em black;
@@ -130,17 +139,29 @@
     transition: background-color $lnx-transition-timing ease;
     white-space: nowrap;
 
+    .ln-light-theme & {
+        background-color: change-color($ln-info-btn-color, $lightness: 100% - lightness($ln-info-btn-color));
+    }
+
     &:hover,
     &:active {
         text-decoration: underline;
-        background-color: change-color(purple, $saturation: 25%, $lightness: 45%);
+        background-color: $ln-info-btn-hover;
+
+        .ln-light-theme & {
+            background-color: change-color($ln-info-btn-hover, $lightness: 100% - lightness($ln-info-btn-hover));
+        }
     }
 
     &:active,
     &:focus,
     &:focus-visible {
         outline: none;
-        border-color: change-color(purple, $saturation: 55%, $lightness: 65%);
+        border-color: $ln-info-btn-activ;
+
+        .ln-light-theme & {
+            border-color: change-color($ln-info-btn-activ, $lightness: 100% - lightness($ln-info-btn-color));
+        }
     }
 }
 
@@ -172,7 +193,6 @@ select.ln-form-select {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    border: 1px solid #111;
     width: 100%;
     //height: 100%;
     padding: golden_ratio(0.8, em);
@@ -211,6 +231,11 @@ $ptr-size: 0.4em;
     display: block;
     background: $lnx-primary-surface-color;
     border: 1px solid #111;
+
+    .ln-light-theme & {
+        border-color: #aaa;
+    }
+
     border-left: none;
     position: absolute;
     height: 100%;

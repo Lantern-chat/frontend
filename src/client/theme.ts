@@ -87,7 +87,7 @@ export function genLightTheme(temperature: number): ITheme {
         saturation: 0,
         lightness: 1.0 - lightness(primary_surface_color),
     });
-    let secondary_text_color = lighten(primary_text_color, 0.1);
+    let secondary_text_color = lighten(primary_text_color, 0.3);
 
     return {
         primary_surface_color,
