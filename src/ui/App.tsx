@@ -52,7 +52,6 @@ export const App = () => {
                                     </Route>
 
                                     <Logo />
-                                    <Link to="/app">Fucking login</Link>
                                 </React.Suspense>
                             </div>
                         </div>
