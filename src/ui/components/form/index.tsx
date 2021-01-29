@@ -1,30 +1,29 @@
-import { JSXInternal } from "preact/src/jsx";
-import Preact, { useMemo, useRef, useState } from "preact/compat";
+import React, { useMemo, useRef, useState } from "react";
 
 import "./form.scss";
 
 interface IFormGroupProps {
-    children: preact.ComponentChildren
+    children: React.ReactNode
 }
 
 interface IFormLabelProps {
-    children: preact.ComponentChildren,
+    children: React.ReactNode,
     htmlFor?: string,
 }
 
 interface IFormTextProps {
-    children: preact.ComponentChildren
+    children: React.ReactNode
 }
 
-export const FormGroup: Preact.FunctionComponent<IFormGroupProps> = Preact.memo((props: IFormGroupProps) => {
+export const FormGroup: React.FunctionComponent<IFormGroupProps> = React.memo((props: IFormGroupProps) => {
     return <div className="ln-form-group" {...props} />
 });
 
-export const FormLabel: Preact.FunctionComponent<IFormLabelProps> = Preact.memo((props: IFormLabelProps) => {
+export const FormLabel: React.FunctionComponent<IFormLabelProps> = React.memo((props: IFormLabelProps) => {
     return <label className="ln-form-label" {...props} />;
 });
 
-export const FormText: Preact.FunctionComponent<IFormTextProps> = Preact.memo((props: IFormTextProps) => {
+export const FormText: React.FunctionComponent<IFormTextProps> = React.memo((props: IFormTextProps) => {
     return <p className="ln-form-text" {...props} />;
 });
 
@@ -36,10 +35,10 @@ interface IFormInputProps {
     required?: boolean,
     classNames?: string,
     isValid?: boolean | null,
-    onChange?: (e: JSXInternal.TargetedEvent<HTMLInputElement>) => void,
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void,
 }
 
-export const FormInput: Preact.FunctionComponent<IFormInputProps> = Preact.memo((props: IFormInputProps) => {
+export const FormInput: React.FunctionComponent<IFormInputProps> = React.memo((props: IFormInputProps) => {
     let classNames = "ln-form-control-wrapper ";
 
     if(props.classNames) {
@@ -65,29 +64,29 @@ export const FormInput: Preact.FunctionComponent<IFormInputProps> = Preact.memo(
 
 
 interface IFormSelectOptionProps {
-    children: preact.ComponentChildren,
+    children: React.ReactNode,
     value?: string | number,
     disabled?: boolean,
     selected?: boolean,
     hidden?: boolean,
 }
 
-export const FormSelectOption: Preact.FunctionComponent<IFormSelectOptionProps> = Preact.memo((props: IFormSelectOptionProps) => {
+export const FormSelectOption: React.FunctionComponent<IFormSelectOptionProps> = React.memo((props: IFormSelectOptionProps) => {
     return (
         <option {...props} />
     );
 });
 
 interface IFormSelectProps {
-    children: preact.ComponentChildren,
+    children: React.ReactNode,
     value?: string | number,
     name?: string,
     defaultValue?: string | number,
     required?: boolean,
-    onChange?: (opt: JSXInternal.TargetedEvent<HTMLSelectElement>) => void,
+    onChange?: (opt: React.ChangeEvent<HTMLSelectElement>) => void,
 }
 
-export const FormSelect: Preact.FunctionComponent<IFormSelectProps> = Preact.memo((props: IFormSelectProps) => {
+export const FormSelect: React.FunctionComponent<IFormSelectProps> = React.memo((props: IFormSelectProps) => {
     return (
         <div className="ln-form-select-wrapper">
             <select className="ln-form-select" {...props} />

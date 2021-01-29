@@ -1,4 +1,4 @@
-import React, { createContext } from "preact/compat";
+import React, { createContext } from "react";
 import { TinyEventEmitter } from "./_event";
 import * as i18n from "ui/i18n";
 

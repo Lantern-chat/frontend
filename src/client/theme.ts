@@ -1,4 +1,4 @@
-import { createContext } from "preact/compat";
+import { createContext } from "react";
 
 import { change_color, kelvin, darken, lighten, lightness, RGBColor, desaturate, formatRGB, adjust_color, kelvin2 } from "./color";
 

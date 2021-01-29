@@ -1,5 +1,5 @@
 import dayjs from "client/time";
-import React, { useContext } from "preact/compat";
+import React, { useContext } from "react";
 import { LocaleContext } from "ui/i18n";
 
 export interface TimestampProps {

@@ -1,11 +1,11 @@
-import React, { useState, useMemo, useReducer, useEffect } from "preact/compat";
+import React, { useState, useMemo, useReducer, useEffect } from "react";
 import dayjs from "client/time";
 
 import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
 
 
-import { Link } from "wouter-preact";
+import { Link } from "react-router-dom";
 
 import { Fireflies } from "ui/components/login/fireflies";
 import { Logo } from "ui/components/login/logo";
@@ -160,7 +160,7 @@ var SETUP_THEN = false;
 import "../login/login.scss";
 import "./register.scss";
 import { Modal } from "ui/components/modal";
-import { JSXInternal } from "preact/src/jsx";
+
 export default function RegisterView() {
     useTitle("Register");
 
@@ -189,7 +189,7 @@ export default function RegisterView() {
         return passwordClass;
     }, [state.pass_strength]);
 
-    let on_submit = (e: JSXInternal.TargetedEvent<HTMLFormElement>) => {
+    let on_submit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         fetch.submitFormUrlEncoded({
@@ -256,18 +256,18 @@ export default function RegisterView() {
                 <FormLabel><I18N t={Translation.DATE_OF_BIRTH} /></FormLabel>
                 <div className="ln-select-group">
                     <FormSelect name="year" required value={state.dob.y || ""} onChange={e => dispatch({ type: RegisterActionType.UpdateYear, value: e.currentTarget.value })}>
-                        <I18N t={Translation.YEAR} render={value => <option disabled hidden value="">{value}</option>} />
+                        <I18N t={Translation.YEAR} render={(value: string) => <option disabled hidden value="">{value}</option>} />
                         {useMemo(() => YEARS.map((year, i) => <option value={year} key={i}>{year}</option>), [])}
                     </FormSelect>
 
                     <FormSelect name="month" required value={state.dob.m != null ? state.dob.m : ""} onChange={e => dispatch({ type: RegisterActionType.UpdateMonth, value: e.currentTarget.value })}>
-                        <I18N t={Translation.MONTH} render={value => <option disabled hidden value="">{value}</option>} />
+                        <I18N t={Translation.MONTH} render={(value: string) => <option disabled hidden value="">{value}</option>} />
                         {useMemo(() => dayjs.months().map((month: string, i: number) => <option value={i} key={i}>{month}</option>), [dayjs.locale()])}
                     </FormSelect>
 
                     <FormSelect name="day" required onChange={e => dispatch({ type: RegisterActionType.UpdateDay, value: e.currentTarget.value })}
                         value={state.dob.d == null ? "" : state.dob.d}>
-                        <I18N t={Translation.DAY} render={value => <option disabled hidden value="">{value}</option>} />
+                        <I18N t={Translation.DAY} render={(value: string) => <option disabled hidden value="">{value}</option>} />
                         {useMemo(() => (new Array(state.days)).fill(undefined).map((_, i) => (
                             <option value={i} key={i}>{(i + 1).toString()}</option>
                         )), [state.days])}

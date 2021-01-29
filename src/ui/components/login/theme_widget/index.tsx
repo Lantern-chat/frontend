@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "preact/compat";
+import React, { useContext, useState } from "react";
 
 import { Theme, MIN_TEMP, MAX_TEMP } from "client/theme";
 
@@ -18,8 +18,8 @@ export const ThemeWidget: React.FunctionComponent = () => {
                 </div>
 
                 <div className="ln-theme-widget-options">
-                    <div class="ln-theme-widget-slider">
-                        <input type="range" min={MIN_TEMP} max={MAX_TEMP} value={theme.temperature} class="slider" name="temperature"
+                    <div className="ln-theme-widget-slider">
+                        <input type="range" min={MIN_TEMP} max={MAX_TEMP} value={theme.temperature} className="slider" name="temperature"
                             onInput={e => theme.setTheme({ ...theme, temperature: parseFloat(e.currentTarget.value) })} />
                     </div>
                 </div>

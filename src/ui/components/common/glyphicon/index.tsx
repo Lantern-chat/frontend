@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "preact/compat";
+import React, { useState, useEffect } from "react";
 
 import "./glyphicon.scss";
 

@@ -47,8 +47,8 @@ module.exports = (env, argv) => {
                 }
             })],
             splitChunks: {
-                chunks: 'all',
-                minChunks: 3,
+                //chunks: 'all',
+                //minChunks: 3,
             }
         },
 
@@ -68,9 +68,11 @@ module.exports = (env, argv) => {
             extensions: [".ts", ".jsx", ".tsx", ".js", ".json"],
             alias: {
                 modernizr$: path.resolve(__dirname, 'src/.modernizrrc'),
-                "react": "preact/compat",
-                "react-dom/test-utils": "preact/test-utils",
-                "react-dom": "preact/compat",
+                //"react": "preact/compat",
+                //"react-dom/test-utils": "preact/test-utils",
+                //"react-dom": "preact/compat",
+                //preact: path.resolve(__dirname, 'node_modules', 'preact'),
+                //'preact/hooks': path.resolve(__dirname, 'node_modules', 'preact', 'hooks'),
             },
             plugins: [
                 new TsconfigPathsPlugin({ configFile: "./tsconfig.json" }),

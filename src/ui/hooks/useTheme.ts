@@ -1,9 +1,31 @@
 
-import { useState, useCallback, useContext } from "preact/compat";
+import { useState, useLayoutEffect } from "react";
 
-import { IThemeContext, Theme } from "client/theme";
+import * as theme from "client/theme";
+import { IThemeContext } from "client/theme";
+export { Theme } from "client/theme";
 
-//export function useTheme(): IThemeContext {
-//    const theme = useContext(Theme);
-//
-//}
+let IS_FIRST_THEME = true;
+let existing_theme: string | null | IThemeContext = localStorage.getItem('theme');
+if(existing_theme) {
+    existing_theme = JSON.parse(existing_theme) as IThemeContext;
+}
+
+export function useTheme(): IThemeContext {
+    let [theme_context, setThemeContext] = useState<IThemeContext>(existing_theme as IThemeContext || theme.DEFAULT_THEME);
+    theme_context.setTheme = (new_theme: theme.IThemeContext) => setThemeContext(new_theme);
+
+    useLayoutEffect(() => {
+        if(theme_context.is_light) {
+            theme.setTheme(theme.genLightTheme(theme_context.temperature), !IS_FIRST_THEME, true);
+        } else {
+            theme.setTheme(theme.genDarkTheme(theme_context.temperature), !IS_FIRST_THEME, false);
+        }
+
+        IS_FIRST_THEME = false;
+
+        localStorage.setItem('theme', JSON.stringify(theme_context));
+    }, [theme_context.is_light, theme_context.temperature]);
+
+    return theme_context;
+}

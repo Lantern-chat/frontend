@@ -1,11 +1,11 @@
-import Preact, { createContext, useContext, useMemo, lazy } from "preact/compat";
+import React, { createContext, useContext, useMemo, lazy } from "react";
 
 import { LangItemProps, Translation } from "./createTranslation";
 export { Translation } from "./createTranslation";
 
 
-type Loader = { loader: () => Promise<{ default: Preact.FunctionComponent<LangItemProps> }> };
-type Lazy = Preact.FunctionComponent<LangItemProps>;
+type Loader = () => Promise<{ default: React.FunctionComponent<LangItemProps> }>;
+type Lazy = React.LazyExoticComponent<React.FunctionComponent<LangItemProps>>;
 type LazyLoader = Loader | Lazy;
 
 /** Composite type of all possible languages */
@@ -23,18 +23,18 @@ LocaleContext.displayName = "LocaleContext";
 
 
 const LANG_INIT: Record<Language, LazyLoader> = {
-    "en": { loader: () => import(/* webpackChunkName: 'i18n.en' */ "./lang/en") },
+    "en": () => import(/* webpackChunkName: 'i18n.en' */ "./lang/en"),
 };
 
 
 /** Initiates the loading of a language pack and returns a
- *  lazy Preact component for async rendering */
+ *  lazy React component for async rendering */
 export function preload(lang: Language): Lazy {
     let loader = LANG_INIT[lang];
 
-    if(typeof loader !== 'function') {
-        let promise = loader.loader(); // start loading now, as the language pack is needed ASAP
-        loader = LANG_INIT[lang] = lazy(() => promise);
+    if(loader instanceof Function) {
+        let promise = loader(); // start loading now, as the language pack is needed ASAP
+        loader = LANG_INIT[lang] = React.lazy(() => promise);
     }
 
     return loader as Lazy;
@@ -54,7 +54,7 @@ export function preload(lang: Language): Lazy {
 export function i18n(
     t: Translation,
     count?: number,
-    render?: (text: string) => preact.ComponentChildren,
+    render?: (text: string) => React.ReactNode,
 ) {
     return <I18N t={t} count={count} render={render} />;
 };
@@ -63,7 +63,7 @@ export function i18n(
  * Memoized component that uses the LocaleContext to select a language,
  * and the props to select which translation string to render.
  * */
-export const I18N: preact.FunctionComponent<LangItemProps> = function(props: LangItemProps) {
+export const I18N: React.FunctionComponent<LangItemProps> = function(props: LangItemProps) {
     // https://github.com/facebook/react/issues/15156
     let { lang } = useContext(LocaleContext);
     return useMemo(() => {

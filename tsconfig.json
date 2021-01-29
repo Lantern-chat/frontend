@@ -12,7 +12,7 @@
     "sourceMap": true,
     "allowJs": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "preact",
+    //"jsxImportSource": "preact",
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
