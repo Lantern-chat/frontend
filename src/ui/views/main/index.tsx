@@ -9,10 +9,7 @@ const lantern_store = createStore((state: LanternStore) => state);
 
 export const MainView: React.FunctionComponent = () => {
     return (
-
-        <Link to="/login">Login</Link>
-
-
+        <div>There's nothing here yet, go home.</div>
     );
 };
 export default MainView;

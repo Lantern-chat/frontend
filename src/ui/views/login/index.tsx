@@ -3,8 +3,9 @@ import React, { useState, useMemo, useReducer, useEffect } from "react";
 import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
 
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 
+import { fetch, XHRMethod } from "client/fetch";
 import { useTitle } from "ui/hooks/useTitle";
 import { Glyphicon } from "ui/components/common/glyphicon/";
 import { FormGroup, FormLabel, FormInput, FormText, FormSelect, FormSelectOption } from "ui/components/form";
@@ -59,13 +60,56 @@ export default function LoginView() {
     useTitle("Login");
 
     let [state, dispatch] = useReducer(login_state_reducer, DEFAULT_LOGIN_STATE);
+    let [errorMsg, setErrorMsg] = useState<string | null>(null);
+    let [redirect, setRedirect] = useState(false);
+
+    let on_submit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        fetch.submitFormUrlEncoded({
+            url: "/api/v1/user/login",
+            method: XHRMethod.POST,
+            body: new FormData(e.currentTarget),
+        }).then((req) => {
+            if(req.status === 200 && req.response.auth != null) {
+                localStorage.setItem('user', JSON.stringify({ auth: req.response.auth }));
+                setRedirect(true);
+            } else {
+                setErrorMsg("Unknown Error");
+            }
+        }).catch((req: XMLHttpRequest) => {
+            setErrorMsg(req.response.message);
+        })
+    };
+
+    if(redirect) {
+        return <Redirect to="/" />;
+    }
+
+
+    let errorModal;
+
+    if(errorMsg != null) {
+        errorModal = (
+            <Modal>
+                <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, zIndex: 'inherit', backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
+                    <div className="ln-center-standalone" style={{ color: 'white' }}>
+                        {errorMsg}
+                        <button onClick={() => setErrorMsg(null)}>Close</button>
+                    </div>
+                </div>
+            </Modal>
+        );
+    }
 
     return (
         <>
-            <form className="ln-form ln-login-form">
+            <form className="ln-form ln-login-form" onSubmit={on_submit}>
                 <div id="title">
                     <h2><I18N t={Translation.LOGIN} /></h2>
                 </div>
+
+                {errorModal}
 
                 <FormGroup>
                     <FormLabel htmlFor="email"><I18N t={Translation.EMAIL_ADDRESS} /></FormLabel>

@@ -16,7 +16,7 @@ const RegisterView: React.FunctionComponent = React.lazy(() => import(   /* webp
 const Fallback = <div className="ln-center-standalone"><Ripple size={120} /></div>;
 
 const MainViewRedirect = React.memo(() => {
-    if(localStorage.getItem('user') != null) {
+    if(localStorage.getItem('user') == null) {
         return <Redirect to="/login" />;
     } else {
         return (

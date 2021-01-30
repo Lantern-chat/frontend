@@ -5,7 +5,7 @@ import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
 
 
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 
 import { Fireflies } from "ui/components/login/fireflies";
 import { Logo } from "ui/components/login/logo";
@@ -165,7 +165,8 @@ export default function RegisterView() {
     useTitle("Register");
 
     let [state, dispatch] = useReducer(register_state_reducer, DEFAULT_REGISTER_STATE);
-    let [errorMsg, setErrorMsg] = useState(null);
+    let [errorMsg, setErrorMsg] = useState<string | null>(null);
+    let [redirect, setRedirect] = useState(false);
 
     useEffect(() => {
         if(!SETUP_THEN && typeof zxcvbn !== 'function') {
@@ -197,11 +198,20 @@ export default function RegisterView() {
             method: XHRMethod.POST,
             body: new FormData(e.currentTarget),
         }).then((req) => {
-            console.log(req);
+            if(req.status === 200 && req.response.auth != null) {
+                localStorage.setItem('user', JSON.stringify({ auth: req.response.auth }));
+                setRedirect(true);
+            } else {
+                setErrorMsg("Unknown Error");
+            }
         }).catch((e: XMLHttpRequest) => {
             setErrorMsg(e.response.message);
         });
     };
+
+    if(redirect) {
+        return <Redirect to="/" />;
+    }
 
     let errorModal;
 
@@ -215,7 +225,7 @@ export default function RegisterView() {
                     </div>
                 </div>
             </Modal>
-        )
+        );
     }
 
     return (
