@@ -15,16 +15,12 @@ const RegisterView: React.FunctionComponent = React.lazy(() => import(   /* webp
 
 const Fallback = <div className="ln-center-standalone"><Ripple size={120} /></div>;
 
-const MainViewRedirect = React.memo(() => {
-    if(localStorage.getItem('user') == null) {
-        return <Redirect to="/login" />;
-    } else {
-        return (
-            <MainView />
-        );
-    }
-});
+// TODO: Find a way to force rerender when user changes
+const MainViewRedirect = React.memo(({ user }: { user: string | null }) => (
+    user != null ? <MainView /> : <Redirect to="/login" />
+));
 
+// NOTE: Using <Switch> ensures routes are rendered exclusively
 export const App = () => {
     let theme_context = useTheme();
 
@@ -40,24 +36,24 @@ export const App = () => {
                         <div className="ln-box">
                             <div className="ln-login-container ln-centered" style={{ zIndex: 1 }}>
                                 <React.Suspense fallback={Fallback}>
-                                    <Route path={["/login"] as any} >
+                                    <Switch>
+                                        <Route path={["/login"] as any} >
+                                            <LoginView />
+                                        </Route>
 
-                                        <LoginView />
-
-                                    </Route>
-
-                                    <Route path={["/register"] as any}>
-
-                                        <RegisterView />
-                                    </Route>
+                                        <Route path={["/register"] as any}>
+                                            <RegisterView />
+                                        </Route>
+                                    </Switch>
 
                                     <Logo />
                                 </React.Suspense>
                             </div>
                         </div>
                     </Route >
+
                     <Route path="/">
-                        <MainViewRedirect />
+                        <MainViewRedirect user={localStorage.getItem('user')} />
                     </Route>
                 </Switch>
             </Router >

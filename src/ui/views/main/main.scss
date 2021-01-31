@@ -1,0 +1,9 @@
+@import "lib/variables";
+
+.ln-main-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-wrap: nowrap;
+    background-color: $lnx-tertiary-surface-color;
+}

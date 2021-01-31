@@ -5,11 +5,22 @@ import { useSelector, Provider, useStore } from "react-redux";
 import { LanternStore } from "models/store";
 import { Link } from "react-router-dom";
 
-const lantern_store = createStore((state: LanternStore) => state);
+import { rootReducer } from "./reducers";
+const lantern_store = createStore(rootReducer);
 
+import { PartyList } from "./components/party_list";
+import { Party } from "./subviews/party";
+
+
+import "./main.scss";
 export const MainView: React.FunctionComponent = () => {
     return (
-        <div>There's nothing here yet, go home.</div>
+        <Provider store={lantern_store}>
+            <div className="ln-main-container">
+                <PartyList />
+                <Party />
+            </div>
+        </Provider>
     );
 };
 export default MainView;

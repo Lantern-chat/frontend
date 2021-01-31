@@ -155,6 +155,8 @@ function register_state_reducer(state: RegisterState, { value, type }: RegisterA
     }
 }
 
+import CircleEmptyInfo from "icons/glyphicons-pro/glyphicons-basic-2-3/svg/individual-svg/glyphicons-basic-196-circle-empty-info.svg";
+
 var SETUP_THEN = false;
 
 import "../login/login.scss";
@@ -252,7 +254,7 @@ export default function RegisterView() {
                 <FormLabel htmlFor="password">
                     <I18N t={Translation.PASSWORD} />
                     <span style={{ paddingLeft: '0.2em' }}>
-                        <Glyphicon import={() => import(/* webpackPreload: true */ "icons/glyphicons-pro/glyphicons-basic-2-3/svg/individual-svg/glyphicons-basic-196-circle-empty-info.svg")} />
+                        <Glyphicon src={CircleEmptyInfo} />
                     </span>
                 </FormLabel>
                 <FormInput type="password" name="password" placeholder="password" required isValid={state.valid_pass}

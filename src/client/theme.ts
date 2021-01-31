@@ -32,6 +32,9 @@ export const DEFAULT_THEME: IThemeContext = {
 };
 
 export const Theme = createContext<IThemeContext>(DEFAULT_THEME);
+if(process.env.NODE_ENV !== 'production') {
+    Theme.displayName = "ThemeContext";
+}
 
 export function genDarkTheme(temperature: number): ITheme {
     LIGHT_THEME = false;
@@ -117,7 +120,7 @@ export function setTheme(theme: ITheme, animate: boolean, is_light: boolean) {
         let varname = "--ln-" + key.replace(/_/g, '-');
         let value = formatRGB(theme[key]);
 
-        console.log("Setting %s to %s", varname, value);
+        //console.log("Setting %s to %s", varname, value);
         de.style.setProperty(varname, value);
     }
 

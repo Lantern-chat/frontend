@@ -1,5 +1,27 @@
-@import "../../../styles/variables.scss";
+@import "lib/variables";
 
-.avatar {
-    color: $lnx-primary-dark-text-color;
+.ln-avatar {
+    color: black;
+    display: inline;
+}
+
+img.ln-avatar-image,
+span.ln-avatar-text {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    vertical-align: middle;
+    width: 1.5em;
+    height: 1.5em;
+
+    .ln-rounded & {
+        border-radius: 50%;
+    }
+    //line-height: 0.925;
+}
+
+span.ln-avatar-text {
+    line-height: 1;
+    font-family: sans-serif;
+    text-align: center;
 }
