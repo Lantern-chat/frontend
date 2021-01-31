@@ -33,7 +33,7 @@ export const App = () => {
 
                         <ThemeWidget />
 
-                        <div className="ln-box">
+                        <div className="ln-box ln-vertical-scroll">
                             <div className="ln-login-container ln-centered" style={{ zIndex: 1 }}>
                                 <React.Suspense fallback={Fallback}>
                                     <Switch>
