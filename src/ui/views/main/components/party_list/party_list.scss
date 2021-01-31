@@ -20,4 +20,6 @@
             margin-top: 0.7em;
         }
     }
+
+    @include scrollbar($lnx-secondary-text-color, $lnx-secondary-surface-color);
 }

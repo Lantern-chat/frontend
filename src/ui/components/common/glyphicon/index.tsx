@@ -29,9 +29,9 @@ export const Glyphicon: React.FunctionComponent<IGlyphiconProps> = React.memo((p
     }, [props]);
 
     return (
-        <span className="ln-glyphicon">
+        <div className="ln-glyphicon">
             <span className="ln-glyphicon-wrapper" dangerouslySetInnerHTML={{ __html: data }} style={{ position: props.absolute != null ? 'absolute' : undefined }} />
-        </span>
+        </div>
     );
 });
 

@@ -13,12 +13,12 @@ export const ChannelList = React.memo((props: IChannelListProps) => {
     let colors = ['yellow', 'lightblue', 'lightgreen', 'lightcoral'];
 
     return (
-        <ul className="ln-channel-list ln-vertical-scroll">
+        <ul className="ln-channel-list ln-vertical-scroll ln-scroll-fixed">
             {props.channels.map((channel, i) => (
                 <li key={channel} className="ln-channel-list-channel">
                     <Avatar text={channel.slice(0, 1)} username={channel} backgroundColor={colors[(i * 7919) % 4]} />
                     <Glyphicon src={Hash} />
-                    <span className="ln-channel-list-name">{channel}</span>
+                    <div className="ln-channel-list-name"><span>{channel}</span></div>
                 </li>
             ))}
         </ul>

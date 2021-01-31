@@ -9,3 +9,18 @@ $zindex-modal-backdrop: 1040;
 $zindex-modal: 1050;
 $zindex-popover: 1060;
 $zindex-tooltip: 1070;
+
+@mixin scrollbar($thumb, $background) {
+    scrollbar-color: $thumb $background;
+
+    &::-webkit-scrollbar {
+        background: $background;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: $thumb;
+        //&:hover {
+        //    opacity: 0.5;
+        //}
+    }
+}
