@@ -7,8 +7,8 @@ import { Link, Redirect } from "react-router-dom";
 
 import { fetch, XHRMethod } from "client/fetch";
 import { useTitle } from "ui/hooks/useTitle";
-import { Glyphicon } from "ui/components/common/glyphicon/";
-import { FormGroup, FormLabel, FormInput, FormText, FormSelect, FormSelectOption } from "ui/components/form";
+//import { Glyphicon } from "ui/components/common/glyphicon";
+import { FormGroup, FormLabel, FormInput } from "ui/components/form";
 import { Modal } from "ui/components/modal";
 
 import { validateUsername, validatePass, validateEmail } from "client/validation";
@@ -85,7 +85,6 @@ export default function LoginView() {
     if(redirect) {
         return <Redirect to="/" />;
     }
-
 
     let errorModal;
 

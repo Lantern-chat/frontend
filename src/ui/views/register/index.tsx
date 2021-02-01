@@ -7,13 +7,11 @@ import { I18N, Translation } from "ui/i18n";
 
 import { Link, Redirect } from "react-router-dom";
 
-import { Fireflies } from "ui/components/login/fireflies";
-import { Logo } from "ui/components/login/logo";
 import { Glyphicon } from "ui/components/common/glyphicon";
 import { Modal } from "ui/components/modal";
 import { Tooltip } from "ui/components/common/tooltip";
 
-import { FormGroup, FormLabel, FormInput, FormText, FormSelect, FormSelectOption } from "ui/components/form";
+import { FormGroup, FormLabel, FormInput, FormText, FormSelect, FormSelectOption, FormSelectGroup } from "ui/components/form";
 
 import { validateUsername, validatePass, validateEmail } from "client/validation";
 
@@ -271,7 +269,7 @@ export default function RegisterView() {
 
             <FormGroup>
                 <FormLabel><I18N t={Translation.DATE_OF_BIRTH} /></FormLabel>
-                <div className="ln-select-group">
+                <FormSelectGroup>
                     <FormSelect name="year" required value={state.dob.y || ""} onChange={e => dispatch({ type: RegisterActionType.UpdateYear, value: e.currentTarget.value })}>
                         <I18N t={Translation.YEAR} render={(value: string) => <option disabled hidden value="">{value}</option>} />
                         {useMemo(() => YEARS.map((year, i) => <option value={year} key={i}>{year}</option>), [])}
@@ -289,7 +287,7 @@ export default function RegisterView() {
                             <option value={i} key={i}>{(i + 1).toString()}</option>
                         )), [state.days])}
                     </FormSelect>
-                </div>
+                </FormSelectGroup>
             </FormGroup>
 
             <hr />

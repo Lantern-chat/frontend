@@ -95,6 +95,10 @@ export const FormSelect: React.FunctionComponent<IFormSelectProps> = React.memo(
     );
 });
 
+export const FormSelectGroup: React.FunctionComponent = React.memo(({ children }: { children: React.ReactNode }) => (
+    <div className="ln-select-group">{children}</div>
+));
+
 if(process.env.NODE_ENV !== 'production') {
     FormGroup.displayName = "FormGroup";
     FormLabel.displayName = "FormLabel";
@@ -102,4 +106,5 @@ if(process.env.NODE_ENV !== 'production') {
     FormSelect.displayName = "FormSelect";
     FormSelectOption.displayName = "FormSelectOption";
     FormInput.displayName = "FormInput";
+    FormSelectGroup.displayName = "FormSelectGroup";
 }
