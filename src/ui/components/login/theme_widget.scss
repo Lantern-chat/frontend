@@ -100,18 +100,23 @@
         border-radius: 0.3em;
         border: none;
 
+        &:focus {
+            outline: none;
+        }
+
         $kelvin_gradient: gen_temp_gradient(20);
 
         //@debug $kelvin_gradient;
 
         background: linear-gradient($kelvin_gradient);
 
-        &::-webkit-slider-thumb,
-        &::-moz-range-thumb {
+        @mixin thumb() {
+            box-shadow: none;
             -webkit-appearance: none;
             appearance: none;
             width: 100%;
             max-width: 0.4em;
+            height: 3em;
             height: 100%;
             background: linear-gradient(to right, transparent 0%, #000 40%, #000 60%, transparent 100%);
             //background: black;
@@ -119,6 +124,23 @@
             outline: none;
             border: none;
             border-radius: 0;
+        }
+
+        &::-webkit-slider-runnable-track {
+            height: 100%;
+            pointer-events: none;
+        }
+
+        &::-webkit-slider-thumb {
+            @include thumb();
+        }
+
+        &::-moz-range-thumb {
+            @include thumb();
+        }
+
+        &::-ms-thumb {
+            @include thumb();
         }
     }
 }
