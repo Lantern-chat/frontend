@@ -9,7 +9,9 @@ import { Link, Redirect } from "react-router-dom";
 
 import { Fireflies } from "ui/components/login/fireflies";
 import { Logo } from "ui/components/login/logo";
-import { Glyphicon } from "ui/components/common/glyphicon/";
+import { Glyphicon } from "ui/components/common/glyphicon";
+import { Modal } from "ui/components/modal";
+import { Tooltip } from "ui/components/common/tooltip";
 
 import { FormGroup, FormLabel, FormInput, FormText, FormSelect, FormSelectOption } from "ui/components/form";
 
@@ -161,8 +163,6 @@ var SETUP_THEN = false;
 
 import "../login/login.scss";
 import "./register.scss";
-import { Modal } from "ui/components/modal";
-
 export default function RegisterView() {
     useTitle("Register");
 
@@ -253,8 +253,13 @@ export default function RegisterView() {
             <FormGroup>
                 <FormLabel htmlFor="password">
                     <I18N t={Translation.PASSWORD} />
-                    <span style={{ paddingLeft: '0.2em' }}>
+                    <span className="ln-tooltip" style={{ marginLeft: '0.2em' }}>
                         <Glyphicon src={CircleEmptyInfo} />
+                        <Tooltip x={1} y={0}>
+                            <div style={{ width: 'min(100vw, 20em)', fontSize: '0.7em' }}>
+                                <p>Password strength is judged by length, complexity and resemblance to common English words.</p>
+                            </div>
+                        </Tooltip>
                     </span>
                 </FormLabel>
                 <FormInput type="password" name="password" placeholder="password" required isValid={state.valid_pass}

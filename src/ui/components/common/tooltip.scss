@@ -1,0 +1,31 @@
+@import "lib/variables";
+
+.ln-tooltip-anchor {
+    position: relative;
+    display: inline;
+}
+
+.ln-tooltip {
+    cursor: help;
+}
+
+.ln-tooltip-body {
+    display: block;
+    position: absolute;
+    z-index: 1;
+    background-color: $lnx-primary-surface-color;
+    border-radius: 0.3em;
+    padding: 1em;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: 0 0 0.5em black;
+
+    .ln-enable-motion & {
+        transition: opacity 0.1s ease-in;
+    }
+}
+
+.ln-tooltip:hover .ln-tooltip-body {
+    opacity: 1;
+    pointer-events: inherit;
+}
