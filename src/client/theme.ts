@@ -1,6 +1,6 @@
 import { createContext } from "react";
 
-import { change_color, kelvin, darken, lighten, lightness, RGBColor, desaturate, formatRGB, adjust_color, kelvin2 } from "./color";
+import { change_color, darken, lighten, lightness, RGBColor, desaturate, formatRGB, adjust_color, kelvin2 } from "./color";
 
 const { min, max, round } = Math;
 
@@ -101,6 +101,8 @@ export function genLightTheme(temperature: number): ITheme {
     }
 }
 
+var currentTimer: number | any = null;
+
 export function setTheme(theme: ITheme, animate: boolean, is_light: boolean) {
     let de = document.documentElement;
 
@@ -125,7 +127,11 @@ export function setTheme(theme: ITheme, animate: boolean, is_light: boolean) {
     }
 
     if(animate) {
-        setTimeout(() => {
+        if(currentTimer !== null) {
+            clearTimeout(currentTimer);
+        }
+
+        currentTimer = setTimeout(() => {
             de.classList.remove("ln-theme-transition");
         }, 1000);
     }
