@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from "react";
 
-import "./firefly.scss";
+import "./fireflies.scss";
 
 import { isPageHidden, visibilityChange } from "ui/utils";
 import { smoothstep, squine3, gaussian2, smin, broad_sine2 } from "client/math";

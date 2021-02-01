@@ -11,7 +11,7 @@ import "ui/styles/layout.scss";
 import App from "ui/App";
 import { useLocale } from "ui/hooks/useLocale";
 
-import { Ripple } from "ui/components/common/spinners/spinners";
+import { Ripple } from "ui/components/common/spinners";
 
 const Loading = React.memo(() => (<div className="ln-center-standalone"><Ripple size={160} /></div>));
 

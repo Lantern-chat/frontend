@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Switch, Link, Redirect } from "react-ro
 
 import { Fireflies } from "ui/components/login/fireflies";
 import { ThemeWidget } from "ui/components/login/theme_widget";
-import { Ripple } from "./components/common/spinners/spinners";
+import { Ripple } from "./components/common/spinners";
 import { Logo } from "./components/login/logo";
 import { useTheme, Theme } from "./hooks/useTheme";
 
