@@ -17,6 +17,7 @@
     "buffer": "^6.0.3",
     "dayjs": "^1.9.8",
     "dummyjs": "^1.1.7",
+    "lodash": "^4.17.20",
     "pako": "^2.0.2",
     "preact-token-input": "^0.3.0",
     "react": "0.0.0-experimental-27659559e",
