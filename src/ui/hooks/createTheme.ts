@@ -11,7 +11,7 @@ if(existing_theme) {
     existing_theme = JSON.parse(existing_theme) as IThemeContext;
 }
 
-export function useTheme(): IThemeContext {
+export function createTheme(): IThemeContext {
     let [theme_context, setThemeContext] = useState<IThemeContext>(existing_theme as IThemeContext || theme.DEFAULT_THEME);
     theme_context.setTheme = (new_theme: theme.IThemeContext) => setThemeContext(new_theme);
 

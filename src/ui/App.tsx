@@ -4,9 +4,9 @@ import { BrowserRouter as Router, Route, Switch, Link, Redirect } from "react-ro
 
 import { Fireflies } from "ui/components/login/fireflies";
 import { ThemeWidget } from "ui/components/login/theme_widget";
-import { Ripple } from "./components/common/spinners";
-import { Logo } from "./components/login/logo";
-import { useTheme, Theme } from "./hooks/useTheme";
+import { Ripple } from "ui/components/common/spinners";
+import { Logo } from "ui/components/login/logo";
+import { createTheme, Theme } from "ui/hooks/createTheme";
 
 
 const MainView: React.FunctionComponent = React.lazy(() => import(       /* webpackCHunkName: 'MainView'     */ "./views/main"));

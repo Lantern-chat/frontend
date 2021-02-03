@@ -9,19 +9,16 @@ import "ui/styles/root.scss";
 import "ui/styles/layout.scss";
 
 import App from "ui/App";
-import { useLocale } from "ui/hooks/useLocale";
+import { createLocale } from "ui/hooks/createLocale";
 
 import { Ripple } from "ui/components/common/spinners";
 
-const Loading = React.memo(() => (<div className="ln-center-standalone"><Ripple size={160} /></div>));
-
-
 let Root = () => {
-    let locale = useLocale();
+    let locale = createLocale();
 
     let root = (
         <i18n.LocaleContext.Provider value={locale}>
-            <React.Suspense fallback={<Loading />}>
+            <React.Suspense fallback={<div className="ln-center-standalone"><Ripple size={160} /></div>}>
                 <App />
             </React.Suspense>
         </i18n.LocaleContext.Provider>

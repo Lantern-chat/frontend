@@ -6,7 +6,7 @@ if(LANGS.indexOf(initialLocale) === -1) {
     initialLocale = "en";
 }
 
-export function useLocale(): ILocaleContext {
+export function createLocale(): ILocaleContext {
     let [locale, setLocale] = useState<ILocaleContext>({ lang: initialLocale, setLocale: (locale: Language) => { } });
     locale.setLocale = (lang: Language) => setLocale({ ...locale, lang });
 
