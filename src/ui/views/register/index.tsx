@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useReducer, useEffect } from "react";
+import React, { useState, useMemo, useReducer, useEffect, useContext } from "react";
 import dayjs from "client/time";
 
 import * as i18n from "ui/i18n";
@@ -157,6 +157,8 @@ function register_state_reducer(state: RegisterState, { value, type }: RegisterA
 
 import CircleEmptyInfo from "icons/glyphicons-pro/glyphicons-basic-2-3/svg/individual-svg/glyphicons-basic-196-circle-empty-info.svg";
 
+import { Session } from "client/session";
+
 var SETUP_THEN = false;
 
 import "../login/login.scss";
@@ -167,6 +169,7 @@ export default function RegisterView() {
     let [state, dispatch] = useReducer(register_state_reducer, DEFAULT_REGISTER_STATE);
     let [errorMsg, setErrorMsg] = useState<string | null>(null);
     let [redirect, setRedirect] = useState(false);
+    let session = useContext(Session);
 
     useEffect(() => {
         if(!SETUP_THEN && typeof zxcvbn !== 'function') {
@@ -203,7 +206,7 @@ export default function RegisterView() {
             body: new FormData(e.currentTarget),
         }).then((req) => {
             if(req.status === 200 && req.response.auth != null) {
-                localStorage.setItem('user', JSON.stringify({ auth: req.response.auth }));
+                session.setSession(req.response);
                 setRedirect(true);
             } else {
                 setErrorMsg("Unknown Error");

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useReducer, useEffect } from "react";
+import React, { useState, useMemo, useReducer, useEffect, useContext } from "react";
 
 import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
@@ -55,6 +55,8 @@ function login_state_reducer(state: LoginState, { value, type }: LoginAction): L
     }
 }
 
+import { Session } from "client/session";
+
 import "./login.scss";
 export default function LoginView() {
     useTitle("Login");
@@ -62,6 +64,7 @@ export default function LoginView() {
     let [state, dispatch] = useReducer(login_state_reducer, DEFAULT_LOGIN_STATE);
     let [errorMsg, setErrorMsg] = useState<string | null>(null);
     let [redirect, setRedirect] = useState(false);
+    let session = useContext(Session);
 
     if(redirect) {
         return <Redirect to="/channels/0/0" />;
@@ -76,7 +79,8 @@ export default function LoginView() {
             body: new FormData(e.currentTarget),
         }).then((req) => {
             if(req.status === 200 && req.response.auth != null) {
-                localStorage.setItem('user', JSON.stringify({ auth: req.response.auth }));
+                console.log("SETTING SESSION");
+                session.setSession(req.response);
                 setRedirect(true);
             } else {
                 setErrorMsg("Unknown Error");
