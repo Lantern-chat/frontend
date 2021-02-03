@@ -7,12 +7,12 @@ import SunIcon from "icons/glyphicons-pro/glyphicons-basic-2-3/svg/individual-sv
 import MoonIcon from "icons/glyphicons-pro/glyphicons-basic-2-3/svg/individual-svg/glyphicons-basic-231-moon.svg";
 
 import "./theme_widget.scss";
-export const ThemeWidget: React.FunctionComponent = () => {
+export const ThemeWidget: React.FunctionComponent = React.memo(() => {
     let input = useRef<HTMLInputElement | null>(null);
     let theme = useContext(Theme);
 
     let onTempTouchMove = (e: React.TouchEvent<HTMLInputElement>) => {
-        if(input && input.current) {
+        if(input.current) {
             let { width, x } = input.current.getBoundingClientRect();
             let touch = e.touches[0].clientX - x;
 
@@ -40,4 +40,7 @@ export const ThemeWidget: React.FunctionComponent = () => {
             </div>
         </div>
     );
-};
+});
+if(process.env.NODE_ENV !== 'production') {
+    ThemeWidget.displayName = "Theme Widget";
+}
