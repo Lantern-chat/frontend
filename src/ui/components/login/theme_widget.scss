@@ -1,6 +1,21 @@
 @import "lib/variables";
 
-.ln-theme-widget-wrapper {
+@function gen_temp_gradient($stops) {
+    $gradient: (to right, #000 0%);
+
+    @for $i from 0 through $stops {
+        $t: $i / $stops;
+        $temp: (1 - $t) * 965 + $t * 12000;
+        $color: kelvin2($temp);
+        $stop: $t * 100%;
+        $gradient: append($gradient, $color #{$stop});
+    }
+
+    @return $gradient;
+}
+
+.ln-theme-widget {
+    display: flex;
     position: absolute;
     top: 1em;
     left: 1em;
@@ -15,7 +30,7 @@
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     }
 
-    .ln-enable-motion {
+    .ln-enable-motion & {
         transition: width 500ms ease-in;
     }
 
@@ -46,56 +61,32 @@
             opacity: 1;
         }
     }
-}
 
-.ln-theme-widget {
-    position: relative;
-    display: flex;
-}
+    &__icon {
+        display: block;
+        font-size: 2.5em;
+        cursor: pointer;
+        fill: $lnx-primary-text-color;
+    }
 
-.ln-theme-widget-icon {
-    display: block;
-    font-size: 2.5em;
-    cursor: pointer;
-    fill: $lnx-primary-text-color;
-}
+    &__options {
+        position: relative;
+        width: 0;
+        padding: 0;
 
-.ln-theme-widget-options {
-    position: relative;
-    width: 0;
-    padding: 0;
+        transition: all 0.1s ease-in !important;
+    }
 
-    transition: all 0.1s ease-in !important;
-}
-
-.ln-theme-widget:hover {
-    .ln-theme-widget-options {
-        //@at-root: 0;
+    &:hover &__options {
         padding: 0 0.4em;
         width: min(15em, 50vw);
     }
-}
 
-.ln-theme-widget-slider {
-    height: 100%;
-}
-
-@function gen_temp_gradient($stops) {
-    $gradient: (to right, #000 0%);
-
-    @for $i from 0 through $stops {
-        $t: $i / $stops;
-        $temp: (1 - $t) * 965 + $t * 12000;
-        $color: kelvin2($temp);
-        $stop: $t * 100%;
-        $gradient: append($gradient, $color #{$stop});
+    &__slider {
+        height: 100%;
     }
 
-    @return $gradient;
-}
-
-.ln-theme-widget {
-    input[type="range"].slider {
+    input[type="range"].ln-slider {
         -webkit-appearance: none;
         appearance: none;
         height: 100%;

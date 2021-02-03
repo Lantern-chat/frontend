@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
+import React, { useContext, useRef } from "react";
 
-import { Theme, MIN_TEMP, MAX_TEMP, setTheme } from "client/theme";
+import { Theme, MIN_TEMP, MAX_TEMP } from "client/theme";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
 import SunIcon from "icons/glyphicons-pro/glyphicons-basic-2-3/svg/individual-svg/glyphicons-basic-232-sun.svg";
@@ -26,18 +26,16 @@ export const ThemeWidget: React.FunctionComponent = () => {
     };
 
     return (
-        <div className="ln-theme-widget-wrapper" title="Change Theme">
-            <div className="ln-theme-widget">
-                <div className="ln-theme-widget-icon" onClick={() => theme.setTheme({ ...theme, is_light: !theme.is_light })}>
-                    <Glyphicon src={theme.is_light ? MoonIcon : SunIcon} />
-                </div>
+        <div className="ln-theme-widget" title="Change Theme">
+            <div className="ln-theme-widget__icon" onClick={() => theme.setTheme({ ...theme, is_light: !theme.is_light })}>
+                <Glyphicon src={theme.is_light ? MoonIcon : SunIcon} />
+            </div>
 
-                <div className="ln-theme-widget-options">
-                    <div className="ln-theme-widget-slider" title="Change Theme Temperature">
-                        <input ref={input} type="range" min={MIN_TEMP} max={MAX_TEMP} value={theme.temperature} className="slider" name="temperature"
-                            onInput={e => theme.setTheme({ ...theme, temperature: parseFloat(e.currentTarget.value) })}
-                            onTouchMove={onTempTouchMove} onTouchStart={onTempTouchMove} />
-                    </div>
+            <div className="ln-theme-widget__options">
+                <div className="ln-theme-widget__slider" title="Change Theme Temperature">
+                    <input ref={input} type="range" min={MIN_TEMP} max={MAX_TEMP} value={theme.temperature} className="ln-slider" name="temperature"
+                        onInput={e => theme.setTheme({ ...theme, temperature: parseFloat(e.currentTarget.value) })}
+                        onTouchMove={onTempTouchMove} onTouchStart={onTempTouchMove} />
                 </div>
             </div>
         </div>
