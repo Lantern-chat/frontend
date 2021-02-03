@@ -123,18 +123,20 @@
     }
 }
 
+$btn-scale: 1.1;
+
 .ln-btn {
     color: $lnx-primary-text-color;
     display: inline-block;
     line-height: 1;
     height: 100%;
-    font-size: 1em;
-    padding: golden_ratio(1, em);
+    font-size: #{$btn-scale * 1em};
+    padding: golden_ratio(1 / $btn-scale, em);
     background-color: $ln-info-btn-color;
     border: 1px solid transparent;
     cursor: pointer;
-    box-shadow: 0 0 0.2em black;
-    border-radius: 0.5em;
+    box-shadow: 0 0 #{0.2em / $btn-scale} black;
+    border-radius: #{0.5em / $btn-scale};
     position: relative;
     transition: background-color $lnx-transition-timing ease;
     white-space: nowrap;
