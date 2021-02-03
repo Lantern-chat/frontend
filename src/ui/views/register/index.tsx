@@ -190,6 +190,10 @@ export default function RegisterView() {
         return passwordClass;
     }, [state.pass_strength]);
 
+    if(redirect) {
+        return <Redirect to="/channels/0/0" />;
+    }
+
     let on_submit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -208,10 +212,6 @@ export default function RegisterView() {
             setErrorMsg(e.response.message);
         });
     };
-
-    if(redirect) {
-        return <Redirect to="/" />;
-    }
 
     let errorModal;
 

@@ -63,6 +63,10 @@ export default function LoginView() {
     let [errorMsg, setErrorMsg] = useState<string | null>(null);
     let [redirect, setRedirect] = useState(false);
 
+    if(redirect) {
+        return <Redirect to="/channels/0/0" />;
+    }
+
     let on_submit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -81,10 +85,6 @@ export default function LoginView() {
             setErrorMsg(req.response.message);
         })
     };
-
-    if(redirect) {
-        return <Redirect to="/" />;
-    }
 
     let errorModal;
 

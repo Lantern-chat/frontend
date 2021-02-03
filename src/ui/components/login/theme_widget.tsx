@@ -26,15 +26,14 @@ export const ThemeWidget: React.FunctionComponent = () => {
     };
 
     return (
-        <div className="ln-theme-widget-wrapper">
+        <div className="ln-theme-widget-wrapper" title="Change Theme">
             <div className="ln-theme-widget">
-                <div className="ln-theme-widget-icon" onClick={() => theme.setTheme({ ...theme, is_light: !theme.is_light })}
-                >
+                <div className="ln-theme-widget-icon" onClick={() => theme.setTheme({ ...theme, is_light: !theme.is_light })}>
                     <Glyphicon src={theme.is_light ? MoonIcon : SunIcon} />
                 </div>
 
                 <div className="ln-theme-widget-options">
-                    <div className="ln-theme-widget-slider">
+                    <div className="ln-theme-widget-slider" title="Change Theme Temperature">
                         <input ref={input} type="range" min={MIN_TEMP} max={MAX_TEMP} value={theme.temperature} className="slider" name="temperature"
                             onInput={e => theme.setTheme({ ...theme, temperature: parseFloat(e.currentTarget.value) })}
                             onTouchMove={onTempTouchMove} onTouchStart={onTempTouchMove} />

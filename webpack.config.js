@@ -15,7 +15,7 @@ const distPath = path.join(__dirname, 'dist');
 module.exports = (env, argv) => {
     const MODE = argv.mode || 'development';
     const IS_PRODUCTION = MODE === "production";
-    const CHUNK_NAME = IS_PRODUCTION ? "[chunkhash]" : "[id]";
+    const CHUNK_NAME = true ? "[id].[chunkhash]" : "[id]";
 
     return {
         entry: "./src/index.tsx",
@@ -23,10 +23,10 @@ module.exports = (env, argv) => {
         mode: MODE,
         watch: true,
         output: {
-            filename: '[name].js',
+            filename: '[name].[fullhash].js',
             chunkFilename: `${CHUNK_NAME}.js`,
             path: distPath,
-            publicPath: 'static/',
+            publicPath: '/static/',
         },
         node: {
             global: true,

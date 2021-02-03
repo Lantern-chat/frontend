@@ -3,10 +3,8 @@
 .ln-channel-list {
     font-size: 1em;
     width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
     padding-top: 1em;
+    height: 100%;
 
     color: $lnx-secondary-text-color;
     fill: $lnx-secondary-text-color;
@@ -22,17 +20,16 @@
     }
 
     .ln-glyphicon {
-        margin-left: 0.3em;
         font-size: 1.3em;
-        //vertical-align: text-top;
-
         height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
     }
 
     @include scrollbar($lnx-secondary-text-color, $lnx-primary-surface-color);
+}
+
+.ln-channel-list-icon {
+    width: 2em;
+    text-align: center;
 }
 
 .ln-channel-list-channel {

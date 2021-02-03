@@ -16,8 +16,8 @@ const RegisterView: React.FunctionComponent = React.lazy(() => import(   /* webp
 const Fallback = <div className="ln-center-standalone"><Ripple size={120} /></div>;
 
 // TODO: Find a way to force rerender when user changes
-const MainViewRedirect = React.memo(({ user }: { user: string | null }) => (
-    user != null ? <MainView /> : <Redirect to="/login" />
+const MainViewRedirect = React.memo(() => (
+    localStorage.getItem('user') != null ? <MainView /> : <Redirect to="/login" />
 ));
 
 // NOTE: Using <Switch> ensures routes are rendered exclusively
@@ -53,7 +53,7 @@ export const App = () => {
                     </Route >
 
                     <Route path="/">
-                        <MainViewRedirect user={localStorage.getItem('user')} />
+                        <MainViewRedirect />
                     </Route>
                 </Switch>
             </Router >

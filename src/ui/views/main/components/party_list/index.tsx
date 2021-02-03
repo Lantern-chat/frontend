@@ -12,7 +12,7 @@ export const PartyList = React.memo(() => {
         <ul className="ln-party-list ln-vertical-scroll ln-scroll-fixed">
             {dummy_data.map((text, i) => (
                 <li key={i}>
-                    <Avatar rounded text={text} username={text} backgroundColor={colors[i]}></Avatar>
+                    <Avatar rounded url={`https://placekitten.com/${(i % 25) + 50}/${(i % 25) + 50}`} username={text} backgroundColor={colors[i]}></Avatar>
                 </li>
             ))}
         </ul>
