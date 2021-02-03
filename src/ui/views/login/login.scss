@@ -15,6 +15,9 @@
 
     &::before,
     &::after {
+        // Fixes lantern popping above this translucent layer during theme transition
+        -webkit-transform: translate3d(0, 0, 0);
+
         z-index: -1;
         content: "";
         position: absolute;
@@ -22,7 +25,10 @@
         bottom: 0;
         left: 0;
         right: 0;
-        transition: opacity 1s ease-in;
+
+        .ln-enable-motion & {
+            transition: opacity 1s ease-in;
+        }
     }
 
     @media (min-width: 49em) {
