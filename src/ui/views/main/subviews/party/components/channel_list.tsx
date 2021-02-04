@@ -4,7 +4,7 @@ export interface IChannelListProps {
     channels: string[],
 }
 
-import Hash from "icons/glyphicons-pro/glyphicons-basic-2-3/svg/individual-svg/glyphicons-basic-740-hash.svg";
+import Hash from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-740-hash.svg";
 import { Glyphicon } from "ui/components/common/glyphicon";
 import { Avatar } from "ui/components/common/avatar";
 

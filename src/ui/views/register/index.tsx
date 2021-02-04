@@ -155,7 +155,7 @@ function register_state_reducer(state: RegisterState, { value, type }: RegisterA
     }
 }
 
-import CircleEmptyInfo from "icons/glyphicons-pro/glyphicons-basic-2-3/svg/individual-svg/glyphicons-basic-196-circle-empty-info.svg";
+import CircleEmptyInfo from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-196-circle-empty-info.svg";
 
 import { Session } from "client/session";
 

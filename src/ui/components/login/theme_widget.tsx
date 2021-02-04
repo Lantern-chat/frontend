@@ -3,8 +3,8 @@ import React, { useContext, useRef } from "react";
 import { Theme, MIN_TEMP, MAX_TEMP } from "client/theme";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
-import SunIcon from "icons/glyphicons-pro/glyphicons-basic-2-3/svg/individual-svg/glyphicons-basic-232-sun.svg";
-import MoonIcon from "icons/glyphicons-pro/glyphicons-basic-2-3/svg/individual-svg/glyphicons-basic-231-moon.svg";
+import SunIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-232-sun.svg";
+import MoonIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-231-moon.svg";
 
 import "./theme_widget.scss";
 export const ThemeWidget: React.FunctionComponent = React.memo(() => {
