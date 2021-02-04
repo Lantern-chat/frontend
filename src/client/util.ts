@@ -13,3 +13,23 @@ export function delay(ms: number): CancellablePromise<void> {
 
     return promise;
 }
+
+export function timeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+    return new Promise((resolve, reject) => {
+        let completed = false;
+
+        promise.then((value) => {
+            if(!completed) {
+                completed = true;
+                resolve(value);
+            }
+        });
+
+        setTimeout(() => {
+            if(!completed) {
+                completed = true;
+                reject();
+            }
+        }, ms);
+    })
+}

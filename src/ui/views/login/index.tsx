@@ -5,8 +5,10 @@ import { I18N, Translation } from "ui/i18n";
 
 import { Link, Redirect } from "react-router-dom";
 
+import { timeout } from "client/util";
 import { fetch, XHRMethod } from "client/fetch";
 import { useTitle } from "ui/hooks/useTitle";
+import { Spinner } from "ui/components/common/spinners/spinner";
 //import { Glyphicon } from "ui/components/common/glyphicon";
 import { FormGroup, FormLabel, FormInput } from "ui/components/form";
 import { Modal } from "ui/components/modal";
@@ -25,15 +27,19 @@ interface LoginState {
     email: string,
     pass: string,
     valid_email: boolean | null,
+    is_logging_in: boolean,
 }
 
 const DEFAULT_LOGIN_STATE: LoginState = {
     email: "",
     pass: "",
     valid_email: null,
+    is_logging_in: false,
 };
 
 enum LoginActionType {
+    Login,
+    NoLogin,
     UpdateEmail,
     UpdatePass,
 }
@@ -50,6 +56,12 @@ function login_state_reducer(state: LoginState, { value, type }: LoginAction): L
         }
         case LoginActionType.UpdatePass: {
             return { ...state, pass: value };
+        }
+        case LoginActionType.Login: {
+            return { ...state, is_logging_in: true };
+        }
+        case LoginActionType.NoLogin: {
+            return { ...state, is_logging_in: false };
         }
         default: return state;
     }
@@ -73,20 +85,31 @@ export default function LoginView() {
     let on_submit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        dispatch({ type: LoginActionType.Login, value: '' });
+
+        // start preloading
+        let main = timeout(import("../main"), 4000).catch(() => { });
+
+        let on_error = (err: string) => {
+            setErrorMsg(err);
+            dispatch({ type: LoginActionType.NoLogin, value: '' });
+        };
+
         fetch.submitFormUrlEncoded({
             url: "/api/v1/user/login",
             method: XHRMethod.POST,
             body: new FormData(e.currentTarget),
         }).then((req) => {
             if(req.status === 200 && req.response.auth != null) {
-                console.log("SETTING SESSION");
-                session.setSession(req.response);
-                setRedirect(true);
+                main.then(() => {
+                    session.setSession(req.response);
+                    setRedirect(true);
+                });
             } else {
-                setErrorMsg("Unknown Error");
+                on_error("Unknown Error");
             }
         }).catch((req: XMLHttpRequest) => {
-            setErrorMsg(req.response.message);
+            on_error(req.response.message);
         })
     };
 
@@ -132,7 +155,9 @@ export default function LoginView() {
 
                 <FormGroup>
                     <div style={{ display: 'flex', padding: '0 1em' }}>
-                        <button className="ln-btn" style={{ marginRight: 'auto' }}>Login</button>
+                        <button className={state.is_logging_in ? 'ln-btn ln-btn--loading-icon' : 'ln-btn'} style={{ marginRight: 'auto' }}>
+                            {state.is_logging_in ? <Spinner size="2em" /> : "Login"}
+                        </button>
                         <Link className="ln-btn" to={"/register"} onMouseOver={() => preloadRegister()}>Register</Link>
                     </div>
                 </FormGroup>

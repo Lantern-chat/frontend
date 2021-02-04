@@ -7,10 +7,13 @@ import { I18N, Translation } from "ui/i18n";
 
 import { Link, Redirect } from "react-router-dom";
 
+import { timeout } from "client/util";
+import { fetch, XHRMethod } from "client/fetch";
+
 import { Glyphicon } from "ui/components/common/glyphicon";
 import { Modal } from "ui/components/modal";
 import { Tooltip } from "ui/components/common/tooltip";
-
+import { Spinner } from "ui/components/common/spinners/spinner";
 import { FormGroup, FormLabel, FormInput, FormText, FormSelect, FormSelectOption, FormSelectGroup } from "ui/components/form";
 
 import { validateUsername, validatePass, validateEmail } from "client/validation";
@@ -21,8 +24,6 @@ type zxcvbn_fn = (input: string) => zxcvbn.ZXCVBNResult;
 
 var zxcvbn: zxcvbn_fn | Promise<{ default: zxcvbn_fn }> = import('zxcvbn');
 
-
-import { fetch, XHRMethod } from "client/fetch";
 import { useTitle } from "ui/hooks/useTitle";
 
 var PRELOADED: boolean = false;
@@ -78,6 +79,7 @@ interface RegisterState {
     valid_email: boolean | null,
     valid_user: boolean | null,
     valid_pass: boolean | null,
+    is_registering: boolean,
 }
 
 const DEFAULT_REGISTER_STATE: RegisterState = {
@@ -90,6 +92,7 @@ const DEFAULT_REGISTER_STATE: RegisterState = {
     valid_email: null,
     valid_user: null,
     valid_pass: null,
+    is_registering: false,
 }
 
 enum RegisterActionType {
@@ -100,6 +103,8 @@ enum RegisterActionType {
     UpdateYear,
     UpdateMonth,
     UpdateDay,
+    Register,
+    NoRegister,
 }
 
 interface RegisterAction {
@@ -151,6 +156,12 @@ function register_state_reducer(state: RegisterState, { value, type }: RegisterA
             let dob = { ...state.dob, d: parseInt(value) };
             return { ...state, dob };
         }
+        case RegisterActionType.Register: {
+            return { ...state, is_registering: true };
+        }
+        case RegisterActionType.NoRegister: {
+            return { ...state, is_registering: false };
+        }
         default: return state;
     }
 }
@@ -200,19 +211,31 @@ export default function RegisterView() {
     let on_submit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        dispatch({ type: RegisterActionType.Register, value: '' });
+
+        // start preloading
+        let main = timeout(import("../main"), 4000).catch(() => { });
+
+        let on_error = (err: string) => {
+            setErrorMsg(err);
+            dispatch({ type: RegisterActionType.NoRegister, value: '' });
+        }
+
         fetch.submitFormUrlEncoded({
             url: "/api/v1/user/register",
             method: XHRMethod.POST,
             body: new FormData(e.currentTarget),
         }).then((req) => {
             if(req.status === 200 && req.response.auth != null) {
-                session.setSession(req.response);
-                setRedirect(true);
+                main.then(() => {
+                    session.setSession(req.response);
+                    setRedirect(true);
+                });
             } else {
-                setErrorMsg("Unknown Error");
+                on_error("Unknown Error");
             }
         }).catch((e: XMLHttpRequest) => {
-            setErrorMsg(e.response.message);
+            on_error(e.response.message);
         });
     };
 
@@ -297,7 +320,9 @@ export default function RegisterView() {
 
             <FormGroup>
                 <div style={{ display: 'flex', padding: '0 1em' }}>
-                    <button className="ln-btn" style={{ marginRight: 'auto' }}>Register</button>
+                    <button className={state.is_registering ? 'ln-btn ln-btn--loading-icon' : 'ln-btn'} style={{ marginRight: 'auto' }}>
+                        {state.is_registering ? <Spinner size="2em" /> : "Register"}
+                    </button>
                     <Link to={"/login"} className="ln-btn" onMouseOver={() => preloadLogin()} >Go to Login</Link>
                 </div>
             </FormGroup>
