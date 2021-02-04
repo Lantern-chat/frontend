@@ -1,6 +1,7 @@
-@import "lib/variables.scss";
+@import "lib/variables";
 
 .ln-ripple {
+    color: $lnx-primary-text-color;
     display: inline-block;
     position: relative;
 

@@ -11,7 +11,7 @@ import "ui/styles/layout.scss";
 import App from "ui/App";
 import { createLocale } from "ui/hooks/createLocale";
 
-import { Ripple } from "ui/components/common/spinners";
+import { Ripple } from "ui/components/common/spinners/ripple";
 
 let Root = () => {
     let locale = createLocale();
