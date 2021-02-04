@@ -34,8 +34,8 @@ module.exports = (env, argv) => {
             __dirname: false,
         },
         optimization: {
-            chunkIds: IS_PRODUCTION ? 'size' : 'natural',
-            moduleIds: IS_PRODUCTION ? 'size' : false,
+            //chunkIds: IS_PRODUCTION ? 'size' : 'natural',
+            //moduleIds: IS_PRODUCTION ? 'size' : false,
             mangleExports: IS_PRODUCTION ? 'size' : 'deterministic',
             minimize: IS_PRODUCTION,
             minimizer: [new TerserPlugin({
