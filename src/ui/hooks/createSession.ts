@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { ISession, ISessionContext } from "client/session";
 import dayjs, { setLongTimeout } from "client/time";
+import { fetch } from "client/fetch";
 
 const SESSION_KEY: string = 'session';
 
@@ -28,6 +29,19 @@ export function createSession(): ISessionContext {
     ctx.setSession = (new_session: ISession | null) => {
         setSession({ ...ctx, session: parseSession(new_session) });
     };
+
+    // on startup, check if valid session
+    useEffect(() => {
+        let session = ctx.session, cancelled = false;
+        if(session != null) {
+            fetch({
+                url: "/api/v1/user/check", headers: {
+                    'Authorization': 'Bearer ' + session.auth,
+                }
+            }).catch(() => cancelled ? null : ctx.setSession(null));
+        }
+        return () => { cancelled = true; };
+    }, []);
 
     useEffect(() => {
         let session = ctx.session, timeout: { t: number } | null = null;
