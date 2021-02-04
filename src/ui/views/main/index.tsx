@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 
 import { createStore } from "redux";
 import { useSelector, Provider, useStore } from "react-redux";
@@ -14,12 +14,14 @@ import { Party } from "./subviews/party";
 
 import "./main.scss";
 export const MainView: React.FunctionComponent = () => {
+
     return (
         <Provider store={lantern_store}>
             <Switch>
-                <Route path={["/channels/:party/:channel", "/"]}>
+                <Route path="/channels/:party/:channel">
                     <div className="ln-main-container">
                         <PartyList />
+
                         <Party />
                     </div>
                 </Route>

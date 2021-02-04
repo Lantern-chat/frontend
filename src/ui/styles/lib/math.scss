@@ -123,7 +123,10 @@ $SIN_ITERATION: 10;
 }
 
 @function golden_ratio($base, $unit) {
-    $other: $base * $PHI;
+    @return #{$base + $unit} golden_ratio_other($base, $unit);
+}
 
-    @return $base + $unit $other + $unit;
+@function golden_ratio_other($base, $unit) {
+    $other: $base * $PHI;
+    @return #{$other + $unit};
 }

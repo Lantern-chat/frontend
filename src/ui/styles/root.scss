@@ -106,4 +106,13 @@ a {
         overflow-y: scroll;
         padding-left: 7px;
     }
+
+    &--rtl {
+        direction: rtl;
+
+        &.ln-scroll-fixed {
+            padding-right: 7px;
+            padding-left: 0;
+        }
+    }
 }
