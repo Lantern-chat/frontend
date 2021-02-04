@@ -34,6 +34,8 @@ module.exports = (env, argv) => {
             __dirname: false,
         },
         optimization: {
+            chunkIds: IS_PRODUCTION ? 'size' : 'natural',
+            moduleIds: IS_PRODUCTION ? 'size' : false,
             mangleExports: IS_PRODUCTION ? 'size' : 'deterministic',
             minimize: IS_PRODUCTION,
             minimizer: [new TerserPlugin({
@@ -47,8 +49,8 @@ module.exports = (env, argv) => {
                 }
             })],
             splitChunks: {
-                //chunks: 'all',
-                //minChunks: 3,
+                chunks: 'all',
+                minChunks: 2,
             }
         },
 
@@ -123,10 +125,7 @@ module.exports = (env, argv) => {
                 },
                 {
                     test: /icons.*\.svg$/,
-                    type: 'asset/inline',
-                    generator: {
-                        dataUrl: content => content.toString()
-                    }
+                    type: 'asset/source',
                 },
                 {
                     test: /\.(jpg|jpeg|png|svg)(\?v=\d+\.\d+\.\d+)?$/,
