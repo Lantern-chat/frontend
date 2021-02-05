@@ -9,18 +9,19 @@
     }
 }
 
-@mixin gen_spinner($spokes, $duration, $clockwise: false) {
+@mixin gen_spinner($spokes, $duration, $clockwise: true) {
     $delay: $duration / $spokes;
     $deg: 360 / $spokes;
 
     @for $i from 1 through $spokes {
         &:nth-child(#{$i}) {
-            transform: rotate(#{$deg * ($i - 1)} + deg);
+            $spoke_delay: $delay * $i;
             @if $clockwise {
-                animation-delay: $delay * $i;
-            } @else {
-                animation-delay: $duration - ($delay * $i);
+                $spoke_delay: $duration - ($delay * $i);
             }
+
+            transform: rotate(#{$deg * ($i - 1)} + deg);
+            animation-delay: -$spoke_delay;
         }
     }
 }
@@ -39,7 +40,7 @@ $spinner-duration: 1.2s;
         animation: ln-spinner $spinner-duration linear infinite;
 
         &::after {
-            content: " ";
+            content: "";
             display: block;
             position: absolute;
             top: 0.0375em;
