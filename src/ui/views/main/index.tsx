@@ -13,20 +13,20 @@ import { Party } from "./subviews/party";
 
 
 import "./main.scss";
-export const MainView: React.FunctionComponent = () => {
+export const MainView: React.FunctionComponent = () => (
+    <Provider store={lantern_store}>
+        <div className="ln-main">
+            <PartyList />
 
-    return (
-        <Provider store={lantern_store}>
             <Switch>
+                <Route path="/channels/@me/:channel">
+                    Test
+                </Route>
                 <Route path="/channels/:party/:channel">
-                    <div className="ln-main-container">
-                        <PartyList />
-
-                        <Party />
-                    </div>
+                    <Party />
                 </Route>
             </Switch>
-        </Provider>
-    );
-};
+        </div>
+    </Provider>
+);
 export default MainView;

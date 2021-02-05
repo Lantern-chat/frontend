@@ -76,7 +76,7 @@ a {
     }
 }
 
-.ln-vertical-scroll {
+.ln-scroll-y {
     overflow-x: hidden;
     overflow-y: auto;
     scrollbar-width: thin;
@@ -113,6 +113,20 @@ a {
         &.ln-scroll-fixed {
             padding-right: 7px;
             padding-left: 0;
+        }
+    }
+
+    &--invisible {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        &.ln-scroll-fixed {
+            padding-left: 0;
+            padding-right: 0;
         }
     }
 }

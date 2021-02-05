@@ -11,11 +11,8 @@ import LogoutIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual
 
 
 import "./party_list.scss";
-import { Tooltip } from "ui/components/common/tooltip";
 export const PartyList = React.memo(() => {
     let ctx = useContext(Session);
-
-    let session = ctx.session!;
 
     let logout = () => {
         ctx.setSession(null)
@@ -23,10 +20,9 @@ export const PartyList = React.memo(() => {
         fetch({
             url: "/api/v1/user/logout",
             method: XHRMethod.DELETE,
-            headers: { 'Authorization': 'Bearer ' + session.auth }
+            headers: { 'Authorization': 'Bearer ' + ctx.session!.auth }
         }).catch(() => { })
     };
-
 
     let dummy_data = ['A', 'B', 'C', 'D'];
     let colors = ['yellow', 'lightblue', 'lightgreen', 'lightcoral'];
@@ -36,8 +32,8 @@ export const PartyList = React.memo(() => {
     }
 
     return (
-        <div className="ln-party-list-wrapper">
-            <ul className="ln-party-list ln-vertical-scroll ln-vertical-scroll--rtl ln-scroll-fixed">
+        <div className="ln-party-list__wrapper">
+            <ul className="ln-party-list ln-scroll-y ln-scroll-y--invisible ln-scroll-fixed">
                 {dummy_data.map((text, i) => (
                     <li key={i}>
                         <Avatar rounded url={`https://placekitten.com/${(i % 25) + 50}/${(i % 25) + 50}`} username={text} backgroundColor={colors[fnv1a(text) % colors.length]}></Avatar>

@@ -25,32 +25,32 @@
     }
 
     @include scrollbar($lnx-secondary-text-color, $lnx-primary-surface-color);
-}
 
-.ln-channel-list-icon {
-    width: 2em;
-    text-align: center;
-}
-
-.ln-channel-list-channel {
-    display: flex;
-    flex-wrap: nowrap;
-}
-
-.ln-channel-list-name {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    line-height: 0.85;
-
-    span {
-        height: 1em;
+    &__icon {
+        width: 2em;
+        text-align: center;
     }
-}
 
-.ln-channel-list-title {
-    height: 100%;
+    &__channel {
+        display: flex;
+        flex-wrap: nowrap;
+    }
+
+    &__name {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        line-height: 0.85;
+
+        span {
+            height: 1em;
+        }
+    }
+
+    &__title {
+        height: 100%;
+    }
 }

@@ -1,7 +1,7 @@
 import { fnv1a } from "client/fnv";
 import React from "react";
-import { ChannelList } from "./components/channel_list";
-import { PartyHeader } from "./components/party_header";
+import { ChannelList } from "ui/views/main/components/party/channel_list";
+import { PartyHeader } from "ui/views/main/components/party/party_header";
 
 import "./party.scss";
 export const Party = () => {
