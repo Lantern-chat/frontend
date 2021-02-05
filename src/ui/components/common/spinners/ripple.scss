@@ -1,15 +1,14 @@
 @import "lib/variables";
 
 .ln-ripple {
-    color: $lnx-primary-text-color;
     display: inline-block;
     position: relative;
 
     div {
+        border: 4px solid $lnx-primary-text-color;
         position: absolute;
-        border-style: solid;
-        border-width: 4px;
-        opacity: 1;
+        width: 100%;
+        height: 100%;
         border-radius: 50%;
         animation: ln-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
 
@@ -21,17 +20,14 @@
 
 @keyframes ln-ripple {
     0% {
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
+        transform: scale(0);
         opacity: 1;
     }
+    50% {
+        opacity: 0.7;
+    }
     100% {
-        top: 0px;
-        left: 0px;
-        width: 100%;
-        height: 100%;
+        transform: scale(1);
         opacity: 0;
     }
 }
