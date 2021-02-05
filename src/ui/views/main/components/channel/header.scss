@@ -1,0 +1,13 @@
+@import "lib/variables";
+
+.ln-channel {
+    &__header {
+        width: 100%;
+        padding: 0.5em;
+        text-align: center;
+        border-bottom: 2px solid $lnx-secondary-surface-color;
+        height: 3em;
+        max-height: 3em;
+        flex-shrink: 0;
+    }
+}

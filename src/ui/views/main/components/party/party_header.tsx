@@ -7,7 +7,7 @@ import Balloons from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-s
 import "./party_header.scss";
 export const PartyHeader = React.memo(() => {
     return (
-        <header className="ln-channel-list-header">
+        <header className="ln-party__header">
             Party Header
             <Glyphicon src={Balloons} />
         </header>

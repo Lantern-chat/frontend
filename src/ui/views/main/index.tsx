@@ -9,7 +9,7 @@ import { rootReducer } from "./reducers";
 const lantern_store = createStore(rootReducer);
 
 import { PartyList } from "./components/party_list";
-import { Party } from "./subviews/party";
+import { Party } from "./components/party/party";
 
 
 import "./main.scss";
