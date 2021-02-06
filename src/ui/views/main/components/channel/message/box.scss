@@ -1,8 +1,52 @@
-.ln-message {
+@import "lib/variables";
+
+.ln-msg-box {
+    cursor: text;
+    display: flex;
+    flex-wrap: nowrap;
+    text-align: center;
+    flex-shrink: 0;
+    padding: 0 2em 0 1em;
+    color: $lnx-primary-text-color;
+    background-color: rgba(50%, 50%, 50%, 50%);
+    min-height: 3em;
+    border-radius: 0.5em;
+    margin: 0.5em 1em 1em 1em;
+
+    &__emoji {
+        fill: $lnx-secondary-text-color;
+
+        font-size: 1.5em;
+        padding-right: 0.5em;
+        //text-align: center;
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        cursor: pointer;
+
+        &:hover {
+            fill: $lnx-primary-text-color;
+        }
+    }
+
     &__box {
+        height: 100%;
         width: 100%;
-        padding: 3em;
-        text-align: center;
-        flex-shrink: 0;
+
+        textarea {
+            padding: 0.5em 0;
+            color: $lnx-primary-text-color;
+            width: 100%;
+            resize: none;
+            border: none;
+            outline: none;
+            font-family: inherit;
+            background-color: transparent;
+        }
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 }

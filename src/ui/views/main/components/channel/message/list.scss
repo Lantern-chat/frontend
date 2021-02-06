@@ -1,6 +1,16 @@
-.ln-message {
-    &__list {
-        display: block;
+.ln-msg-list {
+    &__flex-container {
         flex: 1;
+        position: relative;
     }
+
+    &__wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    padding: 1em;
 }

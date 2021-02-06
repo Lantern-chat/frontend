@@ -13,14 +13,16 @@ export const MessageList = React.memo(() => {
     }
 
     return (
-        <div className="ln-message__container ln-scroll-y ln-scroll-fixed">
-            <ul className="ln-message__list">
-                {messages.map((msg, i) => (
-                    <li key={i} className="ln-message">
-                        {msg.msg}
-                    </li>
-                ))}
-            </ul>
+        <div className="ln-msg-list__flex-container">
+            <div className="ln-msg-list__wrapper ln-scroll-y ln-scroll-fixed">
+                <ul className="ln-msg-list">
+                    {messages.map((msg, i) => (
+                        <li key={i} className="ln-msg">
+                            {msg.msg}
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </div>
     );
 });
