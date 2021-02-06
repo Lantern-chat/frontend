@@ -1,5 +1,9 @@
 @import "lib/variables.scss";
 
+body {
+    fill: $lnx-primary-text-color;
+}
+
 .ln-glyphicon {
     //position: relative;
     height: 1em;
@@ -12,7 +16,7 @@
         //display: inline-block;
         //vertical-align: middle;
         //height: 1em;
-        fill: $lnx-primary-text-color;
+        //fill: $lnx-primary-text-color;
 
         svg {
             height: 100%;
