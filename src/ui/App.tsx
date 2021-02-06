@@ -14,6 +14,8 @@ import { Session } from "client/session";
 const MainView: React.FunctionComponent = React.lazy(() => import(       /* webpackCHunkName: 'MainView'     */ "./views/main"));
 const LoginView: React.FunctionComponent = React.lazy(() => import(      /* webpackChunkName: 'LoginView'    */ "./views/login"));
 const RegisterView: React.FunctionComponent = React.lazy(() => import(   /* webpackChunkName: 'RegisterView' */ "./views/register"));
+const TestbedView: React.FunctionComponent = React.lazy(() => import(    /* webpackChunkName: 'TestbedView'  */ "./views/testbed"));
+
 
 const Fallback = <div className="ln-center-standalone"><Ripple size={120} /></div>;
 
@@ -57,6 +59,10 @@ const AppRouter = () => {
 
                 <Route path="/channels">
                     {session ? <MainView /> : <Redirect to="/login" />}
+                </Route>
+
+                <Route path="/testbed">
+                    <TestbedView />
                 </Route>
 
                 <Route>
