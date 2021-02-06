@@ -8,7 +8,7 @@ export interface ITooltipProps {
 
 import "./tooltip.scss";
 export const Tooltip = React.memo((props: ITooltipProps) => {
-    let body = useRef<HTMLDivElement | null>(null);
+    let body = useRef<HTMLDivElement>(null);
     let [, forceRender] = useState(false);
 
     useLayoutEffect(() => forceRender(true), []);

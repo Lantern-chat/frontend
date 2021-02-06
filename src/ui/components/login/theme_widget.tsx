@@ -8,7 +8,7 @@ import MoonIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-s
 
 import "./theme_widget.scss";
 export const ThemeWidget: React.FunctionComponent = React.memo(() => {
-    let input = useRef<HTMLInputElement | null>(null);
+    let input = useRef<HTMLInputElement>(null);
     let theme = useContext(Theme);
 
     let onTempTouchMove = (e: React.TouchEvent<HTMLInputElement>) => {
