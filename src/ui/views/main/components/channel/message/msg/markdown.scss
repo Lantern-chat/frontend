@@ -93,4 +93,18 @@
             width: 0.1em;
         }
     }
+
+    pre,
+    code {
+        font-family: Consolas, Liberation Mono, Menlo, Courier, monospace;
+        color: #839496;
+        background-color: #2f3136;
+        border: 0.125em solid rgba(32, 34, 37, 0.3);
+        border-radius: 0.3125em;
+    }
+
+    code {
+        padding: 0.05em 0.2em;
+        border: none;
+    }
 }
