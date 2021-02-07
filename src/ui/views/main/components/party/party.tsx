@@ -1,6 +1,5 @@
 import { fnv1a } from "client/fnv";
 import React from "react";
-import { Spinner } from "ui/components/common/spinners/spinner";
 import { ChannelList } from "ui/views/main/components/party/channel_list";
 import { PartyHeader } from "ui/views/main/components/party/party_header";
 import { Channel } from "../channel/channel";

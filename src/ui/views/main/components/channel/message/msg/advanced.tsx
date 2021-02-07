@@ -22,15 +22,13 @@ const renderers = {
     math: ({ value }: { value: string }) => <Tex block math={value} />,
 };
 
-export const AdvancedMessage = React.memo((props: MessageProps) => {
+export const AdvancedMessage = (props: MessageProps) => {
     let msg = props.msg
         .replace(/\$/g, '\\$') // escape $ symbols
         .replace(/(?<=\\\[[^]*)(\\\$)(?=[^]*?\\\])/g, '$$') // unescape $ symbols within block delimiters
         .replace(/\\[\[\]]/g, '$$$$') // escape block
         .replace(/\\[\(\)]/g, '$$'); // escape inline
 
-    console.log(msg);
-
     return <ReactMarkdown plugins={[gfm, math]} renderers={renderers} children={msg} />;
-});
+};
 export default AdvancedMessage;

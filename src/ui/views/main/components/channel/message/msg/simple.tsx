@@ -7,7 +7,7 @@ import "./markdown.scss";
 
 import { MessageProps } from "./types";
 
-export const SimpleMessage = React.memo((props: MessageProps) => {
+export const SimpleMessage = (props: MessageProps) => {
     return <ReactMarkdown plugins={[gfm]} children={props.msg} />
-});
+};
 export default SimpleMessage;

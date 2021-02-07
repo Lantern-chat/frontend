@@ -10,19 +10,21 @@
     display: block;
     overflow-x: auto;
     padding: 0.5em;
-    color: #839496;
 }
 
-.hljs-comment,
-.hljs-quote {
-    color: #586e75 !important;
+.hljs-emphasis {
+    font-style: italic;
+}
+
+.hljs-strong {
+    font-weight: bold;
 }
 
 /* Solarized Green */
 .hljs-keyword,
 .hljs-selector-tag,
 .hljs-addition {
-    color: #859900 !important;
+    color: #859900;
 }
 
 /* Solarized Cyan */
@@ -32,7 +34,7 @@
 .hljs-literal,
 .hljs-doctag,
 .hljs-regexp {
-    color: #2aa198 !important;
+    color: #2aa198;
 }
 
 /* Solarized Blue */
@@ -41,7 +43,7 @@
 .hljs-name,
 .hljs-selector-id,
 .hljs-selector-class {
-    color: #268bd2 !important;
+    color: #268bd2;
 }
 
 /* Solarized Yellow */
@@ -51,7 +53,7 @@
 .hljs-template-variable,
 .hljs-class .hljs-title,
 .hljs-type {
-    color: #b58900 !important;
+    color: #b58900;
 }
 
 /* Solarized Orange */
@@ -63,23 +65,43 @@
 .hljs-selector-attr,
 .hljs-selector-pseudo,
 .hljs-link {
-    color: #cb4b16 !important;
+    color: #cb4b16;
 }
 
 /* Solarized Red */
 .hljs-built_in,
 .hljs-deletion {
-    color: #dc322f !important;
+    color: #dc322f;
 }
 
-.hljs-formula {
-    background: #073642 !important;
+// https://github.com/highlightjs/highlight.js/blob/master/src/styles/solarized-light.css
+.ln-light-theme {
+    .hljs {
+        color: #657b83;
+    }
+
+    .hljs-comment,
+    .hljs-quote {
+        color: #93a1a1;
+    }
+
+    .hljs-formula {
+        background: #eee8d5;
+    }
 }
 
-.hljs-emphasis {
-    font-style: italic !important;
-}
+// https://github.com/highlightjs/highlight.js/blob/master/src/styles/solarized-dark.css
+.ln-dark-theme {
+    .hljs {
+        color: #839496;
+    }
 
-.hljs-strong {
-    font-weight: bold !important;
+    .hljs-comment,
+    .hljs-quote {
+        color: #586e75;
+    }
+
+    .hljs-formula {
+        background: #073642;
+    }
 }
