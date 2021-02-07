@@ -1,5 +1,7 @@
 import React, { useLayoutEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 
+import { RootState } from "ui/views/main/reducers";
 import TextareaAutosize from 'react-textarea-autosize';
 import { Glyphicon } from "ui/components/common/glyphicon";
 
@@ -11,9 +13,11 @@ export const MessageBox = React.memo(() => {
     let ref = useRef<HTMLTextAreaElement>(null);
     let [value, setValue] = useState("");
 
+    let dispatch = useDispatch();
+
     let on_keydown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if(!e.shiftKey && e.key == 'Enter') {
-            // TODO: Send message
+            dispatch({ type: 'send', value });
             setValue("");
         }
     };

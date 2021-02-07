@@ -1,4 +1,9 @@
-import { LanternStore } from "models/store";
 import { combineReducers } from "redux";
 
-export const rootReducer = combineReducers({ default: (state: LanternStore = {}) => state });
+import { messageReducer } from "./messages";
+
+export const rootReducer = combineReducers({
+    messages: messageReducer,
+});
+
+export type RootState = ReturnType<typeof rootReducer>;

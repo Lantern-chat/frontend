@@ -1,0 +1,96 @@
+@import "lib/variables";
+
+.ln-msg {
+    margin-bottom: 1em;
+
+    em {
+        font-style: italic;
+    }
+
+    strong {
+        font-weight: bold;
+    }
+
+    // element spacing (don't space the first child because the .ln-msg margin does that for us)
+    > *:not(:first-child) {
+        margin-top: 1em;
+    }
+
+    ul {
+        list-style: inside disc;
+    }
+
+    ol {
+        list-style: inside decimal;
+    }
+
+    // nested lists are indented
+    li > {
+        ul,
+        ol {
+            padding-left: 1em;
+        }
+    }
+
+    ul,
+    ol {
+        ul,
+        ol {
+            list-style-type: lower-roman;
+            ul,
+            ol {
+                list-style-type: lower-alpha;
+            }
+        }
+    }
+
+    hr {
+        color: $lnx-primary-text-color;
+    }
+
+    h1 {
+        font-size: 1.5em;
+    }
+
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-size: 1em;
+    }
+
+    table {
+        min-width: 20%;
+
+        th,
+        td {
+            padding: 0.3em;
+        }
+
+        th {
+            border-bottom: 1px solid $lnx-primary-surface-color;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    blockquote {
+        position: relative;
+        padding-left: 1em;
+        min-height: 1.5em;
+        line-height: initial;
+
+        &::before {
+            content: "";
+            position: absolute;
+            background-color: $lnx-primary-text-color;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 0.1em;
+        }
+    }
+}

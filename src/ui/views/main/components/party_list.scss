@@ -5,12 +5,45 @@
     flex-direction: column;
     align-items: center;
 
-    img.ln-avatar-image,
-    span.ln-avatar-text {
-        font-size: 2em;
+    .ln-avatar {
+        &__image,
+        &__text {
+            font-size: 2em;
+        }
     }
 
     li {
+        position: relative;
+        text-align: center;
+        width: 100%;
+
+        &::before {
+            contain: paint;
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            right: 93%;
+            background-color: $lnx-primary-text-color;
+            transform: scaleY(0);
+
+            border-top-right-radius: 50%;
+            border-bottom-right-radius: 50%;
+
+            .ln-enable-motion & {
+                transition: transform 0.1s ease-in;
+            }
+        }
+
+        &:hover::before {
+            transform: scaleY(40%);
+        }
+
+        &.selected::before {
+            transform: scaleY(80%);
+        }
+
         margin-bottom: 0.7em;
 
         &:first-child {

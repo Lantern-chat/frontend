@@ -1,24 +1,21 @@
-import React from "react";
+import React, { useContext } from "react";
+import { useSelector } from "react-redux";
+import { IMessageStore } from "ui/views/main/reducers/messages";
+import { RootState } from "ui/views/main/reducers";
 
-const dummyjs = require("dummyjs").default;
+import { Message } from "./msg";
 
-import "./list.scss"
+import "./list.scss";
 export const MessageList = React.memo(() => {
-    let messages = [];
-    for(let i = 0; i < 200; i++) {
-        messages.push({
-            id: i,
-            msg: dummyjs.text(4, 40),
-        });
-    }
+    let { messages }: IMessageStore = useSelector((state: RootState) => state.messages);
 
     return (
         <div className="ln-msg-list__flex-container">
             <div className="ln-msg-list__wrapper ln-scroll-y ln-scroll-fixed">
                 <ul className="ln-msg-list">
-                    {messages.map((msg, i) => (
-                        <li key={i} className="ln-msg">
-                            {msg.msg}
+                    {messages.map(msg => (
+                        <li key={msg.id} className="ln-msg">
+                            <Message msg={msg.msg} />
                         </li>
                     ))}
                 </ul>

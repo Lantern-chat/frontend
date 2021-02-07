@@ -12,10 +12,10 @@ export interface IAvatarProps {
 
 export const Avatar = React.memo((props: IAvatarProps) => (
     <div className={"ln-avatar" + (props.rounded ? " ln-rounded" : '')}>
-        <span className="ln-avatar-wrapper">
+        <span className="ln-avatar__wrapper">
             {props.url != null ?
-                <img src={props.url} className="ln-avatar-image" alt={props.username} /> :
-                <span className="ln-avatar-text" style={{ backgroundColor: props.backgroundColor }}>{props.text || '?'}</span>}
+                <img src={props.url} className="ln-avatar__image" alt={props.username} /> :
+                <span className="ln-avatar__text" style={{ backgroundColor: props.backgroundColor }}>{props.text || '?'}</span>}
         </span>
     </div>
 ));

@@ -3,24 +3,29 @@
 .ln-avatar {
     color: black;
     display: inline;
-}
 
-img.ln-avatar-image,
-span.ln-avatar-text {
-    display: inline-flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 1.5em;
-    height: 1.5em;
-
-    .ln-rounded & {
-        border-radius: 50%;
+    &__wrapper {
+        display: flex;
     }
-    //line-height: 0.925;
-}
 
-span.ln-avatar-text {
-    line-height: 1;
-    font-family: sans-serif;
-    text-align: center;
+    &__image,
+    &__text {
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 1.5em;
+        height: 1.5em;
+        margin: auto;
+
+        .ln-rounded & {
+            border-radius: 50%;
+        }
+        //line-height: 0.925;
+    }
+
+    &__text {
+        line-height: 1;
+        font-family: sans-serif;
+        text-align: center;
+    }
 }

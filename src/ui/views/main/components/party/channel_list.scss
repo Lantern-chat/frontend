@@ -22,13 +22,16 @@
     .ln-glyphicon {
         font-size: 1.3em;
         height: 100%;
+        right: -0.1em;
+        position: relative;
     }
 
     @include scrollbar($lnx-secondary-text-color, $lnx-primary-surface-color);
 
     &__icon {
-        width: 2em;
-        text-align: center;
+        width: 1.5em;
+        text-align: right;
+        margin-right: 0.4em;
     }
 
     &__channel {
