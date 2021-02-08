@@ -10,25 +10,29 @@ import "katex/contrib/mhchem/mhchem";
 import math from 'remark-math';
 
 import 'katex/dist/katex.min.css'
-import "./code.scss";
+import "./advanced.scss";
 
-import { MessageProps } from "./types";
+import { MarkdownProps } from "./types";
 
 const renderers = {
-    code: ({ language, value }: { language: string, value: string }) => {
+    code: ({ language, value = "" }: { language: string, value: string }) => {
         return <SyntaxHighlighter useInlineStyles={false} language={language} children={value} />
     },
-    inlineMath: ({ value }: { value: string }) => <Tex math={value} />,
-    math: ({ value }: { value: string }) => <Tex block math={value} />,
+    inlineMath: ({ value = "" }: { value: string }) => <Tex math={value} />,
+    math: ({ value = "" }: { value: string }) => <Tex block math={value} />,
 };
 
-export const AdvancedMessage = (props: MessageProps) => {
-    let msg = props.msg
+export const AdvancedMarkdown = (props: MarkdownProps) => {
+    let body = props.body
         .replace(/\$/g, '\\$') // escape $ symbols
         .replace(/(?<=\\\[[^]*)(\\\$)(?=[^]*?\\\])/g, '$$') // unescape $ symbols within block delimiters
         .replace(/\\[\[\]]/g, '$$$$') // escape block
         .replace(/\\[\(\)]/g, '$$'); // escape inline
 
-    return <ReactMarkdown plugins={[gfm, math]} renderers={renderers} children={msg} />;
+    return <ReactMarkdown plugins={[gfm, math]} renderers={renderers} children={body} />;
 };
-export default AdvancedMessage;
+export default AdvancedMarkdown;
+
+if(process.env.NODE_ENV !== 'production') {
+    AdvancedMarkdown.displayName = "AdvancedMarkdown";
+}

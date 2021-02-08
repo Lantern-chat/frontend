@@ -1,15 +1,10 @@
 .katex-display {
     text-align: left;
+    margin: 0;
 
     > .katex {
         text-align: left;
     }
-}
-
-.hljs {
-    display: block;
-    overflow-x: auto;
-    padding: 0.5em;
 }
 
 .hljs-emphasis {

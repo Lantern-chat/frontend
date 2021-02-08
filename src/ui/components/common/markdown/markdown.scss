@@ -1,8 +1,12 @@
 @import "lib/variables";
 
-.ln-msg {
-    margin-bottom: 1em;
+.hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 0.5em;
+}
 
+.ln-markdown {
     em {
         font-style: italic;
     }
@@ -11,7 +15,7 @@
         font-weight: bold;
     }
 
-    // element spacing (don't space the first child because the .ln-msg margin does that for us)
+    // element spacing
     > *:not(:first-child) {
         margin-top: 1em;
     }
@@ -106,5 +110,9 @@
     code {
         padding: 0.05em 0.2em;
         border: none;
+    }
+
+    pre code {
+        padding: 0;
     }
 }
