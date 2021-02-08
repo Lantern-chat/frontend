@@ -7,6 +7,7 @@ import { Glyphicon } from "ui/components/common/glyphicon";
 
 import Smiley from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-901-slightly-smiling.svg";
 import SmileyHalf from "icons/glyphicons-pro/glyphicons-halflings-2-2/svg/individual-svg/glyphicons-halflings-243-slightly-smiling.svg";
+import Send from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-461-send.svg";
 
 import "./box.scss";
 export const MessageBox = React.memo(() => {
@@ -44,6 +45,9 @@ export const MessageBox = React.memo(() => {
                     placeholder="Message..."
                     rows={1} maxRows={20}
                     value={value} onKeyDown={on_keydown} onChange={on_change} />
+            </div>
+            <div className="ln-msg-box__send">
+                <Glyphicon src={Send} />
             </div>
         </div>
     );

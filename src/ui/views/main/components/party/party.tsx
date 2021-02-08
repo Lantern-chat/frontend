@@ -7,7 +7,7 @@ import { ChannelBody } from "../channel/body";
 import { ChannelHeader } from "../channel/header";
 
 import "./party.scss";
-export const Party = () => {
+export const Party = React.memo(() => {
     let channels = ["off-topic-general", "lantern-dev", "meta-discussion", "the-memes", "fanfics"];
 
     let prefix = "abcdefghijklmnopqrstuvwxyz";
@@ -28,4 +28,4 @@ export const Party = () => {
             </div>
         </div>
     );
-};
+});

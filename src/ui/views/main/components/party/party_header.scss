@@ -1,22 +1,20 @@
 @import "lib/variables";
 
-.ln-party {
-    &__header {
-        //position: relative;
-        width: 100%;
-        background-color: $lnx-primary-surface-color;
-        padding: 0.5em;
-        text-align: center;
-        //z-index: 1;
-        //box-shadow: 0 0.2em 0.2em -0.2em black;
-        border-bottom: 2px solid $lnx-secondary-surface-color;
-        height: 3em;
-        max-height: 3em;
+.ln-party-header {
+    //position: relative;
+    width: 100%;
+    background-color: $lnx-primary-surface-color;
+    padding: 0.5em;
+    text-align: center;
+    //z-index: 1;
+    //box-shadow: 0 0.2em 0.2em -0.2em black;
+    border-bottom: 2px solid $lnx-secondary-surface-color;
+    height: 3em;
+    max-height: 3em;
 
-        .ln-glyphicon {
-            font-size: 2em;
-            padding-left: 0.5em;
-            vertical-align: middle;
-        }
+    .ln-glyphicon {
+        font-size: 2em;
+        padding-left: 0.5em;
+        vertical-align: middle;
     }
 }

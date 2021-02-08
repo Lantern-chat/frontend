@@ -1,13 +1,30 @@
 @import "lib/variables";
 
-.ln-channel {
-    &__header {
-        width: 100%;
+.ln-channel-header {
+    width: 100%;
+    padding: 0.5em;
+    text-align: center;
+    border-bottom: 2px solid $lnx-secondary-surface-color;
+    height: 3em;
+    max-height: 3em;
+    flex-shrink: 0;
+    position: relative;
+
+    &__hamburger {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
         padding: 0.5em;
-        text-align: center;
-        border-bottom: 2px solid $lnx-secondary-surface-color;
-        height: 3em;
-        max-height: 3em;
-        flex-shrink: 0;
+        font-size: 1.2em;
+
+        @media (min-width: $ln-min-channel-width) {
+            display: none;
+        }
     }
 }

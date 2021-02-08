@@ -6,32 +6,36 @@
     flex-wrap: nowrap;
     text-align: center;
     flex-shrink: 0;
-    padding: 0 2em 0 1em;
     color: $lnx-primary-text-color;
     background-color: rgba(50%, 50%, 50%, 50%);
     min-height: 3em;
     border-radius: 0.5em;
     margin: 0.5em 1em 1em 1em;
 
-    &__emoji {
-        fill: $lnx-secondary-text-color;
-
-        font-size: 1.5em;
-        padding-right: 0.5em;
+    &__emoji,
+    &__send {
         //text-align: center;
         flex: 0 0 auto;
         display: flex;
         flex-direction: column;
         justify-content: center;
         cursor: pointer;
-
+        fill: $lnx-secondary-text-color;
         &:hover {
             fill: $lnx-primary-text-color;
         }
     }
 
+    &__emoji {
+        font-size: 1.5em;
+        padding: 0 0.5em 0 0.5em;
+    }
+    &__send {
+        font-size: 1.75em;
+        padding: 0 0.5em 0 0.5em;
+    }
+
     &__box {
-        height: 100%;
         width: 100%;
 
         textarea {
@@ -43,6 +47,7 @@
             outline: none;
             font-family: inherit;
             background-color: transparent;
+            font-size: inherit;
         }
 
         display: flex;

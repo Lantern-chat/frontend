@@ -10,6 +10,8 @@ $zindex-modal: 1050;
 $zindex-popover: 1060;
 $zindex-tooltip: 1070;
 
+$ln-min-channel-width: 640px;
+
 @mixin scrollbar($thumb, $background) {
     scrollbar-color: $thumb $background;
 
