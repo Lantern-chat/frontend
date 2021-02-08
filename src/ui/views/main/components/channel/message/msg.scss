@@ -1,2 +1,7 @@
 .ln-msg {
+    padding: 0.5em 1em;
+
+    &--editing {
+        background-color: rgba(128, 128, 128, 0.3);
+    }
 }

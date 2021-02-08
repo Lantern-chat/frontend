@@ -11,6 +11,9 @@ const lantern_store = createStore(rootReducer);
 import { PartyList } from "./components/party_list";
 import { Party } from "./components/party/party";
 
+window.addEventListener('resize', () => {
+    lantern_store.dispatch({ type: 'WINDOW_RESIZE' });
+});
 
 import "./main.scss";
 export const MainView: React.FunctionComponent = () => (

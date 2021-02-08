@@ -46,10 +46,6 @@ function render_timeline(props: ITimelineProps, { width = 0, height = 0 }: { wid
 }
 
 export const Timeline = React.memo((props: ITimelineProps) => {
-    if(typeof window.ResizeObserver === 'undefined') {
-        return <></>;
-    }
-
     const { width, height, ref } = useResizeDetector<HTMLDivElement>();
 
     let canvas_ref = useRef<HTMLCanvasElement>(null);

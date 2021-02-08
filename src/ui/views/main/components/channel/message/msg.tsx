@@ -4,10 +4,20 @@ import { Markdown, MarkdownProps } from "ui/components/common/markdown";
 
 import { IMessage } from "ui/views/main/reducers/messages";
 
-export const Message = (msg: IMessage) => {
+export interface MessageProps extends IMessage {
+    editing: boolean,
+}
+
+import "./msg.scss";
+export const Message = React.memo((props: MessageProps) => {
+    let className = "ln-msg";
+    if(props.editing) {
+        className += " ln-msg--editing";
+    }
+
     return (
-        <div className="ln-msg">
-            <Markdown body={msg.msg} />
+        <div className={className}>
+            <Markdown body={props.msg} />
         </div>
     );
-};
+});
