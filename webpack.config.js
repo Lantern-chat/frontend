@@ -51,6 +51,8 @@ module.exports = (env, argv) => {
             splitChunks: {
                 chunks: 'all',
                 minChunks: 2,
+                enforceSizeThreshold: 1024 * 1000,
+                //minSize: 1024 * 1000,
             }
         },
 

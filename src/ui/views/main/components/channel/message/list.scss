@@ -10,6 +10,19 @@
         left: 0;
         right: 0;
         bottom: 0;
+        margin-right: 2em;
+    }
+
+    &__group {
+        margin-top: 1em;
+    }
+
+    &__timeline {
+        position: absolute;
+        top: 0;
+        width: 2em;
+        right: 0;
+        bottom: 0;
     }
 
     padding: 1em;
