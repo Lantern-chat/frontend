@@ -26,7 +26,7 @@ export const Markdown = React.memo((props: MarkdownProps) => {
         // so show the box while loading to prevent multiple layout changes
         if(/`{3}/.test(body)) {
             Element = Pre;
-            let newlines = (body.match(/\n/g) || '').length * 1.03125; // TODO: Figure this out
+            let newlines = (body.match(/\n/g) || '').length * 1.2; // 1.2 line height for code blocks
             style = { minHeight: newlines + 'em' };
         }
 
