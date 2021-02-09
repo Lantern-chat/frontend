@@ -1,19 +1,20 @@
-import React, { useContext } from "react";
+import React from "react";
+import { createStore, applyMiddleware } from "redux";
+import thunk from 'redux-thunk';
 
-import { createStore } from "redux";
-import { useSelector, Provider, useStore } from "react-redux";
-import { LanternStore } from "models/store";
-import { Link, Route, Switch } from "react-router-dom";
-
+import { Provider } from "react-redux";
 import { rootReducer } from "./reducers";
-const lantern_store = createStore(rootReducer);
 
-import { PartyList } from "./components/party_list";
-import { Party } from "./components/party/party";
+const lantern_store = createStore(rootReducer, applyMiddleware(thunk));
 
 window.addEventListener('resize', () => {
     lantern_store.dispatch({ type: 'WINDOW_RESIZE' });
 });
+
+import { Route, Switch } from "react-router-dom";
+
+import { PartyList } from "./components/party_list";
+import { Party } from "./components/party/party";
 
 import "./main.scss";
 export const MainView: React.FunctionComponent = () => (
