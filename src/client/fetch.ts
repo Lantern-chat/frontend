@@ -1,10 +1,13 @@
 export enum XHRMethod {
-    GET,
-    HEAD,
-    POST,
-    PUT,
-    DELETE,
-    OPTIONS,
+    GET = "GET",
+    HEAD = "HEAD",
+    POST = "POST",
+    PUT = "PUT",
+    DELETE = "DELETE",
+    CONNECT = "CONNECT",
+    OPTIONS = "OPTIONS",
+    TRACE = "TRACE",
+    PATCH = "PATCH",
 }
 
 interface XHRParameters {
@@ -33,7 +36,7 @@ export function fetch(params: string | XHRParameters): Promise<XMLHttpRequest> {
             xhr.onerror = e => reject(e);
             xhr.onload = () => { if(xhr.status >= 200 && xhr.status < 400) { resolve(xhr) } else { reject(xhr) } };
 
-            xhr.open(XHRMethod[params.method || XHRMethod.GET], params.url);
+            xhr.open(params.method || "GET", params.url);
 
             if(params.headers) {
                 for(let key in params.headers) {
@@ -49,18 +52,16 @@ export function fetch(params: string | XHRParameters): Promise<XMLHttpRequest> {
 }
 
 fetch.submitFormUrlEncoded = function(params: XHRParameters): Promise<XMLHttpRequest> {
-    function urlencodeFormData(fd: FormData) {
-        var params = new URLSearchParams();
-        fd.forEach((value, key) => {
-            typeof value === 'string' && params.append(key, value);
-        });
-        return params.toString();
-    }
-
     if(params.body instanceof FormData) {
         params.headers = params.headers || {};
         params.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-        params.body = urlencodeFormData(params.body);
+
+        var encoded = new URLSearchParams();
+        params.body.forEach((value, key) => {
+            typeof value === 'string' && encoded.append(key, value);
+        });
+
+        params.body = encoded;
     }
 
     return fetch(params);
