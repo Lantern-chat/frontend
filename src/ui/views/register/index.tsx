@@ -287,7 +287,7 @@ export default function RegisterView() {
                     </span>
                 </FormLabel>
                 <FormInput type="password" name="password" placeholder="password" required isValid={state.valid_pass}
-                    classNames={passwordClass} onChange={e => dispatch({ type: RegisterActionType.UpdatePass, value: e.currentTarget.value })} />
+                    className={passwordClass} onChange={e => dispatch({ type: RegisterActionType.UpdatePass, value: e.currentTarget.value })} />
                 <FormText>
                     Password must be at least 8 characters long and contain at least one number or one special character.
                 </FormText>

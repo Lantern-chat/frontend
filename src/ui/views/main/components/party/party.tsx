@@ -1,10 +1,16 @@
-import { fnv1a } from "client/fnv";
 import React from "react";
+import { shallowEqual, useSelector } from "react-redux";
+
+import { fnv1a } from "client/fnv";
+
 import { ChannelList } from "ui/views/main/components/party/channel_list";
 import { PartyHeader } from "ui/views/main/components/party/party_header";
 import { Channel } from "../channel/channel";
 import { ChannelBody } from "../channel/body";
 import { ChannelHeader } from "../channel/header";
+
+import { RootState } from "ui/views/main/reducers";
+import { Panel } from "ui/views/main/reducers/window";
 
 import "./party.scss";
 export const Party = React.memo(() => {
@@ -17,13 +23,23 @@ export const Party = React.memo(() => {
         channels.push(prefix.charAt(idx) + "est-channel-" + i);
     }
 
+    let [show_panel, use_mobile_view] = useSelector((state: RootState) =>
+        [state.window.show_panel, state.window.use_mobile_view], shallowEqual);
+
+    let classes = ["ln-party__channel"];
+    switch(show_panel) {
+        case Panel.RightSidebar: {
+            classes.push(classes[0] + '--expanded');
+        }
+    }
+
     return (
         <div className="ln-party">
             <div className="ln-party__sidebar">
                 <PartyHeader />
                 <ChannelList channels={channels} />
             </div>
-            <div className="ln-party__channel">
+            <div className={classes.join(' ')}>
                 <Channel />
             </div>
         </div>

@@ -1,5 +1,7 @@
 import React, { useMemo, useRef, useState } from "react";
 
+import classnames from "classnames";
+
 import "./form.scss";
 
 interface IFormGroupProps {
@@ -33,24 +35,19 @@ interface IFormInputProps {
     value?: string,
     placeholder?: string,
     required?: boolean,
-    classNames?: string,
+    className?: string,
     isValid?: boolean | null,
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void,
 }
 
 export const FormInput: React.FunctionComponent<IFormInputProps> = React.memo((props: IFormInputProps) => {
-    let classNames = "ln-form-control-wrapper ";
-
-    if(props.classNames) {
-        classNames += props.classNames;
-    }
-
-    if(props.isValid != null) {
-        classNames += props.isValid ? ' ln-success' : ' ln-error';
-    }
+    let classes = classnames("ln-form-control-wrapper", props.className, {
+        'ln-success': props.isValid === true,
+        'ln-error': props.isValid === false,
+    });
 
     return (
-        <span className={classNames}>
+        <span className={classes}>
             <input className="ln-form-control"
                 type={props.type}
                 name={props.name}

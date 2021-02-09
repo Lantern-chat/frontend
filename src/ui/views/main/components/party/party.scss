@@ -1,6 +1,7 @@
 @import "lib/variables";
 
 .ln-party {
+    background-color: $lnx-secondary-surface-color;
     display: flex;
     flex-wrap: nowrap;
     width: 100%;
@@ -16,7 +17,7 @@
         flex-wrap: nowrap;
 
         @media (max-width: $ln-min-channel-width) {
-            max-width: 100%;
+            max-width: calc(86vw - 4.5em);
         }
     }
 
@@ -32,12 +33,13 @@
             right: 0;
             bottom: 0;
 
-            .ln-enable-motion {
-                transition: left 0.2s ease-in;
+            .ln-enable-motion & {
+                transition: transform 0.2s ease-in;
             }
 
-            &.expanded {
-                left: 80%;
+            &--expanded {
+                transform: translateX(87%);
+                border-top-left-radius: 1em;
             }
         }
     }

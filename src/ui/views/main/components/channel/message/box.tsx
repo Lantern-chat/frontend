@@ -56,11 +56,15 @@ export const MessageBox = React.memo(() => {
         });
     }
 
+    let send = () => {
+        app_dispatch({ type: state.isEditing ? 'MESSAGE_SEND_EDIT' : 'MESSAGE_SEND', payload: state.value.trim() });
+        setState({ ...state, value: "" });
+    };
+
     let on_send_click = (e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation(); // prevent refocus if not focused
 
-        app_dispatch({ type: state.isEditing ? 'MESSAGE_SEND_EDIT' : 'MESSAGE_SEND', payload: state.value.trim() });
-        setState({ ...state, value: "" });
+        send();
 
         if(focused) {
             ref.current!.focus(); // refocus just in-case, since on Safari it blurs automatically
@@ -88,8 +92,7 @@ export const MessageBox = React.memo(() => {
 
                 e.preventDefault(); // don't add the newline
 
-                app_dispatch({ type: state.isEditing ? 'MESSAGE_SEND_EDIT' : 'MESSAGE_SEND', payload: state.value.trim() });
-                setState({ ...state, value: "" });
+                send();
 
                 break;
             }

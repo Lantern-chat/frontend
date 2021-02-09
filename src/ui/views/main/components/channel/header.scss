@@ -10,21 +10,30 @@
     flex-shrink: 0;
     position: relative;
 
-    &__hamburger {
+    &__hamburger,
+    &__users {
         position: absolute;
-        left: 0;
         top: 0;
         bottom: 0;
+        cursor: pointer;
 
         display: flex;
         flex-direction: column;
         justify-content: center;
 
-        padding: 0.5em;
-        font-size: 1.2em;
+        padding: 0.25em;
+        font-size: 2em;
+    }
+
+    &__hamburger {
+        left: 0;
 
         @media (min-width: $ln-min-channel-width) {
             display: none;
         }
+    }
+
+    &__users {
+        right: 0;
     }
 }
