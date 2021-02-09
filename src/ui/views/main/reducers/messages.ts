@@ -36,6 +36,9 @@ export function messageReducer(state: IMessageState = DEFAULT_STATE, action: Mes
                 }]
             };
         }
+        case 'MESSAGE_DISCARD_EDIT': {
+            return { ...state, current_edit: null };
+        }
         case 'MESSAGE_EDIT_PREV': {
             if(state.messages.length == 0) return state;
 
@@ -59,6 +62,8 @@ export function messageReducer(state: IMessageState = DEFAULT_STATE, action: Mes
                 let idx = state.messages.findIndex((msg) => msg.id == current_edit);
                 if(idx < state.messages.length - 1) {
                     current_edit = state.messages[idx + 1].id;
+                } else {
+                    current_edit = null;
                 }
             }
 

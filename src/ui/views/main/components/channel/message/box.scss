@@ -11,6 +11,18 @@
     min-height: 3em;
     border-radius: 0.5em;
     margin: 0.5em 1em 1em 1em;
+    position: relative;
+
+    * {
+        user-select: none;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    &__debug {
+        position: absolute;
+        left: 80%;
+        top: 30%;
+    }
 
     &__emoji,
     &__send {
@@ -48,6 +60,8 @@
             font-family: inherit;
             background-color: transparent;
             font-size: inherit;
+            user-select: initial;
+            caret-color: $lnx-primary-text-color;
         }
 
         display: flex;
