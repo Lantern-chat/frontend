@@ -31,7 +31,7 @@ export function messageReducer(state: IMessageState = DEFAULT_STATE, action: Mes
                 ...state,
                 messages: [...state.messages, {
                     id: counter,
-                    msg: action.payload,
+                    msg: action.payload.trim(),
                     ts: dayjs(),
                 }]
             };
@@ -77,7 +77,7 @@ export function messageReducer(state: IMessageState = DEFAULT_STATE, action: Mes
                     let messages = state.messages.slice();
                     messages[idx] = {
                         ...messages[idx],
-                        msg: action.payload
+                        msg: action.payload.trim(),
                     };
 
                     return { ...state, current_edit: null, messages };

@@ -1,10 +1,11 @@
 import React, { useRef, useState } from "react";
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { createStructuredSelector } from "reselect";
 
 import TextareaAutosize from 'react-textarea-autosize';
 
 //import { IMessageState } from "ui/views/main/reducers/messages";
-import { RootState } from "ui/views/main/reducers";
+import { RootState } from "ui/views/main/state";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
 
@@ -12,10 +13,17 @@ import { Glyphicon } from "ui/components/common/glyphicon";
 import SmileyHalf from "icons/glyphicons-pro/glyphicons-halflings-2-2/svg/individual-svg/glyphicons-halflings-243-slightly-smiling.svg";
 import Send from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-461-send.svg";
 
+import { editMessageNext, editMessagePrev, sendMessage, sendMessageEdit, editMessageDiscard } from "ui/views/main/state/actions/msg";
+
 // TODO: Move elsewhere
 function countLines(str: string): number {
     return (str.match(/\n/g) || '').length;
 }
+
+const msg_selector = createStructuredSelector({
+    msg: (state: RootState) => state.messages,
+    use_mobile_view: (state: RootState) => state.window.use_mobile_view,
+});
 
 import "./box.scss";
 export const MessageBox = React.memo(() => {
@@ -35,11 +43,8 @@ export const MessageBox = React.memo(() => {
         isEditing: false,
     });
 
-    let app_dispatch = useDispatch();
-    let {
-        msg: { messages, current_edit },
-        use_mobile_view,
-    } = useSelector((state: RootState) => ({ msg: state.messages, use_mobile_view: state.window.use_mobile_view }), shallowEqual);
+    let dispatch = useDispatch();
+    let { msg: { messages, current_edit }, use_mobile_view } = useSelector(msg_selector);
 
     if(state.isEditing === true && current_edit == null) { // in edit-mode but no message is selected for edit
         setState({ ...state, isEditing: false, value: "" });
@@ -56,15 +61,15 @@ export const MessageBox = React.memo(() => {
         });
     }
 
-    let send = () => {
-        app_dispatch({ type: state.isEditing ? 'MESSAGE_SEND_EDIT' : 'MESSAGE_SEND', payload: state.value.trim() });
+    let do_send = () => {
+        dispatch(state.isEditing ? sendMessageEdit(state.value) : sendMessage(state.value));
         setState({ ...state, value: "" });
     };
 
     let on_send_click = (e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation(); // prevent refocus if not focused
 
-        send();
+        do_send();
 
         if(focused) {
             ref.current!.focus(); // refocus just in-case, since on Safari it blurs automatically
@@ -92,7 +97,7 @@ export const MessageBox = React.memo(() => {
 
                 e.preventDefault(); // don't add the newline
 
-                send();
+                do_send();
 
                 break;
             }
@@ -102,9 +107,9 @@ export const MessageBox = React.memo(() => {
                 let current_line = countLines(state.value.slice(0, ref.current!.selectionStart));
 
                 if(e.key === 'ArrowUp' && current_line === 0) {
-                    app_dispatch({ type: 'MESSAGE_EDIT_PREV' });
+                    dispatch(editMessagePrev());
                 } else if(e.key === 'ArrowDown' && current_line === total_lines) {
-                    app_dispatch({ type: 'MESSAGE_EDIT_NEXT' });
+                    dispatch(editMessageNext());
                 } else {
                     return;
                 }
@@ -114,9 +119,7 @@ export const MessageBox = React.memo(() => {
             }
             case 'Escape':
             case 'Esc': {
-                if(state.isEditing) {
-                    app_dispatch({ type: 'MESSAGE_DISCARD_EDIT' });
-                }
+                if(state.isEditing) { dispatch(editMessageDiscard()); }
                 break;
             }
         }

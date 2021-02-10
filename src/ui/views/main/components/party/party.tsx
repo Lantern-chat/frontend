@@ -6,11 +6,9 @@ import { fnv1a } from "client/fnv";
 import { ChannelList } from "ui/views/main/components/party/channel_list";
 import { PartyHeader } from "ui/views/main/components/party/party_header";
 import { Channel } from "../channel/channel";
-import { ChannelBody } from "../channel/body";
-import { ChannelHeader } from "../channel/header";
 
-import { RootState } from "ui/views/main/reducers";
-import { Panel } from "ui/views/main/reducers/window";
+import { RootState } from "ui/views/main/state";
+import { Panel } from "ui/views/main/state/reducers/window";
 
 import "./party.scss";
 export const Party = React.memo(() => {
