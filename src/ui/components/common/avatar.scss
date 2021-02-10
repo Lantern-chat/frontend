@@ -1,11 +1,15 @@
 @import "lib/variables";
 
 .ln-avatar {
-    color: black;
     display: inline;
+
+    * {
+        user-select: none;
+    }
 
     &__wrapper {
         display: flex;
+        cursor: pointer;
     }
 
     &__image,

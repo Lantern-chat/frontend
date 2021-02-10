@@ -11,8 +11,10 @@ import LogoutIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual
 
 
 import "./party_list.scss";
+import { useDispatch } from "react-redux";
 export const PartyList = React.memo(() => {
     let ctx = useContext(Session);
+    let dispatch = useDispatch();
 
     let logout = () => {
         ctx.setSession(null)
@@ -27,7 +29,7 @@ export const PartyList = React.memo(() => {
     let dummy_data = ['A', 'B', 'C', 'D'];
     let colors = ['yellow', 'lightblue', 'lightgreen', 'lightcoral'];
 
-    for(let i = 0; i < 25; i++) {
+    for(let i = 0; i < 4; i++) {
         dummy_data.push("party-" + i);
     }
 
@@ -36,9 +38,15 @@ export const PartyList = React.memo(() => {
             <ul className="ln-party-list ln-scroll-y ln-scroll-y--invisible ln-scroll-fixed">
                 {dummy_data.map((text, i) => (
                     <li key={i} className={i == 0 ? 'selected' : undefined}>
-                        <Avatar rounded url={`https://placekitten.com/${(i % 25) + 50}/${(i % 25) + 50}`} username={text} backgroundColor={colors[fnv1a(text) % colors.length]}></Avatar>
+                        <Avatar rounded url={`https://placekitten.com/${(i % 25) + 50}/${(i % 25) + 50}`}
+                            username={text} title={text} backgroundColor={colors[fnv1a(text) % colors.length]} />
                     </li>
                 ))}
+
+                <li id="create-party">
+                    <Avatar rounded text="+" username="Join/Create Party" title="Join/Create Party"
+                        onClick={() => dispatch({ type: 'MODAL_OPEN_CREATE_PARTY' })} />
+                </li>
             </ul>
 
             <div id="logout" onClick={logout} title="Logout">

@@ -15,12 +15,15 @@ import { Route, Switch } from "react-router-dom";
 
 import { PartyList } from "./components/party_list";
 import { Party } from "./components/party/party";
+import { CreatePartyModal } from "./modals/create_party";
 
 import "./main.scss";
 export const MainView: React.FunctionComponent = () => (
     <Provider store={lantern_store}>
         <div className="ln-main">
             <PartyList />
+
+            <CreatePartyModal />
 
             <Switch>
                 <Route path="/channels/@me/:channel">

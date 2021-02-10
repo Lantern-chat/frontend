@@ -7,11 +7,13 @@ export interface IMessage {
 }
 
 export interface IMessageState {
+    message_ids: string[],
     messages: IMessage[],
     current_edit: null | number,
 }
 
 const DEFAULT_STATE: IMessageState = {
+    message_ids: [],
     messages: [],
     current_edit: null,
 };
@@ -40,7 +42,7 @@ export function messageReducer(state: IMessageState = DEFAULT_STATE, action: Mes
             return { ...state, current_edit: null };
         }
         case 'MESSAGE_EDIT_PREV': {
-            if(state.messages.length == 0) return state;
+            if(state.messages.length == 0) break;
 
             let current_edit = state.current_edit;
             if(current_edit != null) {
@@ -55,7 +57,7 @@ export function messageReducer(state: IMessageState = DEFAULT_STATE, action: Mes
             return { ...state, current_edit };
         }
         case 'MESSAGE_EDIT_NEXT': {
-            if(state.messages.length == 0) return state;
+            if(state.messages.length == 0) break;
 
             let current_edit = state.current_edit;
             if(current_edit != null) {
