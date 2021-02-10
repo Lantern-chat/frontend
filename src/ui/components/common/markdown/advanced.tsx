@@ -16,6 +16,7 @@ import { MarkdownProps } from "./types";
 
 const renderers = {
     code: ({ language, value = "" }: { language: string, value: string }) => {
+        value = value.replace(/\s+?($|\n)/g, '$1'); // trim any whitespace leading up to newlines/EOF
         return <SyntaxHighlighter useInlineStyles={false} language={language} children={value} />
     },
     inlineMath: ({ value = "" }: { value: string }) => <Tex math={value} />,
