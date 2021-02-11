@@ -16,8 +16,7 @@ export const Markdown = React.memo((props: MarkdownProps) => {
 
     let body = props.body
         .replace(/>(.*)\n>/g, '>$1\n>\n>') // always split paragraphs in blockquotes
-        .replace(/>{5,}/g, '>>>>>') // limit blockquote depth to 5
-        .replace(/\n/g, '  \n'); // append spaces to ends of lines to prevent inlining
+        .replace(/>{5,}/g, '>>>>>'); // limit blockquote depth to 5
 
     let fallback = <span />;
     if(is_advanced) {

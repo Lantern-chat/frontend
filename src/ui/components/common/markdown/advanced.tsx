@@ -2,6 +2,8 @@ import React from "react";
 
 import ReactMarkdown from 'react-markdown'
 import gfm from 'remark-gfm';
+import breaks from 'remark-breaks';
+import external from 'remark-external-links';
 
 import SyntaxHighlighter from 'react-syntax-highlighter'
 
@@ -14,9 +16,11 @@ import "./advanced.scss";
 
 import { MarkdownProps } from "./types";
 
+import { renderers as simple_renderers } from "./simple";
+
 const renderers = {
+    ...simple_renderers,
     code: ({ language, value = "" }: { language: string, value: string }) => {
-        value = value.replace(/\s+?($|\n)/g, '$1'); // trim any whitespace leading up to newlines/EOF
         return <SyntaxHighlighter useInlineStyles={false} language={language} children={value} />
     },
     inlineMath: ({ value = "" }: { value: string }) => <Tex math={value} />,
@@ -30,7 +34,7 @@ export const AdvancedMarkdown = (props: MarkdownProps) => {
         .replace(/\\[\[\]]/g, '$$$$') // escape block
         .replace(/\\[\(\)]/g, '$$'); // escape inline
 
-    return <ReactMarkdown plugins={[gfm, math]} renderers={renderers} children={body} />;
+    return <ReactMarkdown plugins={[gfm, math, breaks, external]} renderers={renderers} children={body} />;
 };
 export default AdvancedMarkdown;
 

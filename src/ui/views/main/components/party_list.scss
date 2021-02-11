@@ -55,15 +55,24 @@
             .ln-avatar {
                 &__text {
                     background-color: $lnx-primary-surface-color;
+                    color: $lnx-secondary-text-color;
 
                     .ln-enable-motion & {
-                        transition: background-color 0.1s ease-in;
+                        transition: background-color 0.1s ease-in, color 0.1s ease-in;
                     }
                 }
 
                 &__wrapper:hover .ln-avatar__text {
                     background-color: $lnx-tertiary-surface-color;
+                    color: $lnx-primary-text-color;
                 }
+            }
+        }
+
+        &#create-party.selected {
+            .ln-avatar__text {
+                background-color: $lnx-tertiary-surface-color;
+                color: $lnx-primary-text-color;
             }
         }
     }

@@ -1,0 +1,16 @@
+@import "lib/variables";
+
+.ln-party-footer {
+    width: 100%;
+    background-color: $lnx-primary-surface-color;
+    padding: 0.5em;
+    text-align: center;
+
+    border-top: 2px solid $lnx-secondary-surface-color;
+    height: 3em;
+    max-height: 3em;
+
+    @media (max-width: $ln-min-channel-width) {
+        border-bottom-right-radius: 1em;
+    }
+}
