@@ -25,6 +25,14 @@ body {
     background-color: $lnx-primary-surface-color;
 }
 
+#ln-modal-root {
+    &:empty {
+        display: none;
+    }
+
+    z-index: 500;
+}
+
 #ln-root,
 #ln-modal-root {
     width: 100%;
@@ -48,6 +56,8 @@ h3 {
 }
 
 a {
+    color: $ln-link-color;
+
     text-decoration: none;
 
     &:hover,

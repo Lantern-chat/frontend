@@ -2,7 +2,7 @@ import React, { useContext, useRef, useMemo, useState, useEffect } from "react";
 import { useSelector, shallowEqual } from "react-redux";
 
 import { IMessageState } from "ui/views/main/state/reducers/messages";
-import { IWindowState } from "ui/views/main/state/reducers/window";
+import { IWindowState } from "ui/views/main/state/state/window";
 import { RootState } from "ui/views/main/state/reducers";
 
 import { Message } from "./msg";

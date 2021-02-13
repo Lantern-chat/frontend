@@ -7,12 +7,11 @@ import { PartyFooter } from "./party_footer";
 import { Channel } from "../channel/channel";
 
 import { RootState } from "ui/views/main/state";
-import { Panel } from "ui/views/main/state/reducers/window";
+import { Panel } from "ui/views/main/state/state/window";
 
 import "./party.scss";
 export const Party = React.memo(() => {
-    let [show_panel, use_mobile_view] = useSelector((state: RootState) =>
-        [state.window.show_panel, state.window.use_mobile_view], shallowEqual);
+    let show_panel = useSelector((state: RootState) => state.window.show_panel);
 
     let classes = ["ln-party__channel"];
     switch(show_panel) {

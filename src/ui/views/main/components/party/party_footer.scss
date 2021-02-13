@@ -5,7 +5,7 @@
     background-color: $lnx-primary-surface-color;
     padding: 0.5em;
     text-align: center;
-
+    flex-shrink: 0;
     border-top: 2px solid $lnx-secondary-surface-color;
     height: 3em;
     max-height: 3em;

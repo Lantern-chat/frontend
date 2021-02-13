@@ -18,7 +18,10 @@ module.exports = (env, argv) => {
     const CHUNK_NAME = true ? "[id].[chunkhash]" : "[id]";
 
     return {
-        entry: "./src/index.tsx",
+        entry: {
+            index: "./src/index.tsx",
+            testbed: "./src/testbed.tsx",
+        },
         target: "web",
         mode: MODE,
         watch: true,
@@ -130,7 +133,7 @@ module.exports = (env, argv) => {
                     type: 'asset/source',
                 },
                 {
-                    test: /\.(jpg|jpeg|png|svg)(\?v=\d+\.\d+\.\d+)?$/,
+                    test: /\.(jpg|jpeg|png|svg|wav)(\?v=\d+\.\d+\.\d+)?$/,
                     exclude: /(icons|fonts)/,
                     use: [
                         {
@@ -151,6 +154,12 @@ module.exports = (env, argv) => {
             }),
             new webpack.ProvidePlugin({ Buffer: ['buffer', 'Buffer'] }),
             new HtmlWebpackPlugin({
+                excludeChunks: ['index'],
+                template: path.resolve(__dirname, "src", "index.html"),
+                filename: 'testbed.html'
+            }),
+            new HtmlWebpackPlugin({
+                excludeChunks: ['testbed'],
                 template: path.resolve(__dirname, "src", "index.html"),
             }),
             new BundleAnalyzerPlugin({

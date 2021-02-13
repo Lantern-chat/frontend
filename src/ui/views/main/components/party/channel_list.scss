@@ -3,7 +3,6 @@
 .ln-channel-list {
     font-size: 1em;
     width: 100%;
-    padding-top: 1em;
     height: 100%;
 
     color: $lnx-secondary-text-color;
@@ -16,6 +15,14 @@
 
         &:hover {
             background-color: $lnx-tertiary-surface-color;
+        }
+
+        &:first-child {
+            margin-top: 1em;
+        }
+
+        &:last-child {
+            margin-bottom: 1em;
         }
     }
 

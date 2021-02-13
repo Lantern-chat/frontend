@@ -27,8 +27,11 @@ const msg_selector = createStructuredSelector({
 
 import "./box.scss";
 export const MessageBox = React.memo(() => {
+    let dispatch = useDispatch();
+    let { msg: { messages, current_edit }, use_mobile_view } = useSelector(msg_selector);
+
     let ref = useRef<HTMLTextAreaElement>(null);
-    //let keyRef = useRef<HTMLSpanElement>(null);
+    let keyRef = useRef<HTMLSpanElement>(null);
 
     interface MsgBoxState {
         value: string,
@@ -42,9 +45,6 @@ export const MessageBox = React.memo(() => {
         backup: null,
         isEditing: false,
     });
-
-    let dispatch = useDispatch();
-    let { msg: { messages, current_edit }, use_mobile_view } = useSelector(msg_selector);
 
     if(state.isEditing === true && current_edit == null) { // in edit-mode but no message is selected for edit
         setState({ ...state, isEditing: false, value: "" });
@@ -69,7 +69,9 @@ export const MessageBox = React.memo(() => {
     let on_send_click = (e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation(); // prevent refocus if not focused
 
-        do_send();
+        if(state.value.length > 0) {
+            do_send();
+        }
 
         if(focused) {
             ref.current!.focus(); // refocus just in-case, since on Safari it blurs automatically
@@ -77,11 +79,11 @@ export const MessageBox = React.memo(() => {
     };
 
     let on_keydown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        //keyRef.current!.innerText = (e.ctrlKey ? 'Ctrl+' : '') + (e.altKey ? 'Alt+' : '') + (e.shiftKey ? 'Shift+' : '') + (e.key === ' ' ? 'Spacebar' : e.key);
+        keyRef.current!.innerText = (e.ctrlKey ? 'Ctrl+' : '') + (e.altKey ? 'Alt+' : '') + (e.shiftKey ? 'Shift+' : '') + (e.key === ' ' ? 'Spacebar' : e.key);
 
         switch(e.key) {
             case 'Enter': {
-                if(use_mobile_view || e.shiftKey) return;
+                if(use_mobile_view || e.shiftKey || state.value.length === 0) return;
 
                 let cursor = ref.current!.selectionStart;
 
@@ -150,6 +152,9 @@ export const MessageBox = React.memo(() => {
                     placeholder="Message..."
                     rows={1} maxRows={use_mobile_view ? 5 : 20}
                     value={state.value} onKeyDown={on_keydown} onChange={on_change} />
+            </div>
+            <div className="ln-msg-box__debug">
+                <span ref={keyRef}></span>
             </div>
             <div className="ln-msg-box__send" onClick={on_send_click}>
                 <Glyphicon src={Send} />
