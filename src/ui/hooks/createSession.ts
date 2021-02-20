@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { ISession, ISessionContext } from "client/session";
 import dayjs, { setLongTimeout } from "client/time";
-import { fetch } from "client/fetch";
+import { fetch, XHRMethod } from "client/fetch";
 
 const SESSION_KEY: string = 'session';
 
@@ -35,7 +35,8 @@ export function createSession(): ISessionContext {
         let session = ctx.session, cancelled = false;
         if(session != null) {
             fetch({
-                url: "/api/v1/user/check", headers: {
+                method: XHRMethod.HEAD,
+                url: "/api/v1/users/check", headers: {
                     'Authorization': 'Bearer ' + session.auth,
                 }
             }).catch(() => cancelled ? null : ctx.setSession(null));
