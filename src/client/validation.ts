@@ -3,7 +3,7 @@ export function validateUsername(value: string): boolean {
 }
 
 export function validateEmail(value: string): boolean {
-    return /^[^@\s]+@[^@\s]+\.[^.@\s]+$/.test(value);
+    return value.length <= 320 && /^[^@\s]{1,64}@[^@\s]+\.[^.@\s]+$/.test(value);
 }
 
 export function validatePass(value: string): boolean {
