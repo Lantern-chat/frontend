@@ -23,7 +23,7 @@ export const PartyList = React.memo(() => {
         ctx.setSession(null)
 
         fetch({
-            url: "/api/v1/users/logout",
+            url: "/api/v1/user/logout",
             method: XHRMethod.DELETE,
             headers: { 'Authorization': 'Bearer ' + ctx.session!.auth }
         }).catch(() => { })

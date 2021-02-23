@@ -36,7 +36,7 @@ export function createSession(): ISessionContext {
         if(session != null) {
             fetch({
                 method: XHRMethod.HEAD,
-                url: "/api/v1/users/check", headers: {
+                url: "/api/v1/user/check", headers: {
                     'Authorization': 'Bearer ' + session.auth,
                 }
             }).catch(() => cancelled ? null : ctx.setSession(null));

@@ -222,7 +222,7 @@ export default function RegisterView() {
         }
 
         fetch.submitFormUrlEncoded({
-            url: "/api/v1/users",
+            url: "/api/v1/user",
             method: XHRMethod.POST,
             body: new FormData(e.currentTarget),
         }).then((req) => {
