@@ -138,6 +138,7 @@ export const MessageBox = React.memo(() => {
         ref.current!.focus();
     };
 
+    // https://github.com/buildo/react-autosize-textarea/issues/52
     return (
         <div className="ln-msg-box" onClick={on_click_focus}>
             <div className="ln-msg-box__emoji">
