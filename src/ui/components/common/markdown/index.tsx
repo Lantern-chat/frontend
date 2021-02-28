@@ -14,6 +14,8 @@ export const Markdown = React.memo((props: MarkdownProps) => {
     let is_advanced = /`{3}|\\[\[\(]/.test(props.body);
     const Markdown = is_advanced ? AdvancedMarkdown : SimpleMarkdown;
 
+    // TODO: Escape backslashes before underscores, but also escape the underscore
+
     let body = props.body
         .replace(/>(.*)\n>/g, '>$1\n>\n>') // always split paragraphs in blockquotes
         .replace(/>{5,}/g, '>>>>>'); // limit blockquote depth to 5
