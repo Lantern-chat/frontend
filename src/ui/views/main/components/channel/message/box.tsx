@@ -12,6 +12,7 @@ import { Glyphicon } from "ui/components/common/glyphicon";
 //import Smiley from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-901-slightly-smiling.svg";
 import SmileyHalf from "icons/glyphicons-pro/glyphicons-halflings-2-2/svg/individual-svg/glyphicons-halflings-243-slightly-smiling.svg";
 import Send from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-461-send.svg";
+import Plus from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-371-plus.svg";
 
 import { editMessageNext, editMessagePrev, sendMessage, sendMessageEdit, editMessageDiscard } from "ui/views/main/state/actions/msg";
 
@@ -64,6 +65,10 @@ export const MessageBox = React.memo(() => {
     let do_send = () => {
         dispatch(state.isEditing ? sendMessageEdit(state.value) : sendMessage(state.value));
         setState({ ...state, value: "" });
+    };
+
+    let open_upload_click = (e: React.MouseEvent<HTMLDivElement>) => {
+        alert("Upload is not yet implemented!");
     };
 
     let on_send_click = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -138,6 +143,8 @@ export const MessageBox = React.memo(() => {
         ref.current!.focus();
     };
 
+    let is_empty = state.value.length == 0;
+
     // https://github.com/buildo/react-autosize-textarea/issues/52
     return (
         <div className="ln-msg-box" onClick={on_click_focus}>
@@ -157,8 +164,8 @@ export const MessageBox = React.memo(() => {
             <div className="ln-msg-box__debug">
                 <span ref={keyRef}></span>
             </div>
-            <div className="ln-msg-box__send" onClick={on_send_click}>
-                <Glyphicon src={Send} />
+            <div className="ln-msg-box__send" onClick={is_empty ? open_upload_click : on_send_click}>
+                <Glyphicon src={is_empty ? Plus : Send} />
             </div>
         </div>
     );
