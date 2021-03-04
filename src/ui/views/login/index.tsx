@@ -96,7 +96,7 @@ export default function LoginView() {
         };
 
         fetch.submitFormUrlEncoded({
-            url: "/api/v1/user/login",
+            url: "/api/v1/user/@me",
             method: XHRMethod.POST,
             body: new FormData(e.currentTarget),
         }).then((req) => {
