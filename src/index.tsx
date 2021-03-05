@@ -13,6 +13,9 @@ import { createLocale } from "ui/hooks/createLocale";
 
 import { Ripple } from "ui/components/common/spinners/ripple";
 
+//import Worker from "worker-loader!./worker/gateway";
+//let WORKER = new Worker();
+
 let Root = () => {
     let locale = createLocale();
 

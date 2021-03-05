@@ -1,0 +1,10 @@
+[workspace]
+members = ["gateway"]
+
+[profile.dev]
+opt-level = "s"
+
+[profile.release]
+opt-level = "s"
+lto = 'fat'
+codegen-units = 1

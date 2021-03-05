@@ -9,6 +9,7 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const TerserPlugin = require('terser-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const svgToMiniDataURI = require('mini-svg-data-uri');
+const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
 
 const distPath = path.join(__dirname, 'dist');
 
@@ -22,6 +23,9 @@ module.exports = (env, argv) => {
             index: "./src/index.tsx",
             testbed: "./src/testbed.tsx",
         },
+        //stats: {
+        //    children: true,
+        //},
         target: "web",
         mode: MODE,
         watch: true,
@@ -152,7 +156,11 @@ module.exports = (env, argv) => {
                 "typeof window": '"object"',
                 "typeof MessageChannel": '"function"',
             }),
-            new webpack.ProvidePlugin({ Buffer: ['buffer', 'Buffer'] }),
+            new webpack.ProvidePlugin({
+                Buffer: ['buffer', 'Buffer'],
+                //TextDecoder: ['text-encoding', 'TextDecoder'],
+                //TextEncoder: ['text-encoding', 'TextEncoder']
+            }),
             new HtmlWebpackPlugin({
                 excludeChunks: ['index'],
                 template: path.resolve(__dirname, "src", "index.html"),
@@ -162,10 +170,18 @@ module.exports = (env, argv) => {
                 excludeChunks: ['testbed'],
                 template: path.resolve(__dirname, "src", "index.html"),
             }),
-            new BundleAnalyzerPlugin({
-                analyzerMode: 'server',
-                openAnalyzer: true,
+            new WasmPackPlugin({
+                crateDirectory: path.resolve(__dirname, "worker/gateway"),
+                extraArgs: "--target web",
+                outDir: path.resolve(__dirname, "src/worker/gateway/pkg"),
+                //watchDirectories: [
+                //    path.resolve(__dirname, "worker/gateway")
+                //]
             }),
+            //new BundleAnalyzerPlugin({
+            //    analyzerMode: 'server',
+            //    openAnalyzer: true,
+            //}),
             new MiniCssExtractPlugin({
                 // Options similar to the same options in webpackOptions.output
                 // both options are optional

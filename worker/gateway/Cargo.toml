@@ -1,0 +1,39 @@
+[package]
+name = "gateway"
+version = "0.1.0"
+authors = ["Novapone <fpnova@pm.me>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+path = "src/gateway.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen = { version = "0.2", default-features = false }
+js-sys = "0.3"
+wee_alloc = "0.4.5"
+miniz_oxide = "0.4.4"
+# numtoa = "0.2.3" # use this if necessary
+
+[dependencies.web-sys]
+version = "0.3.40"
+features = [
+    "WebSocket",
+    "DedicatedWorkerGlobalScope"
+]
+
+[package.metadata.wasm-pack.profile.dev]
+# Should `wasm-opt` be used to further optimize the wasm binary generated after
+# the Rust compiler has finished? Using `wasm-opt` can often further decrease
+# binary size or do clever tricks that haven't made their way into LLVM yet.
+#
+# Configuration is set to `false` by default for the dev profile, but it can
+# be set to an array of strings which are explicit arguments to pass to
+# `wasm-opt`. For example `['-Os']` would optimize for size while `['-O4']`
+# would execute very expensive optimizations passes
+wasm-opt = ['-Os']
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ['-Os']
