@@ -5,6 +5,10 @@ import thunk from 'redux-thunk';
 import { Provider } from "react-redux";
 import { rootReducer } from "./state";
 
+
+import Worker from "worker-loader!../../../worker/gateway";
+let WORKER = new Worker();
+
 const lantern_store = createStore(rootReducer, applyMiddleware(thunk));
 
 window.addEventListener('resize', () => {

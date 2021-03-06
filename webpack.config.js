@@ -29,6 +29,10 @@ module.exports = (env, argv) => {
         target: "web",
         mode: MODE,
         watch: true,
+        //watchOptions: {
+        //    aggregateTimeout: 600,
+        //    //ignored: ["./worker/", "./build/", "./dist/"],
+        //},
         output: {
             filename: '[name].[fullhash].js',
             chunkFilename: `${CHUNK_NAME}.js`,
@@ -173,10 +177,7 @@ module.exports = (env, argv) => {
             new WasmPackPlugin({
                 crateDirectory: path.resolve(__dirname, "worker/gateway"),
                 extraArgs: "--target web",
-                outDir: path.resolve(__dirname, "src/worker/gateway/pkg"),
-                //watchDirectories: [
-                //    path.resolve(__dirname, "worker/gateway")
-                //]
+                outDir: path.resolve(__dirname, "build/worker/gateway"),
             }),
             //new BundleAnalyzerPlugin({
             //    analyzerMode: 'server',
