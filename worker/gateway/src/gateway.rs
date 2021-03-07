@@ -3,14 +3,10 @@
 
 extern crate alloc;
 use alloc::boxed::Box;
-use alloc::string::String;
 use alloc::vec::Vec;
 
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
-
-#[macro_use]
-extern crate serde;
 
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
@@ -29,69 +25,131 @@ extern "C" {
     fn log_bytes(b: &[u8]);
 }
 
-use js_sys::{JsString, Uint8Array};
-use web_sys::{ErrorEvent, MessageEvent, WebSocket};
+use js_sys::{ArrayBuffer, Uint8Array};
 
 use miniz_oxide::{deflate, inflate};
 
-#[macro_use]
-pub mod closure;
-
-#[derive(Serialize, Deserialize)]
-pub struct Message {
-    pub code: u32,
-    pub msg: String,
+#[wasm_bindgen]
+pub struct Compressor {
+    decomp: Box<inflate::core::DecompressorOxide>,
+    comp: Box<deflate::core::CompressorOxide>,
+    buf: Vec<u8>,
+    out: Vec<u8>,
 }
 
-#[wasm_bindgen(start)]
-pub fn main() -> Result<(), JsValue> {
-    log("Starting worker!");
+use deflate::core::{TDEFLFlush, TDEFLStatus};
+use inflate::TINFLStatus;
 
-    let worker = js_sys::global().dyn_into::<web_sys::DedicatedWorkerGlobalScope>()?;
-
-    let ws = web_sys::WebSocket::new("wss://lantern.chat/api/v1/gateway")?;
-    ws.set_binary_type(web_sys::BinaryType::Arraybuffer);
-
-    let mut recv_buffer = Vec::new();
-    let encoder = web_sys::TextEncoder::new()?;
-    let decoder = web_sys::TextDecoder::new()?;
-
-    let w = worker.clone();
-    let on_message = closure!(move |e: MessageEvent| {
-        if let Ok(abuf) = e.data().dyn_into::<js_sys::ArrayBuffer>() {
-            // get compressed message into memory
-            let array = js_sys::Uint8Array::new(&abuf);
-            recv_buffer.resize(array.length() as usize, 0);
-            array.copy_to(&mut recv_buffer);
-
-            // decompress
-            let mut encoded_msg = match inflate::decompress_to_vec(&recv_buffer) {
-                Err(_e) => return err("Error decompressing message"),
-                Ok(encoded_msg) => encoded_msg,
-            };
-
-            // decode UTF8 to UTF16 for JS
-            let msg = match decoder.decode_with_u8_array(&mut encoded_msg) {
-                Err(_e) => return err("Error decoding message"),
-                Ok(msg) => msg,
-            };
-
-            // create message object to send to UI thread
-            let value = match serde_wasm_bindgen::to_value(&Message { code: 0, msg }) {
-                Err(_e) => return err("Error serializing message"),
-                Ok(value) => value,
-            };
-
-            // post message
-            if let Err(e) = w.post_message(&value) {
-                err("Error posting message");
-            }
-        } else {
-            err("Unexpected websocket data type");
+#[wasm_bindgen]
+impl Compressor {
+    pub fn create() -> Self {
+        Compressor {
+            decomp: Box::default(),
+            comp: {
+                let mut comp = Box::<deflate::core::CompressorOxide>::default();
+                comp.set_compression_level_raw(6);
+                comp
+            },
+            buf: Vec::new(),
+            out: Vec::new(),
         }
-    });
-    ws.set_onmessage(Some(on_message.as_ref().unchecked_ref()));
-    on_message.forget();
+    }
 
-    Ok(())
+    fn decompress_inplace(&mut self) -> Result<(), TINFLStatus> {
+        let flags = inflate::core::inflate_flags::TINFL_FLAG_USING_NON_WRAPPING_OUTPUT_BUF
+            | inflate::core::inflate_flags::TINFL_FLAG_PARSE_ZLIB_HEADER;
+
+        self.out.resize(self.buf.len().saturating_mul(2), 0);
+
+        self.decomp.init();
+
+        let mut in_pos = 0;
+        let mut out_pos = 0;
+
+        loop {
+            let (status, in_consumed, out_consumed) = inflate::core::decompress(
+                &mut self.decomp,
+                &self.buf[in_pos..],
+                &mut self.out,
+                out_pos,
+                flags,
+            );
+
+            in_pos += in_consumed;
+            out_pos += out_consumed;
+
+            match status {
+                TINFLStatus::Done => {
+                    self.out.truncate(out_pos);
+                    return Ok(());
+                }
+                TINFLStatus::HasMoreOutput => {
+                    // We need more space, so check if we can resize the buffer and do it.
+                    let new_len = self
+                        .out
+                        .len()
+                        .checked_add(out_pos)
+                        .ok_or(TINFLStatus::HasMoreOutput)?;
+
+                    self.out.resize(new_len, 0);
+                }
+                _ => return Err(status),
+            }
+        }
+    }
+
+    pub fn decompress(&mut self, abuf: ArrayBuffer) -> Result<Uint8Array, JsValue> {
+        // copy message into memory, reusing the buffer
+        let array = Uint8Array::new(&abuf);
+        self.buf.resize(array.length() as usize, 0);
+        array.copy_to(&mut self.buf);
+
+        match self.decompress_inplace() {
+            Ok(()) => Ok(unsafe { Uint8Array::view(&self.out) }),
+            Err(_) => Err(JsValue::from("Error Decompressing")),
+        }
+    }
+
+    fn compress_inplace(&mut self) -> Result<(), TDEFLStatus> {
+        self.out.resize((self.buf.len() / 2).max(2), 0);
+
+        let mut in_pos = 0;
+        let mut out_pos = 0;
+
+        loop {
+            let (status, bytes_in, bytes_out) = deflate::core::compress(
+                &mut self.comp,
+                &self.buf[in_pos..],
+                &mut self.out[out_pos..],
+                TDEFLFlush::Finish,
+            );
+
+            out_pos += bytes_out;
+            in_pos += bytes_in;
+
+            match status {
+                TDEFLStatus::Done => {
+                    self.out.truncate(out_pos);
+                    return Ok(());
+                }
+                TDEFLStatus::Okay => {
+                    // We need more space, so resize the vector.
+                    if self.out.len().saturating_sub(out_pos) < 30 {
+                        self.out.resize(self.out.len() * 2, 0)
+                    }
+                }
+                _ => return Err(status),
+            }
+        }
+    }
+
+    pub fn compress(&mut self, array: Uint8Array) -> Result<Uint8Array, JsValue> {
+        self.buf.resize(array.length() as usize, 0);
+        array.copy_to(&mut self.buf);
+
+        match self.compress_inplace() {
+            Ok(()) => Ok(unsafe { Uint8Array::view(&self.out) }),
+            Err(_) => Err(JsValue::from("Error Compressing")),
+        }
+    }
 }
