@@ -47,7 +47,7 @@ impl Compressor {
             decomp: Box::default(),
             comp: {
                 let mut comp = Box::<deflate::core::CompressorOxide>::default();
-                comp.set_compression_level_raw(6);
+                comp.set_compression_level_raw(10);
                 comp
             },
             buf: Vec::new(),
@@ -55,13 +55,11 @@ impl Compressor {
         }
     }
 
+    #[inline]
     fn decompress_inplace(&mut self) -> Result<(), TINFLStatus> {
-        let flags = inflate::core::inflate_flags::TINFL_FLAG_USING_NON_WRAPPING_OUTPUT_BUF
-            | inflate::core::inflate_flags::TINFL_FLAG_PARSE_ZLIB_HEADER;
+        self.decomp.init();
 
         self.out.resize(self.buf.len().saturating_mul(2), 0);
-
-        self.decomp.init();
 
         let mut in_pos = 0;
         let mut out_pos = 0;
@@ -72,7 +70,8 @@ impl Compressor {
                 &self.buf[in_pos..],
                 &mut self.out,
                 out_pos,
-                flags,
+                inflate::core::inflate_flags::TINFL_FLAG_USING_NON_WRAPPING_OUTPUT_BUF
+                    | inflate::core::inflate_flags::TINFL_FLAG_PARSE_ZLIB_HEADER,
             );
 
             in_pos += in_consumed;
@@ -110,7 +109,10 @@ impl Compressor {
         }
     }
 
+    #[inline]
     fn compress_inplace(&mut self) -> Result<(), TDEFLStatus> {
+        self.comp.reset();
+
         self.out.resize((self.buf.len() / 2).max(2), 0);
 
         let mut in_pos = 0;
