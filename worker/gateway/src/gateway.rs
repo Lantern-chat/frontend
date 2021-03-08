@@ -11,19 +11,17 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 
-#[wasm_bindgen]
-extern "C" {
-    // Use `js_namespace` here to bind `console.log(..)` instead of just
-    // `log(..)`
-    #[wasm_bindgen(js_namespace = console)]
-    fn log(s: &str);
-
-    #[wasm_bindgen(js_namespace = console, js_name = error)]
-    fn err(s: &str);
-
-    #[wasm_bindgen(js_namespace = console, js_name = log)]
-    fn log_bytes(b: &[u8]);
-}
+//#[wasm_bindgen]
+//extern "C" {
+// Use `js_namespace` here to bind `console.log(..)` instead of just
+// `log(..)`
+//#[wasm_bindgen(js_namespace = console)]
+//fn log(s: &str);
+//#[wasm_bindgen(js_namespace = console, js_name = error)]
+//fn err(s: &str);
+//#[wasm_bindgen(js_namespace = console, js_name = log)]
+//fn log_bytes(b: &[u8]);
+//}
 
 use js_sys::{ArrayBuffer, Uint8Array};
 
@@ -50,8 +48,8 @@ impl Compressor {
                 comp.set_compression_level_raw(10);
                 comp
             },
-            buf: Vec::new(),
-            out: Vec::new(),
+            buf: Vec::with_capacity(1024 * 128),
+            out: Vec::with_capacity(1024 * 128),
         }
     }
 
@@ -104,6 +102,7 @@ impl Compressor {
         array.copy_to(&mut self.buf);
 
         match self.decompress_inplace() {
+            // This is only okay because we immediately use this value in JS, cloning it
             Ok(()) => Ok(unsafe { Uint8Array::view(&self.out) }),
             Err(_) => Err(JsValue::from("Error Decompressing")),
         }
@@ -150,7 +149,8 @@ impl Compressor {
         array.copy_to(&mut self.buf);
 
         match self.compress_inplace() {
-            Ok(()) => Ok(unsafe { Uint8Array::view(&self.out) }),
+            // Clones the value in JS-space to avoid fragmenting the WASM memory
+            Ok(()) => Ok(Uint8Array::from(&self.out[..])),
             Err(_) => Err(JsValue::from("Error Compressing")),
         }
     }
