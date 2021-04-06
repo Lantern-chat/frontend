@@ -11,17 +11,19 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 
-//#[wasm_bindgen]
-//extern "C" {
-// Use `js_namespace` here to bind `console.log(..)` instead of just
-// `log(..)`
-//#[wasm_bindgen(js_namespace = console)]
-//fn log(s: &str);
-//#[wasm_bindgen(js_namespace = console, js_name = error)]
-//fn err(s: &str);
-//#[wasm_bindgen(js_namespace = console, js_name = log)]
-//fn log_bytes(b: &[u8]);
-//}
+/*
+#[wasm_bindgen]
+extern "C" {
+    //Use `js_namespace` here to bind `console.log(..)` instead of just
+    //`log(..)`
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
+    #[wasm_bindgen(js_namespace = console, js_name = error)]
+    fn err(s: &str);
+    #[wasm_bindgen(js_namespace = console, js_name = log)]
+    fn log_bytes(b: &[u8]);
+}
+*/
 
 use js_sys::{ArrayBuffer, Uint8Array};
 
@@ -95,6 +97,31 @@ impl Compressor {
         }
     }
 
+    /*
+    pub fn decompress_simple(&mut self, abuf: ArrayBuffer) -> Result<Vec<u8>, JsValue> {
+        // copy message into memory, reusing the buffer
+        let array = Uint8Array::new(&abuf);
+        self.buf.resize(array.length() as usize, 0);
+        array.copy_to(&mut self.buf);
+
+        unsafe {
+            log_bytes(&self.buf);
+        }
+
+        miniz_oxide::inflate::decompress_to_vec_zlib(&self.buf).map_err(|e| {
+            JsValue::from(match e {
+                TINFLStatus::FailedCannotMakeProgress => "FailedCannotMakeProgress",
+                TINFLStatus::BadParam => "BadParam",
+                TINFLStatus::Adler32Mismatch => "Adler32Mismatch",
+                TINFLStatus::Failed => "Failed",
+                TINFLStatus::Done => "Done",
+                TINFLStatus::NeedsMoreInput => "NeedsMoreInput",
+                TINFLStatus::HasMoreOutput => "HasMoreOutput",
+            })
+        })
+    }
+    */
+
     pub fn decompress(&mut self, abuf: ArrayBuffer) -> Result<Uint8Array, JsValue> {
         // copy message into memory, reusing the buffer
         let array = Uint8Array::new(&abuf);
@@ -104,7 +131,15 @@ impl Compressor {
         match self.decompress_inplace() {
             // This is only okay because we immediately use this value in JS, cloning it
             Ok(()) => Ok(unsafe { Uint8Array::view(&self.out) }),
-            Err(_) => Err(JsValue::from("Error Decompressing")),
+            Err(e) => Err(JsValue::from(match e {
+                TINFLStatus::FailedCannotMakeProgress => "FailedCannotMakeProgress",
+                TINFLStatus::BadParam => "BadParam",
+                TINFLStatus::Adler32Mismatch => "Adler32Mismatch",
+                TINFLStatus::Failed => "Failed",
+                TINFLStatus::Done => "Done",
+                TINFLStatus::NeedsMoreInput => "NeedsMoreInput",
+                TINFLStatus::HasMoreOutput => "HasMoreOutput",
+            })),
         }
     }
 
