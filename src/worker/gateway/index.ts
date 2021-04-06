@@ -5,24 +5,24 @@ const ctx: Worker = self as any;
 import { GatewayMessageType } from "./types";
 
 function msg(t: GatewayMessageType, payload: string): string {
-    let ts = JSON.stringify(t);
-    return `{"t":${ts},"p":"${payload}"}`;
+    return `{"t":${JSON.stringify(t)},"p":"${payload}"}`;
 }
 
 init().then(_wasm => {
-    let ws = new WebSocket(`wss://${self.location.host}/api/v1/gateway`);
+    let ws = new WebSocket(`wss://${self.location.host}/api/v1/gateway?compress=true&encoding=json`);
+    ws.binaryType = "arraybuffer";
 
     let comp = Compressor.create();
     let encoder = new TextEncoder();
     let decoder = new TextDecoder();
 
+    ws.addEventListener('message', (msg) => {
+        let decompressed = comp.decompress(msg.data);
+        let decoded = decoder.decode(decompressed);
+        let parsed = JSON.parse(decoded);
 
-    let msg = `Test Test Test Test Test Test Test Test `;
-    let encoded = encoder.encode(msg);
-    let compressed = comp.compress(encoded);
-
-    console.log("Raw: ", encoded.length)
-    console.log("Compressed: ", compressed.length);
+        console.log("New Message: ", parsed);
+    });
 }).catch(e => {
     console.log("Worker error: {}", e);
     ctx.postMessage(msg(GatewayMessageType.Error, e));
