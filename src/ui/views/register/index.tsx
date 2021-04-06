@@ -20,7 +20,9 @@ import { validateUsername, validatePass, validateEmail } from "client/validation
 
 //import { calcPasswordStrength } from "./password";
 
-type zxcvbn_fn = (input: string) => zxcvbn.ZXCVBNResult;
+import { ZXCVBNResult } from "zxcvbn";
+
+type zxcvbn_fn = (input: string) => ZXCVBNResult;
 
 var zxcvbn: zxcvbn_fn | Promise<{ default: zxcvbn_fn }> = import('zxcvbn');
 

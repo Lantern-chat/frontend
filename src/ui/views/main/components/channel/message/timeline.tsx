@@ -46,7 +46,7 @@ function render_timeline(props: ITimelineProps, { width = 0, height = 0 }: { wid
 }
 
 export const Timeline = React.memo((props: ITimelineProps) => {
-    const { width, height, ref } = useResizeDetector<HTMLDivElement>();
+    const { width, height, ref } = useResizeDetector();
 
     let canvas_ref = useRef<HTMLCanvasElement>(null);
 
@@ -55,7 +55,7 @@ export const Timeline = React.memo((props: ITimelineProps) => {
     }, [props, width, height, canvas_ref]);
 
     return (
-        <div className="ln-msg-list__timeline" ref={ref}>
+        <div className="ln-msg-list__timeline" ref={ref as any}>
             <canvas ref={canvas_ref} />
         </div>
     );
