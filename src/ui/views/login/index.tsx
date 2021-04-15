@@ -85,6 +85,8 @@ export default function LoginView() {
     let on_submit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        if(state.is_logging_in) return;
+
         dispatch({ type: LoginActionType.Login, value: '' });
 
         // start preloading

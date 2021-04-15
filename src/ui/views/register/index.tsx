@@ -213,6 +213,8 @@ export default function RegisterView() {
     let on_submit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        if(state.is_registering) return;
+
         dispatch({ type: RegisterActionType.Register, value: '' });
 
         // start preloading
@@ -221,7 +223,7 @@ export default function RegisterView() {
         let on_error = (err: string) => {
             setErrorMsg(err);
             dispatch({ type: RegisterActionType.NoRegister, value: '' });
-        }
+        };
 
         fetch.submitFormUrlEncoded({
             url: "/api/v1/user",
