@@ -1,6 +1,9 @@
 export enum GatewayMessageType {
+    Init,
     Connecting,
     Connected,
+    Identifying,
+    Ready,
     Disconnected,
     Message,
     Error,

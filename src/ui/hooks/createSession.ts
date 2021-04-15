@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { ISession, ISessionContext } from "client/session";
 import dayjs, { setLongTimeout } from "client/time";
-import { fetch, XHRMethod } from "client/fetch";
+// import { fetch, XHRMethod } from "client/fetch";
 
 const SESSION_KEY: string = 'session';
 
@@ -13,6 +13,10 @@ function parseSession(session: string | ISession | null): ISession | null {
 
     if(session !== null) {
         session.expires = dayjs(session.expires);
+
+        if(dayjs().isAfter(session.expires)) {
+            return null;
+        }
     }
 
     return session;
@@ -30,19 +34,23 @@ export function createSession(): ISessionContext {
         setSession({ ...ctx, session: parseSession(new_session) });
     };
 
-    // on startup, check if valid session
-    useEffect(() => {
-        let session = ctx.session, cancelled = false;
-        if(session != null) {
-            fetch({
-                method: XHRMethod.HEAD,
-                url: "/api/v1/user/check", headers: {
-                    'Authorization': 'Bearer ' + session.auth,
-                }
-            }).catch(() => cancelled ? null : ctx.setSession(null));
-        }
-        return () => { cancelled = true; };
-    }, []);
+    // // on startup, check if valid session
+    // useEffect(() => {
+    //     let session = ctx.session, cancelled = false;
+    //     if(session != null) {
+    //         fetch({
+    //             method: XHRMethod.HEAD,
+    //             url: "/api/v1/user/check", headers: {
+    //                 'Authorization': 'Bearer ' + session.auth,
+    //             }
+    //         }).catch(() => cancelled ? null : ctx.setSession(null));
+    //     }
+    //     return () => { cancelled = true; };
+    // }, []);
+
+
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // NOTE: useEffect can be used as a destructor by just returning a onUnmount callback
 
     useEffect(() => {
         let session = ctx.session, timeout: { t: number } | null = null;

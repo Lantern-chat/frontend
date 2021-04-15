@@ -27,6 +27,8 @@ let counter = 0;
 
 export function messageReducer(state: IMessageState = DEFAULT_STATE, action: MessageAction): IMessageState {
     switch(action.type) {
+        case 'UNMOUNT': return DEFAULT_STATE;
+
         case 'MESSAGE_SEND': {
             counter += 1;
             return {
