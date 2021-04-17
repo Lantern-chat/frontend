@@ -11,7 +11,10 @@ import { createSession } from "ui/hooks/createSession";
 import { Session } from "client/session";
 
 
-const MainView: React.FunctionComponent = React.lazy(() => import(       /* webpackCHunkName: 'MainView'     */ "./views/main"));
+import { MainViewParameters } from "./views/main";
+const MainView: React.FunctionComponent<MainViewParameters>
+    = React.lazy(() => import(       /* webpackCHunkName: 'MainView'     */ "./views/main"));
+
 const LoginView: React.FunctionComponent = React.lazy(() => import(      /* webpackChunkName: 'LoginView'    */ "./views/login"));
 const RegisterView: React.FunctionComponent = React.lazy(() => import(   /* webpackChunkName: 'RegisterView' */ "./views/register"));
 //const TestbedView: React.FunctionComponent = React.lazy(() => import(    /* webpackChunkName: 'TestbedView'  */ "./views/testbed"));
@@ -58,7 +61,7 @@ const AppRouter = () => {
                 </Route >
 
                 <Route path="/channels">
-                    {session ? <MainView /> : <Redirect to="/login" />}
+                    {session ? <MainView session={session} /> : <Redirect to="/login" />}
                 </Route>
 
                 {/*

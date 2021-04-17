@@ -1,5 +1,5 @@
 export enum GatewayMessageType {
-    Init,
+    Initialized,
     Connecting,
     Connected,
     Identifying,
@@ -16,6 +16,7 @@ export interface GatewayWorkerMessage {
 
 export enum GatewayCommandType {
     Connect,
+    Disconnect,
     Identify,
 }
 

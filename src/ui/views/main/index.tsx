@@ -16,7 +16,11 @@ window.addEventListener('resize', () => {
 });
 
 GATEWAY.addEventListener('message', msg => {
-    STORE.dispatch({ type: 'GATEWAY_MESSAGE', payload: msg.data });
+    let data = msg.data;
+    if(typeof data === 'string') {
+        data = JSON.parse(data);
+    }
+    STORE.dispatch({ type: 'GATEWAY_MESSAGE', payload: data });
 });
 
 GATEWAY.addEventListener('error', err => {
@@ -29,12 +33,28 @@ import { PartyList } from "./components/party_list";
 import { Party } from "./components/party/party";
 import { CreatePartyModal } from "./modals/create_party";
 
+import { ISession } from "client/session";
+export interface MainViewParameters {
+    session: ISession,
+}
+
+// Process:
+
+// 1. Login is successful, session is set to a non-null value
+// 2. Login redirects to main view
+// 3. Main view loads and triggers the loading of the worker thread
+// 4. Main view creates an empty Redux store
+//     * All events from the worker are forwarded into the redux store dispatch
+// 5. Main view mounts, dispatching the "MOUNT" event
+// 6. When both "MOUNT" and "GATEWAY_INIT" events are received, the reducer sends a message to the worker with the session auth token for identifying.
+// 7. After identification, the server returns the `Ready` event, which is sent to redux via the worker and contains everything to initialize the user, parties and channels.
+
 import "./main.scss";
-export const MainView: React.FunctionComponent = () => {
+export const MainView: React.FunctionComponent<MainViewParameters> = ({ session }: MainViewParameters) => {
     useEffect(() => {
-        STORE.dispatch({ type: "MOUNT" });
+        STORE.dispatch({ type: "MOUNT", payload: session });
         return () => { STORE.dispatch({ type: "UNMOUNT" }); };
-    }, []);
+    }, [session]);
 
     return (
         <Provider store={STORE}>

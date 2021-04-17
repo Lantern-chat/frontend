@@ -2,7 +2,7 @@ import init, { Compressor, InitOutput } from "../../../build/worker/gateway";
 
 const ctx: Worker = self as any;
 
-import { GatewayMessageType } from "./types";
+import { GatewayMessageType, GatewayCommand, GatewayCommandType } from "./types";
 
 function post_msg(t: GatewayMessageType, payload?: string) {
     ctx.postMessage(`{"t":${t.toString()}` + (payload ? `,"p":"${payload}"}` : '}'));
@@ -12,9 +12,9 @@ var WASM: InitOutput, GATEWAY: Gateway;
 
 init().then(wasm => {
     WASM = wasm;
-    post_msg(GatewayMessageType.Init);
-
     GATEWAY = new Gateway();
+
+    post_msg(GatewayMessageType.Initialized);
 }).catch(e => {
     post_msg(GatewayMessageType.Error, JSON.stringify(e));
 });
@@ -24,9 +24,20 @@ ctx.addEventListener('message', msg => {
         return post_msg(GatewayMessageType.Error, "Not Ready");
     }
 
-    let data = msg.data;
+    let data: GatewayCommand = msg.data;
     if(typeof data === 'string') {
         data = JSON.parse(data);
+    }
+
+    console.log(data);
+
+    switch(data.t) {
+        case GatewayCommandType.Connect: {
+            GATEWAY.connect();
+        }
+        //case GatewayCommandType.Identify: {
+        //    GATEWAY.identify(data.p);
+        //}
     }
 
     // TODO: Receive commands from main thread
@@ -40,13 +51,15 @@ class Gateway {
     ws: WebSocket | null = null;
 
     // heartbeat interval
-    hbi: number = 0;
+    hbi: number = 45000;
 
     // heartbeat interval timer
     hbt: number | undefined;
 
     // waiting on heartbeat ACK
     hbw: boolean = false;
+
+    auth: string | null = null;
 
     constructor() {
         this.comp = Compressor.create();
@@ -74,6 +87,8 @@ class Gateway {
             return post_msg(GatewayMessageType.Error, "WebSocket undefined");
         }
 
+        console.log("SENDING: ", value);
+
         let str = JSON.stringify(value);
         let encoded = this.encoder.encode(str);
         let compressed = this.comp.compress(encoded);
@@ -89,7 +104,8 @@ class Gateway {
         switch(msg.o) {
             // HELLO
             case 0: {
-                this.hbi = msg.p.heartbeat_inverval;
+                console.log("GATEWAY: HELLO", msg);
+                this.hbi = msg.p.heartbeat_interval || 45000;
                 this.hbt = setInterval(() => this.heartbeat(), this.hbi) as any;
 
                 //return this.identify();
@@ -98,6 +114,7 @@ class Gateway {
             }
             // HEARTBEAT ACK
             case 2: {
+                console.log("GATEWAY: ACK", msg);
                 this.hbw = false;
                 break;
             }

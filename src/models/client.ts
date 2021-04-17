@@ -14,7 +14,6 @@ import { genDarkTheme, genLightTheme, IThemeContext, setTheme as setRealTheme } 
 
 export class ClientModel extends TinyEventEmitter {
     currentLanguage: i18n.Language = "en"; // default to English
-    gateway: Worker;
     theme: IThemeContext;
 
     constructor() {
@@ -27,24 +26,6 @@ export class ClientModel extends TinyEventEmitter {
         };
 
         setRealTheme(genDarkTheme(this.theme.temperature), false, false);
-
-        import(/* webpackPreload: true */ "worker-loader!gateway").then(({ default: Gateway }) => {
-            const GATEWAY = new Gateway();
-
-            // TESTING
-            GATEWAY.postMessage({
-                op: GatewayCommandOp.Connect,
-                data: {
-                    host: `wss://${window.location.hostname}/gateway`,
-                    name: "test",
-                    compress: true,
-                }
-            });
-
-            GATEWAY.addEventListener('message', (msg) => {
-                console.log(msg.data);
-            });
-        });
     }
 
     setTheme(theme: IThemeContext) {
