@@ -1,6 +1,6 @@
 import React from "react";
 
-import { fnv1a } from "client/fnv";
+import { fnv1a } from "lib/fnv";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
 import { Avatar } from "ui/components/common/avatar";

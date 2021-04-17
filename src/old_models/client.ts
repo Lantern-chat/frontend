@@ -9,8 +9,8 @@ ClientContext.displayName = "ClientContext";
 
 const LANG_LOCALSTORAGE_KEY = "lang";
 
-import { GatewayCommandOp } from "client/worker";
-import { genDarkTheme, genLightTheme, IThemeContext, setTheme as setRealTheme } from "client/theme";
+import { GatewayCommandOp } from "lib/worker";
+import { genDarkTheme, genLightTheme, IThemeContext, setTheme as setRealTheme } from "lib/theme";
 
 export class ClientModel extends TinyEventEmitter {
     currentLanguage: i18n.Language = "en"; // default to English

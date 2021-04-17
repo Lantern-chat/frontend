@@ -1,6 +1,6 @@
 import React, { useContext, useRef } from "react";
 
-import { Theme, MIN_TEMP, MAX_TEMP } from "client/theme";
+import { Theme, MIN_TEMP, MAX_TEMP } from "lib/theme";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
 import SunIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-232-sun.svg";

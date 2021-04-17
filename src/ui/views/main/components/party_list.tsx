@@ -1,13 +1,13 @@
 import React, { useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { fetch, XHRMethod } from "client/fetch";
-import { fnv1a } from "client/fnv";
+import { fetch, XHRMethod } from "lib/fetch";
+import { fnv1a } from "lib/fnv";
 
 import { Avatar } from "ui/components/common/avatar";
 import { Glyphicon } from "ui/components/common/glyphicon";
 
-import { Session } from "client/session";
+import { Session } from "lib/session";
 import { RootState } from "../state";
 
 import LogoutIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-432-log-out.svg";

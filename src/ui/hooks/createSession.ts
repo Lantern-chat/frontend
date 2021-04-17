@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
-import { ISession, ISessionContext } from "client/session";
-import dayjs, { setLongTimeout } from "client/time";
-// import { fetch, XHRMethod } from "client/fetch";
+import { ISession, ISessionContext } from "lib/session";
+import dayjs, { setLongTimeout } from "lib/time";
+// import { fetch, XHRMethod } from "lib/fetch";
 
 const SESSION_KEY: string = 'session';
 

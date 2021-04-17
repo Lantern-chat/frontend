@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useReducer, useEffect, useContext } from "react";
-import dayjs from "client/time";
+import dayjs from "lib/time";
 
 import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
@@ -7,8 +7,8 @@ import { I18N, Translation } from "ui/i18n";
 
 import { Link, Redirect } from "react-router-dom";
 
-import { timeout } from "client/util";
-import { fetch, XHRMethod } from "client/fetch";
+import { timeout } from "lib/util";
+import { fetch, XHRMethod } from "lib/fetch";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
 import { Modal } from "ui/components/modal";
@@ -16,7 +16,7 @@ import { Tooltip } from "ui/components/common/tooltip";
 import { Spinner } from "ui/components/common/spinners/spinner";
 import { FormGroup, FormLabel, FormInput, FormText, FormSelect, FormSelectOption, FormSelectGroup } from "ui/components/form";
 
-import { validateUsername, validatePass, validateEmail } from "client/validation";
+import { validateUsername, validatePass, validateEmail } from "lib/validation";
 
 //import { calcPasswordStrength } from "./password";
 
@@ -170,7 +170,7 @@ function register_state_reducer(state: RegisterState, { value, type }: RegisterA
 
 import CircleEmptyInfo from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-196-circle-empty-info.svg";
 
-import { Session } from "client/session";
+import { Session } from "lib/session";
 
 var SETUP_THEN = false;
 

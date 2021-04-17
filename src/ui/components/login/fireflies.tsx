@@ -3,9 +3,9 @@ import React, { useRef, useEffect } from "react";
 import "./fireflies.scss";
 
 import { isPageHidden, visibilityChange } from "ui/utils";
-import { smoothstep, squine3, gaussian2, smin, broad_sine2 } from "client/math";
-import * as color from "client/color";
-import { LIGHT_THEME } from "client/theme";
+import { smoothstep, squine3, gaussian2, smin, broad_sine2 } from "lib/math";
+import * as color from "lib/color";
+import { LIGHT_THEME } from "lib/theme";
 
 const { sqrt, cbrt, sin, cos, random, abs, sign, PI, min, max, floor } = Math;
 

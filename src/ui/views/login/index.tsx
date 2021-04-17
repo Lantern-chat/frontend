@@ -5,15 +5,15 @@ import { I18N, Translation } from "ui/i18n";
 
 import { Link, Redirect } from "react-router-dom";
 
-import { timeout } from "client/util";
-import { fetch, XHRMethod } from "client/fetch";
+import { timeout } from "lib/util";
+import { fetch, XHRMethod } from "lib/fetch";
 import { useTitle } from "ui/hooks/useTitle";
 import { Spinner } from "ui/components/common/spinners/spinner";
 //import { Glyphicon } from "ui/components/common/glyphicon";
 import { FormGroup, FormLabel, FormInput } from "ui/components/form";
 import { Modal } from "ui/components/modal";
 
-import { validateUsername, validatePass, validateEmail } from "client/validation";
+import { validateUsername, validatePass, validateEmail } from "lib/validation";
 
 var PRELOADED: boolean = false;
 function preloadRegister() {
@@ -67,7 +67,7 @@ function login_state_reducer(state: LoginState, { value, type }: LoginAction): L
     }
 }
 
-import { Session } from "client/session";
+import { Session } from "lib/session";
 
 import "./login.scss";
 export default function LoginView() {

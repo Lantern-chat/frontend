@@ -1,9 +1,9 @@
 
 import { useState, useLayoutEffect } from "react";
 
-import * as theme from "client/theme";
-import { IThemeContext } from "client/theme";
-export { Theme } from "client/theme";
+import * as theme from "lib/theme";
+import { IThemeContext } from "lib/theme";
+export { Theme } from "lib/theme";
 
 let IS_FIRST_THEME = true;
 let existing_theme: string | null | IThemeContext = localStorage.getItem('theme');

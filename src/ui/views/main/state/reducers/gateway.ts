@@ -1,4 +1,4 @@
-import { ISession } from "client/session";
+import { ISession } from "lib/session";
 
 enum GatewayStatus {
     Unknown = 0,

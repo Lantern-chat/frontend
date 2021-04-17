@@ -33,7 +33,7 @@ import { PartyList } from "./components/party_list";
 import { Party } from "./components/party/party";
 import { CreatePartyModal } from "./modals/create_party";
 
-import { ISession } from "client/session";
+import { ISession } from "lib/session";
 export interface MainViewParameters {
     session: ISession,
 }

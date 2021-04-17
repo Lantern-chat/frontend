@@ -1,4 +1,4 @@
-import dayjs from "client/time";
+import dayjs from "lib/time";
 import React, { useContext } from "react";
 import { LocaleContext } from "ui/i18n";
 

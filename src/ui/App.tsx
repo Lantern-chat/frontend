@@ -8,7 +8,7 @@ import { Ripple } from "ui/components/common/spinners/ripple";
 import { Logo } from "ui/components/login/logo";
 import { createTheme, Theme } from "ui/hooks/createTheme";
 import { createSession } from "ui/hooks/createSession";
-import { Session } from "client/session";
+import { Session } from "lib/session";
 
 
 import { MainViewParameters } from "./views/main";
