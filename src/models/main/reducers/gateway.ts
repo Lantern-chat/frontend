@@ -4,7 +4,6 @@ enum GatewayStatus {
     Unknown = 0,
     Initialized,
     Connected,
-    Identified,
     Disconnected,
     Errored,
 }
@@ -33,30 +32,35 @@ export function gatewayReducer(state: IGatewayState = DEFAULT_STATE, action: Gat
     console.log(action.type);
     switch(action.type) {
         case 'MOUNT': {
+            state = { ...state, session: action.payload };
+            // if we get the mount after init, connect now
             if(state.status == GatewayStatus.Initialized) {
-                GATEWAY.postMessage({ t: GatewayCommandDiscriminator.Connect });
+                GATEWAY.postMessage({
+                    t: GatewayCommandDiscriminator.Connect,
+                    auth: state.session!.auth
+                });
             }
-            return { ...state, session: action.payload };
+            return state;
         }
         case 'UNMOUNT': {
             GATEWAY.postMessage({ t: GatewayCommandDiscriminator.Disconnect });
-            return DEFAULT_STATE
+            return DEFAULT_STATE;
         }
         case 'GATEWAY_MESSAGE': {
             let msg: GatewayMessage = action.payload;
             switch(msg.t) {
                 case GatewayMessageDiscriminator.Initialized: {
-                    GATEWAY.postMessage({ t: GatewayCommandDiscriminator.Connect });
+                    // if we get the init after mount, connect now
+                    if(state.session !== null) {
+                        GATEWAY.postMessage({
+                            t: GatewayCommandDiscriminator.Connect,
+                            auth: state.session.auth
+                        });
+                    }
                     return { ...state, status: GatewayStatus.Initialized };
                 }
                 case GatewayMessageDiscriminator.Connected: {
-                    state = { ...state, status: GatewayStatus.Connected };
-                    if(state.session !== null) {
-                        GATEWAY.postMessage({ t: GatewayCommandDiscriminator.Identify, p: state.session.auth });
-                    } else {
-                        GATEWAY.postMessage({ t: GatewayCommandDiscriminator.Disconnect });
-                    }
-                    return state;
+                    return { ...state, status: GatewayStatus.Connected };
                 }
             }
         }

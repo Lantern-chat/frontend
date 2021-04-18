@@ -18,5 +18,20 @@ export interface GatewayMessageConnecting {
 export interface GatewayMessageConnected {
     t: GatewayMessageDiscriminator.Connected;
 }
+export interface GatewayMessageIdentifying {
+    t: GatewayMessageDiscriminator.Identifying;
+}
+export interface GatewayMessageReady {
+    t: GatewayMessageDiscriminator.Ready;
+}
+export interface GatewayMessageDisconnected {
+    t: GatewayMessageDiscriminator.Disconnected;
+}
 
-export type GatewayMessage = GatewayMessageInitiatized | GatewayMessageConnecting | GatewayMessageConnected;
+export type GatewayMessage =
+    GatewayMessageInitiatized |
+    GatewayMessageConnecting |
+    GatewayMessageConnected |
+    GatewayMessageIdentifying |
+    GatewayMessageReady |
+    GatewayMessageDisconnected;

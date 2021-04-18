@@ -4,6 +4,8 @@ const ctx: Worker = self as any;
 
 import { GatewayMessageDiscriminator } from "./msg";
 import { GatewayCommand, GatewayCommandDiscriminator } from "./cmd";
+import { GatewayEvent, GatewayEventCode } from "./event";
+import { GatewayClientCommand, GatewayClientCommandDiscriminator } from "./client";
 
 function post_msg(t: GatewayMessageDiscriminator, payload?: string) {
     ctx.postMessage(`{"t":${t.toString()}` + (payload ? `,"p":"${payload}"}` : '}'));
@@ -30,20 +32,21 @@ ctx.addEventListener('message', msg => {
         data = JSON.parse(data);
     }
 
-    console.log(data);
-
     switch(data.t) {
         case GatewayCommandDiscriminator.Connect: {
+            GATEWAY.auth = data.auth;
             GATEWAY.connect();
             break;
         }
-        case GatewayCommandDiscriminator.Identify: {
-            GATEWAY.identify(data.auth);
+        case GatewayCommandDiscriminator.Disconnect: {
+            GATEWAY.auth = null;
+            GATEWAY.disconnect();
             break;
         }
+        default: {
+            console.error("Unknown command: ", data);
+        }
     }
-
-    // TODO: Receive commands from main thread
 });
 
 class Gateway {
@@ -64,6 +67,8 @@ class Gateway {
 
     auth: string | null = null;
 
+    attempt: number = 0;
+
     constructor() {
         this.comp = Compressor.create();
         this.encoder = new TextEncoder();
@@ -71,21 +76,27 @@ class Gateway {
     }
 
     connect() {
-        post_msg(GatewayMessageDiscriminator.Connecting);
+        let delay = this.attempt ? (1 << this.attempt) * 8000 : 0;
 
-        this.ws = new WebSocket(`wss://${self.location.host}/api/v1/gateway?compress=true&encoding=json`);
-        this.ws.binaryType = "arraybuffer";
+        console.log("DELAY: ", delay);
 
-        this.ws.addEventListener('open', () => post_msg(GatewayMessageDiscriminator.Connected));
-        this.ws.addEventListener('message', msg => this.processMsg(msg.data));
+        setTimeout(() => {
+            post_msg(GatewayMessageDiscriminator.Connecting);
 
-        // TODO: Handle this with heartbeat and stuff
-        this.ws.addEventListener('close', msg => post_msg(GatewayMessageDiscriminator.Disconnected, msg.code.toString()));
-        this.ws.addEventListener('error', _err => post_msg(GatewayMessageDiscriminator.Error, "WS Error"));
+            this.ws = new WebSocket(`wss://${self.location.host}/api/v1/gateway?compress=true&encoding=json`);
+            this.ws.binaryType = "arraybuffer";
+
+            this.ws.addEventListener('open', () => this.on_open());
+            this.ws.addEventListener('message', msg => this.on_msg(msg.data));
+            this.ws.addEventListener('close', msg => this.on_close(msg));
+            this.ws.addEventListener('error', err => this.on_error(err));
+        }, delay);
+
+        this.attempt += 1;
     }
 
     // TODO: Memoize?
-    send(value: any) {
+    send(value: GatewayClientCommand) {
         if(!this.ws) {
             return post_msg(GatewayMessageDiscriminator.Error, "WebSocket undefined");
         }
@@ -99,26 +110,47 @@ class Gateway {
         this.ws.send(compressed);
     }
 
-    processMsg(raw: ArrayBuffer) {
+    on_close(msg: CloseEvent) {
+        post_msg(GatewayMessageDiscriminator.Disconnected, msg.code.toString());
+
+        this.ws = null;
+        this.hbw = false;
+        clearInterval(this.hbi); // clear heartbeat
+    }
+
+    on_error(_err: Event) {
+        // TODO: Handle this as a close event?
+        post_msg(GatewayMessageDiscriminator.Error, "WS Error");
+    }
+
+    on_open() {
+        this.attempt = 0;
+
+        post_msg(GatewayMessageDiscriminator.Connected);
+        // NOTE: Nothing else to do on open except wait for the Hello event
+    }
+
+    on_msg(raw: ArrayBuffer) {
         let decompressed = this.comp.decompress(raw);
         let decoded = this.decoder.decode(decompressed);
-        let msg = JSON.parse(decoded);
+        let msg: GatewayEvent = JSON.parse(decoded);
 
         switch(msg.o) {
-            // HELLO
-            case 0: {
+            case GatewayEventCode.Hello: {
                 console.log("GATEWAY: HELLO", msg);
                 this.hbi = msg.p.heartbeat_interval || 45000;
                 this.hbt = setInterval(() => this.heartbeat(), this.hbi) as any;
 
-                //return this.identify();
+                this.identify();
 
                 break;
             }
-            // HEARTBEAT ACK
-            case 2: {
+            case GatewayEventCode.HeartbeatACK: {
                 console.log("GATEWAY: ACK", msg);
                 this.hbw = false;
+                break;
+            }
+            case GatewayEventCode.Ready: {
                 break;
             }
         }
@@ -126,18 +158,23 @@ class Gateway {
 
     heartbeat() {
         this.hbw = true;
-        // Send heartbeat
-        this.send({ o: 0 });
+
+        this.send({ o: GatewayClientCommandDiscriminator.Heartbeat });
 
         // in hbi milliseconds, check if an ACK has been received or disconnect/reconnect
         setTimeout(() => {
-            if(this.hbw) {
-                // TODO: handle missed heartbeat ACK and disconnect
-            }
+            if(this.hbw) { this.disconnect() }
         }, this.hbi);
     }
 
-    identify(auth: string) {
-        this.send({ o: 1, p: { auth } });
+    disconnect() {
+        if(this.ws) {
+            // NOTE: This should trigger `on_close`
+            this.ws.close();
+        }
+    }
+
+    identify() {
+        this.send({ o: GatewayClientCommandDiscriminator.Identify, p: { auth: this.auth!, intent: 0 } });
     }
 }
