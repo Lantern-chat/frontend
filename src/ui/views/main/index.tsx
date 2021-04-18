@@ -3,7 +3,7 @@ import { createStore, applyMiddleware } from "redux";
 import thunk from 'redux-thunk';
 
 import { Provider } from "react-redux";
-import { rootReducer } from "./state";
+import { rootReducer } from "models/main";
 
 
 import Gateway from "worker-loader!../../../worker/gateway";

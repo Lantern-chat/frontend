@@ -1,9 +1,9 @@
 import { combineReducers } from "redux";
 
-import { messageReducer } from "./messages";
-import { modalReducer } from "./modals";
-import { windowReducer } from "./window";
-import { gatewayReducer } from "./gateway";
+import { messageReducer } from "./reducers/messages";
+import { modalReducer } from "./reducers/modals";
+import { windowReducer } from "./reducers/window";
+import { gatewayReducer } from "./reducers/gateway";
 
 export const rootReducer = combineReducers({
     messages: messageReducer,
