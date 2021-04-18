@@ -6,8 +6,8 @@ import { PartyHeader } from "./party_header";
 import { PartyFooter } from "./party_footer";
 import { Channel } from "../channel/channel";
 
-import { RootState } from "ui/views/main/state";
-import { Panel } from "ui/views/main/state/state/window";
+import { RootState } from "models/main";
+import { Panel } from "models/main/state/window";
 
 import "./party.scss";
 export const Party = React.memo(() => {

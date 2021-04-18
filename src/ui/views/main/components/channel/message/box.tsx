@@ -5,7 +5,7 @@ import { createStructuredSelector } from "reselect";
 import TextareaAutosize from 'react-textarea-autosize';
 
 //import { IMessageState } from "ui/views/main/reducers/messages";
-import { RootState } from "ui/views/main/state";
+import { RootState } from "models/main";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
 
@@ -14,7 +14,7 @@ import SmileyHalf from "icons/glyphicons-pro/glyphicons-halflings-2-2/svg/indivi
 import Send from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-461-send.svg";
 import Plus from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-371-plus.svg";
 
-import { editMessageNext, editMessagePrev, sendMessage, sendMessageEdit, editMessageDiscard } from "ui/views/main/state/actions/msg";
+import { editMessageNext, editMessagePrev, sendMessage, sendMessageEdit, editMessageDiscard } from "models/main/actions/msg";
 
 // TODO: Move elsewhere
 function countLines(str: string): number {

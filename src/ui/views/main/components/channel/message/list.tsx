@@ -1,9 +1,9 @@
 import React, { useContext, useRef, useMemo, useState, useEffect } from "react";
 import { useSelector, shallowEqual } from "react-redux";
 
-import { IMessageState } from "ui/views/main/state/reducers/messages";
-import { IWindowState } from "ui/views/main/state/state/window";
-import { RootState } from "ui/views/main/state/reducers";
+import { RootState } from "models/main";
+import { IMessageState } from "models/main/reducers/messages";
+import { IWindowState } from "models/main/state/window";
 
 import { Message } from "./msg";
 import { Timeline, ITimelineProps } from "./timeline";

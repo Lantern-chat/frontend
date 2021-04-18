@@ -4,7 +4,7 @@ import classnames from "classnames";
 
 import { Markdown, MarkdownProps } from "ui/components/common/markdown";
 
-import { IMessage } from "ui/views/main/state/reducers/messages";
+import { IMessage } from "models/main/reducers/messages";
 
 export interface MessageProps extends IMessage {
     editing: boolean,

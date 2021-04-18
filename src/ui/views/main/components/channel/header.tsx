@@ -2,7 +2,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { Glyphicon } from "ui/components/common/glyphicon";
 
-import { windowToggleRightSidebar } from "../../state/actions/window";
+import { windowToggleRightSidebar } from "models/main/actions/window";
 
 import Menu from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-600-menu.svg";
 import Users from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-321-users.svg";

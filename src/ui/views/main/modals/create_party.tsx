@@ -1,8 +1,8 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { RootState } from "../state";
-import { closeCreatePartyModal } from 'ui/views/main/state/actions/modals';
+import { RootState } from "models/main";
+import { closeCreatePartyModal } from 'models/main/actions/modals';
 import { GenericModal } from "./generic";
 
 export const CreatePartyModal = React.memo(() => {
