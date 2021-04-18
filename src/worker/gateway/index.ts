@@ -2,9 +2,10 @@ import init, { Compressor, InitOutput } from "../../../build/worker/gateway";
 
 const ctx: Worker = self as any;
 
-import { GatewayMessageType, GatewayCommand, GatewayCommandType } from "./types";
+import { GatewayMessageDiscriminator } from "./msg";
+import { GatewayCommand, GatewayCommandDiscriminator } from "./cmd";
 
-function post_msg(t: GatewayMessageType, payload?: string) {
+function post_msg(t: GatewayMessageDiscriminator, payload?: string) {
     ctx.postMessage(`{"t":${t.toString()}` + (payload ? `,"p":"${payload}"}` : '}'));
 }
 
@@ -14,14 +15,14 @@ init().then(wasm => {
     WASM = wasm;
     GATEWAY = new Gateway();
 
-    post_msg(GatewayMessageType.Initialized);
+    post_msg(GatewayMessageDiscriminator.Initialized);
 }).catch(e => {
-    post_msg(GatewayMessageType.Error, JSON.stringify(e));
+    post_msg(GatewayMessageDiscriminator.Error, JSON.stringify(e));
 });
 
 ctx.addEventListener('message', msg => {
     if(!WASM) {
-        return post_msg(GatewayMessageType.Error, "Not Ready");
+        return post_msg(GatewayMessageDiscriminator.Error, "Not Ready");
     }
 
     let data: GatewayCommand = msg.data;
@@ -32,12 +33,14 @@ ctx.addEventListener('message', msg => {
     console.log(data);
 
     switch(data.t) {
-        case GatewayCommandType.Connect: {
+        case GatewayCommandDiscriminator.Connect: {
             GATEWAY.connect();
+            break;
         }
-        //case GatewayCommandType.Identify: {
-        //    GATEWAY.identify(data.p);
-        //}
+        case GatewayCommandDiscriminator.Identify: {
+            GATEWAY.identify(data.auth);
+            break;
+        }
     }
 
     // TODO: Receive commands from main thread
@@ -68,23 +71,23 @@ class Gateway {
     }
 
     connect() {
-        post_msg(GatewayMessageType.Connecting);
+        post_msg(GatewayMessageDiscriminator.Connecting);
 
         this.ws = new WebSocket(`wss://${self.location.host}/api/v1/gateway?compress=true&encoding=json`);
         this.ws.binaryType = "arraybuffer";
 
-        this.ws.addEventListener('open', () => post_msg(GatewayMessageType.Connected));
+        this.ws.addEventListener('open', () => post_msg(GatewayMessageDiscriminator.Connected));
         this.ws.addEventListener('message', msg => this.processMsg(msg.data));
 
         // TODO: Handle this with heartbeat and stuff
-        this.ws.addEventListener('close', msg => post_msg(GatewayMessageType.Disconnected, msg.code.toString()));
-        this.ws.addEventListener('error', _err => post_msg(GatewayMessageType.Error, "WS Error"));
+        this.ws.addEventListener('close', msg => post_msg(GatewayMessageDiscriminator.Disconnected, msg.code.toString()));
+        this.ws.addEventListener('error', _err => post_msg(GatewayMessageDiscriminator.Error, "WS Error"));
     }
 
     // TODO: Memoize?
     send(value: any) {
         if(!this.ws) {
-            return post_msg(GatewayMessageType.Error, "WebSocket undefined");
+            return post_msg(GatewayMessageDiscriminator.Error, "WebSocket undefined");
         }
 
         console.log("SENDING: ", value);

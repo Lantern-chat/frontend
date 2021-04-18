@@ -25,7 +25,8 @@ export interface GatewayAction {
 }
 
 import { GATEWAY } from "ui/views/main";
-import { GatewayCommandType, GatewayWorkerMessage, GatewayMessageType } from "worker/gateway/types";
+import { GatewayMessage, GatewayMessageDiscriminator } from "worker/gateway/msg";
+import { GatewayCommandDiscriminator } from "worker/gateway/cmd";
 
 export function gatewayReducer(state: IGatewayState = DEFAULT_STATE, action: GatewayAction): IGatewayState {
 
@@ -33,27 +34,27 @@ export function gatewayReducer(state: IGatewayState = DEFAULT_STATE, action: Gat
     switch(action.type) {
         case 'MOUNT': {
             if(state.status == GatewayStatus.Initialized) {
-                GATEWAY.postMessage({ t: GatewayCommandType.Connect });
+                GATEWAY.postMessage({ t: GatewayCommandDiscriminator.Connect });
             }
             return { ...state, session: action.payload };
         }
         case 'UNMOUNT': {
-            GATEWAY.postMessage({ t: GatewayCommandType.Disconnect });
+            GATEWAY.postMessage({ t: GatewayCommandDiscriminator.Disconnect });
             return DEFAULT_STATE
         }
         case 'GATEWAY_MESSAGE': {
-            let msg: GatewayWorkerMessage = action.payload;
+            let msg: GatewayMessage = action.payload;
             switch(msg.t) {
-                case GatewayMessageType.Initialized: {
-                    GATEWAY.postMessage({ t: GatewayCommandType.Connect });
+                case GatewayMessageDiscriminator.Initialized: {
+                    GATEWAY.postMessage({ t: GatewayCommandDiscriminator.Connect });
                     return { ...state, status: GatewayStatus.Initialized };
                 }
-                case GatewayMessageType.Connected: {
+                case GatewayMessageDiscriminator.Connected: {
                     state = { ...state, status: GatewayStatus.Connected };
                     if(state.session !== null) {
-                        GATEWAY.postMessage({ t: GatewayCommandType.Identify, p: state.session.auth });
+                        GATEWAY.postMessage({ t: GatewayCommandDiscriminator.Identify, p: state.session.auth });
                     } else {
-                        GATEWAY.postMessage({ t: GatewayCommandType.Disconnect });
+                        GATEWAY.postMessage({ t: GatewayCommandDiscriminator.Disconnect });
                     }
                     return state;
                 }
