@@ -151,7 +151,11 @@ class Gateway {
                 break;
             }
             case GatewayEventCode.Ready: {
+                console.log("GATEWAY READY", msg);
                 break;
+            }
+            default: {
+                console.log("GATEWAY UNKNOWN", msg);
             }
         }
     }
