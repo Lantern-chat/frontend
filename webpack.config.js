@@ -179,10 +179,10 @@ module.exports = (env, argv) => {
                 extraArgs: "--target web",
                 outDir: path.resolve(__dirname, "build/worker/gateway"),
             }),
-            //new BundleAnalyzerPlugin({
-            //    analyzerMode: 'server',
-            //    openAnalyzer: true,
-            //}),
+            new BundleAnalyzerPlugin({
+                analyzerMode: 'server',
+                openAnalyzer: true,
+            }),
             new MiniCssExtractPlugin({
                 // Options similar to the same options in webpackOptions.output
                 // both options are optional

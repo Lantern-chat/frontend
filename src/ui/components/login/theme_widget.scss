@@ -1,10 +1,12 @@
+@use "sass:math";
+
 @import "lib/variables";
 
 @function gen_temp_gradient($stops) {
     $gradient: (to right, #000 0%);
 
     @for $i from 0 through $stops {
-        $t: $i / $stops;
+        $t: math.div($i, $stops);
         $temp: (1 - $t) * 965 + $t * 12000;
         $color: kelvin2($temp);
         $stop: $t * 100%;

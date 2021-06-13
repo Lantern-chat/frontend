@@ -1,3 +1,5 @@
+@use "sass:math";
+
 @import "lib/variables";
 
 @keyframes ln-spinner {
@@ -10,8 +12,8 @@
 }
 
 @mixin gen_spinner($spokes, $duration, $clockwise: true) {
-    $delay: $duration / $spokes;
-    $deg: 360 / $spokes;
+    $delay: math.div($duration, $spokes);
+    $deg: math.div(360, $spokes);
 
     @for $i from 1 through $spokes {
         &:nth-child(#{$i}) {

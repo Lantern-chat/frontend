@@ -1,5 +1,7 @@
 import React from "react";
 
+import { Components } from 'react-markdown/src/ast-to-react';
+
 import ReactMarkdown from 'react-markdown'
 import gfm from 'remark-gfm';
 import breaks from 'remark-breaks';
@@ -9,14 +11,12 @@ import "./markdown.scss";
 
 import { MarkdownProps } from "./types";
 
-export const renderers = {
-    link: ({ href, children }: { href: string, children: React.ReactNode }) => (
-        <a target="_blank" href={href}>{children}</a>
-    )
+export const renderers: Components = {
+    a: ({ node, ...props }) => (<a target="_blank" {...props} />),
 };
 
 export const SimpleMarkdown: React.FunctionComponent<MarkdownProps> = (props: MarkdownProps) => {
-    return <ReactMarkdown plugins={[gfm, breaks, external]} children={props.body} renderers={renderers} />
+    return <ReactMarkdown remarkPlugins={[gfm, breaks, external]} children={props.body} components={renderers} />
 };
 export default SimpleMarkdown;
 

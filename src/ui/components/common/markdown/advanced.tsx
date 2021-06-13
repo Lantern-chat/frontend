@@ -7,9 +7,9 @@ import external from 'remark-external-links';
 
 import SyntaxHighlighter from 'react-syntax-highlighter'
 
-import Tex from '@matejmazur/react-katex';
 import "katex/contrib/mhchem/mhchem";
-import math from 'remark-math';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 
 import 'katex/dist/katex.min.css'
 import "./advanced.scss";
@@ -20,11 +20,28 @@ import { renderers as simple_renderers } from "./simple";
 
 const renderers = {
     ...simple_renderers,
-    code: ({ language, value = "" }: { language: string, value: string }) => {
-        return <SyntaxHighlighter useInlineStyles={false} language={language} children={value} />
+    code: ({ node, inline, className, ...props }: any) => {
+        console.log({ node, inline, className, ...props });
+
+        if(inline === true) {
+            return <code {...props} />;
+        } else {
+            let language = className, src = props.children;
+
+            if(typeof language === 'string') {
+                language = language.slice('language-'.length);
+            }
+
+            if(Array.isArray(src)) {
+                src = src.join('\n');
+            }
+
+            src = src.trim();
+
+            return <SyntaxHighlighter useInlineStyles={false} language={language} children={src} />;
+        }
     },
-    inlineMath: ({ value = "" }: { value: string }) => <Tex math={value} />,
-    math: ({ value = "" }: { value: string }) => <Tex block math={value} />,
+    pre: ({ children }: any) => (<>{children}</>),
 };
 
 export const AdvancedMarkdown = (props: MarkdownProps) => {
@@ -34,7 +51,7 @@ export const AdvancedMarkdown = (props: MarkdownProps) => {
         .replace(/\\[\[\]]/g, '$$$$') // escape block
         .replace(/\\[\(\)]/g, '$$'); // escape inline
 
-    return <ReactMarkdown plugins={[gfm, math, breaks, external]} renderers={renderers} children={body} />;
+    return <ReactMarkdown remarkPlugins={[gfm, remarkMath, breaks, external]} rehypePlugins={[rehypeKatex]} components={renderers} children={body} />;
 };
 export default AdvancedMarkdown;
 

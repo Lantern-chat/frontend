@@ -1,3 +1,5 @@
+@use "sass:math";
+
 @import "lib/math.scss";
 
 @function kelvin($temp) {
@@ -86,7 +88,7 @@ $BLACKBODY_TABLE_B: (
         $g: nth($BLACKBODY_TABLE_G, $i);
         $b: nth($BLACKBODY_TABLE_B, $i);
 
-        $t_inv: 1 / $t;
+        $t_inv: math.div(1, $t);
 
         $r: nth($r, 1) * $t_inv + nth($r, 2) * $t + nth($r, 3);
         $g: nth($g, 1) * $t_inv + nth($g, 2) * $t + nth($g, 3);
@@ -95,7 +97,7 @@ $BLACKBODY_TABLE_B: (
 
     $v: max(max($r, $g), $b);
 
-    $iv: 255 / $v;
+    $iv: math.div(255, $v);
     @if $v == 0 {
         $iv: 0;
     }

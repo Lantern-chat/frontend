@@ -23,4 +23,4 @@ let Root = () => {
     return root;
 };
 
-ReactDOM.unstable_createRoot(document.getElementById("ln-root")!, { hydrate: true }).render(<Root />);
+ReactDOM.createRoot(document.getElementById("ln-root")!, { hydrate: true }).render(<Root />);

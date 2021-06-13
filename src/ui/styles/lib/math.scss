@@ -1,3 +1,5 @@
+@use "sass:math";
+
 @function trunc($x) {
     @if $x > 0 {
         @return floor($x);
@@ -21,9 +23,9 @@
     @if $exp == 0 {
         @return 1;
     } @else if $exp < 0 {
-        @return 1 / pow-int($number, -$exp);
+        @return math.div(1, pow-int($number, -$exp));
     } @else {
-        $e: floor($exp / 2);
+        $e: floor(math.div($exp, 2));
         $pow: math-pow-polyfill($number, $e);
         @if $e * 2 == $exp {
             @return $pow * $pow;
@@ -38,7 +40,7 @@
     $result: 1;
 
     @for $index from 1 to 100 {
-        $item: $item * $value / $index;
+        $item: math.div($item * $value, $index);
         $result: $result + $item;
     }
 
@@ -51,7 +53,7 @@
 
     @while ($value > 1) {
         $ten-exp: $ten-exp + 1;
-        $value: $value / 10;
+        $value: math.div($value, 10);
     }
 
     $item: -1;
@@ -59,7 +61,7 @@
 
     @for $index from 1 to 100 {
         $item: $item * (1 - $value);
-        $result: $result + $item / $index;
+        $result: $result + math.div($item, $index);
     }
 
     @return $result + $ten-exp * $ln-ten;
@@ -78,8 +80,8 @@
 $PHI: 1.6180339887498948482045868343656381177203091798057628621354486227;
 $PI: 3.14159265358979323846;
 $TWO_PI: $PI * 2;
-$HALF_PI: $PI / 2;
-$QUARTER_PI: $PI / 4;
+$HALF_PI: math.div($PI, 2);
+$QUARTER_PI: math.div($PI, 4);
 $SIN_ITERATION: 10;
 
 @function sin($rad) {
@@ -112,7 +114,7 @@ $SIN_ITERATION: 10;
         $factorialAccVal: factorial($factorialCounter + 2, $factorialCounter, $factorialAccVal);
         $factorialCounter: $factorialCounter + 2;
 
-        $totalVal: $totalVal + ($radPowAccVal / $factorialAccVal);
+        $totalVal: $totalVal + math.div($radPowAccVal, $factorialAccVal);
     }
 
     @return $totalVal;

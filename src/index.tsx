@@ -32,8 +32,8 @@ let Root = () => {
     return root;
 };
 
-//React.render(<Root />, document.getElementById('ln-root')!);
+//ReactDOM.render(<Root />, document.getElementById('ln-root')!);
 //ReactDOM.hydrate(<Root />, document.getElementById("ln-root")!);
-ReactDOM.unstable_createRoot(document.getElementById("ln-root")!, { hydrate: true }).render(<Root />);
+(ReactDOM as any).unstable_createRoot(document.getElementById("ln-root")!, { hydrate: true }).render(<Root />);
 
 // https://github.com/nuxodin/ie11CustomProperties/blob/master/ie11CustomProperties.js
