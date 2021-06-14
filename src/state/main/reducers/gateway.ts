@@ -1,5 +1,7 @@
 import { ISession } from "lib/session";
 
+import { Action, Type } from "../actions";
+
 enum GatewayStatus {
     Unknown = 0,
     Initialized,
@@ -10,28 +12,20 @@ enum GatewayStatus {
 
 export interface IGatewayState {
     status: GatewayStatus,
-    session: ISession | null,
+    session?: ISession,
 }
 
 const DEFAULT_STATE: IGatewayState = {
     status: GatewayStatus.Unknown,
-    session: null,
 };
-
-export interface GatewayAction {
-    type: string,
-    payload: any,
-}
 
 import { GATEWAY } from "ui/views/main";
 import { GatewayMessage, GatewayMessageDiscriminator } from "worker/gateway/msg";
 import { GatewayCommandDiscriminator } from "worker/gateway/cmd";
 
-export function gatewayReducer(state: IGatewayState = DEFAULT_STATE, action: GatewayAction): IGatewayState {
-
-    console.log(action.type);
+export function gatewayReducer(state: IGatewayState = DEFAULT_STATE, action: Action): IGatewayState {
     switch(action.type) {
-        case 'MOUNT': {
+        case Type.MOUNT: {
             state = { ...state, session: action.payload };
             // if we get the mount after init, connect now
             if(state.status == GatewayStatus.Initialized) {
@@ -42,16 +36,16 @@ export function gatewayReducer(state: IGatewayState = DEFAULT_STATE, action: Gat
             }
             return state;
         }
-        case 'UNMOUNT': {
+        case Type.UNMOUNT: {
             GATEWAY.postMessage({ t: GatewayCommandDiscriminator.Disconnect });
             return DEFAULT_STATE;
         }
-        case 'GATEWAY_MESSAGE': {
+        case Type.GATEWAY_EVENT: {
             let msg: GatewayMessage = action.payload;
             switch(msg.t) {
                 case GatewayMessageDiscriminator.Initialized: {
                     // if we get the init after mount, connect now
-                    if(state.session !== null) {
+                    if(state.session) {
                         GATEWAY.postMessage({
                             t: GatewayCommandDiscriminator.Connect,
                             auth: state.session.auth

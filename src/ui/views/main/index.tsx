@@ -1,18 +1,19 @@
 import React, { useEffect } from "react";
 import { createStore, applyMiddleware } from "redux";
 import thunk from 'redux-thunk';
+import { createLogger } from 'redux-logger';
 
 import { Provider } from "react-redux";
-import { rootReducer } from "models/main";
+import { rootReducer, Type } from "state/main";
 
 
 import Gateway from "worker-loader!../../../worker/gateway";
 export const GATEWAY = new Gateway();
 
-export const STORE = createStore(rootReducer, applyMiddleware(thunk));
+export const STORE = createStore(rootReducer, applyMiddleware(thunk, createLogger()));
 
 window.addEventListener('resize', () => {
-    STORE.dispatch({ type: 'WINDOW_RESIZE' });
+    STORE.dispatch({ type: Type.WINDOW_RESIZE });
 });
 
 GATEWAY.addEventListener('message', msg => {
@@ -20,12 +21,12 @@ GATEWAY.addEventListener('message', msg => {
     if(typeof data === 'string') {
         data = JSON.parse(data);
     }
-    STORE.dispatch({ type: 'GATEWAY_MESSAGE', payload: data });
+    STORE.dispatch({ type: Type.GATEWAY_EVENT, payload: data });
 });
 
-GATEWAY.addEventListener('error', err => {
-    STORE.dispatch({ type: 'GATEWAY_ERROR', payload: err });
-});
+//GATEWAY.addEventListener('error', err => {
+//    STORE.dispatch({ type: 'GATEWAY_ERROR', payload: err });
+//});
 
 import { Redirect, Route, Switch } from "react-router-dom";
 
@@ -52,8 +53,8 @@ export interface MainViewParameters {
 import "./main.scss";
 export const MainView: React.FunctionComponent<MainViewParameters> = ({ session }: MainViewParameters) => {
     useEffect(() => {
-        STORE.dispatch({ type: "MOUNT", payload: session });
-        return () => { STORE.dispatch({ type: "UNMOUNT" }); };
+        STORE.dispatch({ type: Type.MOUNT, payload: session });
+        return () => { STORE.dispatch({ type: Type.UNMOUNT }); };
     }, [session]);
 
     return (

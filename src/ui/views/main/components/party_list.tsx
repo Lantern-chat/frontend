@@ -8,7 +8,7 @@ import { Avatar } from "ui/components/common/avatar";
 import { Glyphicon } from "ui/components/common/glyphicon";
 
 import { Session } from "lib/session";
-import { RootState } from "models/main";
+import { RootState } from "state/main";
 
 import LogoutIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-432-log-out.svg";
 

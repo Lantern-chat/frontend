@@ -1,5 +1,7 @@
 import dayjs, { Dayjs } from "dayjs";
 
+import { Action, Type } from "../actions";
+
 export interface IMessage {
     id: number,
     ts: Dayjs,
@@ -18,19 +20,14 @@ const DEFAULT_STATE: IMessageState = {
     current_edit: null,
 };
 
-export interface MessageAction {
-    type: string,
-    payload: string,
-}
-
 let counter = 0;
 
-export function messageReducer(state: IMessageState = DEFAULT_STATE, action: MessageAction): IMessageState {
+export function messageReducer(state: IMessageState = DEFAULT_STATE, action: Action): IMessageState {
     switch(action.type) {
-        case 'UNMOUNT':
+        case Type.UNMOUNT:
             return DEFAULT_STATE;
 
-        case 'MESSAGE_SEND': {
+        case Type.MESSAGE_SEND: {
             counter += 1;
             return {
                 ...state,
@@ -41,10 +38,10 @@ export function messageReducer(state: IMessageState = DEFAULT_STATE, action: Mes
                 }]
             };
         }
-        case 'MESSAGE_DISCARD_EDIT': {
+        case Type.MESSAGE_DISCARD_EDIT: {
             return { ...state, current_edit: null };
         }
-        case 'MESSAGE_EDIT_PREV': {
+        case Type.MESSAGE_EDIT_PREV: {
             if(state.messages.length == 0) break;
 
             let current_edit = state.current_edit;
@@ -59,7 +56,7 @@ export function messageReducer(state: IMessageState = DEFAULT_STATE, action: Mes
 
             return { ...state, current_edit };
         }
-        case 'MESSAGE_EDIT_NEXT': {
+        case Type.MESSAGE_EDIT_NEXT: {
             if(state.messages.length == 0) break;
 
             let current_edit = state.current_edit;
@@ -74,7 +71,7 @@ export function messageReducer(state: IMessageState = DEFAULT_STATE, action: Mes
 
             return { ...state, current_edit };
         }
-        case 'MESSAGE_SEND_EDIT': {
+        case Type.MESSAGE_SEND_EDIT: {
             let current_edit = state.current_edit;
             if(current_edit != null) {
                 let idx = state.messages.findIndex((msg) => msg.id == current_edit);

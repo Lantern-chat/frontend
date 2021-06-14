@@ -1,8 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { RootState } from "models/main";
-import { closeCreatePartyModal } from 'models/main/actions/modals';
+import { RootState, Type } from "state/main";
 import { GenericModal } from "./generic";
 
 export const CreatePartyModal = React.memo(() => {
@@ -14,7 +13,7 @@ export const CreatePartyModal = React.memo(() => {
     }
 
     return (
-        <GenericModal onClose={() => dispatch(closeCreatePartyModal())}>
+        <GenericModal onClose={() => dispatch({ type: Type.MODAL_CLOSE_CREATE_PARTY })}>
             <h4>Create of Join a Party</h4>
             <ul>
                 <li></li>

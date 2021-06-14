@@ -5,7 +5,7 @@ import { createStructuredSelector } from "reselect";
 import TextareaAutosize from 'react-textarea-autosize';
 
 //import { IMessageState } from "ui/views/main/reducers/messages";
-import { RootState } from "models/main";
+import { RootState, Type } from "state/main";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
 
@@ -13,8 +13,6 @@ import { Glyphicon } from "ui/components/common/glyphicon";
 import SmileyHalf from "icons/glyphicons-pro/glyphicons-halflings-2-2/svg/individual-svg/glyphicons-halflings-243-slightly-smiling.svg";
 import Send from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-461-send.svg";
 import Plus from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-371-plus.svg";
-
-import { editMessageNext, editMessagePrev, sendMessage, sendMessageEdit, editMessageDiscard } from "models/main/actions/msg";
 
 // TODO: Move elsewhere
 function countLines(str: string): number {
@@ -63,7 +61,7 @@ export const MessageBox = React.memo(() => {
     }
 
     let do_send = () => {
-        dispatch(state.isEditing ? sendMessageEdit(state.value) : sendMessage(state.value));
+        dispatch({ type: state.isEditing ? Type.MESSAGE_SEND_EDIT : Type.MESSAGE_SEND, payload: state.value });
         setState({ ...state, value: "" });
     };
 
@@ -114,9 +112,9 @@ export const MessageBox = React.memo(() => {
                 let current_line = countLines(state.value.slice(0, ref.current!.selectionStart));
 
                 if(e.key === 'ArrowUp' && current_line === 0) {
-                    dispatch(editMessagePrev());
+                    dispatch({ type: Type.MESSAGE_EDIT_PREV });
                 } else if(e.key === 'ArrowDown' && current_line === total_lines) {
-                    dispatch(editMessageNext());
+                    dispatch({ type: Type.MESSAGE_EDIT_NEXT });
                 } else {
                     return;
                 }
@@ -126,7 +124,7 @@ export const MessageBox = React.memo(() => {
             }
             case 'Escape':
             case 'Esc': {
-                if(state.isEditing) { dispatch(editMessageDiscard()); }
+                if(state.isEditing) { dispatch({ type: Type.MESSAGE_DISCARD_EDIT }); }
                 break;
             }
         }
