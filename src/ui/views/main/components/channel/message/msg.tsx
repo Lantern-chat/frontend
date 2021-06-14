@@ -4,10 +4,11 @@ import classnames from "classnames";
 
 import { Markdown, MarkdownProps } from "ui/components/common/markdown";
 
-import { IMessage } from "state/main/reducers/messages";
+import { Message as MessageModel } from "state/main/models";
 
-export interface MessageProps extends IMessage {
+export interface MessageProps {
     editing: boolean,
+    msg: MessageModel,
 }
 
 import "./msg.scss";
@@ -18,7 +19,7 @@ export const Message = React.memo((props: MessageProps) => {
 
     return (
         <div className={classes}>
-            <Markdown body={props.msg} />
+            <Markdown body={props.msg.content} />
         </div>
     );
 });

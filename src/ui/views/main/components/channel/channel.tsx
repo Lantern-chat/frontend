@@ -1,16 +1,21 @@
 import React from "react";
 
 import "./channel.scss";
-import { ChannelBody } from "./body";
 import { ChannelHeader } from "./header";
-import { MessageList } from "./message/list";
+import { MessageFeed } from "./message/feed";
 import { MessageBox } from "./message/box";
+import { Snowflake } from "state/main/models";
 
-export const Channel = React.memo(() => {
+export interface IChannelProps {
+    channel: Snowflake,
+    party: Snowflake,
+}
+
+export const Channel = React.memo((props: IChannelProps) => {
     return (
         <div className="ln-channel">
             <ChannelHeader />
-            <MessageList />
+            <MessageFeed channel={props.channel} />
             <MessageBox />
         </div>
     );

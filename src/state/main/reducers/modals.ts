@@ -17,5 +17,6 @@ export function modalReducer(state: IModalState = DEFAULT_STATE, action: Action)
             return { ...state, create_party_open: false };
         }
     }
+
     return state;
 }

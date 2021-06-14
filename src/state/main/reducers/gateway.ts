@@ -2,6 +2,8 @@ import { ISession } from "lib/session";
 
 import { Action, Type } from "../actions";
 
+import { GATEWAY } from "ui/views/main";
+
 enum GatewayStatus {
     Unknown = 0,
     Initialized,
@@ -19,7 +21,6 @@ const DEFAULT_STATE: IGatewayState = {
     status: GatewayStatus.Unknown,
 };
 
-import { GATEWAY } from "ui/views/main";
 import { GatewayMessage, GatewayMessageDiscriminator } from "worker/gateway/msg";
 import { GatewayCommandDiscriminator } from "worker/gateway/cmd";
 
@@ -56,6 +57,9 @@ export function gatewayReducer(state: IGatewayState = DEFAULT_STATE, action: Act
                 case GatewayMessageDiscriminator.Connected: {
                     return { ...state, status: GatewayStatus.Connected };
                 }
+                //case GatewayMessageDiscriminator.Message: {
+                //
+                //}
             }
         }
     }

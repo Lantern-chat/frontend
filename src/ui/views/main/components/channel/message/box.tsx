@@ -19,15 +19,13 @@ function countLines(str: string): number {
     return (str.match(/\n/g) || '').length;
 }
 
-const msg_selector = createStructuredSelector({
-    msg: (state: RootState) => state.messages,
-    use_mobile_view: (state: RootState) => state.window.use_mobile_view,
-});
-
 import "./box.scss";
 export const MessageBox = React.memo(() => {
     let dispatch = useDispatch();
-    let { msg: { messages, current_edit }, use_mobile_view } = useSelector(msg_selector);
+    let { msg: { messages, current_edit }, use_mobile_view } = useSelector((state: RootState) => ({
+        msg: { messages: [] as any[], current_edit: null },
+        use_mobile_view: state.window.use_mobile_view,
+    }));
 
     let ref = useRef<HTMLTextAreaElement>(null);
     let keyRef = useRef<HTMLSpanElement>(null);
