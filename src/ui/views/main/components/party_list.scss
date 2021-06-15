@@ -13,6 +13,13 @@
         }
     }
 
+    a,
+    a:hover,
+    a:active {
+        color: inherit;
+        text-decoration: inherit;
+    }
+
     li {
         position: relative;
         text-align: center;

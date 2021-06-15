@@ -1,4 +1,6 @@
 import React from "react";
+import { useParams } from "react-router";
+
 import { shallowEqual, useSelector } from "react-redux";
 
 import { ChannelList } from "./channel_list";
@@ -11,12 +13,15 @@ import { RootState } from "state/main";
 import { Panel } from "state/main/reducers/window";
 
 import "./party.scss";
-import { useParams } from "react-router";
 
 export const Party = React.memo(() => {
     let show_panel = useSelector((state: RootState) => state.window.show_panel);
 
-    let { party, channel } = useParams<{ party: string, channel: string }>();
+    let { party, channel } = useParams<{ party: string, channel?: string }>();
+
+    if(!channel) {
+        return <div>Loading...</div>;
+    }
 
     let classes = ["ln-party__channel"];
     switch(show_panel) {

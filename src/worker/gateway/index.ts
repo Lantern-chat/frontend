@@ -7,24 +7,20 @@ import { GatewayCommand, GatewayCommandDiscriminator } from "./cmd";
 import { GatewayEvent, GatewayEventCode } from "./event";
 import { GatewayClientCommand, GatewayClientCommandDiscriminator } from "./client";
 
-function post_msg(t: GatewayMessageDiscriminator, payload?: string) {
-    ctx.postMessage(`{"t":${t.toString()}` + (payload ? `,"p":"${payload}"}` : '}'));
-}
-
 var WASM: InitOutput, GATEWAY: Gateway;
 
 init().then(wasm => {
     WASM = wasm;
     GATEWAY = new Gateway();
 
-    post_msg(GatewayMessageDiscriminator.Initialized);
+    ctx.postMessage({ t: GatewayMessageDiscriminator.Initialized });
 }).catch(e => {
-    post_msg(GatewayMessageDiscriminator.Error, JSON.stringify(e));
+    ctx.postMessage({ t: GatewayMessageDiscriminator.Error, p: e });
 });
 
 ctx.addEventListener('message', msg => {
     if(!WASM) {
-        return post_msg(GatewayMessageDiscriminator.Error, "Not Ready");
+        return ctx.postMessage({ t: GatewayMessageDiscriminator.Error, p: "Not Ready" });
     }
 
     let data: GatewayCommand = msg.data;
@@ -81,7 +77,7 @@ class Gateway {
         console.log("DELAY: ", delay);
 
         setTimeout(() => {
-            post_msg(GatewayMessageDiscriminator.Connecting);
+            ctx.postMessage({ t: GatewayMessageDiscriminator.Connecting });
 
             this.ws = new WebSocket(`wss://${self.location.host}/api/v1/gateway?compress=true&encoding=json`);
             this.ws.binaryType = "arraybuffer";
@@ -98,7 +94,7 @@ class Gateway {
     // TODO: Memoize?
     send(value: GatewayClientCommand) {
         if(!this.ws) {
-            return post_msg(GatewayMessageDiscriminator.Error, "WebSocket undefined");
+            return ctx.postMessage({ t: GatewayMessageDiscriminator.Error, p: "WebSocket undefined" });
         }
 
         console.log("SENDING: ", value);
@@ -111,7 +107,7 @@ class Gateway {
     }
 
     on_close(msg: CloseEvent) {
-        post_msg(GatewayMessageDiscriminator.Disconnected, msg.code.toString());
+        ctx.postMessage({ t: GatewayMessageDiscriminator.Disconnected, p: msg.code });
 
         this.ws = null;
         this.hbw = false;
@@ -120,13 +116,13 @@ class Gateway {
 
     on_error(_err: Event) {
         // TODO: Handle this as a close event?
-        post_msg(GatewayMessageDiscriminator.Error, "WS Error");
+        ctx.postMessage({ t: GatewayMessageDiscriminator.Error, p: "WS Error" });
     }
 
     on_open() {
         this.attempt = 0;
 
-        post_msg(GatewayMessageDiscriminator.Connected);
+        ctx.postMessage({ t: GatewayMessageDiscriminator.Connected });
         // NOTE: Nothing else to do on open except wait for the Hello event
     }
 
@@ -152,6 +148,10 @@ class Gateway {
             }
             case GatewayEventCode.Ready: {
                 console.log("GATEWAY READY", msg);
+                ctx.postMessage({
+                    t: GatewayMessageDiscriminator.Ready,
+                    p: msg.p,
+                });
                 break;
             }
             default: {
@@ -166,9 +166,7 @@ class Gateway {
         this.send({ o: GatewayClientCommandDiscriminator.Heartbeat });
 
         // in hbi milliseconds, check if an ACK has been received or disconnect/reconnect
-        setTimeout(() => {
-            if(this.hbw) { this.disconnect() }
-        }, this.hbi);
+        setTimeout(() => { if(this.hbw) { this.disconnect() } }, this.hbi);
     }
 
     disconnect() {

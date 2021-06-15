@@ -21,6 +21,9 @@ GATEWAY.addEventListener('message', msg => {
     if(typeof data === 'string') {
         data = JSON.parse(data);
     }
+    if(typeof data.p === 'string') {
+        data.p = JSON.parse(data.p);
+    }
     STORE.dispatch({ type: Type.GATEWAY_EVENT, payload: data });
 });
 
@@ -28,7 +31,7 @@ GATEWAY.addEventListener('message', msg => {
 //    STORE.dispatch({ type: 'GATEWAY_ERROR', payload: err });
 //});
 
-import { Redirect, Route, Switch } from "react-router-dom";
+import { Redirect, Route, Switch } from "react-router";
 
 import { PartyList } from "./components/party_list";
 import { Party } from "./components/party/party";
@@ -58,12 +61,11 @@ export const MainView: React.FunctionComponent<MainViewParameters> = ({ session 
     }, [session]);
 
     return (
-        <Provider store={STORE}>
-            <div className="ln-main">
+        <div className="ln-main">
+            <Provider store={STORE}>
                 <PartyList />
 
                 <CreatePartyModal />
-
                 <Switch>
                     <Route path="/channels/@me/:channel">
                         Direct Message
@@ -71,15 +73,15 @@ export const MainView: React.FunctionComponent<MainViewParameters> = ({ session 
                     <Route path="/channels/@me">
                         User Home
                     </Route>
-                    <Route path="/channels/:party/:channel">
+                    <Route path={["/channels/:party/:channel", "/channels/:party"]}>
                         <Party />
                     </Route>
                     <Route>
                         <Redirect to="/channels/@me"></Redirect>
                     </Route>
                 </Switch>
-            </div>
-        </Provider>
+            </Provider>
+        </div>
     );
 };
 export default MainView;

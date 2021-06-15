@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
+import React, { Suspense, useContext } from "react";
 
-import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch, Redirect, useParams } from "react-router-dom";
 
 import { Fireflies } from "ui/components/login/fireflies";
 import { ThemeWidget } from "ui/components/login/theme_widget";
@@ -30,7 +30,7 @@ const LoginRoutes = () => (
 
         <div className="ln-box ln-scroll-y">
             <div className="ln-login-container ln-centered" style={{ zIndex: 1 }}>
-                <React.Suspense fallback={Fallback}>
+                <Suspense fallback={Fallback}>
                     <Switch>
                         <Route path="/login">
                             <LoginView />
@@ -42,7 +42,7 @@ const LoginRoutes = () => (
                     </Switch>
 
                     <Logo />
-                </React.Suspense>
+                </Suspense>
             </div>
         </div>
     </>
@@ -57,7 +57,7 @@ const AppRouter = () => {
         <Router>
             <Switch>
                 <Route path={["/login", "/register"]}>
-                    {session ? <Redirect to="channels/0/0" /> : <LoginRoutes />}
+                    {session ? <Redirect to="/channels/@me" /> : <LoginRoutes />}
                 </Route >
 
                 <Route path="/channels">
@@ -71,7 +71,7 @@ const AppRouter = () => {
 
                 <Route>
                     {/* 404 */}
-                    {session ? <Redirect to="channels/0/0" /> : <Redirect to="/login" />}
+                    {session ? <Redirect to="/channels/@me" /> : <Redirect to="/login" />}
                 </Route>
             </Switch>
         </Router >

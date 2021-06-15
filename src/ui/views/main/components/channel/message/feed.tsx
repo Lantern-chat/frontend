@@ -21,34 +21,43 @@ export const MessageFeed = React.memo((props: IMessageListProps) => {
         width: state.window.width,
     }));
 
+    let feed;
+
     if(room == null) {
-        return <div>Channel does not exist</div>;
-    }
-
-    const showTimeline = windowWidth > 640;
-
-    let wrapperClasses = "ln-msg-list__wrapper ln-scroll-y ln-scroll-fixed";
-
-    let MaybeTimeline: React.FunctionComponent<ITimelineProps> = Timeline;
-    if(!hasTimeline || !showTimeline) {
-        MaybeTimeline = () => <></>;
+        feed = <div className="ln-center-standalone">Channel does not exist</div>;
     } else {
-        wrapperClasses += ' has-timeline';
+
+        const showTimeline = windowWidth > 640;
+
+        let wrapperClasses = "ln-msg-list__wrapper ln-scroll-y ln-scroll-fixed";
+
+        let MaybeTimeline: React.FunctionComponent<ITimelineProps> = Timeline;
+        if(!hasTimeline || !showTimeline) {
+            MaybeTimeline = () => <></>;
+        } else {
+            wrapperClasses += ' has-timeline';
+        }
+
+        feed = (
+            <>
+                <MaybeTimeline direction={0} position={0} />
+
+                <div className={wrapperClasses}>
+                    <ul className="ln-msg-list">
+                        {room.msgs.map(msg_state => (
+                            <li key={msg_state.msg.id} className="ln-msg-list__group">
+                                <Message editing={false} msg={msg_state.msg} />
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </>
+        );
     }
 
     return (
         <div className="ln-msg-list__flex-container">
-            <MaybeTimeline direction={0} position={0} />
-
-            <div className={wrapperClasses}>
-                <ul className="ln-msg-list">
-                    {room.msgs.map(msg_state => (
-                        <li key={msg_state.msg.id} className="ln-msg-list__group">
-                            <Message editing={false} msg={msg_state.msg} />
-                        </li>
-                    ))}
-                </ul>
-            </div>
+            {feed}
         </div>
     );
 });

@@ -2,6 +2,7 @@ import { Action, Type } from "../actions";
 
 import { User } from "../models";
 import { ISession } from "lib/session";
+import { GatewayMessageDiscriminator } from "worker/gateway/msg";
 
 export interface IUserState {
     user?: User,
@@ -16,7 +17,11 @@ export function userReducer(state: IUserState = DEFAULT_STATE, action: Action) {
         case Type.MOUNT: {
             return { ...state, session: action.payload };
         }
-        // TODO: Ready event
+        case Type.GATEWAY_EVENT: {
+            if(action.payload.t == GatewayMessageDiscriminator.Ready) {
+                return { ...state, user: action.payload.p.user };
+            }
+        }
     }
 
     return state;

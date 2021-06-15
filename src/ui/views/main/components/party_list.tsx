@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
-import { useParams } from "react-router";
+import { useParams, useRouteMatch } from "react-router";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { fetch, XHRMethod } from "lib/fetch";
@@ -18,16 +19,15 @@ import "./party_list.scss";
 export const PartyList = React.memo(() => {
     let ctx = useContext(Session);
 
+    let active_party = useRouteMatch<{ party: string }>("/channels/:party")?.params.party;
 
     let dispatch = useDispatch();
-
-    let { create_party_open, parties, sorted_parties } = useSelector((state: RootState) => ({
+    let { create_party_open, parties, last_channel } = useSelector((state: RootState) => ({
         parties: state.party.parties,
-        sorted_parties: state.party.sorted,
+        last_channel: state.party.last_channel,
+        //sorted_parties: state.party.sorted,
         create_party_open: state.modals.create_party_open
     }));
-
-    let { party: active_party } = useParams<{ party: string }>();
 
     let logout = () => {
         ctx.setSession(null)
@@ -39,18 +39,31 @@ export const PartyList = React.memo(() => {
         }).catch(() => { })
     };
 
-    let colors = ['yellow', 'lightblue', 'lightgreen', 'lightcoral'];
+    let colors = ['goldenrod', 'royalblue', 'darkgreen', 'crimson'];
 
     return (
         <div className="ln-party-list__wrapper">
             <ol className="ln-party-list ln-scroll-y ln-scroll-y--invisible ln-scroll-fixed">
-                {Array.from(parties.values(), (party, i) => (
-                    <li value={party.sort_order} key={party.id}
-                        className={party.id == active_party ? 'selected' : undefined}>
-                        <Avatar rounded url={`https://placekitten.com/${(i % 25) + 50}/${(i % 25) + 50}`}
-                            username={party.name} title={party.name} backgroundColor={colors[fnv1a(party.id) % colors.length]} />
-                    </li>
-                ))}
+                <li value={0} id="user-home" className={'@me' == active_party ? 'selected' : ''}>
+                    <Link to="/channels/@me">
+                        <Avatar rounded text="@" username="Home" title="Home" />
+                    </Link>
+                </li>
+
+                {Array.from(parties.values(), (party, i) => {
+                    let last = last_channel.get(party.id);
+                    last = last ? '/' + last : '';
+                    return (
+                        <li value={1 + party.sort_order} key={party.id}
+                            className={party.id == active_party ? 'selected' : undefined}>
+                            <Link to={`/channels/${party.id}${last}`}>
+                                <Avatar rounded url={true ? undefined : `https://placekitten.com/${(i % 25) + 50}/${(i % 25) + 50}`}
+                                    text={party.name.charAt(0)}
+                                    username={party.name} title={party.name} backgroundColor={colors[fnv1a(party.id) % colors.length]} />
+                            </Link>
+                        </li>
+                    );
+                })}
 
                 <li id="create-party" className={create_party_open ? 'selected' : ''}>
                     <Avatar rounded text="+" username="Join/Create a Party" title="Join/Create a Party"
