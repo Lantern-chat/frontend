@@ -14,7 +14,7 @@ export const CreatePartyModal = React.memo(() => {
 
     return (
         <GenericModal onClose={() => dispatch({ type: Type.MODAL_CLOSE_CREATE_PARTY })}>
-            <h4>Create of Join a Party</h4>
+            <h4>Create or Join a Party</h4>
             <ul>
                 <li></li>
             </ul>
