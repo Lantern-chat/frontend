@@ -19,9 +19,9 @@ export const Party = React.memo(() => {
 
     let { party, channel } = useParams<{ party: string, channel?: string }>();
 
-    if(!channel) {
-        return <div>Loading...</div>;
-    }
+    //if(!channel) {
+    //    return <div>Loading...</div>;
+    //}
 
     let classes = ["ln-party__channel"];
     switch(show_panel) {

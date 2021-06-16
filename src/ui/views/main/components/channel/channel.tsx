@@ -7,16 +7,27 @@ import { MessageBox } from "./message/box";
 import { Snowflake } from "state/main/models";
 
 export interface IChannelProps {
-    channel: Snowflake,
+    channel?: Snowflake,
     party: Snowflake,
 }
 
 export const Channel = React.memo((props: IChannelProps) => {
+    let feed_box;
+    if(props.channel != null) {
+        feed_box = (
+            <>
+                <MessageFeed channel={props.channel} />
+                <MessageBox />
+            </>
+        );
+    } else {
+        feed_box = <div className="ln-center-standalone">Loading...</div>;
+    }
+
     return (
         <div className="ln-channel">
             <ChannelHeader />
-            <MessageFeed channel={props.channel} />
-            <MessageBox />
+            {feed_box}
         </div>
     );
 });
