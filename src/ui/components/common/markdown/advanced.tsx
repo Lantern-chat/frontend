@@ -45,6 +45,7 @@ const renderers = {
 };
 
 export const AdvancedMarkdown = (props: MarkdownProps) => {
+    // TODO: Don't do this inside code blocks
     let body = props.body
         .replace(/\$/g, '\\$') // escape $ symbols
         .replace(/(?<=\\\[[^]*)(\\\$)(?=[^]*?\\\])/g, '$$') // unescape $ symbols within block delimiters

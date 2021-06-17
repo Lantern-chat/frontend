@@ -15,10 +15,11 @@ export const Markdown = React.memo((props: MarkdownProps) => {
     const Markdown = is_advanced ? AdvancedMarkdown : SimpleMarkdown;
 
     // TODO: Escape backslashes before underscores, but also escape the underscore
-
+    // TODO: Only apply these tweaks outside of code blocks
     let body = props.body
-        .replace(/>(.*)\n>/g, '>$1\n>\n>') // always split paragraphs in blockquotes
-        .replace(/>{5,}/g, '>>>>>'); // limit blockquote depth to 5
+        .replace(/^>(?=[^\s>])/g, '\\>') // change emotes like >.< to \>.< automatically
+        .replace(/^>\s(.*)\n>/g, '>$1\n>\n>') // always split paragraphs in blockquotes
+        .replace(/^>{5,}/g, '>>>>>'); // limit blockquote depth to 5
 
     let fallback = <span />;
     if(is_advanced) {
