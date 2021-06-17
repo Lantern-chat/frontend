@@ -24,36 +24,34 @@ function decode_ac(value: number, max: number): RGBColor {
 
 export function decode(hash: ArrayBuffer, w: number, h: number, punch: number): Uint8ClampedArray {
     if(hash.byteLength < 6) throw "Invalid blurhash";
-    let view = new DataView(hash), byte = 0;
+    let view = new DataView(hash),
+        byte = 1; // avoid increment after q_max_value
 
     let size_flag = view.getUint8(byte); byte += 1;
 
-    let cy = ((size_flag / 9) | 0) + 1;
-    let cx = ((size_flag % 9) | 0) + 1;
+    let cy = ((size_flag / 9) | 0) + 1,
+        cx = ((size_flag % 9) | 0) + 1;
 
-    console.log("dim", cx, cy);
-
-    let num_colors = cx * cy;
-
-    let q_max_value = view.getInt8(byte); byte += 1;
-    let max_value = (q_max_value + 1) / 166.0;
-
-    let colors: RGBColor[] = new Array(num_colors);
+    let q_max_value = view.getInt8(byte - 1),
+        max_value = (q_max_value + 1) / 166.0,
+        num_colors = cx * cy,
+        colors: RGBColor[] = new Array(num_colors),
+        mc = max_value * punch,
+        iw = PI / w,
+        ih = PI / h,
+        out = new Uint8ClampedArray(w * h * 4);
 
     colors[0] = decode_dc(view.getUint32(byte, true)); byte += 4;
-
-    let mc = max_value * punch;
     for(let i = 1; i < num_colors; i++) {
         colors[i] = decode_ac(view.getUint16(byte, true), mc); byte += 2;
     }
 
-    let out = new Uint8ClampedArray(w * h * 4);
-
-    let iw = PI / w, ih = PI / h;
-
     for(let y = 0; y < h; y++) {
         for(let x = 0, p = y * w; x < w; x++) {
-            let xf = x * iw, yf = y * ih, c: RGBColor = { r: 0, g: 0, b: 0 };
+            let xf = x * iw,
+                yf = y * ih,
+                c: RGBColor = { r: 0, g: 0, b: 0 };
+
             for(let j = 0; j < cy; j++) {
                 for(let i = 0, k = j * cx; i < cx; i++) {
                     let idx = i + k, basis = cos(xf * i) * cos(yf * j);
