@@ -211,8 +211,8 @@ export function normalize({ r, g, b }: RGBColor): RGBColor {
 
 
 export function linear2srgb({ r, g, b }: RGBColor): RGBColor {
-    let l2s = (u: number) => u <= 0.0031308 ? (12.92 * u) : (1.055 * Math.pow(u, 1 / 2.4) - 0.055);
-    return { r: l2s(r) * 255, g: l2s(g) * 255, b: l2s(b) * 255 };
+    let l2s = (u: number) => min(255, round(255 * (u <= 0.0031308 ? (12.92 * u) : (1.055 * Math.pow(u, 1 / 2.4) - 0.055))));
+    return { r: l2s(r), g: l2s(g), b: l2s(b) };
 }
 export function srgb2linear({ r, g, b }: RGBColor): RGBColor {
     let s2l = (u: number) => u <= 0.04045 ? (u / 12.92) : Math.pow((u + 0.055) / 1.055, 2.4);
