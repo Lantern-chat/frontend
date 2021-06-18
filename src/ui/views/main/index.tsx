@@ -1,16 +1,14 @@
 import React, { useEffect } from "react";
 import { createStore, applyMiddleware } from "redux";
-import thunk from 'redux-thunk';
-import { createLogger } from 'redux-logger';
 
 import { Provider } from "react-redux";
-import { rootReducer, Type } from "state/main";
+import { enhancers, rootReducer, Type } from "state/main";
 
 
 import Gateway from "worker-loader!../../../worker/gateway";
 export const GATEWAY = new Gateway();
 
-export const STORE = createStore(rootReducer, applyMiddleware(thunk, createLogger()));
+export const STORE = createStore(rootReducer, enhancers);
 
 window.addEventListener('resize', () => {
     STORE.dispatch({ type: Type.WINDOW_RESIZE });
