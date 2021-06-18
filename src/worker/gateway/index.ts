@@ -1,52 +1,13 @@
-import init, { Compressor, InitOutput } from "../../../build/worker/gateway";
-
 const ctx: Worker = self as any;
+
+import { zlibSync as compress, unzlibSync as decompress } from 'fflate';
 
 import { GatewayMessageDiscriminator } from "./msg";
 import { GatewayCommand, GatewayCommandDiscriminator } from "./cmd";
 import { GatewayEvent, GatewayEventCode } from "./event";
 import { GatewayClientCommand, GatewayClientCommandDiscriminator } from "./client";
 
-var WASM: InitOutput, GATEWAY: Gateway;
-
-init().then(wasm => {
-    WASM = wasm;
-    GATEWAY = new Gateway();
-
-    ctx.postMessage({ t: GatewayMessageDiscriminator.Initialized });
-}).catch(e => {
-    ctx.postMessage({ t: GatewayMessageDiscriminator.Error, p: e });
-});
-
-ctx.addEventListener('message', msg => {
-    if(!WASM) {
-        return ctx.postMessage({ t: GatewayMessageDiscriminator.Error, p: "Not Ready" });
-    }
-
-    let data: GatewayCommand = msg.data;
-    if(typeof data === 'string') {
-        data = JSON.parse(data);
-    }
-
-    switch(data.t) {
-        case GatewayCommandDiscriminator.Connect: {
-            GATEWAY.auth = data.auth;
-            GATEWAY.connect();
-            break;
-        }
-        case GatewayCommandDiscriminator.Disconnect: {
-            GATEWAY.auth = null;
-            GATEWAY.disconnect();
-            break;
-        }
-        default: {
-            console.error("Unknown command: ", data);
-        }
-    }
-});
-
 class Gateway {
-    comp: Compressor;
     encoder: TextEncoder;
     decoder: TextDecoder;
 
@@ -66,7 +27,6 @@ class Gateway {
     attempt: number = 0;
 
     constructor() {
-        this.comp = Compressor.create();
         this.encoder = new TextEncoder();
         this.decoder = new TextDecoder();
     }
@@ -101,7 +61,7 @@ class Gateway {
 
         let str = JSON.stringify(value);
         let encoded = this.encoder.encode(str);
-        let compressed = this.comp.compress(encoded);
+        let compressed = compress(encoded);
 
         this.ws.send(compressed);
     }
@@ -127,7 +87,7 @@ class Gateway {
     }
 
     on_msg(raw: ArrayBuffer) {
-        let decompressed = this.comp.decompress(raw);
+        let decompressed = decompress(new Uint8Array(raw));
         let decoded = this.decoder.decode(decompressed);
         let msg: GatewayEvent = JSON.parse(decoded);
 
@@ -180,3 +140,30 @@ class Gateway {
         this.send({ o: GatewayClientCommandDiscriminator.Identify, p: { auth: this.auth!, intent: 0 } });
     }
 }
+
+var GATEWAY: Gateway = new Gateway();
+
+ctx.postMessage({ t: GatewayMessageDiscriminator.Initialized });
+
+ctx.addEventListener('message', msg => {
+    let data: GatewayCommand = msg.data;
+    if(typeof data === 'string') {
+        data = JSON.parse(data);
+    }
+
+    switch(data.t) {
+        case GatewayCommandDiscriminator.Connect: {
+            GATEWAY.auth = data.auth;
+            GATEWAY.connect();
+            break;
+        }
+        case GatewayCommandDiscriminator.Disconnect: {
+            GATEWAY.auth = null;
+            GATEWAY.disconnect();
+            break;
+        }
+        default: {
+            console.error("Unknown command: ", data);
+        }
+    }
+});

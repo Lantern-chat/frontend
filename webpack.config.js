@@ -9,7 +9,6 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const TerserPlugin = require('terser-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const svgToMiniDataURI = require('mini-svg-data-uri');
-const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
 
 const distPath = path.join(__dirname, 'dist');
 
@@ -174,11 +173,11 @@ module.exports = (env, argv) => {
                 excludeChunks: ['testbed'],
                 template: path.resolve(__dirname, "src", "index.html"),
             }),
-            new WasmPackPlugin({
-                crateDirectory: path.resolve(__dirname, "worker/gateway"),
-                extraArgs: "--target web",
-                outDir: path.resolve(__dirname, "build/worker/gateway"),
-            }),
+            //new WasmPackPlugin({
+            //    crateDirectory: path.resolve(__dirname, "worker/gateway"),
+            //    extraArgs: "--target web",
+            //    outDir: path.resolve(__dirname, "build/worker/gateway"),
+            //}),
             new BundleAnalyzerPlugin({
                 analyzerMode: 'server',
                 openAnalyzer: true,
