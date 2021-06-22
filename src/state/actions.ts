@@ -1,4 +1,8 @@
 export enum Type {
+    HISTORY_UPDATE = "HISTORY_UPDATE",
+
+    SESSION_EXPIRED = "SESSION_EXPIRED",
+
     WINDOW_RESIZE = "WINDOW_RESIZE",
     WINDOW_TOGGLE_RIGHT_SIDEBAR = "WINDOW_TOGGLE_RIGHT_SIDEBAR",
     WINDOW_TOGGLE_LEFT_SIDEBAR = "WINDOW_TOGGLE_LEFT_SIDEBAR",
@@ -19,6 +23,8 @@ export enum Type {
 }
 
 export type Action =
+    HistoryUpdate |
+    SessionExpired |
     WindowResize |
     WindowToggleRightSidebar |
     WindowToggleLeftSidebar |
@@ -32,6 +38,19 @@ export type Action =
     MessageEditPrev |
     MessageEditNext |
     MessageSendEdit;
+
+// HISTORY ACTIONS
+
+import { Update } from "history";
+export interface HistoryUpdate {
+    type: Type.HISTORY_UPDATE,
+    update: Update,
+}
+
+// SESSION ACTIONS
+export interface SessionExpired {
+    type: Type.SESSION_EXPIRED,
+}
 
 // WINDOW ACTIONS
 
@@ -57,6 +76,7 @@ export interface ModalCloseCreateParty {
     type: Type.MODAL_CLOSE_CREATE_PARTY
 }
 
+import { History } from "history";
 // APPLICATION ACTIONS
 
 import { ISession } from "lib/session";

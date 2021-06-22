@@ -1,27 +1,30 @@
-import React, { Suspense, useContext } from "react";
+import React, { Suspense, useContext, useEffect, useMemo } from "react";
+import { createBrowserHistory } from "history";
+import { createStore } from "redux";
+import { Provider, useSelector } from "react-redux";
+import { RootState } from "state/root";
 
-import { BrowserRouter as Router, Route, Switch, Redirect, useParams } from "react-router-dom";
+import { enhancers, initialReducer, Type } from "state/initial";
 
 import { Fireflies } from "ui/components/login/fireflies";
 import { ThemeWidget } from "ui/components/login/theme_widget";
 import { Ripple } from "ui/components/common/spinners/ripple";
 import { Logo } from "ui/components/login/logo";
-import { createTheme, Theme } from "ui/hooks/createTheme";
-import { createSession } from "ui/hooks/createSession";
-import { Session } from "lib/session";
+import { selectPath } from "state/selectors/selectPath";
+import { HistoryContext } from "./hooks/useHistory";
+import { Link } from "./components/link";
+import { initialSession } from "lib/session";
 
-
-import { MainViewParameters } from "./views/main";
-const MainView: React.FunctionComponent<MainViewParameters>
-    = React.lazy(() => import(       /* webpackCHunkName: 'MainView'     */ "./views/main"));
-
-const LoginView: React.FunctionComponent = React.lazy(() => import(      /* webpackChunkName: 'LoginView'    */ "./views/login"));
-const RegisterView: React.FunctionComponent = React.lazy(() => import(   /* webpackChunkName: 'RegisterView' */ "./views/register"));
+//import { MainViewParameters } from "./views/main";
+//const MainView: React.FunctionComponent<MainViewParameters>
+//    = React.lazy(() => import(       /* webpackCHunkName: 'MainView'     */ "./views/main"));
+//const LoginView: React.FunctionComponent = React.lazy(() => import(      /* webpackChunkName: 'LoginView'    */ "./views/login"));
+//const RegisterView: React.FunctionComponent = React.lazy(() => import(   /* webpackChunkName: 'RegisterView' */ "./views/register"));
 //const TestbedView: React.FunctionComponent = React.lazy(() => import(    /* webpackChunkName: 'TestbedView'  */ "./views/testbed"));
 
 
 const Fallback = <div className="ln-center-standalone"><Ripple size={120} /></div>;
-
+/*
 const LoginRoutes = () => (
     <>
         <Fireflies density={175} />
@@ -49,7 +52,7 @@ const LoginRoutes = () => (
 );
 
 // Create the router and paths
-const AppRouter = () => {
+const AppRouter2 = () => {
     let { session } = useContext(Session);
 
     // NOTE: Using <Switch> ensures routes are rendered exclusively
@@ -64,31 +67,51 @@ const AppRouter = () => {
                     {session ? <MainView session={session} /> : <Redirect to="/login" />}
                 </Route>
 
-                {/*
-                <Route path="/testbed">
-                    <TestbedView />
-                </Route>*/}
-
                 <Route>
-                    {/* 404 */}
                     {session ? <Redirect to="/channels/@me" /> : <Redirect to="/login" />}
                 </Route>
             </Switch>
         </Router >
     );
+}*/
+
+
+export const HISTORY = createBrowserHistory();
+export const STORE = createStore(initialReducer, {
+    history: { history: HISTORY, location: HISTORY.location },
+    user: { session: initialSession }
+}, enhancers);
+
+HISTORY.listen(update => STORE.dispatch({ type: Type.HISTORY_UPDATE, update }));
+
+const ACCEPTABLE_PATHS = ['login', 'register', 'channels'];
+let first_part = HISTORY.location.pathname.slice(1).split('/', 1)[0];
+
+if(ACCEPTABLE_PATHS.indexOf(first_part) == -1) {
+    HISTORY.replace(initialSession != null ? '/channels/@me' : '/login')
 }
 
-// Provide non-Redux app-specific contexts
-export const App = () => {
-    let theme_context = createTheme();
-    let session_context = createSession();
+const AppRouter = React.memo(() => {
+    let { parts } = useSelector(selectPath);
 
+    switch(parts[0]) {
+        case 'login': return <div>Login</div>;
+        case 'register': return <div>Register</div>;
+        case 'channels': return <div>Channels<Link href="/login">Login</Link></div>;
+    }
+
+    return Fallback;
+});
+
+// HistoryContext is used for history actions, NOT looking up history data
+// Redux store is used for all view-related data, including history data
+export const App = () => {
     return (
-        <Theme.Provider value={theme_context}>
-            <Session.Provider value={session_context}>
+        <HistoryContext.Provider value={HISTORY}>
+            <Provider store={STORE}>
                 <AppRouter />
-            </Session.Provider>
-        </Theme.Provider>
+            </Provider>
+        </HistoryContext.Provider>
     );
 };
 

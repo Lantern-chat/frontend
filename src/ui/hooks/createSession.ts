@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { ISession, ISessionContext } from "lib/session";
-import dayjs, { setLongTimeout } from "lib/time";
+import dayjs, { LongTimeout, setLongTimeout } from "lib/time";
 // import { fetch, XHRMethod } from "lib/fetch";
 
 const SESSION_KEY: string = 'session';
@@ -53,7 +53,7 @@ export function createSession(): ISessionContext {
     // NOTE: useEffect can be used as a destructor by just returning a onUnmount callback
 
     useEffect(() => {
-        let session = ctx.session, timeout: { t: number } | null = null;
+        let session = ctx.session, timeout: LongTimeout | null = null;
 
         localStorage.setItem(SESSION_KEY, JSON.stringify(session));
         if(session != null) {

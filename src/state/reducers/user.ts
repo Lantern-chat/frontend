@@ -6,7 +6,7 @@ import { GatewayMessageDiscriminator } from "worker/gateway/msg";
 
 export interface IUserState {
     user?: User,
-    session?: ISession,
+    session?: ISession | null,
 }
 
 const DEFAULT_STATE: IUserState = {};

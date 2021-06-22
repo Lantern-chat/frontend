@@ -16,7 +16,11 @@ export default dayjs;
 
 const MAX_DURATION: number = 0x7FFFFFFF;
 
-export function setLongTimeout(cb: () => void, delay: number, existing?: { t: number }): { t: number } {
+export interface LongTimeout {
+    t: number,
+}
+
+export function setLongTimeout(cb: () => void, delay: number, existing?: LongTimeout): LongTimeout {
     let timeout = { t: 0 };
     if(delay <= MAX_DURATION) {
         timeout = { t: setTimeout(cb, delay) as any };

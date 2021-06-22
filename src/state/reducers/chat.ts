@@ -14,8 +14,9 @@ export interface IMessageState {
 
 export interface IRoomState {
     room: Room,
-    msgs: IMessageState[];
-    current_edit: null | Snowflake;
+    msgs: IMessageState[],
+    pending: IMessageState[],
+    current_edit: null | Snowflake,
 }
 /*
 export class RoomState {
