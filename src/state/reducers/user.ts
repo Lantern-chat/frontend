@@ -13,14 +13,16 @@ const DEFAULT_STATE: IUserState = {};
 
 export function userReducer(state: IUserState = DEFAULT_STATE, action: Action) {
     switch(action.type) {
-        case Type.UNMOUNT: return DEFAULT_STATE;
-        case Type.MOUNT: {
-            return { ...state, session: action.payload };
-        }
+        case Type.SESSION_LOGOUT:
+        case Type.SESSION_EXPIRED: return DEFAULT_STATE;
         case Type.GATEWAY_EVENT: {
             if(action.payload.t == GatewayMessageDiscriminator.Ready) {
                 return { ...state, user: action.payload.p.user };
             }
+            break;
+        }
+        case Type.SESSION_LOGIN: {
+            return { ...state, session: action.session };
         }
     }
 

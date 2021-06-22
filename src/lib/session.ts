@@ -7,7 +7,7 @@ export interface ISession {
 }
 
 import dayjs, { LongTimeout, setLongTimeout } from "lib/time";
-import { Store } from "redux";
+import { Dispatch, Store } from "redux";
 import { Action, Type } from "state/actions";
 import { RootState } from "state/root";
 
@@ -31,7 +31,7 @@ export function parseSession(session: string | ISession | null): ISession | null
 
 export var initialSession = parseSession(localStorage.getItem(SESSION_KEY));
 
-export function storeSession(store: Store<RootState, Action>, session: ISession) {
+export function storeSession(dispatch: Dispatch<Action>, session: ISession) {
     if(session != null) {
         localStorage.setItem(SESSION_KEY, JSON.stringify(session));
 
@@ -40,7 +40,7 @@ export function storeSession(store: Store<RootState, Action>, session: ISession)
         }
 
         session.timeout = setLongTimeout(
-            () => store.dispatch({ type: Type.SESSION_EXPIRED }),
+            () => dispatch({ type: Type.SESSION_EXPIRED }),
             Math.max(0, session.expires.diff(dayjs()))
         );
     } else {

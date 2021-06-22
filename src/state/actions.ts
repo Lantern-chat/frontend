@@ -1,7 +1,11 @@
+import { RootState } from "./root";
+
 export enum Type {
     HISTORY_UPDATE = "HISTORY_UPDATE",
 
     SESSION_EXPIRED = "SESSION_EXPIRED",
+    SESSION_LOGIN = "SESSION_LOGIN",
+    SESSION_LOGOUT = "SESSION_LOGOUT",
 
     WINDOW_RESIZE = "WINDOW_RESIZE",
     WINDOW_TOGGLE_RIGHT_SIDEBAR = "WINDOW_TOGGLE_RIGHT_SIDEBAR",
@@ -22,9 +26,18 @@ export enum Type {
     MESSAGE_DISCARD_EDIT = "MESSAGE_DISCARD_EDIT",
 }
 
+export interface LanternDispatch extends Dispatch<Action> {
+    (action: DispatchableAction): void;
+}
+
+export type DispatchableAction = Action | ThunkAction | Promise<Action>;
+export type ThunkAction = (dispatch: Dispatch<Action>, getState: () => RootState) => void;
+
 export type Action =
     HistoryUpdate |
     SessionExpired |
+    SessionLogin |
+    SessionLogout |
     WindowResize |
     WindowToggleRightSidebar |
     WindowToggleLeftSidebar |
@@ -50,6 +63,15 @@ export interface HistoryUpdate {
 // SESSION ACTIONS
 export interface SessionExpired {
     type: Type.SESSION_EXPIRED,
+}
+
+export interface SessionLogin {
+    type: Type.SESSION_LOGIN,
+    session: ISession,
+}
+
+export interface SessionLogout {
+    type: Type.SESSION_LOGOUT,
 }
 
 // WINDOW ACTIONS
@@ -80,6 +102,7 @@ import { History } from "history";
 // APPLICATION ACTIONS
 
 import { ISession } from "lib/session";
+import { Dispatch } from "redux";
 export interface Mount {
     type: Type.MOUNT,
     payload: ISession,

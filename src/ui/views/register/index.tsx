@@ -1,4 +1,7 @@
 import React, { useState, useMemo, useReducer, useEffect, useContext } from "react";
+import { useDispatch } from "react-redux";
+import { LanternDispatch } from "state/actions";
+
 import dayjs from "lib/time";
 
 import * as i18n from "ui/i18n";
@@ -169,25 +172,23 @@ function register_state_reducer(state: RegisterState, { value, type }: RegisterA
 
 import CircleEmptyInfo from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-196-circle-empty-info.svg";
 
-import { Session } from "lib/session";
-
 var SETUP_THEN = false;
 
 import "../login/login.scss";
 import "./register.scss";
+import { sessionSet } from "state/action_creators/session";
 export default function RegisterView() {
     useTitle("Register");
 
-    let hctx = useContext(HistoryContext);
-    let [state, dispatch] = useReducer(register_state_reducer, DEFAULT_REGISTER_STATE);
+    let dispatch = useDispatch<LanternDispatch>();
+    let [state, form_dispatch] = useReducer(register_state_reducer, DEFAULT_REGISTER_STATE);
     let [errorMsg, setErrorMsg] = useState<string | null>(null);
-    let session = useContext(Session);
 
     useEffect(() => {
         if(!SETUP_THEN && typeof zxcvbn !== 'function') {
             zxcvbn.then(mod => {
                 zxcvbn = mod.default;
-                dispatch({ type: RegisterActionType.UpdatePassStrength, value: "" });
+                form_dispatch({ type: RegisterActionType.UpdatePassStrength, value: "" });
             });
             SETUP_THEN = true;
         }
@@ -210,14 +211,14 @@ export default function RegisterView() {
 
         if(state.is_registering) return;
 
-        dispatch({ type: RegisterActionType.Register, value: '' });
+        form_dispatch({ type: RegisterActionType.Register, value: '' });
 
         // start preloading
         let main = timeout(import("../main"), 4000).catch(() => { });
 
         let on_error = (err: string) => {
             setErrorMsg(err);
-            dispatch({ type: RegisterActionType.NoRegister, value: '' });
+            form_dispatch({ type: RegisterActionType.NoRegister, value: '' });
         };
 
         fetch.submitFormUrlEncoded({
@@ -226,10 +227,7 @@ export default function RegisterView() {
             body: new FormData(e.currentTarget),
         }).then((req) => {
             if(req.status === 200 && req.response.auth != null) {
-                main.then(() => {
-                    session.setSession(req.response);
-                    hctx.history.push("/channels/@me");
-                });
+                main.then(() => dispatch(sessionSet(req.response)));
             } else {
                 on_error("Unknown Error");
             }
@@ -264,13 +262,13 @@ export default function RegisterView() {
             <FormGroup>
                 <FormLabel htmlFor="email"><I18N t={Translation.EMAIL_ADDRESS} /></FormLabel>
                 <FormInput value={state.email} type="email" name="email" placeholder="example@example.com" required isValid={state.valid_email}
-                    onChange={e => dispatch({ type: RegisterActionType.UpdateEmail, value: e.currentTarget.value })} />
+                    onChange={e => form_dispatch({ type: RegisterActionType.UpdateEmail, value: e.currentTarget.value })} />
             </FormGroup>
 
             <FormGroup>
                 <FormLabel htmlFor="username"><I18N t={Translation.USERNAME} /></FormLabel>
                 <FormInput value={state.user} type="text" name="username" placeholder="username" required isValid={state.valid_user}
-                    onChange={e => dispatch({ type: RegisterActionType.UpdateUser, value: e.currentTarget.value })} />
+                    onChange={e => form_dispatch({ type: RegisterActionType.UpdateUser, value: e.currentTarget.value })} />
             </FormGroup>
 
             <FormGroup>
@@ -286,7 +284,7 @@ export default function RegisterView() {
                     </span>
                 </FormLabel>
                 <FormInput type="password" name="password" placeholder="password" required isValid={state.valid_pass}
-                    className={passwordClass} onChange={e => dispatch({ type: RegisterActionType.UpdatePass, value: e.currentTarget.value })} />
+                    className={passwordClass} onChange={e => form_dispatch({ type: RegisterActionType.UpdatePass, value: e.currentTarget.value })} />
                 <FormText>
                     Password must be at least 8 characters long and contain at least one number or one special character.
                 </FormText>
@@ -295,17 +293,17 @@ export default function RegisterView() {
             <FormGroup>
                 <FormLabel><I18N t={Translation.DATE_OF_BIRTH} /></FormLabel>
                 <FormSelectGroup>
-                    <FormSelect name="year" required value={state.dob.y || ""} onChange={e => dispatch({ type: RegisterActionType.UpdateYear, value: e.currentTarget.value })}>
+                    <FormSelect name="year" required value={state.dob.y || ""} onChange={e => form_dispatch({ type: RegisterActionType.UpdateYear, value: e.currentTarget.value })}>
                         <I18N t={Translation.YEAR} render={(value: string) => <option disabled hidden value="">{value}</option>} />
                         {useMemo(() => YEARS.map((year, i) => <option value={year} key={i}>{year}</option>), [])}
                     </FormSelect>
 
-                    <FormSelect name="month" required value={state.dob.m != null ? state.dob.m : ""} onChange={e => dispatch({ type: RegisterActionType.UpdateMonth, value: e.currentTarget.value })}>
+                    <FormSelect name="month" required value={state.dob.m != null ? state.dob.m : ""} onChange={e => form_dispatch({ type: RegisterActionType.UpdateMonth, value: e.currentTarget.value })}>
                         <I18N t={Translation.MONTH} render={(value: string) => <option disabled hidden value="">{value}</option>} />
                         {useMemo(() => dayjs.months().map((month: string, i: number) => <option value={i} key={i}>{month}</option>), [dayjs.locale()])}
                     </FormSelect>
 
-                    <FormSelect name="day" required onChange={e => dispatch({ type: RegisterActionType.UpdateDay, value: e.currentTarget.value })}
+                    <FormSelect name="day" required onChange={e => form_dispatch({ type: RegisterActionType.UpdateDay, value: e.currentTarget.value })}
                         value={state.dob.d == null ? "" : state.dob.d}>
                         <I18N t={Translation.DAY} render={(value: string) => <option disabled hidden value="">{value}</option>} />
                         {useMemo(() => (new Array(state.days)).fill(undefined).map((_, i) => (

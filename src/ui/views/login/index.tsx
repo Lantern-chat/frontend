@@ -1,4 +1,7 @@
 import React, { useState, useMemo, useReducer, useEffect, useContext } from "react";
+import { useDispatch } from "react-redux";
+import { LanternDispatch } from "state/actions";
+import { sessionSet } from "state/action_creators/session";
 
 import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
@@ -67,31 +70,28 @@ function login_state_reducer(state: LoginState, { value, type }: LoginAction): L
     }
 }
 
-import { Session } from "lib/session";
-
 import "./login.scss";
 export default function LoginView() {
     useTitle("Login");
 
-    let hctx = useContext(HistoryContext);
+    let dispatch = useDispatch<LanternDispatch>();
 
-    let [state, dispatch] = useReducer(login_state_reducer, DEFAULT_LOGIN_STATE);
+    let [state, form_dispatch] = useReducer(login_state_reducer, DEFAULT_LOGIN_STATE);
     let [errorMsg, setErrorMsg] = useState<string | null>(null);
-    let session = useContext(Session);
 
     let on_submit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         if(state.is_logging_in) return;
 
-        dispatch({ type: LoginActionType.Login, value: '' });
+        form_dispatch({ type: LoginActionType.Login, value: '' });
 
         // start preloading
         let main = timeout(import("../main"), 4000).catch(() => { });
 
         let on_error = (err: string) => {
             setErrorMsg(err);
-            dispatch({ type: LoginActionType.NoLogin, value: '' });
+            form_dispatch({ type: LoginActionType.NoLogin, value: '' });
         };
 
         fetch.submitFormUrlEncoded({
@@ -100,10 +100,7 @@ export default function LoginView() {
             body: new FormData(e.currentTarget),
         }).then((req) => {
             if(req.status === 200 && req.response.auth != null) {
-                main.then(() => {
-                    session.setSession(req.response);
-                    hctx.history.push("/channels/@me");
-                });
+                main.then(() => dispatch(sessionSet(req.response)));
             } else {
                 on_error("Unknown Error");
             }
@@ -139,7 +136,7 @@ export default function LoginView() {
                 <FormGroup>
                     <FormLabel htmlFor="email"><I18N t={Translation.EMAIL_ADDRESS} /></FormLabel>
                     <FormInput value={state.email} type="text" name="email" placeholder="example@example.com" required isValid={state.valid_email}
-                        onChange={e => dispatch({ type: LoginActionType.UpdateEmail, value: e.currentTarget.value })} />
+                        onChange={e => form_dispatch({ type: LoginActionType.UpdateEmail, value: e.currentTarget.value })} />
                 </FormGroup>
 
                 <FormGroup>
@@ -147,7 +144,7 @@ export default function LoginView() {
                         <I18N t={Translation.PASSWORD} />
                     </FormLabel>
                     <FormInput value={state.pass} type="password" name="password" placeholder="password" required
-                        onChange={e => dispatch({ type: LoginActionType.UpdatePass, value: e.currentTarget.value })} />
+                        onChange={e => form_dispatch({ type: LoginActionType.UpdatePass, value: e.currentTarget.value })} />
                 </FormGroup>
 
                 <hr />

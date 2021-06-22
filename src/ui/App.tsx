@@ -112,8 +112,6 @@ const AppInner = React.memo(() => {
     );
 });
 
-// HistoryContext is used for history actions, NOT looking up history data
-// Redux store is used for all view-related data, including history data
 export const App = () => {
     let [history, setHistory] = useState(recomputeHistoryContext(HISTORY));
 
