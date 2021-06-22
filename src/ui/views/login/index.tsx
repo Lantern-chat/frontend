@@ -3,8 +3,6 @@ import React, { useState, useMemo, useReducer, useEffect, useContext } from "rea
 import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
 
-import { Link, Redirect } from "react-router-dom";
-
 import { timeout } from "lib/util";
 import { fetch, XHRMethod } from "lib/fetch";
 import { useTitle } from "ui/hooks/useTitle";
@@ -12,6 +10,8 @@ import { Spinner } from "ui/components/common/spinners/spinner";
 //import { Glyphicon } from "ui/components/common/glyphicon";
 import { FormGroup, FormLabel, FormInput } from "ui/components/form";
 import { Modal } from "ui/components/modal";
+
+import { HistoryContext, Link } from "ui/components/history";
 
 import { validateUsername, validatePass, validateEmail } from "lib/validation";
 
@@ -73,14 +73,11 @@ import "./login.scss";
 export default function LoginView() {
     useTitle("Login");
 
+    let hctx = useContext(HistoryContext);
+
     let [state, dispatch] = useReducer(login_state_reducer, DEFAULT_LOGIN_STATE);
     let [errorMsg, setErrorMsg] = useState<string | null>(null);
-    let [redirect, setRedirect] = useState(false);
     let session = useContext(Session);
-
-    if(redirect) {
-        return <Redirect to="/channels/0/0" />;
-    }
 
     let on_submit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -105,7 +102,7 @@ export default function LoginView() {
             if(req.status === 200 && req.response.auth != null) {
                 main.then(() => {
                     session.setSession(req.response);
-                    setRedirect(true);
+                    hctx.history.push("/channels/@me");
                 });
             } else {
                 on_error("Unknown Error");
@@ -160,7 +157,7 @@ export default function LoginView() {
                         <button className={state.is_logging_in ? 'ln-btn ln-btn--loading-icon' : 'ln-btn'} style={{ marginRight: 'auto' }}>
                             {state.is_logging_in ? <Spinner size="2em" /> : "Login"}
                         </button>
-                        <Link className="ln-btn" to={"/register"} onMouseOver={() => preloadRegister()}>Register</Link>
+                        <Link className="ln-btn" href="/register" onMouseOver={() => preloadRegister()}>Register</Link>
                     </div>
                 </FormGroup>
             </form>

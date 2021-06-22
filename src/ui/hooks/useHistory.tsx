@@ -28,16 +28,3 @@ export const HistoryProvider: React.FunctionComponent = ({ children }) => {
     );
 };
 */
-
-export interface IRedirectProps {
-    to: string,
-    push?: boolean,
-}
-
-export const Redirect: React.FunctionComponent<IRedirectProps> = (props) => {
-    let history = useContext(HistoryContext);
-
-    useEffect(() => (props.push ? history.push : history.replace)(props.to), [props.to]);
-
-    return null;
-};
