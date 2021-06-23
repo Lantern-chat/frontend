@@ -101,7 +101,7 @@ export function genLightTheme(temperature: number): ITheme {
     }
 }
 
-var currentTimer: number | any = null;
+var currentTimer: ReturnType<typeof setTimeout> | null = null;
 
 export function setTheme(theme: ITheme, animate: boolean, is_light: boolean) {
     let de = document.documentElement;

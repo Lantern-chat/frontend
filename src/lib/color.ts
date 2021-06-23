@@ -296,13 +296,14 @@ export function kelvin2(t: number): RGBColor {
     ));
 }
 
-export function formatRGB({ r, g, b }: RGBColor, alpha?: number): string {
+export function formatRGB(c: RGBColor, alpha?: number): string {
     if(__DEV__) {
         let l = (v: number): boolean => v < 0.0 || v > 1.0;
-        if(l(r) || l(g) || l(b)) console.log("Invalid color: ", { r, g, b });
+        if(l(c.r) || l(c.g) || l(c.b)) console.log("Invalid color: ", c);
     }
 
-    let rgb = [r, g, b],
+    let { r, g, b } = linear2srgb(c),
+        rgb = [r, g, b],
         prefix = 'rgb';
 
     if(alpha !== undefined) {
@@ -310,5 +311,5 @@ export function formatRGB({ r, g, b }: RGBColor, alpha?: number): string {
         prefix += 'a';
     }
 
-    return prefix + `(${rgb.map(x => round(x * 255)).join(',')})`;
+    return prefix + `(${rgb.join(',')})`;
 }
