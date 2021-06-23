@@ -8,7 +8,9 @@ const DEFAULT_STATE: IModalState = {
     create_party_open: false,
 };
 
-export function modalReducer(state: IModalState = DEFAULT_STATE, action: Action) {
+export function modalReducer(state: IModalState | null | undefined, action: Action) {
+    state = state || DEFAULT_STATE;
+
     switch(action.type) {
         case Type.MODAL_OPEN_CREATE_PARTY: {
             return { ...state, create_party_open: true };

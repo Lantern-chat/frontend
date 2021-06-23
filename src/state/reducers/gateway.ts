@@ -1,11 +1,11 @@
 import { ISession } from "lib/session";
 
 import { Action, Type } from "../actions";
+import { GLOBAL } from "state/global";
 
-import { GATEWAY } from "ui/views/main";
 
 enum GatewayStatus {
-    Unknown = 0,
+    Unknown,
     Initialized,
     Connected,
     Disconnected,
@@ -24,22 +24,25 @@ const DEFAULT_STATE: IGatewayState = {
 import { GatewayMessage, GatewayMessageDiscriminator } from "worker/gateway/msg";
 import { GatewayCommandDiscriminator } from "worker/gateway/cmd";
 
-export function gatewayReducer(state: IGatewayState = DEFAULT_STATE, action: Action): IGatewayState {
+export function gatewayReducer(state: IGatewayState | null | undefined, action: Action): IGatewayState {
+    state = state || DEFAULT_STATE;
+
     switch(action.type) {
-        case Type.MOUNT: {
-            state = { ...state, session: action.payload };
+        case Type.SESSION_LOGIN: {
+            state = { ...state, session: action.session };
             // if we get the mount after init, connect now
             if(state.status == GatewayStatus.Initialized) {
-                GATEWAY.postMessage({
+                GLOBAL.gateway!.postMessage({
                     t: GatewayCommandDiscriminator.Connect,
-                    auth: state.session!.auth
+                    auth: action.session.auth
                 });
             }
             return state;
         }
-        case Type.UNMOUNT: {
-            GATEWAY.postMessage({ t: GatewayCommandDiscriminator.Disconnect });
-            return DEFAULT_STATE;
+        case Type.SESSION_EXPIRED: {
+            GLOBAL.gateway!.postMessage({ t: GatewayCommandDiscriminator.Disconnect });
+
+            return { status: state.status == GatewayStatus.Unknown ? GatewayStatus.Unknown : GatewayStatus.Initialized };
         }
         case Type.GATEWAY_EVENT: {
             let msg: GatewayMessage = action.payload;
@@ -47,7 +50,7 @@ export function gatewayReducer(state: IGatewayState = DEFAULT_STATE, action: Act
                 case GatewayMessageDiscriminator.Initialized: {
                     // if we get the init after mount, connect now
                     if(state.session) {
-                        GATEWAY.postMessage({
+                        GLOBAL.gateway!.postMessage({
                             t: GatewayCommandDiscriminator.Connect,
                             auth: state.session.auth
                         });

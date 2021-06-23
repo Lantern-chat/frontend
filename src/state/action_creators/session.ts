@@ -6,16 +6,17 @@ export function setSession(session: ISession | null): DispatchableAction {
     return (dispatch) => {
         session = parseSession(session);
 
-        if(session != null) {
-            storeSession(dispatch, session);
+        // stores or removes session based on if session is null
+        storeSession(dispatch, session);
 
+        if(session != null) {
             dispatch({ type: Type.SESSION_LOGIN, session });
 
             HISTORY.push(DEFAULT_LOGGED_IN_CHANNEL);
         } else {
-            // TODO: This is usually set on login/register, so this
-            // should be impossible, right?
             dispatch({ type: Type.SESSION_EXPIRED });
+
+            HISTORY.push('/login');
         }
     }
 };

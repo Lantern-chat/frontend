@@ -214,7 +214,7 @@ export default function RegisterView() {
         form_dispatch({ type: RegisterActionType.Register, value: '' });
 
         // start preloading
-        let main = timeout(import("../main"), 4000).catch(() => { });
+        let main = import("../main");
 
         let on_error = (err: string) => {
             setErrorMsg(err);

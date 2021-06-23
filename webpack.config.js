@@ -47,6 +47,7 @@ module.exports = (env, argv) => {
             //chunkIds: IS_PRODUCTION ? 'size' : 'natural',
             //moduleIds: IS_PRODUCTION ? 'size' : false,
             mangleExports: IS_PRODUCTION ? 'size' : 'deterministic',
+            //runtimeChunk: 'single',
             minimize: IS_PRODUCTION,
             minimizer: [new TerserPlugin({
                 parallel: true,

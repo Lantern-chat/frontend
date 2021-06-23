@@ -5,6 +5,12 @@ import { createBrowserHistory } from "history";
 
 import { loadSession } from "lib/session";
 
+interface IGlobalState {
+    gateway?: Worker,
+}
+
+export const GLOBAL: IGlobalState = {};
+
 export const HISTORY = createBrowserHistory();
 export const STORE = createStore(initialReducer, {
     history: { history: HISTORY, location: HISTORY.location },
@@ -13,6 +19,9 @@ export const STORE = createStore(initialReducer, {
 
 HISTORY.listen(update => STORE.dispatch({ type: Type.HISTORY_UPDATE, update }));
 
+window.addEventListener('resize', () => {
+    STORE.dispatch({ type: Type.WINDOW_RESIZE });
+});
 
 export const DEFAULT_LOGGED_IN_CHANNEL: string = "/channels/@me";
 

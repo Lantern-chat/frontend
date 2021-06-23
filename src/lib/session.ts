@@ -31,7 +31,7 @@ export function loadSession(): ISession | null {
     return parseSession(localStorage.getItem(SESSION_KEY));
 }
 
-export function storeSession(dispatch: LanternDispatch, session: ISession) {
+export function storeSession(dispatch: LanternDispatch, session: ISession | null) {
     if(session != null) {
         localStorage.setItem(SESSION_KEY, JSON.stringify(session));
 

@@ -86,8 +86,8 @@ export default function LoginView() {
 
         form_dispatch({ type: LoginActionType.Login, value: '' });
 
-        // start preloading
-        let main = timeout(import("../main"), 4000).catch(() => { });
+        // start preloading and ensure reducers are replaced
+        let main = import("../main");
 
         let on_error = (err: string) => {
             setErrorMsg(err);

@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { createStructuredSelector } from "reselect";
 
 import { fetch, XHRMethod } from "lib/fetch";
 import { fnv1a } from "lib/fnv";
@@ -9,29 +10,33 @@ import { Avatar } from "ui/components/common/avatar";
 import { Glyphicon } from "ui/components/common/glyphicon";
 
 import { RootState } from "state/root";
+import { setSession } from "state/action_creators/session";
 
 import LogoutIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-432-log-out.svg";
 
+
+let party_list_selector = createStructuredSelector({
+    parties: (state: RootState) => state.party.parties,
+    last_channel: (state: RootState) => state.party.last_channel,
+    create_party_open: (state: RootState) => state.modals.create_party_open,
+    auth: (state: RootState) => state.user.session?.auth,
+});
 
 import "./party_list.scss";
 export const PartyList = React.memo(() => {
     let active_party = ""; //useRouteMatch<{ party: string }>("/channels/:party")?.params.party;
 
     let dispatch = useDispatch();
-    let { create_party_open, parties, last_channel } = useSelector((state: RootState) => ({
-        parties: state.party.parties,
-        last_channel: state.party.last_channel,
-        //sorted_parties: state.party.sorted,
-        create_party_open: state.modals.create_party_open
-    }));
+    let { create_party_open, parties, last_channel, auth } = useSelector(party_list_selector);
 
     let logout = () => {
-        //ctx.setSession(null)
-        //fetch({
-        //    url: "/api/v1/user/@me",
-        //    method: XHRMethod.DELETE,
-        //    headers: { 'Authorization': 'Bearer ' + ctx.session!.auth }
-        //}).catch(() => { })
+        dispatch(
+            fetch({
+                url: "/api/v1/user/@me",
+                method: XHRMethod.DELETE,
+                headers: { 'Authorization': 'Bearer ' + auth }
+            }).then(() => setSession(null))
+        );
     };
 
     let colors = ['goldenrod', 'royalblue', 'darkgreen', 'crimson'];

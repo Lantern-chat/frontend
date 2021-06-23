@@ -18,10 +18,8 @@ const RegisterView: React.FunctionComponent = React.lazy(() => import(   /* webp
 
 const Fallback = <div className="ln-center-standalone"><Ripple size={120} /></div>;
 
-const LoginRoutes = () => {
-    let ctx = useContext(HistoryContext);
-
-    let View = ctx.parts[0] == 'login' ? LoginView : RegisterView;
+const LoginRoutes = React.memo(({ which }: { which: 'login' | 'register' }) => {
+    let View = which == 'login' ? LoginView : RegisterView;
 
     return (
         <>
@@ -39,42 +37,16 @@ const LoginRoutes = () => {
             </div>
         </>
     );
-};
-
-/*
-// Create the router and paths
-const AppRouter2 = () => {
-    let { session } = useContext(Session);
-
-    // NOTE: Using <Switch> ensures routes are rendered exclusively
-    return (
-        <Router>
-            <Switch>
-                <Route path={["/login", "/register"]}>
-                    {session ? <Redirect to="/channels/@me" /> : <LoginRoutes />}
-                </Route >
-
-                <Route path="/channels">
-                    {session ? <MainView session={session} /> : <Redirect to="/login" />}
-                </Route>
-
-                <Route>
-                    {session ? <Redirect to="/channels/@me" /> : <Redirect to="/login" />}
-                </Route>
-            </Switch>
-        </Router >
-    );
-}*/
+});
 
 const AppRouter = () => {
-    let ctx = useContext(HistoryContext);
+    let ctx = useContext(HistoryContext),
+        first_part = ctx.parts[0];
 
-    console.log("Rendering router");
-
-    switch(ctx.parts[0]) {
+    switch(first_part) {
         case 'login':
         case 'register':
-            return <LoginRoutes />;
+            return <LoginRoutes which={first_part} />;
         case 'channels':
             return <MainView />;
     }

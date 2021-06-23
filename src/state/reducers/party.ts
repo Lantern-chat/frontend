@@ -15,9 +15,11 @@ const DEFAULT_STATE: IPartyState = {
     //sorted: [],
 };
 
-export function partyReducer(state: IPartyState = DEFAULT_STATE, action: Action) {
+export function partyReducer(state: IPartyState | null | undefined, action: Action) {
+    state = state || DEFAULT_STATE;
+
     switch(action.type) {
-        case Type.UNMOUNT: return DEFAULT_STATE;
+        case Type.SESSION_EXPIRED: return DEFAULT_STATE;
         case Type.GATEWAY_EVENT: {
             switch(action.payload.t) {
                 case GatewayMessageDiscriminator.Ready: {

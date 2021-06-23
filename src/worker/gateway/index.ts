@@ -7,6 +7,8 @@ import { GatewayCommand, GatewayCommandDiscriminator } from "./cmd";
 import { GatewayEvent, GatewayEventCode } from "./event";
 import { GatewayClientCommand, GatewayClientCommandDiscriminator } from "./client";
 
+console.log("!!!!!GATEWAY LOADED!!!!!");
+
 class Gateway {
     encoder: TextEncoder;
     decoder: TextDecoder;
@@ -14,13 +16,13 @@ class Gateway {
     ws: WebSocket | null = null;
 
     // heartbeat interval
-    hbi: number = 45000;
+    heartbeat_interval: number = 45000;
 
     // heartbeat interval timer
-    hbt: number | undefined;
+    heartbeat_timer: number | undefined;
 
     // waiting on heartbeat ACK
-    hbw: boolean = false;
+    heartbeat_waiting_on_ack: boolean = false;
 
     auth: string | null = null;
 
@@ -70,8 +72,8 @@ class Gateway {
         ctx.postMessage({ t: GatewayMessageDiscriminator.Disconnected, p: msg.code });
 
         this.ws = null;
-        this.hbw = false;
-        clearInterval(this.hbi); // clear heartbeat
+        this.heartbeat_waiting_on_ack = false;
+        clearInterval(this.heartbeat_timer); // clear heartbeat
     }
 
     on_error(_err: Event) {
@@ -94,8 +96,8 @@ class Gateway {
         switch(msg.o) {
             case GatewayEventCode.Hello: {
                 console.log("GATEWAY: HELLO", msg);
-                this.hbi = msg.p.heartbeat_interval || 45000;
-                this.hbt = setInterval(() => this.heartbeat(), this.hbi) as any;
+                this.heartbeat_interval = msg.p.heartbeat_interval || 45000;
+                this.heartbeat_timer = setInterval(() => this.heartbeat(), this.heartbeat_interval) as any;
 
                 this.identify();
 
@@ -103,7 +105,7 @@ class Gateway {
             }
             case GatewayEventCode.HeartbeatACK: {
                 console.log("GATEWAY: ACK", msg);
-                this.hbw = false;
+                this.heartbeat_waiting_on_ack = false;
                 break;
             }
             case GatewayEventCode.Ready: {
@@ -121,12 +123,12 @@ class Gateway {
     }
 
     heartbeat() {
-        this.hbw = true;
+        this.heartbeat_waiting_on_ack = true;
 
         this.send({ o: GatewayClientCommandDiscriminator.Heartbeat });
 
         // in hbi milliseconds, check if an ACK has been received or disconnect/reconnect
-        setTimeout(() => { if(this.hbw) { this.disconnect() } }, this.hbi);
+        setTimeout(() => { if(this.heartbeat_waiting_on_ack) { this.disconnect() } }, this.heartbeat_interval);
     }
 
     disconnect() {

@@ -63,9 +63,11 @@ const DEFAULT_STATE: IChatState = {
     rooms: new Map(),
 };
 
-export function chatReducer(state: IChatState = DEFAULT_STATE, action: Action): IChatState {
+export function chatReducer(state: IChatState | null | undefined, action: Action): IChatState {
+    state = state || DEFAULT_STATE;
+
     switch(action.type) {
-        case Type.UNMOUNT: return DEFAULT_STATE;
+        case Type.SESSION_EXPIRED: return DEFAULT_STATE;
 
         // fast filter before invoking Immer
         case Type.MESSAGE_SEND:

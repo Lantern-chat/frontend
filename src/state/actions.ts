@@ -1,11 +1,14 @@
-import { RootState } from "./root";
+import { Dispatch } from "redux";
+import { History } from "history";
+
+import { RootState } from "state/root";
+import { ISession } from "lib/session";
 
 export enum Type {
     HISTORY_UPDATE = "HISTORY_UPDATE",
 
     SESSION_EXPIRED = "SESSION_EXPIRED",
     SESSION_LOGIN = "SESSION_LOGIN",
-    SESSION_LOGOUT = "SESSION_LOGOUT",
 
     WINDOW_RESIZE = "WINDOW_RESIZE",
     WINDOW_TOGGLE_RIGHT_SIDEBAR = "WINDOW_TOGGLE_RIGHT_SIDEBAR",
@@ -35,16 +38,13 @@ export type ThunkAction = (dispatch: Dispatch<Action>, getState: () => RootState
 
 export type Action =
     HistoryUpdate |
-    SessionExpired |
     SessionLogin |
-    SessionLogout |
+    SessionExpired |
     WindowResize |
     WindowToggleRightSidebar |
     WindowToggleLeftSidebar |
     ModalOpenCreateParty |
     ModalCloseCreateParty |
-    Mount |
-    Unmount |
     GatewayEvent |
     MessageSend |
     MessageDiscordEdit |
@@ -70,10 +70,6 @@ export interface SessionLogin {
     session: ISession,
 }
 
-export interface SessionLogout {
-    type: Type.SESSION_LOGOUT,
-}
-
 // WINDOW ACTIONS
 
 export interface WindowResize {
@@ -96,20 +92,6 @@ export interface ModalOpenCreateParty {
 
 export interface ModalCloseCreateParty {
     type: Type.MODAL_CLOSE_CREATE_PARTY
-}
-
-import { History } from "history";
-// APPLICATION ACTIONS
-
-import { ISession } from "lib/session";
-import { Dispatch } from "redux";
-export interface Mount {
-    type: Type.MOUNT,
-    payload: ISession,
-}
-
-export interface Unmount {
-    type: Type.UNMOUNT,
 }
 
 // GATEWAY ACTIONS
