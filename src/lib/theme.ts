@@ -48,13 +48,13 @@ export function genDarkTheme(temperature: number): ITheme {
 
     //console.log("saturation: ", s);
 
-    let primary_surface_color = change_color(k, { lightness: 0.2, saturation: s });
+    let primary_surface_color = change_color(k, { l: 0.2, s: s });
     let secondary_surface_color = darken(primary_surface_color, 0.05);
     let tertiary_surface_color = lighten(primary_surface_color, 0.05);
 
     let primary_text_color = change_color(primary_surface_color, {
-        saturation: 0,
-        lightness: 1.1 - lightness(primary_surface_color),
+        s: 0,
+        l: 1.1 - lightness(primary_surface_color),
     });
     let secondary_text_color = darken(primary_text_color, 0.2);
 
@@ -84,11 +84,11 @@ export function genLightTheme(temperature: number): ITheme {
     //console.log("saturation: ", s);
     //console.log("lightness: ", l);
 
-    let primary_surface_color = change_color(k, { saturation: s, lightness: l });
-    let secondary_surface_color = adjust_color(primary_surface_color, { lightness: -0.05, saturation: -0.4 });
+    let primary_surface_color = change_color(k, { s: s, l: l });
+    let secondary_surface_color = adjust_color(primary_surface_color, { l: -0.05, s: -0.4 });
     let primary_text_color = change_color(primary_surface_color, {
-        saturation: 0,
-        lightness: 1.0 - lightness(primary_surface_color),
+        s: 0,
+        l: 1.0 - lightness(primary_surface_color),
     });
     let secondary_text_color = lighten(primary_text_color, 0.3);
 

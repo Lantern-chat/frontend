@@ -4,9 +4,9 @@ const clamp01 = (x: number) => min(1, max(0, x));
 
 
 export interface IChangeColorOptions {
-    hue?: number,
-    saturation?: number,
-    lightness?: number,
+    h?: number,
+    s?: number,
+    l?: number,
 }
 
 export type Color = RGBColor | HSVColor | HSLColor;
@@ -32,8 +32,6 @@ export interface HSLColor {
     l: number,
 }
 
-export const BLACK: RGBColor = { r: 0, g: 0, b: 0 };
-
 export function any2rgb(color: Color): RGBColor {
     let c = color as any;
     if(c.r !== undefined) {
@@ -45,7 +43,7 @@ export function any2rgb(color: Color): RGBColor {
     else if(c.l !== undefined) {
         return hsl2rgb(c);
     }
-    else return BLACK;
+    else return rgb(0, 0, 0);
 }
 
 export function any2hsv(color: Color): HSVColor {
@@ -87,7 +85,7 @@ export function hsv2rgb({ h, s, v }: HSVColor): RGBColor {
     return rgb(f(5), f(3), f(1));
 }
 
-function rgb2hslv({ r, g, b }: RGBColor, hsv: boolean): number[] {
+function rgb2hslv({ r, g, b }: RGBColor, is_hsv: boolean): HSVColor | HSLColor {
     let maximum = max(r, g, b);
 
     let p: number[];
@@ -95,22 +93,26 @@ function rgb2hslv({ r, g, b }: RGBColor, hsv: boolean): number[] {
         case r: { p = [0, g - b]; break; }
         case g: { p = [2, b - r]; break; }
         case b: { p = [4, r - g]; break; }
-        default: return [0, 0, 0]; // NaNs
+        default: return is_hsv ? hsv(0, 0, 0) : hsl(0, 0, 0); // NaNs
     }
 
-    let minimum = min(r, g, b);
-    let c = maximum - minimum;
-    let h = c === 0 ? 0 : 60 * (p[0] + p[1] / c);
-    let s: number, lv = maximum;
+    let minimum = min(r, g, b),
+        c = maximum - minimum,
+        h = c === 0 ? 0 : 60 * (p[0] + p[1] / c),
+        lv = maximum,
+        constructor,
+        s: number;
 
-    if(hsv) {
+    if(is_hsv) {
         s = lv === 0 ? 0 : c / lv;
+        constructor = hsv;
     } else {
         lv = (minimum + maximum) / 2;
         s = (lv === 0 || lv === 1) ? 0 : (maximum - lv) / min(lv, 1 - lv);
+        constructor = hsl;
     }
 
-    return [h, s, lv];
+    return constructor(h, s, lv);
 }
 
 export function hsl2hsv({ h, s, l }: HSLColor): HSVColor {
@@ -124,16 +126,14 @@ export function hsv2hsl({ h, s, v }: HSVColor): HSLColor {
 }
 
 export function rgb2hsl(rgb: RGBColor): HSLColor {
-    let [h, s, l] = rgb2hslv(rgb, false);
-    return { h, s, l };
+    return rgb2hslv(rgb, false) as HSLColor;
 }
 
 export function rgb2hsv(rgb: RGBColor): HSVColor {
-    let [h, s, v] = rgb2hslv(rgb, true);
-    return { h, s, v };
+    return rgb2hslv(rgb, true) as HSVColor;
 }
 
-export function change_color(rgb: RGBColor, { hue, saturation, lightness }: IChangeColorOptions): RGBColor {
+export function change_color(rgb: RGBColor, { h: hue, s: saturation, l: lightness }: IChangeColorOptions): RGBColor {
     let { h, s, l } = rgb2hsl(rgb);
 
     let k = (v: number, s: number | undefined) => s != undefined ? clamp01(s) : v;
@@ -144,7 +144,7 @@ export function change_color(rgb: RGBColor, { hue, saturation, lightness }: ICha
     });
 }
 
-export function adjust_color(rgb: RGBColor, { hue, saturation, lightness }: IChangeColorOptions): RGBColor {
+export function adjust_color(rgb: RGBColor, { h: hue, s: saturation, l: lightness }: IChangeColorOptions): RGBColor {
     let { h, s, l } = rgb2hsl(rgb);
 
     let k = (v: number, s: number | undefined) => s != undefined ? clamp01(s + v) : v;
@@ -155,7 +155,7 @@ export function adjust_color(rgb: RGBColor, { hue, saturation, lightness }: ICha
     });
 }
 
-export function scale_color(rgb: RGBColor, { hue, saturation, lightness }: IChangeColorOptions): RGBColor {
+export function scale_color(rgb: RGBColor, { h: hue, s: saturation, l: lightness }: IChangeColorOptions): RGBColor {
     let { h, s, l } = rgb2hsl(rgb);
 
     let k = (v: number, s: number | undefined) => s != undefined ? clamp01(v + s * (s > 0 ? 1 - s : s)) : v;
@@ -182,7 +182,7 @@ export function lightness(color: Color): number {
 
 export function lighten(rgb: RGBColor, amount: number): RGBColor {
     return adjust_color(rgb, {
-        lightness: amount,
+        l: amount,
     });
 }
 
@@ -192,7 +192,7 @@ export function darken(rgb: RGBColor, amount: number): RGBColor {
 
 export function saturate(rgb: RGBColor, amount: number): RGBColor {
     return adjust_color(rgb, {
-        saturation: amount,
+        s: amount,
     });
 }
 
@@ -215,8 +215,10 @@ export function linear2srgb({ r, g, b }: RGBColor): RGBColor {
     return { r: l2s(r), g: l2s(g), b: l2s(b) };
 }
 export function srgb2linear({ r, g, b }: RGBColor): RGBColor {
-    let s2l = (u: number) => u <= 0.04045 ? (u / 12.92) : Math.pow((u + 0.055) / 1.055, 2.4);
-    return { r: s2l(r / 255), g: s2l(g / 255), b: s2l(b / 255) };
+    let s2l = (u: number) => {
+        u /= 255.0; return u <= 0.04045 ? (u / 12.92) : Math.pow((u + 0.055) / 1.055, 2.4);
+    };
+    return { r: s2l(r), g: s2l(g), b: s2l(b) };
 }
 
 
@@ -239,7 +241,8 @@ export function kelvin(temp: number): RGBColor {
         g = 288.1221695283 * Math.pow(temp, -0.0755148492);
     }
 
-    return { r: r / 255, g: g / 255, b: b / 255 };
+    // TODO: Check if this is correct? Original only returned 0-255, unsure if sRGB
+    return srgb2linear({ r, g, b });
 }
 
 
@@ -295,7 +298,7 @@ export function kelvin2(t: number): RGBColor {
 
 export function formatRGB({ r, g, b }: RGBColor, alpha?: number): string {
     if(__DEV__) {
-        let l = (v: number): boolean => v < 0 || v > 1;
+        let l = (v: number): boolean => v < 0.0 || v > 1.0;
         if(l(r) || l(g) || l(b)) console.log("Invalid color: ", { r, g, b });
     }
 
