@@ -27,7 +27,7 @@ module.exports = (env, argv) => {
         //},
         target: "web",
         mode: MODE,
-        watch: true,
+        watch: MODE !== "production",
         //watchOptions: {
         //    aggregateTimeout: 600,
         //    //ignored: ["./worker/", "./build/", "./dist/"],
@@ -53,6 +53,7 @@ module.exports = (env, argv) => {
                 terserOptions: {
                     sourceMap: !IS_PRODUCTION,
                     compress: {
+                        ecma: 2015,
                         passes: 3,
                         unsafe_math: true,
                     }
