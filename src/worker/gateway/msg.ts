@@ -1,4 +1,4 @@
-import { ReadyEvent } from "state/main/models";
+import { ReadyEvent } from "state/models";
 
 export enum GatewayMessageDiscriminator {
     Initialized,

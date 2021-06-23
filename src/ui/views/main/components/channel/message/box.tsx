@@ -1,11 +1,11 @@
 import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createStructuredSelector } from "reselect";
 
 import TextareaAutosize from 'react-textarea-autosize';
 
 //import { IMessageState } from "ui/views/main/reducers/messages";
-import { RootState, Type } from "state/main";
+import { RootState } from "state/root";
+import { Type } from "state/actions";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
 

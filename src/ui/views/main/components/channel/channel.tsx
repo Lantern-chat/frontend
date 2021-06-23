@@ -4,7 +4,7 @@ import "./channel.scss";
 import { ChannelHeader } from "./header";
 import { MessageFeed } from "./message/feed";
 import { MessageBox } from "./message/box";
-import { Snowflake } from "state/main/models";
+import { Snowflake } from "state/models";
 
 export interface IChannelProps {
     channel?: Snowflake,

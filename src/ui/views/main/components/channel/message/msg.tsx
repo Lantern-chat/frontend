@@ -4,7 +4,7 @@ import classnames from "classnames";
 
 import { Markdown, MarkdownProps } from "ui/components/common/markdown";
 
-import { Message as MessageModel } from "state/main/models";
+import { Message as MessageModel } from "state/models";
 
 export interface MessageProps {
     editing: boolean,

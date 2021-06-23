@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 
-import { Provider } from "react-redux";
 import { mainReducer, Type } from "state/main";
-
-import { STORE } from "ui/App";
+import { STORE } from "state/global";
 STORE.replaceReducer(mainReducer);
+
+import { selectPath } from "state/selectors/selectPath";
 
 import Gateway from "worker-loader!../../../worker/gateway";
 export const GATEWAY = new Gateway();
@@ -28,16 +29,9 @@ GATEWAY.addEventListener('message', msg => {
 //    STORE.dispatch({ type: 'GATEWAY_ERROR', payload: err });
 //});
 
-import { Redirect, Route, Switch } from "react-router";
-
 import { PartyList } from "./components/party_list";
 import { Party } from "./components/party/party";
 import { CreatePartyModal } from "./modals/create_party";
-
-import { ISession } from "lib/session";
-export interface MainViewParameters {
-    session: ISession,
-}
 
 // Process:
 
@@ -51,33 +45,34 @@ export interface MainViewParameters {
 // 7. After identification, the server returns the `Ready` event, which is sent to redux via the worker and contains everything to initialize the user, parties and channels.
 
 import "./main.scss";
-export const MainView: React.FunctionComponent<MainViewParameters> = ({ session }: MainViewParameters) => {
-    useEffect(() => {
-        STORE.dispatch({ type: Type.MOUNT, payload: session });
-        return () => { STORE.dispatch({ type: Type.UNMOUNT }); };
-    }, [session]);
+
+export const MainView: React.FunctionComponent = () => {
+    let { parts } = useSelector(selectPath);
 
     return (
         <div className="ln-main">
-            <Provider store={STORE}>
-                <PartyList />
+            <PartyList />
 
-                <CreatePartyModal />
-                <Switch>
-                    <Route path="/channels/@me/:channel">
-                        Direct Message
+            <CreatePartyModal />
+
+            <Party />
+
+            {/*
+            <Switch>
+                <Route path="/channels/@me/:channel">
+                    Direct Message
                     </Route>
-                    <Route path="/channels/@me">
-                        User Home
+                <Route path="/channels/@me">
+                    User Home
                     </Route>
-                    <Route path={["/channels/:party/:channel", "/channels/:party"]}>
-                        <Party />
-                    </Route>
-                    <Route>
-                        <Redirect to="/channels/@me"></Redirect>
-                    </Route>
-                </Switch>
-            </Provider>
+                <Route path={["/channels/:party/:channel", "/channels/:party"]}>
+                    <Party />
+                </Route>
+                <Route>
+                    <Redirect to="/channels/@me"></Redirect>
+                </Route>
+            </Switch>
+            */}
         </div>
     );
 };

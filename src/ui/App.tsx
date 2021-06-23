@@ -8,11 +8,9 @@ import { Fireflies } from "ui/components/login/fireflies";
 import { ThemeWidget } from "ui/components/login/theme_widget";
 import { Ripple } from "ui/components/common/spinners/ripple";
 import { Logo } from "ui/components/login/logo";
-import { Link, HistoryContext, recomputeHistoryContext } from "./components/history";
+import { HistoryContext, recomputeHistoryContext } from "./components/history";
 
-//import { MainViewParameters } from "./views/main";
-//const MainView: React.FunctionComponent<MainViewParameters>
-//    = React.lazy(() => import(       /* webpackCHunkName: 'MainView'     */ "./views/main"));
+const MainView: React.FunctionComponent = React.lazy(() => import(       /* webpackCHunkName: 'MainView'     */ "./views/main"));
 const LoginView: React.FunctionComponent = React.lazy(() => import(      /* webpackChunkName: 'LoginView'    */ "./views/login"));
 const RegisterView: React.FunctionComponent = React.lazy(() => import(   /* webpackChunkName: 'RegisterView' */ "./views/register"));
 //const TestbedView: React.FunctionComponent = React.lazy(() => import(    /* webpackChunkName: 'TestbedView'  */ "./views/testbed"));
@@ -78,7 +76,7 @@ const AppRouter = () => {
         case 'register':
             return <LoginRoutes />;
         case 'channels':
-            return <div>Channels<Link href="/login">Login</Link></div>;
+            return <MainView />;
     }
 
     return null;

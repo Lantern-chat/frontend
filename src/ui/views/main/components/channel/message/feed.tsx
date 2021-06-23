@@ -1,9 +1,9 @@
 import React, { useContext, useRef, useMemo, useState, useEffect } from "react";
 import { useSelector, shallowEqual } from "react-redux";
 
-import { Snowflake } from "state/main/models";
-import { RootState, Type } from "state/main";
-import { IChatState, IWindowState } from "state/main/reducers";
+import { Snowflake } from "state/models";
+import { RootState, Type } from "state/root";
+import { IChatState, IWindowState } from "state/reducers";
 
 import { Message } from "./msg";
 import { Timeline, ITimelineProps } from "./timeline";

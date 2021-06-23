@@ -8,9 +8,9 @@ import { PartyHeader } from "./party_header";
 import { PartyFooter } from "./party_footer";
 import { Channel } from "../channel/channel";
 
-import { Snowflake } from "state/main/models";
-import { RootState } from "state/main";
-import { Panel } from "state/main/reducers/window";
+import { Snowflake } from "state/models";
+import { RootState } from "state/root";
+import { Panel } from "state/reducers/window";
 
 import "./party.scss";
 
