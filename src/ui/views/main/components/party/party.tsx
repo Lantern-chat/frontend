@@ -1,5 +1,4 @@
 import React from "react";
-import { useParams } from "react-router";
 
 import { shallowEqual, useSelector } from "react-redux";
 
@@ -17,7 +16,7 @@ import "./party.scss";
 export const Party = React.memo(() => {
     let show_panel = useSelector((state: RootState) => state.window.show_panel);
 
-    let { party, channel } = useParams<{ party: string, channel?: string }>();
+    let { party, channel } = { party: '', channel: '' }; // useParams<{ party: string, channel?: string }>();
 
     //if(!channel) {
     //    return <div>Loading...</div>;
