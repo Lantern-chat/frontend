@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useReducer, useEffect, useContext } from "react";
 import { useDispatch } from "react-redux";
 import { LanternDispatch } from "state/actions";
-import { sessionSet } from "state/action_creators/session";
+import { setSession } from "state/action_creators/session";
 
 import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
@@ -100,7 +100,7 @@ export default function LoginView() {
             body: new FormData(e.currentTarget),
         }).then((req) => {
             if(req.status === 200 && req.response.auth != null) {
-                main.then(() => dispatch(sessionSet(req.response)));
+                main.then(() => dispatch(setSession(req.response)));
             } else {
                 on_error("Unknown Error");
             }

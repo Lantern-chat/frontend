@@ -25,7 +25,7 @@ let Root = () => {
     );
 
     // don't need strict checking in prod
-    if(process.env.NODE_ENV !== 'production') {
+    if(__DEV__) {
         root = (<React.StrictMode>{root}</React.StrictMode>);
     }
 

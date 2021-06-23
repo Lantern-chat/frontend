@@ -53,6 +53,6 @@ export const Link = React.memo(forwardRef((props: ILinkProps, ref: React.Mutable
     return <a {...props} ref={ref} />
 }));
 
-if(process.env.NODE_ENV !== 'production') {
+if(__DEV__) {
     Link.displayName = "Link";
 }

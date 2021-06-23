@@ -12,6 +12,6 @@ export const Logo: React.FunctionComponent = React.memo(() => {
     );
 });
 
-if(process.env.NODE_ENV !== 'production') {
+if(__DEV__) {
     Logo.displayName = "Logo";
 }

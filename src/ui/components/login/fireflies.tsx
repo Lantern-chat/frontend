@@ -300,6 +300,6 @@ export const Fireflies: React.FunctionComponent<IFireflyProps> = React.memo((pro
     return (<canvas id="ln-fireflies" ref={canvas_ref} />);
 });
 
-if(process.env.NODE_ENV !== 'production') {
+if(__DEV__) {
     Fireflies.displayName = "Fireflies";
 }

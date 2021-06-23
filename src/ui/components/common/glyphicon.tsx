@@ -35,6 +35,6 @@ export const Glyphicon: React.FunctionComponent<IGlyphiconProps> = React.memo((p
     );
 });
 
-if(process.env.NODE_ENV !== 'production') {
+if(__DEV__) {
     Glyphicon.displayName = "Glyphicon";
 }

@@ -57,7 +57,7 @@ export function createSession(): ISessionContext {
 
         localStorage.setItem(SESSION_KEY, JSON.stringify(session));
         if(session != null) {
-            if(process.env.NODE_ENV !== 'production') {
+            if(__DEV__) {
                 console.log("Setting session expiry timer for: ", session.expires.toISOString());
             }
 

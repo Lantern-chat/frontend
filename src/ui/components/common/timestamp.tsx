@@ -14,6 +14,6 @@ export const Timestamp: React.FunctionComponent<TimestampProps> = React.memo((pr
         .format(props.format || DEFAULT_FORMAT)}</>
 ));
 
-if(process.env.NODE_ENV !== 'production') {
+if(__DEV__) {
     Timestamp.displayName = "Timestamp";
 }

@@ -17,6 +17,6 @@ export interface RootState {
     theme: IThemeState,
 }
 
-export const enhancers = process.env.NODE_ENV !== 'production' ?
+export const enhancers = __DEV__ ?
     applyMiddleware(promiseMiddleware, thunk, createLogger()) :
     applyMiddleware(promiseMiddleware, thunk);

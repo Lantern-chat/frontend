@@ -56,6 +56,6 @@ export const AdvancedMarkdown = (props: MarkdownProps) => {
 };
 export default AdvancedMarkdown;
 
-if(process.env.NODE_ENV !== 'production') {
+if(__DEV__) {
     AdvancedMarkdown.displayName = "AdvancedMarkdown";
 }

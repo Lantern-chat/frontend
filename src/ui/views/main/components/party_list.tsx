@@ -77,6 +77,6 @@ export const PartyList = React.memo(() => {
         </div>
     );
 });
-if(process.env.NODE_ENV !== 'production') {
+if(__DEV__) {
     PartyList.displayName = "PartyList";
 }

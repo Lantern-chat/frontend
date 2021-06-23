@@ -1,15 +1,17 @@
 import { ISession, parseSession, storeSession } from "lib/session";
+import { DEFAULT_LOGGED_IN_CHANNEL, HISTORY } from "state/global";
 import { DispatchableAction, Type } from "../actions";
 
-export function sessionSet(session: ISession | null): DispatchableAction {
-    return (dispatch, getState) => {
+export function setSession(session: ISession | null): DispatchableAction {
+    return (dispatch) => {
         session = parseSession(session);
+
         if(session != null) {
-            dispatch({ type: Type.SESSION_LOGIN, session });
             storeSession(dispatch, session);
 
-            getState().history.history.push('/channels/@me');
+            dispatch({ type: Type.SESSION_LOGIN, session });
 
+            HISTORY.push(DEFAULT_LOGGED_IN_CHANNEL);
         } else {
             // TODO: This is usually set on login/register, so this
             // should be impossible, right?

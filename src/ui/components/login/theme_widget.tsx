@@ -41,6 +41,6 @@ export const ThemeWidget: React.FunctionComponent = React.memo(() => {
         </div>
     );
 });
-if(process.env.NODE_ENV !== 'production') {
+if(__DEV__) {
     ThemeWidget.displayName = "Theme Widget";
 }

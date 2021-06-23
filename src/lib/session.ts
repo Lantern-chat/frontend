@@ -7,9 +7,7 @@ export interface ISession {
 }
 
 import dayjs, { LongTimeout, setLongTimeout } from "lib/time";
-import { Dispatch, Store } from "redux";
-import { Action, Type } from "state/actions";
-import { RootState } from "state/root";
+import { LanternDispatch, Type } from "state/actions";
 
 const SESSION_KEY: string = 'session';
 
@@ -29,13 +27,15 @@ export function parseSession(session: string | ISession | null): ISession | null
     return session;
 }
 
-export var initialSession = parseSession(localStorage.getItem(SESSION_KEY));
+export function loadSession(): ISession | null {
+    return parseSession(localStorage.getItem(SESSION_KEY));
+}
 
-export function storeSession(dispatch: Dispatch<Action>, session: ISession) {
+export function storeSession(dispatch: LanternDispatch, session: ISession) {
     if(session != null) {
         localStorage.setItem(SESSION_KEY, JSON.stringify(session));
 
-        if(process.env.NODE_ENV !== 'production') {
+        if(__DEV__) {
             console.log("Setting session expiry timer for: ", session.expires.toISOString());
         }
 

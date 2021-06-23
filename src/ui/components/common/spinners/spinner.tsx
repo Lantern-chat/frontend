@@ -20,6 +20,6 @@ export const Spinner: React.FunctionComponent<SpinnerProps> = React.memo((props:
     </div >
 ));
 
-if(process.env.NODE_ENV !== 'production') {
+if(__DEV__) {
     Spinner.displayName = "SpinnerSpinner";
 }

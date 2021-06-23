@@ -176,7 +176,7 @@ var SETUP_THEN = false;
 
 import "../login/login.scss";
 import "./register.scss";
-import { sessionSet } from "state/action_creators/session";
+import { setSession } from "state/action_creators/session";
 export default function RegisterView() {
     useTitle("Register");
 
@@ -227,7 +227,7 @@ export default function RegisterView() {
             body: new FormData(e.currentTarget),
         }).then((req) => {
             if(req.status === 200 && req.response.auth != null) {
-                main.then(() => dispatch(sessionSet(req.response)));
+                main.then(() => dispatch(setSession(req.response)));
             } else {
                 on_error("Unknown Error");
             }
@@ -333,6 +333,6 @@ export default function RegisterView() {
     );
 }
 
-if(process.env.NODE_ENV !== 'production') {
+if(__DEV__) {
     RegisterView.displayName = "RegisterView";
 }

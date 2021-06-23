@@ -158,6 +158,8 @@ module.exports = (env, argv) => {
             new webpack.DefinePlugin({
                 "typeof window": '"object"',
                 "typeof MessageChannel": '"function"',
+                "__DEV__": JSON.stringify(JSON.parse(process.env.BUILD_DEV || 'true')),
+                "__PRERELEASE__": JSON.stringify(JSON.parse(process.env.BUILD_PRERELEASE || 'false'))
             }),
             new webpack.ProvidePlugin({
                 Buffer: ['buffer', 'Buffer'],

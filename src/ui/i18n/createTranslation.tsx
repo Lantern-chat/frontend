@@ -23,7 +23,7 @@ export function createTranslation(table: TranslationTable): React.FunctionCompon
         }
         return (<>{text}</>)
     };
-    if(process.env.NODE_ENV !== 'production') {
+    if(__DEV__) {
         renderer.displayName = "i18n_Inner";
     }
     return renderer;

@@ -294,13 +294,14 @@ export function kelvin2(t: number): RGBColor {
 }
 
 export function formatRGB({ r, g, b }: RGBColor, alpha?: number): string {
-    if(process.env.NODE_ENV !== 'production') {
+    if(__DEV__) {
         let l = (v: number): boolean => v < 0 || v > 1;
         if(l(r) || l(g) || l(b)) console.log("Invalid color: ", { r, g, b });
     }
 
-    let rgb = [r, g, b];
-    let prefix = 'rgb';
+    let rgb = [r, g, b],
+        prefix = 'rgb';
+
     if(alpha !== undefined) {
         rgb.push(alpha);
         prefix += 'a';

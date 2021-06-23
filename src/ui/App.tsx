@@ -1,18 +1,14 @@
 import React, { Suspense, useContext, useEffect, useMemo, useState } from "react";
-import { createBrowserHistory } from "history";
-import { createStore } from "redux";
 import { Provider, useSelector } from "react-redux";
-import { RootState } from "state/root";
 
-import { enhancers, initialReducer, Type } from "state/initial";
+import { HISTORY, STORE } from "state/global";
+
 
 import { Fireflies } from "ui/components/login/fireflies";
 import { ThemeWidget } from "ui/components/login/theme_widget";
 import { Ripple } from "ui/components/common/spinners/ripple";
 import { Logo } from "ui/components/login/logo";
-import { selectPath } from "state/selectors/selectPath";
 import { Link, HistoryContext, recomputeHistoryContext } from "./components/history";
-import { initialSession } from "lib/session";
 
 //import { MainViewParameters } from "./views/main";
 //const MainView: React.FunctionComponent<MainViewParameters>
@@ -75,6 +71,8 @@ const AppRouter2 = () => {
 const AppRouter = () => {
     let ctx = useContext(HistoryContext);
 
+    console.log("Rendering router");
+
     switch(ctx.parts[0]) {
         case 'login':
         case 'register':
@@ -85,24 +83,6 @@ const AppRouter = () => {
 
     return null;
 };
-
-
-export const HISTORY = createBrowserHistory();
-export const STORE = createStore(initialReducer, {
-    history: { history: HISTORY, location: HISTORY.location },
-    user: { session: initialSession }
-}, enhancers);
-
-HISTORY.listen(update => STORE.dispatch({ type: Type.HISTORY_UPDATE, update }));
-
-const ACCEPTABLE_PATHS = ['login', 'register', 'channels'];
-let first_part = HISTORY.location.pathname.slice(1).split('/', 1)[0];
-
-if(ACCEPTABLE_PATHS.indexOf(first_part) == -1) {
-    HISTORY.replace(initialSession != null ? '/channels/@me' : '/login')
-} else if(['login', 'register'].indexOf(first_part) >= 0 && initialSession != null) {
-    HISTORY.replace('/channels/@me');
-}
 
 const AppInner = React.memo(() => {
     return (

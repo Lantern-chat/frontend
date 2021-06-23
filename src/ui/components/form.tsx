@@ -96,7 +96,7 @@ export const FormSelectGroup: React.FunctionComponent = React.memo(({ children }
     <div className="ln-select-group">{children}</div>
 ));
 
-if(process.env.NODE_ENV !== 'production') {
+if(__DEV__) {
     FormGroup.displayName = "FormGroup";
     FormLabel.displayName = "FormLabel";
     FormText.displayName = "FormText";

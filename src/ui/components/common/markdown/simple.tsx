@@ -20,6 +20,6 @@ export const SimpleMarkdown: React.FunctionComponent<MarkdownProps> = (props: Ma
 };
 export default SimpleMarkdown;
 
-if(process.env.NODE_ENV !== 'production') {
+if(__DEV__) {
     SimpleMarkdown.displayName = "SimpleMarkdown";
 }

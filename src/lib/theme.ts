@@ -28,11 +28,11 @@ export interface IThemeContext {
 export const DEFAULT_THEME: IThemeContext = {
     is_light: false,
     temperature: 7500,
-    setTheme: (theme: IThemeContext) => { }
+    setTheme: (_theme: IThemeContext) => { }
 };
 
 export const Theme = createContext<IThemeContext>(DEFAULT_THEME);
-if(process.env.NODE_ENV !== 'production') {
+if(__DEV__) {
     Theme.displayName = "ThemeContext";
 }
 
