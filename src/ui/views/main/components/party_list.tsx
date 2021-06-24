@@ -23,16 +23,18 @@ let sorted_party_selector = createSelector((state: RootState) => state.party.par
 
 let party_list_selector = createStructuredSelector({
     parties: sorted_party_selector,
+    auth: (state: RootState) => state.user.session!.auth,
     last_channel: (state: RootState) => state.party.last_channel,
     create_party_open: (state: RootState) => state.modals.create_party_open,
-    auth: (state: RootState) => state.user.session?.auth,
     active_party: (state: RootState) => state.history.parts[1] // /channels/:party_id/:channel_id
 });
 
-const Logout = () => {
-    let auth = useSelector((state: RootState) => state.user.session!.auth);
+import "./party_list.scss";
+export const PartyList = React.memo(() => {
+    let { create_party_open, parties, last_channel, auth, active_party } = useSelector(party_list_selector);
 
     let dispatch = useDispatch();
+
     let logout = () => dispatch(
         fetch({
             url: "/api/v1/user/@me",
@@ -40,18 +42,6 @@ const Logout = () => {
             headers: { 'Authorization': 'Bearer ' + auth }
         }).then(() => setSession(null))
     );
-
-    return (
-        <div id="logout" onClick={logout} title="Logout">
-            <Glyphicon src={LogoutIcon} />
-        </div>
-    );
-};
-
-import "./party_list.scss";
-export const PartyList = React.memo(() => {
-    let { create_party_open, parties, last_channel, active_party } = useSelector(party_list_selector);
-    let dispatch = useDispatch();
 
     let colors = ['goldenrod', 'royalblue', 'darkgreen', 'crimson'];
 
@@ -69,9 +59,9 @@ export const PartyList = React.memo(() => {
                         url = party.icon_id && `/avatars/${party.id}/${party.icon_id}`;
 
                     last = last ? '/' + last : '';
-
                     return (
-                        <li key={party.id} className={party.id == active_party ? 'selected' : undefined}>
+                        <li key={party.id}
+                            className={party.id == active_party ? 'selected' : undefined}>
                             <Link href={`/channels/${party.id}${last}`}>
                                 <Avatar rounded url={url} text={party.name.charAt(0)}
                                     username={party.name} title={party.name} backgroundColor={colors[fnv1a(party.id) % colors.length]} />
@@ -86,11 +76,12 @@ export const PartyList = React.memo(() => {
                 </li>
             </ol>
 
-            <Logout />
+            <div id="logout" onClick={logout} title="Logout">
+                <Glyphicon src={LogoutIcon} />
+            </div>
         </div>
     );
 });
 if(__DEV__) {
     PartyList.displayName = "PartyList";
-    Logout.displayName = "Logout";
 }
