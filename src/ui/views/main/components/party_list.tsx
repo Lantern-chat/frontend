@@ -54,14 +54,14 @@ export const PartyList = React.memo(() => {
                     </Link>
                 </li>
 
-                {parties.map((party, i) => {
+                {parties.map(party => {
                     let last = last_channel.get(party.id),
                         url = party.icon_id && `/avatars/${party.id}/${party.icon_id}`;
 
                     last = last ? '/' + last : '';
                     return (
                         <li key={party.id}
-                            className={party.id == active_party ? 'selected' : undefined}>
+                            className={party.id == active_party ? 'selected' : ''}>
                             <Link href={`/channels/${party.id}${last}`}>
                                 <Avatar rounded url={url} text={party.name.charAt(0)}
                                     username={party.name} title={party.name} backgroundColor={colors[fnv1a(party.id) % colors.length]} />

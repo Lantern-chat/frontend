@@ -21,10 +21,9 @@
         height: 1.5em;
         margin: auto;
 
-        .ln-rounded & {
+        &--rounded {
             border-radius: 50%;
         }
-        //line-height: 0.925;
     }
 
     &__text {

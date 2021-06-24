@@ -12,12 +12,19 @@ export interface IAvatarProps {
     onClick?: (e: React.MouseEvent<HTMLSpanElement>) => void,
 }
 
-export const Avatar = React.memo((props: IAvatarProps) => (
-    <div className={"ln-avatar" + (props.rounded ? " ln-rounded" : '')}>
-        <span className="ln-avatar__wrapper" onClick={props.onClick} title={props.title}>
-            {props.url != null ?
-                <img src={props.url} className="ln-avatar__image" alt={props.username} /> :
-                <span className="ln-avatar__text" style={{ backgroundColor: props.backgroundColor }}>{props.text || '?'}</span>}
-        </span>
-    </div>
-));
+export const Avatar = React.memo((props: IAvatarProps) => {
+    let is_image = props.url != null,
+        className = "ln-avatar" + (is_image ? '__image' : '__text');
+
+    className = (props.rounded ? [className, className + "--rounded"] : [className]).join(' ');
+
+    return (
+        <div className="ln-avatar">
+            <span className="ln-avatar__wrapper" onClick={props.onClick} title={props.title}>
+                {is_image ?
+                    <img src={props.url} className={className} alt={props.username} /> :
+                    <span className={className} style={{ backgroundColor: props.backgroundColor }}>{props.text || '?'}</span>}
+            </span>
+        </div>
+    );
+});
