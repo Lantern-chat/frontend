@@ -1,20 +1,16 @@
 import React, { AnchorHTMLAttributes, forwardRef, useContext, createContext, Context } from 'react';
 import { History, State, Location } from 'history';
 
+import { IHistoryState } from "state/reducers/history";
+export { recomputeHistoryContext } from "state/reducers/history";
+
 export interface IHistoryContext {
     history: History,
     location: Location,
     parts: string[]
 }
 
-export const HistoryContext: Context<IHistoryContext> = createContext<IHistoryContext>(null!);
-
-export function recomputeHistoryContext(history: History): IHistoryContext {
-    let location = history.location,
-        parts = location.pathname.slice(1).split('/');
-
-    return { history, location, parts };
-}
+export const HistoryContext: Context<IHistoryState> = createContext<IHistoryState>(null!);
 
 export interface ILinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
     state?: State,

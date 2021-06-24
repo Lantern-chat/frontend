@@ -4,6 +4,7 @@ import { enhancers, initialReducer, Type } from "./initial";
 import { createBrowserHistory } from "history";
 
 import { loadSession } from "lib/session";
+import { recomputeHistoryContext } from "ui/components/history";
 
 interface IGlobalState {
     gateway?: Worker,
@@ -13,7 +14,7 @@ export const GLOBAL: IGlobalState = {};
 
 export const HISTORY = createBrowserHistory();
 export const STORE = createStore(initialReducer, {
-    history: { history: HISTORY, location: HISTORY.location },
+    history: recomputeHistoryContext(HISTORY),
     user: { session: loadSession() }
 }, enhancers);
 
