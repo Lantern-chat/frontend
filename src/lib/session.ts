@@ -7,7 +7,7 @@ export interface ISession {
 }
 
 import dayjs, { LongTimeout, setLongTimeout } from "lib/time";
-import { LanternDispatch, Type } from "state/actions";
+import { Dispatch, Type } from "state/actions";
 
 const SESSION_KEY: string = 'session';
 
@@ -31,7 +31,7 @@ export function loadSession(): ISession | null {
     return parseSession(localStorage.getItem(SESSION_KEY));
 }
 
-export function storeSession(dispatch: LanternDispatch, session: ISession | null) {
+export function storeSession(dispatch: Dispatch, session: ISession | null) {
     if(session != null) {
         localStorage.setItem(SESSION_KEY, JSON.stringify(session));
 

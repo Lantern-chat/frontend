@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useMemo, lazy } from "react";
 
-import { LangItemProps, Translation } from "./createTranslation";
-export { Translation } from "./createTranslation";
-
+import { LangItemProps } from "./createTranslation";
+import { Translation } from "./translation";
+export { Translation } from "./translation";
 
 type Loader = () => Promise<{ default: React.FunctionComponent<LangItemProps> }>;
 type Lazy = React.LazyExoticComponent<React.FunctionComponent<LangItemProps>>;

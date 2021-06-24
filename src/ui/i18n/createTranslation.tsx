@@ -1,5 +1,7 @@
 import React from "react";
 
+import { Translation } from "./translation";
+
 export interface LangItemProps {
     /** Phrase being translated */
     t: Translation,
@@ -29,23 +31,3 @@ export function createTranslation(table: TranslationTable): React.FunctionCompon
     return renderer;
 }
 
-/** Enum of all possible translation phrase keys */
-export enum Translation {
-    CHANNEL,
-    PARTY,
-    DIRECT_MESSAGE,
-    CREATE_DIRECT_MESSAGE,
-    YEAR,
-    MONTH,
-    DAY,
-    MONTHS,
-    REGISTER,
-    LOGIN,
-    EMAIL_ADDRESS,
-    USERNAME,
-    USERNAME_OR_EMAIL,
-    NICKNAME,
-    PASSWORD,
-    RESET,
-    DATE_OF_BIRTH,
-};

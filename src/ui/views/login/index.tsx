@@ -1,12 +1,12 @@
 import React, { useState, useMemo, useReducer, useEffect, useContext } from "react";
 import { useDispatch } from "react-redux";
-import { LanternDispatch } from "state/actions";
+import { Dispatch } from "state/actions";
 import { setSession } from "state/action_creators/session";
 
 import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
 
-import { timeout } from "lib/util";
+//import { timeout } from "lib/util";
 import { fetch, XHRMethod } from "lib/fetch";
 import { useTitle } from "ui/hooks/useTitle";
 import { Spinner } from "ui/components/common/spinners/spinner";
@@ -14,9 +14,9 @@ import { Spinner } from "ui/components/common/spinners/spinner";
 import { FormGroup, FormLabel, FormInput } from "ui/components/form";
 import { Modal } from "ui/components/modal";
 
-import { HistoryContext, Link } from "ui/components/history";
+import { Link } from "ui/components/history";
 
-import { validateUsername, validatePass, validateEmail } from "lib/validation";
+import { validateEmail } from "lib/validation";
 
 var PRELOADED: boolean = false;
 function preloadRegister() {
@@ -74,7 +74,7 @@ import "./login.scss";
 export default function LoginView() {
     useTitle("Login");
 
-    let dispatch = useDispatch<LanternDispatch>();
+    let dispatch = useDispatch<Dispatch>();
 
     let [state, form_dispatch] = useReducer(login_state_reducer, DEFAULT_LOGIN_STATE);
     let [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -99,13 +99,29 @@ export default function LoginView() {
             method: XHRMethod.POST,
             body: new FormData(e.currentTarget),
         }).then((req) => {
-            if(req.status === 200 && req.response.auth != null) {
+            if(req.status == 201 && req.response.auth != null) {
                 main.then(() => dispatch(setSession(req.response)));
             } else {
-                on_error("Unknown Error");
+                on_error("Unknown Error: " + req.status);
+
+                if(__DEV__) {
+                    console.error("Missing auth field in response: ", req);
+                }
             }
         }).catch((req: XMLHttpRequest) => {
-            on_error(req.response.message);
+            try {
+                let response = req.response;
+                if(typeof response === 'string') {
+                    response = JSON.parse(response);
+                }
+                on_error(response.message);
+            } catch(e) {
+                on_error("Unknown error: " + req.status);
+
+                if(__DEV__) {
+                    console.error("Missing JSON in error response?", e, req);
+                }
+            }
         })
     };
 

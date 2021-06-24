@@ -1,16 +1,16 @@
 import React, { useState, useMemo, useReducer, useEffect, useContext } from "react";
 import { useDispatch } from "react-redux";
-import { LanternDispatch } from "state/actions";
+import { Dispatch } from "state/actions";
 
 import dayjs from "lib/time";
 
 import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
 
-import { timeout } from "lib/util";
+//import { timeout } from "lib/util";
 import { fetch, XHRMethod } from "lib/fetch";
 
-import { HistoryContext, Link } from "ui/components/history";
+import { Link } from "ui/components/history";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
 import { Modal } from "ui/components/modal";
@@ -180,7 +180,7 @@ import { setSession } from "state/action_creators/session";
 export default function RegisterView() {
     useTitle("Register");
 
-    let dispatch = useDispatch<LanternDispatch>();
+    let dispatch = useDispatch<Dispatch>();
     let [state, form_dispatch] = useReducer(register_state_reducer, DEFAULT_REGISTER_STATE);
     let [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -226,14 +226,30 @@ export default function RegisterView() {
             method: XHRMethod.POST,
             body: new FormData(e.currentTarget),
         }).then((req) => {
-            if(req.status === 200 && req.response.auth != null) {
+            if(req.status == 201 && req.response.auth != null) {
                 main.then(() => dispatch(setSession(req.response)));
             } else {
-                on_error("Unknown Error");
+                on_error("Unknown Error: " + req.status);
+
+                if(__DEV__) {
+                    console.error("Missing auth field in response: ", req);
+                }
             }
-        }).catch((e: XMLHttpRequest) => {
-            on_error(e.response.message);
-        });
+        }).catch((req: XMLHttpRequest) => {
+            try {
+                let response = req.response;
+                if(typeof response === 'string') {
+                    response = JSON.parse(response);
+                }
+                on_error(response.message);
+            } catch(e) {
+                on_error("Unknown error: " + req.status);
+
+                if(__DEV__) {
+                    console.error("Missing JSON in error response?", e, req);
+                }
+            }
+        })
     };
 
     let errorModal;

@@ -1,4 +1,4 @@
-import { Dispatch } from "redux";
+import { Dispatch as ReduxDispatch } from "redux";
 import { History } from "history";
 
 import { RootState } from "state/root";
@@ -7,8 +7,8 @@ import { ISession } from "lib/session";
 export enum Type {
     HISTORY_UPDATE = "HISTORY_UPDATE",
 
-    SESSION_EXPIRED = "SESSION_EXPIRED",
     SESSION_LOGIN = "SESSION_LOGIN",
+    SESSION_EXPIRED = "SESSION_EXPIRED",
 
     WINDOW_RESIZE = "WINDOW_RESIZE",
     WINDOW_TOGGLE_RIGHT_SIDEBAR = "WINDOW_TOGGLE_RIGHT_SIDEBAR",
@@ -16,9 +16,6 @@ export enum Type {
 
     MODAL_OPEN_CREATE_PARTY = "MODAL_OPEN_CREATE_PARTY",
     MODAL_CLOSE_CREATE_PARTY = "MODAL_CLOSE_CREATE_PARTY",
-
-    MOUNT = "MOUNT",
-    UNMOUNT = "UNMOUNT",
 
     GATEWAY_EVENT = "GATEWAY_EVENT",
 
@@ -29,12 +26,12 @@ export enum Type {
     MESSAGE_DISCARD_EDIT = "MESSAGE_DISCARD_EDIT",
 }
 
-export interface LanternDispatch extends Dispatch<Action> {
+export interface Dispatch extends ReduxDispatch<Action> {
     (action: DispatchableAction): void;
 }
 
 export type DispatchableAction = Action | ThunkAction | Promise<Action>;
-export type ThunkAction = (dispatch: Dispatch<Action>, getState: () => RootState) => void;
+export type ThunkAction = (dispatch: ReduxDispatch<Action>, getState: () => RootState) => void;
 
 export type Action =
     HistoryUpdate |
