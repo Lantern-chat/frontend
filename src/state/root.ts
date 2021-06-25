@@ -4,6 +4,7 @@ import { promiseMiddleware } from "./middleware/promise";
 import { applyMiddleware } from "redux";
 import thunk from 'redux-thunk';
 import { createLogger } from "redux-logger";
+import { gatewayMiddleware } from "./middleware/gateway";
 
 export { Action, Type, DispatchableAction } from "./actions";
 
@@ -19,5 +20,5 @@ export interface RootState {
 }
 
 export const enhancers = __DEV__ ?
-    applyMiddleware(promiseMiddleware, thunk, createLogger()) :
-    applyMiddleware(promiseMiddleware, thunk);
+    applyMiddleware(gatewayMiddleware, promiseMiddleware, thunk, createLogger()) :
+    applyMiddleware(gatewayMiddleware, promiseMiddleware, thunk);
