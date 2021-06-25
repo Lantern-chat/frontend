@@ -1,6 +1,7 @@
 import { Dispatch as ReduxDispatch } from "redux";
 import { History } from "history";
 
+import { Room } from "./models";
 import { RootState } from "state/root";
 import { ISession } from "lib/session";
 
@@ -18,6 +19,8 @@ export enum Type {
     MODAL_CLOSE_CREATE_PARTY = "MODAL_CLOSE_CREATE_PARTY",
 
     GATEWAY_EVENT = "GATEWAY_EVENT",
+
+    ROOMS_LOADED = "ROOMS_LOADED",
 
     MESSAGE_SEND = "MESSAGE_SEND",
     MESSAGE_SEND_EDIT = "MESSAGE_SEND_EDIT",
@@ -43,6 +46,7 @@ export type Action =
     ModalOpenCreateParty |
     ModalCloseCreateParty |
     GatewayEvent |
+    RoomsLoaded |
     MessageSend |
     MessageDiscordEdit |
     MessageEditPrev |
@@ -97,6 +101,13 @@ import { GatewayMessage } from "worker/gateway/msg";
 export interface GatewayEvent {
     type: Type.GATEWAY_EVENT,
     payload: GatewayMessage
+}
+
+// PARTY ACTIONS
+
+export interface RoomsLoaded {
+    type: Type.ROOMS_LOADED,
+    rooms: Room[],
 }
 
 // MESSAGE ACTIONS

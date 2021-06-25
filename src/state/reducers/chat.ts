@@ -7,17 +7,6 @@ import { Action, Type } from "../actions";
 
 import { Message, Snowflake, Room } from "../models";
 
-export interface IMessageState {
-    msg: Message,
-    ts: Dayjs,
-}
-
-export interface IRoomState {
-    room: Room,
-    msgs: IMessageState[],
-    pending: IMessageState[],
-    current_edit: null | Snowflake,
-}
 /*
 export class RoomState {
     msgs: IMessageState[] = [];
@@ -55,6 +44,19 @@ export class RoomState {
     }
 }
 */
+
+export interface IMessageState {
+    msg: Message,
+    ts: Dayjs,
+}
+
+export interface IRoomState {
+    room: Room,
+    msgs: IMessageState[],
+    pending: IMessageState[],
+    current_edit: null | Snowflake,
+}
+
 export interface IChatState {
     rooms: Map<Snowflake, IRoomState>,
 }
@@ -68,6 +70,21 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
 
     switch(action.type) {
         case Type.SESSION_EXPIRED: return DEFAULT_STATE;
+
+        case Type.ROOMS_LOADED: {
+            return produce(state, draft => {
+                for(let room of action.rooms) {
+                    if(draft.rooms.has(room.id)) continue;
+
+                    draft.rooms.set(room.id, {
+                        room,
+                        msgs: [],
+                        pending: [],
+                        current_edit: null,
+                    });
+                }
+            })
+        }
 
         // fast filter before invoking Immer
         case Type.MESSAGE_SEND:

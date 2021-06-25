@@ -1,46 +1,64 @@
 import React from "react";
+import { useSelector } from "react-redux";
+import { createSelector, createStructuredSelector } from "reselect";
 
 import { fnv1a } from "lib/fnv";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
 import { Avatar } from "ui/components/common/avatar";
+import { Link } from "ui/components/history";
 
 import Hash from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-740-hash.svg";
 
-const colors = ['yellow', 'lightblue', 'lightgreen', 'lightcoral', 'orange', 'plum'];
+import { RootState } from "state/root";
+import { Room } from "state/models";
 
 
-const ListedChannel = React.memo(({ channel, i }: { channel: string, i: number }) => {
-    let name_hash = fnv1a(channel);
-
+const ListedChannel = React.memo(({ room }: { room: Room }) => {
     return (
-        <li key={channel}>
-            <div className="ln-channel-list__channel">
-                <div className="ln-channel-list__icon">
-                    {name_hash % 2 == 0 ?
-                        <Avatar url={`https://placekitten.com/${(i % 25) + 25}/${(i % 25) + 25}`} username={channel} backgroundColor={colors[name_hash % colors.length]} /> :
-                        <Glyphicon src={Hash} />}
-                </div>
-                <div className="ln-channel-list__name"><span>{channel}</span></div>
+        <Link className="ln-channel-list__channel" href={`/channels/${room.party_id || '@me'}/${room.id}`}>
+            <div className="ln-channel-list__icon">
+                {room.icon_id ?
+                    <Avatar url={`/avatars/${room.id}/${room.icon_id}`} username={room.name} /> :
+                    <Glyphicon src={Hash} />}
             </div>
-        </li>
+            <div className="ln-channel-list__name"><span>{room.name}</span></div>
+        </Link>
     );
 });
 
+
+let channel_list_selector = createSelector(
+    (state: RootState) => state.history.parts[1],
+    (state: RootState) => state.history.parts[2],
+    (state: RootState) => state.party.parties,
+    (party_id, room_id, parties) => {
+        let party = parties.get(party_id);
+
+        return {
+            selected: room_id,
+            rooms: party?.rooms,
+        };
+    }
+);
+
+
+
 import "./channel_list.scss";
 export const ChannelList = React.memo(() => {
-    let channels = ["off-topic-general", "lantern-dev", "meta-discussion", "the-memes", "fanfics"];
+    let { selected, rooms = [] } = useSelector(channel_list_selector);
 
-    let prefix = "abcdefghijklmnopqrstuvwxyz";
-
-    for(let i = 0; i < 150; i++) {
-        let idx = fnv1a((i * 12345).toString()) % prefix.length;
-        channels.push(prefix.charAt(idx) + "est-channel-" + i);
+    if(rooms.length == 0) {
+        return <div style={{ height: "100%" }}>Loading...</div>;
     }
 
     return (
         <ul className="ln-channel-list ln-scroll-y ln-scroll-fixed">
-            {channels.map((channel, i) => <ListedChannel key={channel} channel={channel} i={i} />)}
+            {rooms.map(room =>
+                <li key={room.id}>
+                    <ListedChannel room={room} />
+                </li>
+            )}
         </ul>
     );
 });

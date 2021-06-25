@@ -26,6 +26,13 @@
         }
     }
 
+    a,
+    a:hover,
+    a:active {
+        text-decoration: inherit;
+        color: inherit;
+    }
+
     .ln-glyphicon {
         font-size: 1.3em;
         height: 100%;

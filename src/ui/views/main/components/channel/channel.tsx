@@ -13,14 +13,10 @@ export interface IChannelProps {
 
 export const Channel = React.memo((props: IChannelProps) => {
     let feed_box;
-    if(props.channel != null) {
-        feed_box = (
-            <>
-                <MessageFeed channel={props.channel} />
-                <MessageBox />
-            </>
-        );
+    if(props.channel) {
+        feed_box = <MessageFeed channel={props.channel} />;
     } else {
+        // TODO: Replace with fake CSS channel?
         feed_box = <div className="ln-center-standalone">Loading...</div>;
     }
 
@@ -28,6 +24,7 @@ export const Channel = React.memo((props: IChannelProps) => {
         <div className="ln-channel">
             <ChannelHeader />
             {feed_box}
+            <MessageBox disabled={!props.channel} />
         </div>
     );
 });

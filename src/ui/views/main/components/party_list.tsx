@@ -11,12 +11,14 @@ import { Glyphicon } from "ui/components/common/glyphicon";
 
 import { RootState } from "state/root";
 import { setSession } from "state/action_creators/session";
+import { activateParty } from "state/action_creators/party";
+import { Snowflake } from "state/models";
 
 import LogoutIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-432-log-out.svg";
 
 let sorted_party_selector = createSelector((state: RootState) => state.party.parties, parties => {
     // this really just copies references into an array, so it should be fast
-    let party_array = Array.from(parties.values());
+    let party_array = Array.from(parties.values(), party => party.party);
     party_array.sort((a, b) => a.sort_order - b.sort_order);
     return party_array;
 });
@@ -39,7 +41,7 @@ export const PartyList = React.memo(() => {
         fetch({
             url: "/api/v1/user/@me",
             method: XHRMethod.DELETE,
-            headers: { 'Authorization': 'Bearer ' + auth }
+            bearer: auth,
         }).then(() => setSession(null))
     );
 
@@ -62,7 +64,7 @@ export const PartyList = React.memo(() => {
                     return (
                         <li key={party.id}
                             className={party.id == active_party ? 'selected' : ''}>
-                            <Link href={`/channels/${party.id}${last}`}>
+                            <Link href={`/channels/${party.id}${last}`} onClick={() => dispatch(activateParty(party.id))}>
                                 <Avatar rounded url={url} text={party.name.charAt(0)}
                                     username={party.name} title={party.name} backgroundColor={colors[fnv1a(party.id) % colors.length]} />
                             </Link>

@@ -12,15 +12,16 @@ import { RootState } from "state/root";
 import { Panel } from "state/reducers/window";
 
 import "./party.scss";
+import { createStructuredSelector } from "reselect";
+
+let party_selector = createStructuredSelector({
+    party: (state: RootState) => state.history.parts[1],
+    channel: (state: RootState) => state.history.parts[2],
+    show_panel: (state: RootState) => state.window.show_panel,
+})
 
 export const Party = React.memo(() => {
-    let show_panel = useSelector((state: RootState) => state.window.show_panel);
-
-    let { party, channel } = { party: '', channel: '' }; // useParams<{ party: string, channel?: string }>();
-
-    //if(!channel) {
-    //    return <div>Loading...</div>;
-    //}
+    let { show_panel, party, channel } = useSelector(party_selector);
 
     let classes = ["ln-party__channel"];
     switch(show_panel) {

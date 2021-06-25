@@ -19,8 +19,12 @@ function countLines(str: string): number {
     return (str.match(/\n/g) || '').length;
 }
 
+export interface IMessageBoxProps {
+    disabled?: boolean,
+}
+
 import "./box.scss";
-export const MessageBox = React.memo(() => {
+export const MessageBox = React.memo(({ disabled }: IMessageBoxProps) => {
     let dispatch = useDispatch();
     let { msg: { messages, current_edit }, use_mobile_view } = useSelector((state: RootState) => ({
         msg: { messages: [] as any[], current_edit: null },
@@ -28,7 +32,8 @@ export const MessageBox = React.memo(() => {
     }));
 
     let ref = useRef<HTMLTextAreaElement>(null);
-    let keyRef = useRef<HTMLSpanElement>(null);
+
+    let keyRef = __DEV__ ? useRef<HTMLSpanElement>(null) : undefined;
 
     interface MsgBoxState {
         value: string,
@@ -58,16 +63,18 @@ export const MessageBox = React.memo(() => {
         });
     }
 
+    let do_nothing = () => { };
+
     let do_send = () => {
         dispatch({ type: state.isEditing ? Type.MESSAGE_SEND_EDIT : Type.MESSAGE_SEND, payload: state.value });
         setState({ ...state, value: "" });
     };
 
-    let open_upload_click = (e: React.MouseEvent<HTMLDivElement>) => {
+    let open_upload_click = disabled ? do_nothing : (e: React.MouseEvent<HTMLDivElement>) => {
         alert("Upload is not yet implemented!");
     };
 
-    let on_send_click = (e: React.MouseEvent<HTMLDivElement>) => {
+    let on_send_click = disabled ? do_nothing : (e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation(); // prevent refocus if not focused
 
         if(state.value.length > 0) {
@@ -80,7 +87,9 @@ export const MessageBox = React.memo(() => {
     };
 
     let on_keydown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        keyRef.current!.innerText = (e.ctrlKey ? 'Ctrl+' : '') + (e.altKey ? 'Alt+' : '') + (e.shiftKey ? 'Shift+' : '') + (e.key === ' ' ? 'Spacebar' : e.key);
+        if(__DEV__) {
+            keyRef!.current!.innerText = (e.ctrlKey ? 'Ctrl+' : '') + (e.altKey ? 'Alt+' : '') + (e.shiftKey ? 'Shift+' : '') + (e.key === ' ' ? 'Spacebar' : e.key);
+        }
 
         switch(e.key) {
             case 'Enter': {
@@ -134,7 +143,7 @@ export const MessageBox = React.memo(() => {
         setState({ ...state, value: e.currentTarget.value.replace(/^\n+/, '') });
     };
 
-    let on_click_focus = (e: React.MouseEvent<HTMLDivElement>) => {
+    let on_click_focus = disabled ? do_nothing : (e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation();
         ref.current!.focus();
     };
@@ -143,12 +152,12 @@ export const MessageBox = React.memo(() => {
 
     // https://github.com/buildo/react-autosize-textarea/issues/52
     return (
-        <div className="ln-msg-box" onClick={on_click_focus}>
+        <div className={"ln-msg-box" + (disabled ? ' ln-msg-box--disabled' : '')} onClick={on_click_focus}>
             <div className="ln-msg-box__emoji">
                 <Glyphicon src={SmileyHalf} />
             </div>
             <div className="ln-msg-box__box">
-                <TextareaAutosize
+                <TextareaAutosize disabled={disabled}
                     onBlur={() => setTimeout(() => setFocus(false), 0)} // don't run on same frame?
                     onFocus={() => setFocus(true)}
                     cacheMeasurements={true}
@@ -157,9 +166,13 @@ export const MessageBox = React.memo(() => {
                     rows={1} maxRows={use_mobile_view ? 5 : 20}
                     value={state.value} onKeyDown={on_keydown} onChange={on_change} />
             </div>
-            <div className="ln-msg-box__debug">
-                <span ref={keyRef}></span>
-            </div>
+
+            {
+                __DEV__ ?
+                    <div className="ln-msg-box__debug"><span ref={keyRef}></span></div>
+                    : null
+            }
+
             <div className="ln-msg-box__send" onClick={is_empty ? open_upload_click : on_send_click}>
                 <Glyphicon src={is_empty ? Plus : Send} />
             </div>
