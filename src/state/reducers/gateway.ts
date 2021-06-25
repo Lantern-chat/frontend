@@ -14,7 +14,6 @@ export enum GatewayStatus {
 
 export interface IGatewayState {
     status: GatewayStatus,
-    session?: ISession,
 }
 
 const DEFAULT_STATE: IGatewayState = {
@@ -28,9 +27,6 @@ export function gatewayReducer(state: IGatewayState | null | undefined, action: 
     state = state || DEFAULT_STATE;
 
     switch(action.type) {
-        case Type.SESSION_LOGIN: {
-            return { ...state, session: action.session };
-        }
         case Type.SESSION_EXPIRED: {
             return { status: state.status == GatewayStatus.Unknown ? GatewayStatus.Unknown : GatewayStatus.Initialized };
         }

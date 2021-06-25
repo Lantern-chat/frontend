@@ -6,6 +6,8 @@ import { createBrowserHistory } from "history";
 import { loadSession } from "lib/session";
 import { recomputeHistoryContext } from "ui/components/history";
 
+export { DYNAMIC_MIDDLEWARE } from "./root";
+
 interface IGlobalState {
     gateway?: Worker,
 }

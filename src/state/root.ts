@@ -4,7 +4,7 @@ import { promiseMiddleware } from "./middleware/promise";
 import { applyMiddleware } from "redux";
 import thunk from 'redux-thunk';
 import { createLogger } from "redux-logger";
-import { gatewayMiddleware } from "./middleware/gateway";
+import { createDynamicMiddlewares } from "./middleware";
 
 export { Action, Type, DispatchableAction } from "./actions";
 
@@ -19,6 +19,8 @@ export interface RootState {
     theme: IThemeState,
 }
 
+export const DYNAMIC_MIDDLEWARE = createDynamicMiddlewares();
+
 export const enhancers = __DEV__ ?
-    applyMiddleware(gatewayMiddleware, promiseMiddleware, thunk, createLogger()) :
-    applyMiddleware(gatewayMiddleware, promiseMiddleware, thunk);
+    applyMiddleware(thunk, DYNAMIC_MIDDLEWARE.enhancers, promiseMiddleware, createLogger()) :
+    applyMiddleware(thunk, DYNAMIC_MIDDLEWARE.enhancers, promiseMiddleware);
