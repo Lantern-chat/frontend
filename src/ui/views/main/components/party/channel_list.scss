@@ -7,14 +7,17 @@
 
     color: $lnx-secondary-text-color;
     fill: $lnx-secondary-text-color;
-    background-color: $lnx-primary-surface-color;
+    //background-color: $lnx-primary-surface-color;
 
     li {
         padding: 0.25em 0;
         padding-left: 5%;
 
+        // tiny bit of spacing below rows to add a transparent border
+        margin-bottom: 2px;
+
         &:hover {
-            background-color: $lnx-tertiary-surface-color;
+            background-color: $lnx-primary-surface-color;
         }
 
         &:first-child {
@@ -23,6 +26,13 @@
 
         &:last-child {
             margin-bottom: 1em;
+        }
+
+        &.selected,
+        &.selected:hover,
+        &.selected:active {
+            color: $lnx-primary-text-color;
+            background-color: $lnx-tertiary-surface-color;
         }
     }
 

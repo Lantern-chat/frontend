@@ -55,7 +55,7 @@ export const ChannelList = React.memo(() => {
     return (
         <ul className="ln-channel-list ln-scroll-y ln-scroll-fixed">
             {rooms.map(room =>
-                <li key={room.id}>
+                <li key={room.id} className={room.id == selected ? 'selected' : undefined}>
                     <ListedChannel room={room} />
                 </li>
             )}
