@@ -16,6 +16,7 @@ interface XHRParameters {
     body?: Document | BodyInit,
     method?: XHRMethod,
     timeout?: number,
+    bearer?: string,
     onprogress?: (this: XMLHttpRequest, ev: ProgressEvent) => any;
     headers?: { [header: string]: string },
 }
@@ -42,6 +43,10 @@ export function fetch(params: string | XHRParameters): Promise<XMLHttpRequest> {
                 for(let key in params.headers) {
                     xhr.setRequestHeader(key, params.headers[key]);
                 }
+            }
+
+            if(params.bearer) {
+                xhr.setRequestHeader('Authorization', 'Bearer ' + params.bearer);
             }
 
             xhr.send(params.body);
