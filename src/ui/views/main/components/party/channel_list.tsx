@@ -42,23 +42,21 @@ let channel_list_selector = createSelector(
     }
 );
 
-
-
 import "./channel_list.scss";
 export const ChannelList = React.memo(() => {
     let { selected, rooms = [] } = useSelector(channel_list_selector);
 
-    if(rooms.length == 0) {
-        return <div style={{ height: "100%" }}>Loading...</div>;
-    }
+    let inner = rooms.length == 0 ?
+        <div style={{ height: "100%" }}>Loading...</div> :
+        rooms.map(room =>
+            <li key={room.id} className={room.id == selected ? 'selected' : undefined}>
+                <ListedChannel room={room} />
+            </li>
+        );
 
     return (
         <ul className="ln-channel-list ln-scroll-y ln-scroll-fixed">
-            {rooms.map(room =>
-                <li key={room.id} className={room.id == selected ? 'selected' : undefined}>
-                    <ListedChannel room={room} />
-                </li>
-            )}
+            {inner}
         </ul>
     );
 });
