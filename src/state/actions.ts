@@ -122,7 +122,7 @@ export interface MessagesLoaded {
 
 export interface MessageSend {
     type: Type.MESSAGE_SEND,
-    payload: string,
+    msg: Message,
 }
 
 export interface MessageDiscordEdit {

@@ -6,6 +6,7 @@ import TextareaAutosize from 'react-textarea-autosize';
 //import { IMessageState } from "ui/views/main/reducers/messages";
 import { RootState } from "state/root";
 import { Type } from "state/actions";
+import { Snowflake } from "state/models";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
 
@@ -20,11 +21,14 @@ function countLines(str: string): number {
 }
 
 export interface IMessageBoxProps {
-    disabled?: boolean,
+    channel?: Snowflake,
 }
 
 import "./box.scss";
-export const MessageBox = React.memo(({ disabled }: IMessageBoxProps) => {
+import { sendMessage } from "state/action_creators/send_msg";
+export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
+    let disabled = !channel;
+
     let dispatch = useDispatch();
     let { msg: { messages, current_edit }, use_mobile_view } = useSelector((state: RootState) => ({
         msg: { messages: [] as any[], current_edit: null },
@@ -66,7 +70,8 @@ export const MessageBox = React.memo(({ disabled }: IMessageBoxProps) => {
     let do_nothing = () => { };
 
     let do_send = () => {
-        dispatch({ type: state.isEditing ? Type.MESSAGE_SEND_EDIT : Type.MESSAGE_SEND, payload: state.value });
+        dispatch(sendMessage(channel!, state.value));
+        //dispatch({ type: state.isEditing ? Type.MESSAGE_SEND_EDIT : Type.MESSAGE_SEND, payload: state.value });
         setState({ ...state, value: "" });
     };
 

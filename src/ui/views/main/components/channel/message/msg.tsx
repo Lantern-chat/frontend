@@ -12,6 +12,7 @@ export interface MessageProps {
 }
 
 import "./msg.scss";
+import { ErrorBoundary } from "ui/components/error";
 export const Message = React.memo((props: MessageProps) => {
     let classes = classnames("ln-msg", {
         'ln-msg--editing': props.editing
@@ -19,7 +20,9 @@ export const Message = React.memo((props: MessageProps) => {
 
     return (
         <div className={classes}>
-            <Markdown body={props.msg.content} />
+            <ErrorBoundary>
+                <Markdown body={props.msg.content} />
+            </ErrorBoundary>
         </div>
     );
 });

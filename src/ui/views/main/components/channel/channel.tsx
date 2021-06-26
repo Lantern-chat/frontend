@@ -24,7 +24,7 @@ export const Channel = React.memo((props: IChannelProps) => {
         <div className="ln-channel">
             <ChannelHeader />
             {feed_box}
-            <MessageBox disabled={!props.channel} />
+            <MessageBox channel={props.channel} />
         </div>
     );
 });
