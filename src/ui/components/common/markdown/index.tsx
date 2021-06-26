@@ -2,7 +2,7 @@ import React from "react";
 import { Spinner } from "ui/components/common/spinners/spinner";
 
 import SimpleMarkdown from "./simple";
-const AdvancedMarkdown = React.lazy(() => import("./advanced"));
+const AdvancedMarkdown = React.lazy(() => import(/* webpackChunkName: 'AdvancedMarkdown' */ "./advanced"));
 
 import { MarkdownProps } from "./types";
 export { MarkdownProps } from "./types";

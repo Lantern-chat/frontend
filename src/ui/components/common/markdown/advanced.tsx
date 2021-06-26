@@ -14,8 +14,6 @@ import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css'
 import "./advanced.scss";
 
-import { MarkdownProps } from "./types";
-
 import { renderers as simple_renderers } from "./simple";
 
 const renderers = {
@@ -44,11 +42,16 @@ const renderers = {
     pre: ({ children }: any) => (<>{children}</>),
 };
 
+import { MarkdownProps } from "./types";
+
 export const AdvancedMarkdown = (props: MarkdownProps) => {
     // TODO: Don't do this inside code blocks
     let body = props.body
         .replace(/\$/g, '\\$') // escape $ symbols
-        .replace(/(?<=\\\[[^]*)(\\\$)(?=[^]*?\\\])/g, '$$') // unescape $ symbols within block delimiters
+        .replace(/\\\[([^]*)\\\]/g, match => {
+            // unescape $ symbols within block delimiters
+            return '\\[' + match.replace(/\\\$/g, '$$') + '\\]';
+        })
         .replace(/\\[\[\]]/g, '$$$$') // escape block
         .replace(/\\[\(\)]/g, '$$'); // escape inline
 
