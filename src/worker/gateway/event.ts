@@ -1,3 +1,5 @@
+import { HelloEvent, Message, ReadyEvent, TypingStartEvent } from "state/models";
+
 export enum GatewayEventCode {
     Hello = 0,
     HeartbeatACK = 2,
@@ -22,27 +24,15 @@ export interface GenericEvent<O, P = undefined> {
     p: P,
 }
 
-//export interface GatewayEventHello {
-//    o: GatewayEventCode.Hello,
-//    p: {
-//        heartbeat_interval: number,
-//    }
-//}
-
-//export interface GatewayEventHeartbeatACK {
-//    o: GatewayEventCode.HeartbeatACK;
-//}
-
-export type GatewayEventHello = GenericEvent<GatewayEventCode.Hello, { heartbeat_interval: number }>;
+export type GatewayEventHello = GenericEvent<GatewayEventCode.Hello, HelloEvent>;
 export type GatewayEventHeartbeatACK = GenericEvent<GatewayEventCode.HeartbeatACK>;
-
-export interface GatewayEventReadyPayload {
-
-}
-
-export type GatewayEventReady = GenericEvent<GatewayEventCode.Ready, GatewayEventReadyPayload>;
+export type GatewayEventReady = GenericEvent<GatewayEventCode.Ready, ReadyEvent>;
+export type GatewayEventMsgCreate = GenericEvent<GatewayEventCode.MessageCreate, Message>;
+export type GatewayEventTypingStart = GenericEvent<GatewayEventCode.TypingStart, TypingStartEvent>;
 
 export type GatewayEvent =
     GatewayEventHello |
     GatewayEventHeartbeatACK |
-    GatewayEventReady;
+    GatewayEventReady |
+    GatewayEventMsgCreate |
+    GatewayEventTypingStart;

@@ -1,7 +1,7 @@
 import { Dispatch as ReduxDispatch } from "redux";
 import { History } from "history";
-
-import { Room } from "./models";
+import { IHistoryState } from "./reducers";
+import { Room, Message } from "./models";
 import { RootState } from "state/root";
 import { ISession } from "lib/session";
 
@@ -21,6 +21,7 @@ export enum Type {
     GATEWAY_EVENT = "GATEWAY_EVENT",
 
     ROOMS_LOADED = "ROOMS_LOADED",
+    MESSAGES_LOADED = "MESSAGES_LOADED",
 
     MESSAGE_SEND = "MESSAGE_SEND",
     MESSAGE_SEND_EDIT = "MESSAGE_SEND_EDIT",
@@ -47,6 +48,7 @@ export type Action =
     ModalCloseCreateParty |
     GatewayEvent |
     RoomsLoaded |
+    MessagesLoaded |
     MessageSend |
     MessageDiscordEdit |
     MessageEditPrev |
@@ -59,6 +61,7 @@ import { Update } from "history";
 export interface HistoryUpdate {
     type: Type.HISTORY_UPDATE,
     update: Update,
+    ctx: IHistoryState,
 }
 
 // SESSION ACTIONS
@@ -108,6 +111,11 @@ export interface GatewayEvent {
 export interface RoomsLoaded {
     type: Type.ROOMS_LOADED,
     rooms: Room[],
+}
+
+export interface MessagesLoaded {
+    type: Type.MESSAGES_LOADED,
+    msgs: Message[]
 }
 
 // MESSAGE ACTIONS

@@ -35,6 +35,20 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
                 }
             }
         });
+        case Type.HISTORY_UPDATE: {
+            let [, party_id, channel_id] = action.ctx.parts;
+
+            return produce(state, draft => {
+                let party = draft.parties.get(party_id);
+                if(party) {
+                    let room = party.rooms.find(room => room.id == channel_id);
+
+                    if(room) {
+                        draft.last_channel.set(party_id, channel_id);
+                    }
+                }
+            });
+        }
         case Type.GATEWAY_EVENT: {
             switch(action.payload.t) {
                 case GatewayMessageDiscriminator.Ready: {

@@ -1,4 +1,5 @@
 import { ReadyEvent } from "state/models";
+import { GatewayEvent } from "./event";
 
 export enum GatewayMessageDiscriminator {
     Initialized,
@@ -7,7 +8,7 @@ export enum GatewayMessageDiscriminator {
     Identifying,
     Ready,
     Disconnected,
-    Message,
+    Event,
     Error,
 }
 
@@ -31,10 +32,16 @@ export interface GatewayMessageDisconnected {
     t: GatewayMessageDiscriminator.Disconnected;
 }
 
+export interface GatewayMessageEvent {
+    t: GatewayMessageDiscriminator.Event;
+    p: GatewayEvent
+}
+
 export type GatewayMessage =
     GatewayMessageInitiatized |
     GatewayMessageConnecting |
     GatewayMessageConnected |
     GatewayMessageIdentifying |
     GatewayMessageReady |
-    GatewayMessageDisconnected;
+    GatewayMessageDisconnected |
+    GatewayMessageEvent;

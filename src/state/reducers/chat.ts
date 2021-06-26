@@ -6,6 +6,9 @@ import _ from "lodash";
 import { Action, Type } from "../actions";
 
 import { Message, Snowflake, Room } from "../models";
+import { GatewayMessageDiscriminator } from "worker/gateway/msg";
+import { GatewayEventCode } from "worker/gateway/event";
+import { binarySearch } from "lib/util";
 
 /*
 export class RoomState {
@@ -45,6 +48,10 @@ export class RoomState {
 }
 */
 
+
+
+
+
 export interface IMessageState {
     msg: Message,
     ts: Dayjs,
@@ -71,19 +78,64 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
     switch(action.type) {
         case Type.SESSION_EXPIRED: return DEFAULT_STATE;
 
-        case Type.ROOMS_LOADED: {
-            return produce(state, draft => {
-                for(let room of action.rooms) {
-                    if(draft.rooms.has(room.id)) continue;
+        case Type.ROOMS_LOADED: return produce(state, draft => {
+            for(let room of action.rooms) {
+                if(draft.rooms.has(room.id)) continue;
 
-                    draft.rooms.set(room.id, {
-                        room,
-                        msgs: [],
-                        pending: [],
-                        current_edit: null,
-                    });
+                draft.rooms.set(room.id, {
+                    room,
+                    msgs: [],
+                    pending: [],
+                    current_edit: null,
+                });
+            }
+        });
+
+        case Type.MESSAGES_LOADED: return produce(state, draft => {
+            for(let msg of action.msgs) {
+                let room = draft.rooms.get(msg.room_id);
+                if(!room) continue;
+
+                room.msgs.push({
+                    msg,
+                    ts: dayjs(msg.created_at),
+                });
+            }
+
+            for(let room of draft.rooms.values()) {
+                room.msgs.sort((a, b) => a.ts.diff(b.ts));
+            }
+        });
+
+        case Type.GATEWAY_EVENT: {
+            switch(action.payload.t) {
+                case GatewayMessageDiscriminator.Event: {
+                    let event = action.payload.p;
+                    switch(event.o) {
+                        case GatewayEventCode.MessageCreate: {
+                            let raw_msg = event.p, msg = {
+                                msg: raw_msg,
+                                ts: dayjs(raw_msg.created_at)
+                            };
+
+                            return produce(state, draft => {
+                                let room = draft.rooms.get(raw_msg.room_id);
+
+                                if(room) {
+                                    let { idx } = binarySearch(room.msgs, m => m.ts.diff(msg.ts));
+                                    room.msgs.splice(idx, 0, msg);
+
+                                    console.log("Splicing message '%s' at index %d", raw_msg.content, idx);
+                                }
+                            });
+                        }
+                    }
+
+                    break;
                 }
-            })
+            }
+
+            break;
         }
 
         // fast filter before invoking Immer

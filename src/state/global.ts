@@ -20,7 +20,11 @@ export const STORE = createStore(initialReducer, {
     user: { session: loadSession() }
 }, enhancers);
 
-HISTORY.listen(update => STORE.dispatch({ type: Type.HISTORY_UPDATE, update }));
+HISTORY.listen(update => STORE.dispatch({
+    type: Type.HISTORY_UPDATE,
+    update,
+    ctx: recomputeHistoryContext(HISTORY)
+}));
 
 window.addEventListener('resize', () => {
     STORE.dispatch({ type: Type.WINDOW_RESIZE });

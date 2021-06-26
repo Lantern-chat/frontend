@@ -6,6 +6,7 @@ export interface DynamicMiddleware<DispatchExt = {}, S = any, D extends ReduxDis
     addMiddleware: <T extends Middleware<DispatchExt, S, D>>(middleware: T) => void;
 }
 
+// based on https://github.com/pofigizm/redux-dynamic-middlewares/blob/master/src/index.js
 export function createDynamicMiddlewares<DispatchExt, S, A extends AnyAction>(): DynamicMiddleware<DispatchExt, S, LanternDispatch> {
     let middlewares: Middleware<{}, S, LanternDispatch>[] = [],
         composed = compose(),

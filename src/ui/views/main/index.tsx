@@ -2,10 +2,10 @@ import React from "react";
 
 import { mainReducer, Type } from "state/main";
 import { GLOBAL, STORE, DYNAMIC_MIDDLEWARE } from "state/global";
-import { gatewayMiddleware } from "state/middleware/gateway";
+import { mainMiddleware } from "state/middleware/main";
 
 STORE.replaceReducer(mainReducer);
-DYNAMIC_MIDDLEWARE.addMiddleware(gatewayMiddleware);
+DYNAMIC_MIDDLEWARE.addMiddleware(mainMiddleware);
 
 let session = STORE.getState().user.session;
 

@@ -7,7 +7,11 @@ import { GatewayCommand, GatewayCommandDiscriminator } from "./cmd";
 import { GatewayEvent, GatewayEventCode } from "./event";
 import { GatewayClientCommand, GatewayClientCommandDiscriminator } from "./client";
 
-console.log("!!!!!GATEWAY LOADED!!!!!");
+__DEV__ && console.log("!!!!!GATEWAY LOADED!!!!!");
+
+function post() {
+
+}
 
 class Gateway {
     encoder: TextEncoder;
@@ -56,7 +60,7 @@ class Gateway {
     // TODO: Memoize?
     send(value: GatewayClientCommand) {
         if(!this.ws) {
-            return ctx.postMessage({ t: GatewayMessageDiscriminator.Error, p: "WebSocket undefined" });
+            return ctx.postMessage({ t: GatewayMessageDiscriminator.Error, p: { err: "WebSocket undefined" } });
         }
 
         console.log("SENDING: ", value);
@@ -68,17 +72,23 @@ class Gateway {
         this.ws.send(compressed);
     }
 
+    do_close() {
+        if(this.ws) {
+            this.ws = null;
+            this.heartbeat_waiting_on_ack = false;
+            clearInterval(this.heartbeat_timer); // clear heartbeat
+        }
+    }
+
     on_close(msg: CloseEvent) {
         ctx.postMessage({ t: GatewayMessageDiscriminator.Disconnected, p: msg.code });
-
-        this.ws = null;
-        this.heartbeat_waiting_on_ack = false;
-        clearInterval(this.heartbeat_timer); // clear heartbeat
+        this.do_close();
     }
 
     on_error(_err: Event) {
         // TODO: Handle this as a close event?
-        ctx.postMessage({ t: GatewayMessageDiscriminator.Error, p: "WS Error" });
+        ctx.postMessage({ t: GatewayMessageDiscriminator.Error, p: { err: "WS Error" } });
+        this.do_close();
     }
 
     on_open() {
@@ -116,6 +126,10 @@ class Gateway {
                 });
                 break;
             }
+            case GatewayEventCode.MessageCreate: return ctx.postMessage({
+                t: GatewayMessageDiscriminator.Event,
+                p: msg,
+            });
             default: {
                 console.log("GATEWAY UNKNOWN", msg);
             }

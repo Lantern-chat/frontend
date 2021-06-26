@@ -1,13 +1,15 @@
 import { Middleware } from "redux";
 
 import { Dispatch } from "state/actions";
-import { GLOBAL } from "state/global";
+import { loadMessages, SearchMode } from "state/action_creators/load_msgs";
+import { activateParty } from "state/action_creators/party";
+import { GLOBAL, HISTORY } from "state/global";
 import { GatewayStatus } from "state/reducers/gateway";
 import { Action, RootState, Type } from "state/root";
 import { GatewayCommandDiscriminator } from "worker/gateway/cmd";
 import { GatewayMessage, GatewayMessageDiscriminator } from "worker/gateway/msg";
 
-export const gatewayMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, getState }) => next => (action: Action) => {
+export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, getState }) => next => (action: Action) => {
     // run reducers first
     let res = next(action);
 
@@ -33,6 +35,29 @@ export const gatewayMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatc
             GLOBAL.gateway.postMessage({ t: GatewayCommandDiscriminator.Disconnect });
             break;
         }
+        case Type.ROOMS_LOADED: {
+            let state = getState(),
+                channel_id = state.history.parts[2],
+                room = action.rooms.find(room => room.id == channel_id);
+
+            if(room) { dispatch(loadMessages(channel_id)); }
+
+            break;
+        }
+        case Type.HISTORY_UPDATE: {
+            let state = getState(),
+                channel_id = action.ctx.parts[2],
+                room = state.chat.rooms.get(channel_id);
+
+            if(room) {
+                let last_msg = room.msgs[room.msgs.length - 1];
+                let last_msg_id = last_msg != null ? last_msg.msg.id : '1';
+
+                dispatch(loadMessages(channel_id, 100, last_msg_id, SearchMode.After));
+            }
+
+            break;
+        }
         case Type.GATEWAY_EVENT: {
             let msg: GatewayMessage = action.payload;
             switch(msg.t) {
@@ -45,6 +70,18 @@ export const gatewayMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatc
                             auth: state.user.session.auth
                         });
                     }
+                    break;
+                }
+                case GatewayMessageDiscriminator.Ready: {
+                    let state = getState(), parties = state.party.parties, party_id = state.history.parts[1];
+
+                    if(parties.has(party_id)) {
+                        dispatch(activateParty(party_id));
+                    } else {
+                        HISTORY.replace('/channels/@me');
+                    }
+
+                    break;
                 }
             }
             break;

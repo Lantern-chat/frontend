@@ -17,7 +17,7 @@ export function recomputeHistoryContext(history: History): IHistoryState {
 
 export function historyReducer(state: IHistoryState, action: Action) {
     if(action.type == Type.HISTORY_UPDATE) {
-        return recomputeHistoryContext(state.history);
+        return action.ctx;
     }
 
     return state || null;
