@@ -122,7 +122,11 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
                                 let room = draft.rooms.get(raw_msg.room_id);
 
                                 if(room) {
-                                    let { idx } = binarySearch(room.msgs, m => m.ts.diff(msg.ts));
+                                    let { idx, found } = binarySearch(room.msgs, m => m.ts.diff(msg.ts));
+
+                                    // message already exists
+                                    if(found && room.msgs[idx].msg.id == raw_msg.id) return;
+
                                     room.msgs.splice(idx, 0, msg);
 
                                     console.log("Splicing message '%s' at index %d", raw_msg.content, idx);
