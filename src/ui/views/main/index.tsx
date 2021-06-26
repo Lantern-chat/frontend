@@ -1,7 +1,7 @@
 import React from "react";
 
 import { mainReducer, Type } from "state/main";
-import { GLOBAL, STORE, DYNAMIC_MIDDLEWARE } from "state/global";
+import { GLOBAL, STORE, DYNAMIC_MIDDLEWARE, HISTORY } from "state/global";
 import { mainMiddleware } from "state/middleware/main";
 
 STORE.replaceReducer(mainReducer);
@@ -11,6 +11,8 @@ let session = STORE.getState().user.session;
 
 if(session) {
     STORE.dispatch({ type: Type.SESSION_LOGIN, session });
+} else {
+    HISTORY.replace('/login');
 }
 
 import Gateway from "worker-loader!worker/gateway";
