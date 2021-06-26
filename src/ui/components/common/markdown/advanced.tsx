@@ -44,6 +44,13 @@ const renderers = {
 
 import { MarkdownProps } from "./types";
 
+// TODO: https://vincenttam.gitlab.io/js/katex-macros.js
+const katexMacros: any = {
+    '\\f': '#1f(#2)',
+    "\\dirac": "\\operatorname{\\delta}\\left(#1\\right)",
+    "\\scalarprod": "\\left\\langle#1,#2\\right\\rangle",
+};
+
 export const AdvancedMarkdown = (props: MarkdownProps) => {
     // TODO: Don't do this inside code blocks
     let body = props.body
@@ -55,7 +62,11 @@ export const AdvancedMarkdown = (props: MarkdownProps) => {
         .replace(/\\[\[\]]/g, '$$$$') // escape block
         .replace(/\\[\(\)]/g, '$$'); // escape inline
 
-    return <ReactMarkdown remarkPlugins={[gfm, remarkMath, breaks, external]} rehypePlugins={[rehypeKatex]} components={renderers} children={body} />;
+    return <ReactMarkdown
+        remarkPlugins={[gfm, remarkMath, breaks, external]}
+        rehypePlugins={[[rehypeKatex, { macros: katexMacros }]]}
+        components={renderers}
+        children={body} />;
 };
 export default AdvancedMarkdown;
 
