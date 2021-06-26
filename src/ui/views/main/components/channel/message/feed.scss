@@ -1,3 +1,5 @@
+@import "lib/variables";
+
 .ln-msg-list {
     &__flex-container {
         flex: 1;
@@ -19,6 +21,8 @@
 
     &__group {
         padding: 0.5em 0;
+        display: flex;
+        flex-direction: column;
     }
 
     &__timeline {
@@ -30,4 +34,52 @@
     }
 
     padding-top: 1em;
+}
+
+.ln-msg {
+    &__wrapper {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+
+            .ln-msg__sidets {
+                color: $lnx-secondary-text-color;
+            }
+        }
+    }
+
+    &__title {
+        padding-bottom: 0.35em;
+    }
+
+    &__username {
+        margin-right: 0.5em;
+    }
+
+    &__ts {
+        font-size: 0.8em;
+        color: $lnx-secondary-text-color;
+    }
+
+    &__side {
+        width: 4em;
+        flex-shrink: 0;
+
+        .ln-avatar {
+            font-size: 1.75em;
+        }
+    }
+
+    &__sidets {
+        font-size: 0.6em;
+        color: transparent;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        justify-content: center;
+    }
 }
