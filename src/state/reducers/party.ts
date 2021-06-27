@@ -1,5 +1,6 @@
 import produce from "immer";
 import { GatewayMessageDiscriminator } from "worker/gateway/msg";
+import { PartyMember } from "../../../../backend/crates/models/models";
 import { Action, Type } from "../actions";
 
 import { Snowflake, Party, Room } from "../models";
@@ -7,6 +8,7 @@ import { Snowflake, Party, Room } from "../models";
 export interface IParty {
     party: Party,
     rooms: Room[],
+    members: PartyMember[],
 }
 
 export interface IPartyState {
@@ -54,9 +56,9 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
                 case GatewayMessageDiscriminator.Ready: {
                     let p = action.payload.p;
 
-                    let parties = new Map();
+                    let parties: Map<Snowflake, IParty> = new Map();
                     for(let party of p.parties) {
-                        parties.set(party.id, { party, rooms: [] });
+                        parties.set(party.id, { party, rooms: [], members: [] });
                     }
                     return { ...state, parties };
                 }
