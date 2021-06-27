@@ -18,6 +18,7 @@
     li {
         // tiny bit of spacing below rows to add a transparent border
         margin-bottom: 2px;
+        border-radius: 0.2em;
 
         &:hover {
             background-color: rgba(128, 128, 128, 0.1);
@@ -33,7 +34,8 @@
 
         &.selected,
         &.selected:hover,
-        &.selected:active {
+        &.selected:active,
+        &.selected:focus {
             svg {
                 fill: $lnx-primary-text-color;
             }
@@ -42,9 +44,11 @@
         }
     }
 
+    //&__channel,
     a,
     a:hover,
-    a:active {
+    a:active,
+    a:focus {
         text-decoration: inherit;
         color: inherit;
         width: 100%;

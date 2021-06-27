@@ -12,33 +12,47 @@ export interface IHistoryContext {
 
 export const HistoryContext: Context<IHistoryState> = createContext<IHistoryState>(null!);
 
-export interface ILinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
+export interface ILinkProps extends AnchorHTMLAttributes<HTMLElement> {
     state?: State,
     replace?: boolean,
+    useDiv?: boolean,
 }
 
-export const Link = React.memo(forwardRef((props: ILinkProps, ref: React.MutableRefObject<HTMLAnchorElement>) => {
-    let { href, onClick, replace, state, target } = props,
+export function canNavigate(target: string | undefined, event: React.MouseEvent<HTMLElement> | React.TouchEvent<HTMLElement>): boolean {
+    return !event.defaultPrevented && // onClick prevented default
+        (!target || target === "_self") && // let browser handle "target=_blank" etc.
+        !(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey); // ignore clicks with modifier keys
+}
+
+function callEventHandler<T extends React.SyntheticEvent>(event: T, handler?: (event: T) => void) {
+    if(handler) {
+        try { handler(event) } catch(ex) {
+            event.preventDefault();
+            throw ex;
+        }
+    }
+}
+
+export const Link = React.memo(forwardRef((props: ILinkProps, ref: React.MutableRefObject<any>) => {
+    let { href, onClick, onTouchEnd, replace, state, target, useDiv } = props,
         ctx = useContext(HistoryContext),
         history = ctx.history,
         method = replace ? history.replace : history.push;
 
     if(href) {
         props = {
-            ...props, onClick: (event: React.MouseEvent<HTMLAnchorElement>) => {
-                if(onClick) {
-                    try { onClick(event) } catch(ex) {
-                        event.preventDefault();
-                        throw ex;
-                    }
+            ...props,
+            onClick: (event: React.MouseEvent<HTMLElement>) => {
+                callEventHandler(event, onClick);
+                // canNavigate + ignore everything but left clicks
+                if(canNavigate(target, event) && event.button === 0) {
+                    event.preventDefault();
+                    method(href!, state);
                 }
-
-                if(
-                    !event.defaultPrevented && // onClick prevented default
-                    event.button === 0 && // ignore everything but left clicks
-                    (!target || target === "_self") && // let browser handle "target=_blank" etc.
-                    !(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey)) // ignore clicks with modifier keys
-                {
+            },
+            onTouchEnd: (event: React.TouchEvent<HTMLElement>) => {
+                callEventHandler(event, onTouchEnd);
+                if(canNavigate(target, event)) {
                     event.preventDefault();
                     method(href!, state);
                 }
@@ -46,7 +60,7 @@ export const Link = React.memo(forwardRef((props: ILinkProps, ref: React.Mutable
         };
     }
 
-    return <a {...props} ref={ref} />
+    return useDiv ? <div {...props} ref={ref} /> : <a {...props} ref={ref} />
 }));
 
 if(__DEV__) {
