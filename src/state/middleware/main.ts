@@ -51,7 +51,7 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
 
             if(room) {
                 let last_msg = room.msgs[room.msgs.length - 1];
-                let last_msg_id = last_msg != null ? last_msg.msg.id : '1';
+                let last_msg_id = last_msg != null ? last_msg.msg.id : undefined;
 
                 dispatch(loadMessages(channel_id, 100, last_msg_id, SearchMode.After));
             }
