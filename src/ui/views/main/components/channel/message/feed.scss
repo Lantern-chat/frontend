@@ -41,6 +41,10 @@
         bottom: 0;
     }
 
+    &:last-child {
+        margin-bottom: 1em;
+    }
+
     //padding-top: 1em;
 }
 
@@ -89,8 +93,10 @@
     }
 
     &__side {
-        width: 4em;
+        min-width: 4.425em;
         flex-shrink: 0;
+        padding-left: 1em;
+        padding-right: 0.8em;
 
         .ln-avatar {
             font-size: 1.75em;

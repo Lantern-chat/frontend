@@ -5,4 +5,8 @@
 
     //padding-top: 0.2em;
     word-wrap: break-word;
+
+    &__message {
+        overflow: hidden;
+    }
 }
