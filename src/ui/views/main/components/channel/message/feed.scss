@@ -13,6 +13,13 @@
         right: 0;
         bottom: 0;
         z-index: 1;
+        padding: 0;
+        line-height: normal;
+
+        scrollbar-width: none;
+        &::-webkit-scrollbar {
+            display: none;
+        }
 
         &.has-timeline {
             margin-right: 2em;
@@ -20,9 +27,10 @@
     }
 
     &__group {
-        padding: 0.5em 0;
+        //padding: 0.5em 0;
         display: flex;
         flex-direction: column;
+        margin-top: 0.6em;
     }
 
     &__timeline {
@@ -33,7 +41,7 @@
         bottom: 0;
     }
 
-    padding-top: 1em;
+    //padding-top: 1em;
 }
 
 .ln-msg {
@@ -41,6 +49,7 @@
         display: flex;
         flex-direction: row;
         flex-wrap: nowrap;
+        padding: 0.25em 0;
 
         &:hover {
             background-color: rgba(0, 0, 0, 0.1);
@@ -51,12 +60,27 @@
         }
     }
 
+    //&__message {
+    //display: flex;
+    //flex-direction: column;
+    //justify-content: center;
+    //}
+
     &__title {
         padding-bottom: 0.35em;
     }
 
     &__username {
         margin-right: 0.5em;
+        cursor: pointer;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    &__ts,
+    &__sidets {
+        cursor: default;
     }
 
     &__ts {
@@ -81,5 +105,6 @@
         flex-direction: column;
         height: 100%;
         justify-content: center;
+        user-select: none;
     }
 }

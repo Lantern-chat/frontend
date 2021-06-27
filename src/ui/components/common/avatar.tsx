@@ -2,14 +2,12 @@ import React from "react";
 
 import "./avatar.scss";
 
-export interface IAvatarProps {
+export interface IAvatarProps extends React.HTMLAttributes<HTMLSpanElement> {
     rounded?: boolean,
     url?: string,
     text?: string,
-    title?: string,
     backgroundColor?: string,
     username: string,
-    onClick?: (e: React.MouseEvent<HTMLSpanElement>) => void,
 }
 
 export const Avatar = React.memo((props: IAvatarProps) => {
@@ -19,8 +17,8 @@ export const Avatar = React.memo((props: IAvatarProps) => {
     className = (props.rounded ? [className, className + "--rounded"] : [className]).join(' ');
 
     return (
-        <div className="ln-avatar">
-            <span className="ln-avatar__wrapper" onClick={props.onClick} title={props.title}>
+        <div className="ln-avatar" >
+            <span className="ln-avatar__wrapper" {...props}>
                 {is_image ?
                     <img src={props.url} className={className} alt={props.username} /> :
                     <span className={className} style={{ backgroundColor: props.backgroundColor }}>{props.text || '?'}</span>}

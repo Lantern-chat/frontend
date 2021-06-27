@@ -23,17 +23,17 @@ const MessageGroup = ({ group }: { group: IMessageState[] }) => {
     let list = group.map((msg, i) => {
         let message = <Message editing={false} msg={msg.msg} />;
 
-        let side;
+        let side, ts = msg.ts.format("dddd, MMMM DD, h:mm A");
         if(i == 0) {
             let title = (
                 <div className="ln-msg__title">
                     <span className="ln-msg__username">{nickname}</span>
-                    <span className="ln-msg__ts">{msg.ts.calendar()}</span>
+                    <span className="ln-msg__ts" title={ts}>{msg.ts.calendar()}</span>
                 </div>
             );
 
             message = (
-                <div>
+                <div className="ln-msg__message">
                     {title}
                     {message}
                 </div>
@@ -44,7 +44,7 @@ const MessageGroup = ({ group }: { group: IMessageState[] }) => {
             );
         } else {
             side = (
-                <div className="ln-msg__sidets">{msg.ts.format('hh:mm A')}</div>
+                <div className="ln-msg__sidets" title={ts}>{msg.ts.format('h:mm A')}</div>
             );
         }
 
@@ -81,7 +81,7 @@ export const MessageFeed = React.memo((props: IMessageListProps) => {
 
         const showTimeline = windowWidth > 640;
 
-        let wrapperClasses = "ln-msg-list__wrapper ln-scroll-y ln-scroll-fixed";
+        let wrapperClasses = "ln-msg-list__wrapper ln-scroll-y";
 
         let MaybeTimeline: React.FunctionComponent<ITimelineProps> = Timeline;
         if(!hasTimeline || !showTimeline) {

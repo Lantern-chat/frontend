@@ -5,19 +5,22 @@
     width: 100%;
     height: 100%;
 
+    font-family: Whitney, "Helvetica Neue", Helvetica, Arial, sans-serif;
+
     color: $lnx-secondary-text-color;
-    fill: $lnx-secondary-text-color;
-    //background-color: $lnx-primary-surface-color;
+
+    // This cannot be raw due to Safari bug
+    svg {
+        fill: $lnx-secondary-text-color;
+    }
+    background-color: $lnx-primary-surface-color;
 
     li {
-        padding: 0.25em 0;
-        padding-left: 5%;
-
         // tiny bit of spacing below rows to add a transparent border
         margin-bottom: 2px;
 
         &:hover {
-            background-color: $lnx-primary-surface-color;
+            background-color: rgba(128, 128, 128, 0.1);
         }
 
         &:first-child {
@@ -31,6 +34,9 @@
         &.selected,
         &.selected:hover,
         &.selected:active {
+            svg {
+                fill: $lnx-primary-text-color;
+            }
             color: $lnx-primary-text-color;
             background-color: $lnx-tertiary-surface-color;
         }
@@ -41,40 +47,57 @@
     a:active {
         text-decoration: inherit;
         color: inherit;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        padding: 0.35em 0;
+        padding-left: 5%;
+        line-height: normal;
     }
 
     .ln-glyphicon {
         font-size: 1.3em;
-        height: 100%;
+        //height: 100%;
         right: -0.1em;
         position: relative;
     }
 
     @include scrollbar($lnx-secondary-text-color, $lnx-primary-surface-color);
 
+    &__channel {
+        //display: flex;
+        //flex-wrap: nowrap;
+        cursor: pointer;
+        //height: 100%;
+        //line-height: 1.2;
+    }
+
     &__icon {
         width: 1.5em;
         text-align: right;
         margin-right: 0.4em;
-    }
-
-    &__channel {
-        display: flex;
-        flex-wrap: nowrap;
-        cursor: pointer;
+        flex-shrink: 0;
+        display: inline-block;
     }
 
     &__name {
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
-        display: flex;
+        display: inline-flex;
         flex-direction: column;
         justify-content: center;
-        line-height: 0.85;
+        //line-height: 0.85;
 
-        span {
-            height: 1em;
+        //line-height: normal;
+
+        span,
+        p {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            //height: 100%;
+            //line-height: 1.2;
         }
     }
 
