@@ -68,29 +68,18 @@ const MessageGroup = ({ group }: { group: IMessageState[] }) => {
 import "./feed.scss";
 import { Avatar } from "ui/components/common/avatar";
 export const MessageFeed = React.memo((props: IMessageListProps) => {
+    let [scroll, setScroll] = useState(0);
+
     let { room, width: windowWidth } = useSelector((state: RootState) => ({
         room: state.chat.rooms.get(props.channel),
         width: state.window.width,
     }));
 
-    let feed;
-
-    if(room == null) {
-        feed = <div className="ln-center-standalone">Channel does not exist</div>;
-    } else {
-
-        const showTimeline = windowWidth > 640;
-
-        let wrapperClasses = "ln-msg-list__wrapper ln-scroll-y";
-
-        let MaybeTimeline: React.FunctionComponent<ITimelineProps> = Timeline;
-        if(!hasTimeline || !showTimeline) {
-            MaybeTimeline = () => <></>;
-        } else {
-            wrapperClasses += ' has-timeline';
-        }
+    let groups: IMessageState[][] = useMemo(() => {
+        if(room == null) return [];
 
         let groups: IMessageState[][] = [];
+
         for(let msg of room.msgs) {
             let last_group = groups[groups.length - 1];
 
@@ -106,18 +95,46 @@ export const MessageFeed = React.memo((props: IMessageListProps) => {
             groups.push([msg]);
         }
 
-        feed = (
+        return groups;
+
+    }, [room && room.msgs]);
+
+    let feed = useMemo(() => {
+        if(room == null) {
+            return <div className="ln-center-standalone">Channel does not exist</div>;
+        }
+
+        const showTimeline = windowWidth > 640;
+
+        let wrapperClasses = "ln-msg-list__wrapper ln-scroll-y";
+
+        let MaybeTimeline: React.FunctionComponent<ITimelineProps> = Timeline;
+        if(room != null && hasTimeline && showTimeline) {
+            MaybeTimeline = () => <></>;
+        } else {
+            wrapperClasses += ' has-timeline';
+        }
+
+        let on_scroll = (event: React.UIEvent<HTMLDivElement>) => {
+            //console.log(event);
+        };
+
+        let feed_inner = (
+            <div className={wrapperClasses} onScroll={on_scroll}>
+                <ul className="ln-msg-list">
+                    {groups.map(group => <MessageGroup key={group[0].msg.id} group={group} />)}
+                </ul>
+            </div>
+        );
+
+        return (
             <>
                 <MaybeTimeline direction={0} position={0} />
-
-                <div className={wrapperClasses}>
-                    <ul className="ln-msg-list">
-                        {groups.map(group => <MessageGroup key={group[0].msg.id} group={group} />)}
-                    </ul>
-                </div>
+                {feed_inner}
             </>
         );
-    }
+
+    }, [groups]);
 
     return (
         <div className="ln-msg-list__flex-container">
