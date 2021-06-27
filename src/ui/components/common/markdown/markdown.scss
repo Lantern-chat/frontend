@@ -89,7 +89,7 @@
         position: relative;
         padding-left: 1em;
         min-height: 1.5em;
-        line-height: initial;
+        line-height: normal;
 
         &::before {
             content: "";
@@ -118,6 +118,6 @@
 
     pre code {
         padding: 0;
-        line-height: 1.2;
+        line-height: normal;
     }
 }
