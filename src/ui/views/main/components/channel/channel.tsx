@@ -5,6 +5,7 @@ import { ChannelHeader } from "./header";
 import { MessageFeed } from "./message/feed";
 import { MessageBox } from "./message/box";
 import { Snowflake } from "state/models";
+import { ErrorBoundary } from "ui/components/error";
 
 export interface IChannelProps {
     channel?: Snowflake,
@@ -22,9 +23,11 @@ export const Channel = React.memo((props: IChannelProps) => {
 
     return (
         <div className="ln-channel">
-            <ChannelHeader />
-            {feed_box}
-            <MessageBox channel={props.channel} />
+            <ErrorBoundary>
+                <ChannelHeader />
+                {feed_box}
+                <MessageBox channel={props.channel} />
+            </ErrorBoundary>
         </div>
     );
 });
