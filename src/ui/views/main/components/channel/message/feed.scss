@@ -93,10 +93,16 @@
     }
 
     &__side {
-        min-width: 4.425em;
+        min-width: 4.025em;
         flex-shrink: 0;
-        padding-left: 1em;
-        padding-right: 0.8em;
+        padding-left: 0.8em;
+        padding-right: 0.6em;
+
+        @media (min-width: $ln-min-channel-width) {
+            min-width: 4.425em;
+            padding-left: 1em;
+            padding-right: 0.8em;
+        }
 
         .ln-avatar {
             font-size: 1.75em;

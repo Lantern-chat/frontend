@@ -9,9 +9,13 @@
     color: $lnx-primary-text-color;
     background-color: rgba(50%, 50%, 50%, 50%);
     min-height: 3em;
-    border-radius: 0.5em;
-    margin: 0 1em 1em 1em;
     position: relative;
+
+    // TODO: Fix textarea background color bleeding over border-radius in mobile-view and showing the sidebar
+    @media (min-width: $ln-min-channel-width) {
+        border-radius: 0.5em;
+        margin: 0 1em 1em 1em;
+    }
 
     &--disabled * {
         cursor: not-allowed !important;
