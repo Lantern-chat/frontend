@@ -97,19 +97,19 @@ export const MessageFeed = React.memo((props: IMessageListProps) => {
 
         return groups;
 
-    }, [room && room.msgs]);
+    }, [room?.msgs]);
 
     let feed = useMemo(() => {
-        if(room == null) {
+        if(!room) {
             return <div className="ln-center-standalone">Channel does not exist</div>;
         }
 
-        const showTimeline = windowWidth > 640;
 
-        let wrapperClasses = "ln-msg-list__wrapper ln-scroll-y";
+        let showTimeline = windowWidth > 640,
+            wrapperClasses = "ln-msg-list__wrapper ln-scroll-y",
+            MaybeTimeline: React.FunctionComponent<ITimelineProps> = Timeline;
 
-        let MaybeTimeline: React.FunctionComponent<ITimelineProps> = Timeline;
-        if(room != null && hasTimeline && showTimeline) {
+        if(!hasTimeline || !showTimeline) {
             MaybeTimeline = () => <></>;
         } else {
             wrapperClasses += ' has-timeline';
@@ -119,20 +119,17 @@ export const MessageFeed = React.memo((props: IMessageListProps) => {
             //console.log(event);
         };
 
-        let feed_inner = (
-            <div className={wrapperClasses} onScroll={on_scroll}>
-                <ul className="ln-msg-list">
-                    {groups.map(group => <MessageGroup key={group[0].msg.id} group={group} />)}
-                </ul>
-            </div>
-        );
-
         return (
             <>
                 <MaybeTimeline direction={0} position={0} />
-                {feed_inner}
+                <div className={wrapperClasses} onScroll={on_scroll}>
+                    <ul className="ln-msg-list">
+                        {groups.map(group => <MessageGroup key={group[0].msg.id} group={group} />)}
+                    </ul>
+                </div>
             </>
         );
+
 
     }, [groups]);
 
