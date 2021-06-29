@@ -16,6 +16,7 @@ export interface ILinkProps extends AnchorHTMLAttributes<HTMLElement> {
     state?: State,
     replace?: boolean,
     useDiv?: boolean,
+    onNavigate?: () => void,
 }
 
 export function canNavigate(target: string | undefined, event: React.MouseEvent<HTMLElement> | React.TouchEvent<HTMLElement>): boolean {
@@ -34,7 +35,7 @@ function callEventHandler<T extends React.SyntheticEvent>(event: T, handler?: (e
 }
 
 export const Link = React.memo(forwardRef((props: ILinkProps, ref: React.MutableRefObject<any>) => {
-    let { href, onClick, onTouchEnd, replace, state, target, useDiv } = props,
+    let { href, onClick, onTouchEnd, onNavigate, replace, state, target, useDiv } = props,
         ctx = useContext(HistoryContext),
         history = ctx.history,
         method = replace ? history.replace : history.push;
@@ -43,6 +44,7 @@ export const Link = React.memo(forwardRef((props: ILinkProps, ref: React.Mutable
         props = {
             ...props,
             onClick: (event: React.MouseEvent<HTMLElement>) => {
+                callEventHandler(event, onNavigate);
                 callEventHandler(event, onClick);
                 // canNavigate + ignore everything but left clicks
                 if(canNavigate(target, event) && event.button === 0) {
@@ -51,6 +53,7 @@ export const Link = React.memo(forwardRef((props: ILinkProps, ref: React.Mutable
                 }
             },
             onTouchEnd: (event: React.TouchEvent<HTMLElement>) => {
+                callEventHandler(event, onNavigate);
                 callEventHandler(event, onTouchEnd);
                 if(canNavigate(target, event)) {
                     event.preventDefault();
@@ -58,6 +61,13 @@ export const Link = React.memo(forwardRef((props: ILinkProps, ref: React.Mutable
                 }
             }
         };
+
+        // silence warning about these
+        if(__DEV__) {
+            delete props['useDiv'];
+            delete props['replace'];
+            delete props['onNavigate'];
+        }
     }
 
     return useDiv ? <div {...props} ref={ref} /> : <a {...props} ref={ref} />

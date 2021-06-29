@@ -1,7 +1,7 @@
 @import "lib/variables";
 
 .ln-avatar {
-    display: inline;
+    display: inline-block;
 
     * {
         user-select: none;
@@ -11,6 +11,8 @@
         //display: flex;
         cursor: pointer;
     }
+
+    line-height: 1;
 
     &__image,
     &__text {
@@ -27,7 +29,6 @@
     }
 
     &__text {
-        line-height: 1;
         font-family: sans-serif;
         text-align: center;
     }

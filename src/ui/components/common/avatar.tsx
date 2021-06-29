@@ -2,12 +2,13 @@ import React from "react";
 
 import "./avatar.scss";
 
-export interface IAvatarProps extends React.HTMLAttributes<HTMLSpanElement> {
+export interface IAvatarProps {
     rounded?: boolean,
     url?: string,
     text?: string,
     backgroundColor?: string,
     username: string,
+    span?: React.HTMLAttributes<HTMLSpanElement>,
 }
 
 export const Avatar = React.memo((props: IAvatarProps) => {
@@ -18,7 +19,7 @@ export const Avatar = React.memo((props: IAvatarProps) => {
 
     return (
         <div className="ln-avatar" >
-            <span className="ln-avatar__wrapper" {...props}>
+            <span className="ln-avatar__wrapper" {...props.span}>
                 {is_image ?
                     <img src={props.url} className={className} alt={props.username} /> :
                     <span className={className} style={{ backgroundColor: props.backgroundColor }}>{props.text || '?'}</span>}

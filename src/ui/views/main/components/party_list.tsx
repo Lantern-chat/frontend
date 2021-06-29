@@ -52,29 +52,29 @@ export const PartyList = React.memo(() => {
             <ol className="ln-party-list ln-scroll-y ln-scroll-y--invisible ln-scroll-fixed">
                 <li id="user-home" className={'@me' == active_party ? 'selected' : ''}>
                     <Link href="/channels/@me">
-                        <Avatar rounded text="@" username="Home" title="Home" />
+                        <Avatar rounded text="@" username="Home" span={{ title: "Home" }} />
                     </Link>
                 </li>
 
                 {parties.map(party => {
                     let last = last_channel.get(party.id),
                         url = party.icon_id && `/avatars/${party.id}/${party.icon_id}`;
-
                     last = last ? '/' + last : '';
                     return (
                         <li key={party.id}
                             className={party.id == active_party ? 'selected' : ''}>
-                            <Link href={`/channels/${party.id}${last}`} onClick={() => dispatch(activateParty(party.id))}>
+                            <Link href={`/channels/${party.id}${last}`} onNavigate={() => dispatch(activateParty(party.id))}>
                                 <Avatar rounded url={url} text={party.name.charAt(0)}
-                                    username={party.name} title={party.name} backgroundColor={colors[fnv1a(party.id) % colors.length]} />
+                                    username={party.name} span={{ title: party.name }} backgroundColor={colors[fnv1a(party.id) % colors.length]} />
                             </Link>
                         </li>
                     );
                 })}
 
                 <li id="create-party" className={create_party_open ? 'selected' : ''}>
-                    <Avatar rounded text="+" username="Join/Create a Party" title="Join/Create a Party"
-                        onClick={() => dispatch({ type: 'MODAL_OPEN_CREATE_PARTY' })} />
+                    <Avatar rounded text="+" username="Join/Create a Party"
+                        span={{ title: "Join/Create a Party", onClick: () => dispatch({ type: 'MODAL_OPEN_CREATE_PARTY' }) }}
+                    />
                 </li>
             </ol>
 

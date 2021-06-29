@@ -34,6 +34,7 @@
     a:active {
         color: inherit;
         text-decoration: inherit;
+        display: inline-block;
     }
 
     li {
@@ -42,7 +43,6 @@
         width: 100%;
 
         &::before {
-            contain: paint;
             content: "";
             position: absolute;
             left: 0;
@@ -58,6 +58,8 @@
             .ln-enable-motion & {
                 transition: transform 0.1s ease-in;
             }
+
+            contain: paint;
         }
 
         &:hover {
