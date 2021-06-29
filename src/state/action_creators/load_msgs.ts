@@ -32,7 +32,10 @@ export function loadMessages(room_id: Snowflake, limit: number = 100, search?: S
                 dispatch({ type: Type.MESSAGES_LOADED, msgs: res.response });
             }
         } catch(e) {
-            console.error(e);
+            if(__DEV__) {
+                alert("Error loading messages");
+                console.error(e);
+            }
         }
     };
 }
