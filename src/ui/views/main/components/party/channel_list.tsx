@@ -4,6 +4,7 @@ import { createSelector, createStructuredSelector } from "reselect";
 
 import { fnv1a } from "lib/fnv";
 
+import { Bounce } from "ui/components/common/spinners/bounce";
 import { Glyphicon } from "ui/components/common/glyphicon";
 import { Avatar } from "ui/components/common/avatar";
 import { Link } from "ui/components/history";
@@ -47,7 +48,9 @@ export const ChannelList = React.memo(() => {
     let { selected, rooms = [] } = useSelector(channel_list_selector);
 
     let inner = rooms.length == 0 ?
-        <div style={{ height: "100%" }}>Loading...</div> :
+        <div style={{ height: "100%", paddingTop: '1em' }}>
+            <Bounce size="auto" />
+        </div> :
         rooms.map(room =>
             <li key={room.id} className={room.id == selected ? 'selected' : undefined}>
                 <ListedChannel room={room} />
