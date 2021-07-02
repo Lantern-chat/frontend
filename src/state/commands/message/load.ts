@@ -1,6 +1,6 @@
 import { fetch, XHRMethod } from "lib/fetch";
 import { DispatchableAction, Type } from "state/actions";
-import { Room, Snowflake } from "../models";
+import { Room, Snowflake } from "state/models";
 
 export enum SearchMode {
     Before = "before",

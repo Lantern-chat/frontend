@@ -7,6 +7,7 @@ import TextareaAutosize from 'react-textarea-autosize';
 import { RootState } from "state/root";
 import { Type } from "state/actions";
 import { Snowflake } from "state/models";
+import { sendMessage } from "state/commands";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
 
@@ -25,7 +26,6 @@ export interface IMessageBoxProps {
 }
 
 import "./box.scss";
-import { sendMessage } from "state/action_creators/send_msg";
 export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     let disabled = !channel;
 

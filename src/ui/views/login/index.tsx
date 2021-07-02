@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useReducer, useEffect, useContext } from "react";
 import { useDispatch } from "react-redux";
 import { Dispatch } from "state/actions";
-import { setSession } from "state/action_creators/session";
+import { setSession } from "state/commands";
 
 import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";

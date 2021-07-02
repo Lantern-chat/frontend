@@ -1,6 +1,6 @@
 import { ISession, parseSession, storeSession } from "lib/session";
 import { DEFAULT_LOGGED_IN_CHANNEL, HISTORY } from "state/global";
-import { DispatchableAction, Type } from "../actions";
+import { DispatchableAction, Type } from "state/actions";
 
 export function setSession(session: ISession | null): DispatchableAction {
     return (dispatch) => {

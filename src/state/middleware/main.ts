@@ -1,8 +1,7 @@
 import { Middleware } from "redux";
 
 import { Dispatch } from "state/actions";
-import { loadMessages, SearchMode } from "state/action_creators/load_msgs";
-import { activateParty } from "state/action_creators/party";
+import { loadMessages, SearchMode, activateParty } from "state/commands";
 import { DEFAULT_LOGGED_IN_CHANNEL, GLOBAL, HISTORY } from "state/global";
 import { GatewayStatus } from "state/reducers/gateway";
 import { Action, RootState, Type } from "state/root";

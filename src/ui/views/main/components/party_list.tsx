@@ -10,8 +10,7 @@ import { Avatar } from "ui/components/common/avatar";
 import { Glyphicon } from "ui/components/common/glyphicon";
 
 import { RootState } from "state/root";
-import { setSession } from "state/action_creators/session";
-import { activateParty } from "state/action_creators/party";
+import { setSession, activateParty } from "state/commands";
 import { Snowflake } from "state/models";
 
 import LogoutIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-432-log-out.svg";

@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useReducer, useEffect, useContext } from "react";
 import { useDispatch } from "react-redux";
 import { Dispatch } from "state/actions";
-import { setSession } from "state/action_creators/session";
+import { setSession } from "state/commands";
 
 import dayjs from "lib/time";
 

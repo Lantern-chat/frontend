@@ -1,6 +1,6 @@
 import { fetch, XHRMethod } from "lib/fetch";
 import { DispatchableAction, Type } from "state/actions";
-import { Room, Snowflake } from "../models";
+import { Room, Snowflake } from "state/models";
 
 export function activateParty(party_id: Snowflake): DispatchableAction {
     return async (dispatch, getState) => {
