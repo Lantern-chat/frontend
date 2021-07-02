@@ -9,6 +9,7 @@ export interface IAvatarProps {
     backgroundColor?: string,
     username: string,
     span?: React.HTMLAttributes<HTMLSpanElement>,
+    children?: React.ReactNode,
 }
 
 export const Avatar = React.memo((props: IAvatarProps) => {
@@ -22,7 +23,7 @@ export const Avatar = React.memo((props: IAvatarProps) => {
             <span className="ln-avatar__wrapper" {...props.span}>
                 {is_image ?
                     <img src={props.url} className={className} alt={props.username} /> :
-                    <span className={className} style={{ backgroundColor: props.backgroundColor }}>{props.text || '?'}</span>}
+                    <span className={className} style={{ backgroundColor: props.backgroundColor }}>{props.children || props.text || '?'}</span>}
             </span>
         </div>
     );
