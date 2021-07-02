@@ -25,15 +25,19 @@ let sorted_party_selector = createSelector((state: RootState) => state.party.par
 
 let party_list_selector = createStructuredSelector({
     parties: sorted_party_selector,
+    user_object: (state: RootState) => state.user.user,
     auth: (state: RootState) => state.user.session!.auth,
     last_channel: (state: RootState) => state.party.last_channel,
     create_party_open: (state: RootState) => state.modals.create_party_open,
+    gateway_status: (state: RootState) => state.gateway.status,
     active_party: (state: RootState) => state.history.parts[1] // /channels/:party_id/:channel_id
 });
 
 import "./party_list.scss";
+import { Spinner } from "ui/components/common/spinners/spinner";
+import { GatewayStatus } from "state/reducers/gateway";
 export const PartyList = React.memo(() => {
-    let { create_party_open, parties, last_channel, auth, active_party } = useSelector(party_list_selector);
+    let { create_party_open, user_object, parties, last_channel, auth, active_party, gateway_status } = useSelector(party_list_selector);
 
     let dispatch = useDispatch();
 
@@ -47,6 +51,35 @@ export const PartyList = React.memo(() => {
 
     let colors = ['goldenrod', 'royalblue', 'darkgreen', 'crimson'];
 
+    const GATEWAY_PENDING = [GatewayStatus.Connecting, GatewayStatus.Waiting, GatewayStatus.Unknown];
+
+    let party_list;
+    if(user_object && GATEWAY_PENDING.indexOf(gateway_status) == -1) {
+        party_list = parties.map(party => {
+            let last = last_channel.get(party.id),
+                url = party.icon_id && `/avatars/${party.id}/${party.icon_id}`;
+            last = last ? '/' + last : '';
+            return (
+                <li key={party.id}
+                    className={party.id == active_party ? 'selected' : ''}>
+                    <Link href={`/channels/${party.id}${last}`} onNavigate={() => dispatch(activateParty(party.id))}>
+                        <Avatar rounded url={url} text={party.name.charAt(0)}
+                            username={party.name} span={{ title: party.name }} backgroundColor={colors[fnv1a(party.id) % colors.length]} />
+                    </Link>
+                </li>
+            );
+        });
+    } else {
+
+        party_list = (
+            <li id="connecting">
+                <div className="ln-center-standalone">
+                    <Spinner size="2em" />
+                </div>
+            </li>
+        );
+    }
+
     return (
         <div className="ln-party-list__wrapper">
             <ol className="ln-party-list ln-scroll-y ln-scroll-y--invisible ln-scroll-fixed">
@@ -56,20 +89,7 @@ export const PartyList = React.memo(() => {
                     </Link>
                 </li>
 
-                {parties.map(party => {
-                    let last = last_channel.get(party.id),
-                        url = party.icon_id && `/avatars/${party.id}/${party.icon_id}`;
-                    last = last ? '/' + last : '';
-                    return (
-                        <li key={party.id}
-                            className={party.id == active_party ? 'selected' : ''}>
-                            <Link href={`/channels/${party.id}${last}`} onNavigate={() => dispatch(activateParty(party.id))}>
-                                <Avatar rounded url={url} text={party.name.charAt(0)}
-                                    username={party.name} span={{ title: party.name }} backgroundColor={colors[fnv1a(party.id) % colors.length]} />
-                            </Link>
-                        </li>
-                    );
-                })}
+                {party_list}
 
                 <li id="create-party" className={create_party_open ? 'selected' : ''}>
                     <Avatar rounded text="+" username="Join/Create a Party"

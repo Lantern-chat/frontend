@@ -8,16 +8,17 @@ export enum SearchMode {
     Around = "around",
 }
 
-export function loadMessages(room_id: Snowflake, limit: number = 100, search?: Snowflake, mode: SearchMode = SearchMode.After): DispatchableAction {
+export function loadMessages(room_id: Snowflake, search?: Snowflake, mode: SearchMode = SearchMode.After): DispatchableAction {
     return async (dispatch, getState) => {
         let state = getState();
 
-        let query = "?limit=" + limit;
+        let query = "?limit=100";
 
         if(search) {
             query += `&${mode}=` + search;
         }
 
+        // TODO: Run this in a loop to fetch ALL messages since search, IF AND ONLY IF there is a search id
         try {
             let res = await fetch({
                 url: `/api/v1/room/${room_id}/messages${query}`,

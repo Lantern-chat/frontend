@@ -29,6 +29,11 @@
         }
     }
 
+    #connecting > div {
+        width: 100%;
+        height: 100%;
+    }
+
     a,
     a:hover,
     a:active {
@@ -82,6 +87,10 @@
 
         &.selected::before {
             transform: scaleY(80%);
+        }
+
+        &#connecting::before {
+            transform: scaleY(0);
         }
 
         margin-bottom: 0.7em;

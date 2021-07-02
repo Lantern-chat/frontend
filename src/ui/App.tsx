@@ -10,16 +10,27 @@ import { Ripple } from "ui/components/common/spinners/ripple";
 import { Logo } from "ui/components/login/logo";
 import { HistoryContext, recomputeHistoryContext } from "./components/history";
 
-const MainView: React.FunctionComponent = React.lazy(() => import(       /* webpackChunkName: 'MainView'     */ "./views/main"));
-const LoginView: React.FunctionComponent = React.lazy(() => import(      /* webpackChunkName: 'LoginView'    */ "./views/login"));
-const RegisterView: React.FunctionComponent = React.lazy(() => import(   /* webpackChunkName: 'RegisterView' */ "./views/register"));
+const MainView: React.FunctionComponent = React.lazy(() => import(      /* webpackChunkName: 'MainView'     */ "./views/main"));
+const LoginView: React.FunctionComponent = React.lazy(() => import(     /* webpackChunkName: 'LoginView'    */ "./views/login"));
+const RegisterView: React.FunctionComponent = React.lazy(() => import(  /* webpackChunkName: 'RegisterView' */ "./views/register"));
+const VerifyView: React.FunctionComponent = React.lazy(() => import(    /* webpackChunkName: 'VerifyView'   */ "./views/verify"));
+const ResetView: React.FunctionComponent = React.lazy(() => import(     /* webpackChunkName: 'ResetView'    */ "./views/reset"));
+
 //const TestbedView: React.FunctionComponent = React.lazy(() => import(    /* webpackChunkName: 'TestbedView'  */ "./views/testbed"));
 
 
 const Fallback = <div className="ln-center-standalone"><Ripple size={120} /></div>;
 
-const LoginRoutes = React.memo(({ which }: { which: 'login' | 'register' }) => {
-    let View = which == 'login' ? LoginView : RegisterView;
+const ValidLoginLikePaths: ['login', 'register', 'verify', 'reset'] = ['login', 'register', 'verify', 'reset']
+
+const LoginRoutes = React.memo(({ which }: { which: typeof ValidLoginLikePaths[number] }) => {
+    let View;
+    switch(which) {
+        case 'login': View = LoginView; break;
+        case 'register': View = RegisterView; break;
+        case 'verify': View = VerifyView; break;
+        case 'reset': View = ResetView; break;
+    }
 
     return (
         <>
@@ -46,8 +57,11 @@ const AppRouter = () => {
     switch(first_part) {
         case 'login':
         case 'register':
+        case 'verify':
+        case 'reset':
             return <LoginRoutes which={first_part} />;
         case 'channels':
+        case 'invite':
             return <MainView />;
     }
 

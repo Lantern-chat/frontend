@@ -20,7 +20,7 @@ export function activateParty(party_id: Snowflake): DispatchableAction {
             });
 
             if(res.status == 200) {
-                dispatch({ type: Type.ROOMS_LOADED, rooms: res.response });
+                dispatch({ type: Type.PARTY_LOADED, rooms: res.response });
             }
         }
         catch(e) {

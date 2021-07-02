@@ -78,7 +78,7 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
     switch(action.type) {
         case Type.SESSION_EXPIRED: return DEFAULT_STATE;
 
-        case Type.ROOMS_LOADED: return produce(state, draft => {
+        case Type.PARTY_LOADED: return produce(state, draft => {
             for(let room of action.rooms) {
                 if(draft.rooms.has(room.id)) continue;
 

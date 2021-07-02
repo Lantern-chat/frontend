@@ -7,6 +7,8 @@ import { GLOBAL } from "state/global";
 export enum GatewayStatus {
     Unknown,
     Initialized,
+    Connecting,
+    Waiting,
     Connected,
     Disconnected,
     Errored,
@@ -14,6 +16,7 @@ export enum GatewayStatus {
 
 export interface IGatewayState {
     status: GatewayStatus,
+    waiting?: Date,
 }
 
 const DEFAULT_STATE: IGatewayState = {
@@ -21,7 +24,6 @@ const DEFAULT_STATE: IGatewayState = {
 };
 
 import { GatewayMessage, GatewayMessageDiscriminator } from "worker/gateway/msg";
-import { GatewayCommandDiscriminator } from "worker/gateway/cmd";
 
 export function gatewayReducer(state: IGatewayState | null | undefined, action: Action): IGatewayState {
     state = state || DEFAULT_STATE;
@@ -36,8 +38,14 @@ export function gatewayReducer(state: IGatewayState | null | undefined, action: 
                 case GatewayMessageDiscriminator.Initialized: {
                     return { ...state, status: GatewayStatus.Initialized };
                 }
+                case GatewayMessageDiscriminator.Connecting: {
+                    return { ...state, status: GatewayStatus.Connecting, waiting: undefined };
+                }
                 case GatewayMessageDiscriminator.Connected: {
-                    return { ...state, status: GatewayStatus.Connected };
+                    return { ...state, status: GatewayStatus.Connected, waiting: undefined };
+                }
+                case GatewayMessageDiscriminator.Waiting: {
+                    return { ...state, status: GatewayStatus.Waiting, waiting: new Date(msg.p) }
                 }
                 //case GatewayMessageDiscriminator.Message: {
                 //

@@ -23,7 +23,7 @@ class Gateway {
     heartbeat_interval: number = 45000;
 
     // heartbeat interval timer
-    heartbeat_timer: number | undefined;
+    heartbeat_timer?: number;
 
     // waiting on heartbeat ACK
     heartbeat_waiting_on_ack: boolean = false;
@@ -32,29 +32,48 @@ class Gateway {
 
     attempt: number = 0;
 
+    connecting_timeout?: number;
+
     constructor() {
         this.encoder = new TextEncoder();
         this.decoder = new TextDecoder();
     }
 
     connect() {
-        let delay = this.attempt ? (1 << this.attempt) * 8000 : 0;
+        if(!this.ws) {
+            if(this.connecting_timeout !== undefined) {
+                return this.retry_now();
+            }
 
-        console.log("DELAY: ", delay);
+            let delay = this.attempt ? 1000 : 0;
 
-        setTimeout(() => {
-            ctx.postMessage({ t: GatewayMessageDiscriminator.Connecting });
+            console.log("DELAY: ", delay);
 
-            this.ws = new WebSocket(`wss://${self.location.host}/api/v1/gateway?compress=true&encoding=json`);
-            this.ws.binaryType = "arraybuffer";
+            if(delay > 0) {
+                ctx.postMessage({ t: GatewayMessageDiscriminator.Waiting, p: Date.now() + delay })
+            }
 
-            this.ws.addEventListener('open', () => this.on_open());
-            this.ws.addEventListener('message', msg => this.on_msg(msg.data));
-            this.ws.addEventListener('close', msg => this.on_close(msg));
-            this.ws.addEventListener('error', err => this.on_error(err));
-        }, delay);
+            this.connecting_timeout = <any>setTimeout(() => this.do_connect(), delay);
+            this.attempt += 1;
+        }
+    }
 
-        this.attempt += 1;
+    do_connect() {
+        ctx.postMessage({ t: GatewayMessageDiscriminator.Connecting });
+
+        this.ws = new WebSocket(`wss://${self.location.host}/api/v1/gateway?compress=true&encoding=json`);
+        this.ws.binaryType = "arraybuffer";
+
+        this.ws.addEventListener('open', () => this.on_open());
+        this.ws.addEventListener('message', msg => this.on_msg(msg.data));
+        this.ws.addEventListener('close', msg => this.on_close(msg));
+        this.ws.addEventListener('error', err => this.on_error(err));
+    }
+
+    retry_now() {
+        clearTimeout(this.connecting_timeout);
+        this.connecting_timeout = undefined;
+        this.do_connect();
     }
 
     // TODO: Memoize?
@@ -81,14 +100,14 @@ class Gateway {
     }
 
     on_close(msg: CloseEvent) {
-        ctx.postMessage({ t: GatewayMessageDiscriminator.Disconnected, p: msg.code });
         this.do_close();
+        ctx.postMessage({ t: GatewayMessageDiscriminator.Disconnected, p: msg.code });
     }
 
     on_error(_err: Event) {
         // TODO: Handle this as a close event?
-        ctx.postMessage({ t: GatewayMessageDiscriminator.Error, p: { err: "WS Error" } });
         this.do_close();
+        ctx.postMessage({ t: GatewayMessageDiscriminator.Error, p: { err: "WS Error" } });
     }
 
     on_open() {

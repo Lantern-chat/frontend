@@ -4,6 +4,7 @@ import { GatewayEvent } from "./event";
 export enum GatewayMessageDiscriminator {
     Initialized,
     Connecting,
+    Waiting,
     Connected,
     Identifying,
     Ready,
@@ -17,6 +18,10 @@ export interface GatewayMessageInitiatized {
 }
 export interface GatewayMessageConnecting {
     t: GatewayMessageDiscriminator.Connecting;
+}
+export interface GatewayMessageWaiting {
+    t: GatewayMessageDiscriminator.Waiting;
+    p: number; // timestamp in unix time milliseconds
 }
 export interface GatewayMessageConnected {
     t: GatewayMessageDiscriminator.Connected;
@@ -40,6 +45,7 @@ export interface GatewayMessageEvent {
 export type GatewayMessage =
     GatewayMessageInitiatized |
     GatewayMessageConnecting |
+    GatewayMessageWaiting |
     GatewayMessageConnected |
     GatewayMessageIdentifying |
     GatewayMessageReady |

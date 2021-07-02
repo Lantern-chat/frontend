@@ -19,8 +19,9 @@ export enum Type {
     MODAL_CLOSE_CREATE_PARTY = "MODAL_CLOSE_CREATE_PARTY",
 
     GATEWAY_EVENT = "GATEWAY_EVENT",
+    GATEWAY_RETRY = "GATEWAY_RETRY",
 
-    ROOMS_LOADED = "ROOMS_LOADED",
+    PARTY_LOADED = "PARTY_LOADED",
     MESSAGES_LOADED = "MESSAGES_LOADED",
 
     MESSAGE_SEND = "MESSAGE_SEND",
@@ -47,7 +48,8 @@ export type Action =
     ModalOpenCreateParty |
     ModalCloseCreateParty |
     GatewayEvent |
-    RoomsLoaded |
+    GatewayRetry |
+    PartyLoaded |
     MessagesLoaded |
     MessageSend |
     MessageDiscordEdit |
@@ -106,10 +108,14 @@ export interface GatewayEvent {
     payload: GatewayMessage
 }
 
+export interface GatewayRetry {
+    type: Type.GATEWAY_RETRY,
+}
+
 // PARTY ACTIONS
 
-export interface RoomsLoaded {
-    type: Type.ROOMS_LOADED,
+export interface PartyLoaded {
+    type: Type.PARTY_LOADED,
     rooms: Room[],
 }
 

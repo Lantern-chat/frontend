@@ -141,39 +141,37 @@ export default function LoginView() {
     }
 
     return (
-        <>
-            <form className="ln-form ln-login-form" onSubmit={on_submit}>
-                <div id="title">
-                    <h2><I18N t={Translation.LOGIN} /></h2>
+        <form className="ln-form ln-login-form" onSubmit={on_submit}>
+            <div id="title">
+                <h2><I18N t={Translation.LOGIN} /></h2>
+            </div>
+
+            {errorModal}
+
+            <FormGroup>
+                <FormLabel htmlFor="email"><I18N t={Translation.EMAIL_ADDRESS} /></FormLabel>
+                <FormInput value={state.email} type="text" name="email" placeholder="example@example.com" required isValid={state.valid_email}
+                    onChange={e => form_dispatch({ type: LoginActionType.UpdateEmail, value: e.currentTarget.value })} />
+            </FormGroup>
+
+            <FormGroup>
+                <FormLabel htmlFor="password">
+                    <I18N t={Translation.PASSWORD} />
+                </FormLabel>
+                <FormInput value={state.pass} type="password" name="password" placeholder="password" required
+                    onChange={e => form_dispatch({ type: LoginActionType.UpdatePass, value: e.currentTarget.value })} />
+            </FormGroup>
+
+            <hr />
+
+            <FormGroup>
+                <div style={{ display: 'flex', padding: '0 1em' }}>
+                    <button className={state.is_logging_in ? 'ln-btn ln-btn--loading-icon' : 'ln-btn'} style={{ marginRight: 'auto' }}>
+                        {state.is_logging_in ? <Spinner size="2em" /> : "Login"}
+                    </button>
+                    <Link className="ln-btn" href="/register" onMouseOver={() => preloadRegister()}>Register</Link>
                 </div>
-
-                {errorModal}
-
-                <FormGroup>
-                    <FormLabel htmlFor="email"><I18N t={Translation.EMAIL_ADDRESS} /></FormLabel>
-                    <FormInput value={state.email} type="text" name="email" placeholder="example@example.com" required isValid={state.valid_email}
-                        onChange={e => form_dispatch({ type: LoginActionType.UpdateEmail, value: e.currentTarget.value })} />
-                </FormGroup>
-
-                <FormGroup>
-                    <FormLabel htmlFor="password">
-                        <I18N t={Translation.PASSWORD} />
-                    </FormLabel>
-                    <FormInput value={state.pass} type="password" name="password" placeholder="password" required
-                        onChange={e => form_dispatch({ type: LoginActionType.UpdatePass, value: e.currentTarget.value })} />
-                </FormGroup>
-
-                <hr />
-
-                <FormGroup>
-                    <div style={{ display: 'flex', padding: '0 1em' }}>
-                        <button className={state.is_logging_in ? 'ln-btn ln-btn--loading-icon' : 'ln-btn'} style={{ marginRight: 'auto' }}>
-                            {state.is_logging_in ? <Spinner size="2em" /> : "Login"}
-                        </button>
-                        <Link className="ln-btn" href="/register" onMouseOver={() => preloadRegister()}>Register</Link>
-                    </div>
-                </FormGroup>
-            </form>
-        </>
+            </FormGroup>
+        </form>
     );
 }

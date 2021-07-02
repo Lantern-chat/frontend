@@ -28,7 +28,8 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
 
     switch(action.type) {
         case Type.SESSION_EXPIRED: return DEFAULT_STATE;
-        case Type.ROOMS_LOADED: return produce(state, draft => {
+
+        case Type.PARTY_LOADED: return produce(state, draft => {
             action.rooms.sort((a, b) => a.sort_order - b.sort_order);
 
             for(let room of action.rooms) {

@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useReducer, useEffect, useContext } from "react";
 import { useDispatch } from "react-redux";
 import { Dispatch } from "state/actions";
+import { setSession } from "state/action_creators/session";
 
 import dayjs from "lib/time";
 
@@ -176,7 +177,6 @@ var SETUP_THEN = false;
 
 import "../login/login.scss";
 import "./register.scss";
-import { setSession } from "state/action_creators/session";
 export default function RegisterView() {
     useTitle("Register");
 
