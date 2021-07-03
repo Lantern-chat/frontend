@@ -27,7 +27,7 @@ module.exports = (env, argv) => {
         //},
         target: "web",
         mode: MODE,
-        watch: MODE !== "production",
+        watch: !IS_PRODUCTION,
         //watchOptions: {
         //    aggregateTimeout: 600,
         //    //ignored: ["./worker/", "./build/", "./dist/"],
@@ -160,7 +160,7 @@ module.exports = (env, argv) => {
             new webpack.DefinePlugin({
                 "typeof window": '"object"',
                 "typeof MessageChannel": '"function"',
-                "__DEV__": JSON.stringify(JSON.parse(process.env.BUILD_DEV || 'true')),
+                "__DEV__": JSON.stringify(!IS_PRODUCTION),
                 "__PRERELEASE__": JSON.stringify(JSON.parse(process.env.BUILD_PRERELEASE || 'false'))
             }),
             new webpack.ProvidePlugin({
