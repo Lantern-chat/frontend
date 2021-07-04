@@ -6,6 +6,21 @@
         position: relative;
     }
 
+    &__cover {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 100;
+        background-color: transparent;
+
+        &::after {
+            // ensures it blocks hover stuff
+            content: "";
+        }
+    }
+
     &__wrapper {
         position: absolute;
         top: 0;

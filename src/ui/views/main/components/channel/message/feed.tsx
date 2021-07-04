@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useMemo, useState, useEffect } from "react";
-import { useSelector, shallowEqual } from "react-redux";
+import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import { createStructuredSelector } from 'reselect';
 
 import dayjs from "lib/time";
@@ -8,6 +8,7 @@ import { Snowflake } from "state/models";
 import { RootState, Type } from "state/root";
 import { IChatState, IWindowState } from "state/reducers";
 import { IMessageState } from "state/reducers/chat";
+import { Panel } from "state/reducers/window";
 
 import { pickColorFromHash } from "lib/palette";
 
@@ -79,14 +80,16 @@ const feed_selector = createStructuredSelector({
     width: (state: RootState) => state.window.width,
     is_light_theme: (state: RootState) => state.theme.is_light,
     use_mobile_view: (state: RootState) => state.window.use_mobile_view,
+    show_panel: (state: RootState) => state.window.show_panel,
 });
 
 import "./feed.scss";
 export const MessageFeed = React.memo((props: IMessageListProps) => {
     let [scrollTop, setScrollTop] = useState(0);
+    let dispatch = useDispatch();
 
     let room = useSelector((state: RootState) => state.chat.rooms.get(props.channel));
-    let { width: windowWidth, is_light_theme, use_mobile_view } = useSelector(feed_selector);
+    let { width: windowWidth, is_light_theme, use_mobile_view, show_panel } = useSelector(feed_selector);
 
     let groups: IMessageState[][] = useMemo(() => {
         if(room == null) return [];
@@ -144,23 +147,41 @@ export const MessageFeed = React.memo((props: IMessageListProps) => {
         };
 
 
-
         return (
             <>
                 <MaybeTimeline direction={0} position={0} />
-                <div className={wrapperClasses} onScroll={on_scroll}>
-                    <ul className="ln-msg-list">
+                <div className={wrapperClasses} onScroll={on_scroll} >
+                    <ul className="ln-msg-list" >
                         {groups.map(group => <MessageGroup key={group[0].msg.id} group={group} is_light_theme={is_light_theme} />)}
                     </ul>
                 </div>
             </>
         );
-
-
     }, [groups]);
+
+    let cover;
+    if(use_mobile_view && show_panel != Panel.Main) {
+        let on_click = () => {
+            switch(show_panel) {
+                case Panel.LeftSidebar: {
+                    dispatch({ type: Type.WINDOW_TOGGLE_LEFT_SIDEBAR });
+                    break;
+                }
+                case Panel.RightSidebar: {
+                    dispatch({ type: Type.WINDOW_TOGGLE_RIGHT_SIDEBAR });
+                    break;
+                }
+            }
+        };
+
+        cover = (
+            <div className="ln-msg-list__cover" onClick={on_click} />
+        );
+    }
 
     return (
         <div className="ln-msg-list__flex-container">
+            {cover}
             {feed}
         </div>
     );
