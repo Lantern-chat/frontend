@@ -66,6 +66,7 @@ export interface IRoomState {
 
 export interface IChatState {
     rooms: Map<Snowflake, IRoomState>,
+    active_room?: Snowflake,
 }
 
 const DEFAULT_STATE: IChatState = {

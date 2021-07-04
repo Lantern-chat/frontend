@@ -11,17 +11,17 @@ import "./header.scss";
 export const ChannelHeader = React.memo(() => {
     let dispatch = useDispatch();
 
-    let on_click = () => dispatch({ type: Type.WINDOW_TOGGLE_RIGHT_SIDEBAR });
-
     return (
         <div className="ln-channel-header">
-            <div className="ln-channel-header__hamburger" onClick={on_click}>
+            <div className="ln-channel-header__hamburger"
+                onClick={() => dispatch({ type: Type.WINDOW_TOGGLE_LEFT_SIDEBAR })}>
                 <Glyphicon src={Menu} />
             </div>
 
             Channel Header
 
-            <div className="ln-channel-header__users">
+            <div className="ln-channel-header__users"
+                onClick={() => dispatch({ type: Type.WINDOW_TOGGLE_RIGHT_SIDEBAR })}>
                 <Glyphicon src={Users} />
             </div>
         </div>

@@ -9,14 +9,18 @@ DYNAMIC_MIDDLEWARE.addMiddleware(mainMiddleware);
 
 let session = STORE.getState().user.session;
 
+// if there is an existing session, fire off the login again to refresh parts of the state
 if(session) {
     STORE.dispatch({ type: Type.SESSION_LOGIN, session });
 } else {
+    // otherwise, main view should never have been loaded so redirect to login
     HISTORY.replace('/login');
 }
 
 import Gateway from "worker-loader!worker/gateway";
 
+// this script may be run multiple times if unlucky,
+// so double-check the gateway hasn't already been created
 if(!GLOBAL.gateway) {
     GLOBAL.gateway = new Gateway();
 
@@ -26,7 +30,6 @@ if(!GLOBAL.gateway) {
             data = JSON.parse(data);
         }
         if(typeof data.p === 'string') {
-            console.log(data.p);
             data.p = JSON.parse(data.p);
         }
         STORE.dispatch({ type: Type.GATEWAY_EVENT, payload: data });
@@ -39,38 +42,32 @@ if(!GLOBAL.gateway) {
 
 import { PartyList } from "./components/party_list";
 import { Party } from "./components/party/party";
-import { CreatePartyModal } from "./modals/create_party";
+import MainModals from "./modals";
 
 import "./main.scss";
+import { useSelector } from "react-redux";
+import { RootState } from "state/root";
+import { Panel } from "state/reducers/window";
 
 export const MainView: React.FunctionComponent = React.memo(() => {
     //let { parts } = useSelector(selectPath);
 
+    let is_right_view = useSelector((state: RootState) => state.window.use_mobile_view && state.window.show_panel == Panel.RightSidebar);
+
+    let party_list = is_right_view ? null : <PartyList />;
+
     return (
         <div className="ln-main">
-            <PartyList />
-
-            <CreatePartyModal />
+            {party_list}
 
             <Party />
 
-            {/*
-            <Switch>
-                <Route path="/channels/@me/:channel">
-                    Direct Message
-                    </Route>
-                <Route path="/channels/@me">
-                    User Home
-                    </Route>
-                <Route path={["/channels/:party/:channel", "/channels/:party"]}>
-                    <Party />
-                </Route>
-                <Route>
-                    <Redirect to="/channels/@me"></Redirect>
-                </Route>
-            </Switch>
-            */}
+            <MainModals />
         </div>
     );
 });
 export default MainView;
+
+if(__DEV__) {
+    MainView.displayName = "MainView";
+}

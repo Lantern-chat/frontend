@@ -8,12 +8,14 @@ import { Snowflake, Party, Room } from "../models";
 export interface IParty {
     party: Party,
     rooms: Room[],
-    members: PartyMember[],
+    members: Map<Snowflake, PartyMember>,
+    needs_refresh: boolean,
 }
 
 export interface IPartyState {
     parties: Map<Snowflake, IParty>,
     last_channel: Map<Snowflake, Snowflake>,
+    active_party?: Snowflake,
     //sorted: Snowflake[]
 }
 
@@ -30,11 +32,27 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
         case Type.SESSION_EXPIRED: return DEFAULT_STATE;
 
         case Type.PARTY_LOADED: return produce(state, draft => {
-            action.rooms.sort((a, b) => a.sort_order - b.sort_order);
+            let party = draft.parties.get(action.party_id);
 
-            for(let room of action.rooms) {
-                if(room.party_id) {
-                    draft.parties.get(room.party_id)?.rooms.push(room);
+            if(party) {
+                action.rooms.sort((a, b) => a.sort_order - b.sort_order);
+
+                for(let room of action.rooms) {
+                    if(__DEV__ && room.party_id !== action.party_id) {
+                        alert("Mismatch in fetched rooms!");
+                    }
+
+                    party.rooms.push(room);
+                }
+
+                party.needs_refresh = false;
+            }
+        });
+        case Type.MEMBERS_LOADED: return produce(state, draft => {
+            let party = draft.parties.get(action.party_id);
+            if(party) {
+                for(let member of action.members) {
+                    party.members.set(member.user!.id, member);
                 }
             }
         });
@@ -59,7 +77,12 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
 
                     let parties: Map<Snowflake, IParty> = new Map();
                     for(let party of p.parties) {
-                        parties.set(party.id, { party, rooms: [], members: [] });
+                        parties.set(party.id, {
+                            party,
+                            rooms: [],
+                            members: new Map(),
+                            needs_refresh: true
+                        });
                     }
                     return { ...state, parties };
                 }

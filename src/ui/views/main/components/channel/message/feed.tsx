@@ -78,17 +78,15 @@ const MessageGroup = ({ group, is_light_theme }: MessageGroupProps) => {
 const feed_selector = createStructuredSelector({
     width: (state: RootState) => state.window.width,
     is_light_theme: (state: RootState) => state.theme.is_light,
+    use_mobile_view: (state: RootState) => state.window.use_mobile_view,
 });
 
 import "./feed.scss";
 export const MessageFeed = React.memo((props: IMessageListProps) => {
-    let [scroll, setScroll] = useState(0);
+    let [scrollTop, setScrollTop] = useState(0);
 
-    let { room, width: windowWidth, is_light_theme } = useSelector((state: RootState) => ({
-        room: state.chat.rooms.get(props.channel),
-        width: state.window.width,
-        is_light_theme: state.theme.is_light,
-    }));
+    let room = useSelector((state: RootState) => state.chat.rooms.get(props.channel));
+    let { width: windowWidth, is_light_theme, use_mobile_view } = useSelector(feed_selector);
 
     let groups: IMessageState[][] = useMemo(() => {
         if(room == null) return [];
@@ -130,8 +128,22 @@ export const MessageFeed = React.memo((props: IMessageListProps) => {
         }
 
         let on_scroll = (event: React.UIEvent<HTMLDivElement>) => {
-            //console.log(event);
+            let t = event.currentTarget;
+
+            let at_top = t.scrollTop == 0, at_bottom = (t.scrollTop == (t.scrollHeight - t.offsetHeight));
+
+            //if(use_mobile_view) {
+            //    let delta = scrollTop - t.scrollTop;
+            //    if(delta != 0 && (at_top || at_bottom)) {
+            //        event.preventDefault();
+            //    }
+            //}
+
+
+            setScrollTop(t.scrollTop);
         };
+
+
 
         return (
             <>

@@ -1,7 +1,7 @@
 import { Dispatch as ReduxDispatch } from "redux";
 import { History } from "history";
 import { IHistoryState } from "./reducers";
-import { Room, Message } from "./models";
+import { Snowflake, Room, Message, PartyMember } from "./models";
 import { RootState } from "state/root";
 import { ISession } from "lib/session";
 
@@ -25,6 +25,7 @@ export enum Type {
 
     PARTY_LOADED = "PARTY_LOADED",
     MESSAGES_LOADED = "MESSAGES_LOADED",
+    MEMBERS_LOADED = "MEMBERS_LOADED",
 
     MESSAGE_SEND = "MESSAGE_SEND",
     MESSAGE_SEND_EDIT = "MESSAGE_SEND_EDIT",
@@ -38,7 +39,7 @@ export interface Dispatch extends ReduxDispatch<Action> {
 }
 
 export type DispatchableAction = Action | ThunkAction | Promise<Action>;
-export type ThunkAction = (dispatch: ReduxDispatch<Action>, getState: () => RootState) => void;
+export type ThunkAction = (dispatch: <T extends DispatchableAction>(action: T) => T, getState: () => RootState) => void;
 
 export type Action =
     HistoryUpdate |
@@ -54,6 +55,7 @@ export type Action =
     GatewayRetry |
     PartyLoaded |
     MessagesLoaded |
+    MembersLoaded |
     MessageSend |
     MessageDiscordEdit |
     MessageEditPrev |
@@ -127,12 +129,20 @@ export interface GatewayRetry {
 
 export interface PartyLoaded {
     type: Type.PARTY_LOADED,
+    party_id: Snowflake,
     rooms: Room[],
 }
 
 export interface MessagesLoaded {
     type: Type.MESSAGES_LOADED,
+    room_id: Snowflake,
     msgs: Message[]
+}
+
+export interface MembersLoaded {
+    type: Type.MEMBERS_LOADED,
+    party_id: Snowflake,
+    members: PartyMember[],
 }
 
 // MESSAGE ACTIONS

@@ -2,8 +2,6 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
 
-import { fnv1a } from "lib/fnv";
-
 import { Bounce } from "ui/components/common/spinners/bounce";
 import { Glyphicon } from "ui/components/common/glyphicon";
 import { Avatar } from "ui/components/common/avatar";
@@ -30,8 +28,8 @@ const ListedChannel = React.memo(({ room }: { room: Room }) => {
 
 
 let channel_list_selector = createSelector(
-    (state: RootState) => state.history.parts[1],
-    (state: RootState) => state.history.parts[2],
+    (state: RootState) => state.history.parts[1], // party_id
+    (state: RootState) => state.history.parts[2], // room_id
     (state: RootState) => state.party.parties,
     (party_id, room_id, parties) => {
         let party = parties.get(party_id);

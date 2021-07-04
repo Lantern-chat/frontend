@@ -1,5 +1,14 @@
 @import "lib/variables";
 
+@keyframes close_sidebar {
+    0% {
+        width: 100% !important;
+    }
+    100% {
+        width: 0 !important;
+    }
+}
+
 .ln-party {
     background-color: $lnx-secondary-surface-color;
     display: flex;
@@ -7,9 +16,26 @@
     width: 100%;
     flex-basis: 100%;
 
+    &__user-list {
+        @media (max-width: $ln-min-channel-width) {
+            max-width: calc(70vw);
+            position: absolute;
+            right: 0;
+        }
+    }
+
     &__sidebar {
-        max-width: 16em;
-        min-width: 11em;
+        @media (max-width: $ln-min-channel-width) {
+            max-width: calc(86vw - 4.2em);
+        }
+    }
+
+    &__sidebar,
+    &__user-list {
+        @media (min-width: $ln-min-channel-width) {
+            max-width: 16em;
+            min-width: 11em;
+        }
         width: 100%;
         height: 100%;
         display: flex;
@@ -17,8 +43,16 @@
         flex-wrap: nowrap;
         z-index: 0;
 
-        @media (max-width: $ln-min-channel-width) {
-            max-width: calc(86vw - 4.2em);
+        opacity: 1;
+
+        .ln-enable-motion & {
+            transition: opacity 0.2s ease-in;
+        }
+
+        &--closed {
+            touch-action: none;
+            pointer-events: none;
+            opacity: 0;
         }
     }
 
@@ -28,20 +62,28 @@
         background-color: $lnx-tertiary-surface-color;
 
         @media (max-width: $ln-min-channel-width) {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
+            z-index: 1;
+            overflow: hidden;
 
             .ln-enable-motion & {
                 transition: transform 0.2s ease-in;
             }
 
-            &--expanded {
-                transform: translateX(87%);
+            &--expanded-right {
+                transform: translateX(-71vw);
                 border-top-left-radius: 1em;
                 border-bottom-left-radius: 1em;
+            }
+
+            &--expanded-left {
+                transform: translateX(87vw);
+                border-top-right-radius: 1em;
+                border-bottom-right-radius: 1em;
             }
         }
     }
