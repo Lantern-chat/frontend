@@ -212,20 +212,26 @@ export function normalize({ r, g, b }: RGBColor): RGBColor {
 
 
 function linear2u8({ r, g, b }: RGBColor): RGBColor {
-    let l2u = (u: number) => min(255, max(255 * u));
+    let l2u = (u: number) => min(255, max(0, 255 * u)) | 0;
     return { r: l2u(r), g: l2u(g), b: l2u(b) };
+}
+function u82linear({ r, g, b }: RGBColor): RGBColor {
+    let k = (x: number) => x /= 255.0;
+    return { r: k(r), g: k(g), b: k(b) }
 }
 
 export function linear2srgb({ r, g, b }: RGBColor): RGBColor {
-    let l2s = (u: number) => min(255, round(255 * (u <= 0.0031308 ? (12.92 * u) : (1.055 * Math.pow(u, 1 / 2.4) - 0.055))));
-    return { r: l2s(r), g: l2s(g), b: l2s(b) };
+    let l2s = (u: number) => u <= 0.0031308 ? (12.92 * u) : (1.055 * Math.pow(u, 1 / 2.4) - 0.055);
+    return linear2u8({ r: l2s(r), g: l2s(g), b: l2s(b) });
 }
-export function srgb2linear({ r, g, b }: RGBColor): RGBColor {
-    let s2l = (u: number) => {
-        u /= 255.0; return u <= 0.04045 ? (u / 12.92) : Math.pow((u + 0.055) / 1.055, 2.4);
-    };
+function linearsrgb2linear({ r, g, b }: RGBColor): RGBColor {
+    let s2l = (u: number) => u <= 0.04045 ? (u / 12.92) : Math.pow((u + 0.055) / 1.055, 2.4);
     return { r: s2l(r), g: s2l(g), b: s2l(b) };
 }
+export function srgb2linear(c: RGBColor): RGBColor {
+    return linearsrgb2linear(u82linear(c));
+}
+
 
 
 
