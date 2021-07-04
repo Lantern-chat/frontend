@@ -7,7 +7,12 @@
     text-align: center;
     flex-shrink: 0;
     color: $lnx-primary-text-color;
-    background-color: rgba(50%, 50%, 50%, 50%);
+    background-color: rgba(128, 128, 128, 0.5);
+
+    .ln-light-theme & {
+        background-color: rgba(128, 128, 128, 0.2);
+    }
+
     min-height: 3em;
     position: relative;
 
@@ -36,7 +41,7 @@
     &__send {
         //text-align: center;
         flex: 0 0 auto;
-        display: flex;
+        display: inline-flex;
         flex-direction: column;
         justify-content: center;
         cursor: pointer;

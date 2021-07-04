@@ -11,5 +11,9 @@ const DEFAULT_STATE: IThemeState = {
 };
 
 export function themeReducer(state: IThemeState = DEFAULT_STATE, action: Action) {
+    if(action.type == Type.SET_THEME) {
+        state = { temperature: action.temperature, is_light: action.is_light };
+    }
+
     return state;
 }

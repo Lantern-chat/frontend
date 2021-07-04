@@ -1,16 +1,24 @@
-import { createContext } from "react";
-
-import { change_color, darken, lighten, lightness, RGBColor, desaturate, formatRGB, adjust_color, kelvin2 } from "./color";
+import { change_color, darken, lighten, lightness, RGBColor, desaturate, formatRGB, adjust_color, kelvin2, rgb, rgb2hsl, hue, saturation, hsl2rgb } from "./color";
 
 const { min, max, round } = Math;
 
-export interface ITheme {
+export interface IThemeColors {
     primary_surface_color: RGBColor,
     secondary_surface_color: RGBColor,
     tertiary_surface_color: RGBColor,
     primary_text_color: RGBColor,
     secondary_text_color: RGBColor,
 }
+
+export interface ITheme {
+    temperature: number,
+    is_light: boolean,
+}
+
+export const DEFAULT_THEME: ITheme = {
+    temperature: 7500,
+    is_light: false,
+};
 
 export const MIN_TEMP: number = 965.0;
 export const MAX_TEMP: number = 12000;
@@ -19,26 +27,7 @@ let clamp_temp = (temp: number): number => min(MAX_TEMP, max(MIN_TEMP, temp));
 
 export var LIGHT_THEME: boolean = false;
 
-export interface IThemeContext {
-    is_light: boolean,
-    temperature: number,
-    setTheme: (theme: IThemeContext) => void,
-}
-
-export const DEFAULT_THEME: IThemeContext = {
-    is_light: false,
-    temperature: 7500,
-    setTheme: (_theme: IThemeContext) => { }
-};
-
-export const Theme = createContext<IThemeContext>(DEFAULT_THEME);
-if(__DEV__) {
-    Theme.displayName = "ThemeContext";
-}
-
-export function genDarkTheme(temperature: number): ITheme {
-    LIGHT_THEME = false;
-
+export function genDarkTheme(temperature: number): IThemeColors {
     temperature = clamp_temp(temperature);
     let k = kelvin2(temperature);
 
@@ -67,9 +56,15 @@ export function genDarkTheme(temperature: number): ITheme {
     };
 }
 
-export function genLightTheme(temperature: number): ITheme {
-    LIGHT_THEME = true;
+/*
+For light/dark modes:
 
+Secondary is darkest
+Primary is medium
+Tertiary is lightest
+*/
+
+export function genLightTheme(temperature: number): IThemeColors {
     temperature = clamp_temp(temperature);
     let k = kelvin2(temperature);
 
@@ -81,29 +76,46 @@ export function genLightTheme(temperature: number): ITheme {
     l *= -l;
     l += 0.99;
 
-    //console.log("saturation: ", s);
-    //console.log("lightness: ", l);
+    let primary_surface_color = change_color(k, { s, l });
+    let secondary_surface_color = adjust_color(primary_surface_color, { l: -0.1 });
 
-    let primary_surface_color = change_color(k, { s: s, l: l });
-    let secondary_surface_color = adjust_color(primary_surface_color, { l: -0.05, s: -0.4 });
-    let primary_text_color = change_color(primary_surface_color, {
-        s: 0,
-        l: 1.0 - lightness(primary_surface_color),
-    });
-    let secondary_text_color = lighten(primary_text_color, 0.3);
+    let s2 = Math.abs(temperature - 7000) / 2000;
+    s2 *= s2 * s2; // ^3
+    s2 = Math.min(0, Math.max(-1, s2 - 0.5));
+    let s3 = s2 + s;
+
+    secondary_surface_color = change_color(secondary_surface_color, { s: s3 });
+    let tertiary_surface_color = lighten(primary_surface_color, Math.max(0, 0.95 - lightness(primary_surface_color)));
+
+    let primary_text_color = rgb(0, 0, 0);
+    let secondary_text_color = lighten(primary_text_color, lightness(primary_surface_color) * 0.3);
+
+    let psc = rgb2hsl(primary_surface_color);
+    psc.l = Math.max(0, lightness(tertiary_surface_color) - 0.05);
+    psc.s = Math.min(1, s2 + psc.s);
+
+    primary_surface_color = hsl2rgb(psc);
 
     return {
         primary_surface_color,
         secondary_surface_color,
-        tertiary_surface_color: { r: 1, g: 1, b: 1 },
+        tertiary_surface_color,
         primary_text_color,
         secondary_text_color,
     }
 }
 
-var currentTimer: ReturnType<typeof setTimeout> | null = null;
+var currentTimer: ReturnType<typeof setTimeout>;
 
-export function setTheme(theme: ITheme, animate: boolean, is_light: boolean) {
+export function setTheme({ temperature, is_light }: ITheme, animate: boolean) {
+    let colors = is_light ? genLightTheme(temperature) : genDarkTheme(temperature);
+
+    setThemeColors(colors, animate, is_light);
+}
+
+export function setThemeColors(colors: IThemeColors, animate: boolean, is_light: boolean) {
+    LIGHT_THEME = is_light;
+
     let de = document.documentElement;
 
     if(animate) {
@@ -118,21 +130,26 @@ export function setTheme(theme: ITheme, animate: boolean, is_light: boolean) {
         de.classList.remove('ln-light-theme');
     }
 
-    for(let key in theme) {
+    for(let key in colors) {
         let varname = "--ln-" + key.replace(/_/g, '-');
-        let value = formatRGB(theme[key]);
+        let value = formatRGB(colors[key]);
 
         //console.log("Setting %s to %s", varname, value);
         de.style.setProperty(varname, value);
     }
 
     if(animate) {
-        if(currentTimer !== null) {
-            clearTimeout(currentTimer);
-        }
-
+        clearTimeout(currentTimer);
         currentTimer = setTimeout(() => {
             de.classList.remove("ln-theme-transition");
         }, 1000);
     }
+}
+
+const THEME_KEY: string = 'theme';
+
+export function loadTheme(): ITheme {
+    let theme = localStorage.getItem(THEME_KEY);
+
+    return theme ? { ...DEFAULT_THEME, ...JSON.parse(theme) } : DEFAULT_THEME;
 }

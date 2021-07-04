@@ -1,5 +1,7 @@
 import React, { useContext, useRef, useMemo, useState, useEffect } from "react";
 import { useSelector, shallowEqual } from "react-redux";
+import { createStructuredSelector } from 'reselect';
+
 import dayjs from "lib/time";
 
 import { Snowflake } from "state/models";
@@ -7,6 +9,9 @@ import { RootState, Type } from "state/root";
 import { IChatState, IWindowState } from "state/reducers";
 import { IMessageState } from "state/reducers/chat";
 
+import { pickColorFromHash } from "lib/palette";
+
+import { Avatar } from "ui/components/common/avatar";
 import { Message } from "./msg";
 import { Timeline, ITimelineProps } from "./timeline";
 
@@ -16,7 +21,12 @@ export interface IMessageListProps {
     channel: Snowflake
 }
 
-const MessageGroup = ({ group }: { group: IMessageState[] }) => {
+interface MessageGroupProps {
+    group: IMessageState[],
+    is_light_theme: boolean
+}
+
+const MessageGroup = ({ group, is_light_theme }: MessageGroupProps) => {
     let { msg } = group[0];
     let nickname = msg.member?.nick || msg.author.username;
 
@@ -40,7 +50,7 @@ const MessageGroup = ({ group }: { group: IMessageState[] }) => {
             );
 
             side = (
-                <Avatar username={nickname} text={nickname.charAt(0)} backgroundColor="#999" />
+                <Avatar username={nickname} text={nickname.charAt(0)} backgroundColor={pickColorFromHash(msg.msg.author.id, is_light_theme)} />
             );
         } else {
             side = (
@@ -65,14 +75,19 @@ const MessageGroup = ({ group }: { group: IMessageState[] }) => {
     );
 };
 
+const feed_selector = createStructuredSelector({
+    width: (state: RootState) => state.window.width,
+    is_light_theme: (state: RootState) => state.theme.is_light,
+});
+
 import "./feed.scss";
-import { Avatar } from "ui/components/common/avatar";
 export const MessageFeed = React.memo((props: IMessageListProps) => {
     let [scroll, setScroll] = useState(0);
 
-    let { room, width: windowWidth } = useSelector((state: RootState) => ({
+    let { room, width: windowWidth, is_light_theme } = useSelector((state: RootState) => ({
         room: state.chat.rooms.get(props.channel),
         width: state.window.width,
+        is_light_theme: state.theme.is_light,
     }));
 
     let groups: IMessageState[][] = useMemo(() => {
@@ -104,7 +119,6 @@ export const MessageFeed = React.memo((props: IMessageListProps) => {
             return <div className="ln-center-standalone">Channel does not exist</div>;
         }
 
-
         let showTimeline = windowWidth > 640,
             wrapperClasses = "ln-msg-list__wrapper ln-scroll-y",
             MaybeTimeline: React.FunctionComponent<ITimelineProps> = Timeline;
@@ -124,7 +138,7 @@ export const MessageFeed = React.memo((props: IMessageListProps) => {
                 <MaybeTimeline direction={0} position={0} />
                 <div className={wrapperClasses} onScroll={on_scroll}>
                     <ul className="ln-msg-list">
-                        {groups.map(group => <MessageGroup key={group[0].msg.id} group={group} />)}
+                        {groups.map(group => <MessageGroup key={group[0].msg.id} group={group} is_light_theme={is_light_theme} />)}
                     </ul>
                 </div>
             </>

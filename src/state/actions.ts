@@ -18,6 +18,8 @@ export enum Type {
     MODAL_OPEN_CREATE_PARTY = "MODAL_OPEN_CREATE_PARTY",
     MODAL_CLOSE_CREATE_PARTY = "MODAL_CLOSE_CREATE_PARTY",
 
+    SET_THEME = "SET_THEME",
+
     GATEWAY_EVENT = "GATEWAY_EVENT",
     GATEWAY_RETRY = "GATEWAY_RETRY",
 
@@ -42,6 +44,7 @@ export type Action =
     HistoryUpdate |
     SessionLogin |
     SessionExpired |
+    SetTheme |
     WindowResize |
     WindowToggleRightSidebar |
     WindowToggleLeftSidebar |
@@ -74,6 +77,14 @@ export interface SessionExpired {
 export interface SessionLogin {
     type: Type.SESSION_LOGIN,
     session: ISession,
+}
+
+// THEME ACTIONS
+
+export interface SetTheme {
+    type: Type.SET_THEME,
+    temperature: number,
+    is_light: boolean,
 }
 
 // WINDOW ACTIONS

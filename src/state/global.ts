@@ -4,6 +4,7 @@ import { enhancers, initialReducer, Type } from "./initial";
 import { createBrowserHistory } from "history";
 
 import { loadSession } from "lib/session";
+import { loadTheme, setTheme } from "lib/theme";
 import { recomputeHistoryContext } from "ui/components/history";
 
 export { DYNAMIC_MIDDLEWARE } from "./root";
@@ -17,7 +18,8 @@ export const GLOBAL: IGlobalState = {};
 export const HISTORY = createBrowserHistory();
 export const STORE = createStore(initialReducer, {
     history: recomputeHistoryContext(HISTORY),
-    user: { session: loadSession() }
+    user: { session: loadSession() },
+    theme: loadTheme(),
 }, enhancers);
 
 HISTORY.listen(update => STORE.dispatch({
@@ -54,3 +56,5 @@ if(ACCEPTABLE_PATHS.indexOf(first_part) == -1) {
 
     HISTORY.replace(DEFAULT_LOGGED_IN_CHANNEL);
 }
+
+setTheme(STORE.getState().theme, false);

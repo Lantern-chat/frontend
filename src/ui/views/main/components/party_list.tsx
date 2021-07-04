@@ -2,16 +2,17 @@ import React, { useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
 
+import { RootState } from "state/root";
+import { setSession, activateParty } from "state/commands";
+import { GatewayStatus } from "state/reducers/gateway";
+
 import { fetch, XHRMethod } from "lib/fetch";
-import { fnv1a } from "lib/fnv";
+import { pickColorFromHash } from "lib/palette";
 
 import { Link } from "ui/components/history";
 import { Avatar } from "ui/components/common/avatar";
 import { Glyphicon } from "ui/components/common/glyphicon";
-
-import { RootState } from "state/root";
-import { setSession, activateParty } from "state/commands";
-import { Snowflake } from "state/models";
+import { Spinner } from "ui/components/common/spinners/spinner";
 
 import LogoutIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-432-log-out.svg";
 
@@ -24,6 +25,7 @@ let sorted_party_selector = createSelector((state: RootState) => state.party.par
 
 let party_list_selector = createStructuredSelector({
     parties: sorted_party_selector,
+    is_light_theme: (state: RootState) => state.theme.is_light,
     user_object: (state: RootState) => state.user.user,
     auth: (state: RootState) => state.user.session!.auth,
     last_channel: (state: RootState) => state.party.last_channel,
@@ -33,10 +35,8 @@ let party_list_selector = createStructuredSelector({
 });
 
 import "./party_list.scss";
-import { Spinner } from "ui/components/common/spinners/spinner";
-import { GatewayStatus } from "state/reducers/gateway";
 export const PartyList = React.memo(() => {
-    let { create_party_open, user_object, parties, last_channel, auth, active_party, gateway_status } = useSelector(party_list_selector);
+    let { create_party_open, is_light_theme, user_object, parties, last_channel, auth, active_party, gateway_status } = useSelector(party_list_selector);
 
     let dispatch = useDispatch();
 
@@ -47,8 +47,6 @@ export const PartyList = React.memo(() => {
             bearer: auth,
         }).then(() => setSession(null))
     );
-
-    let colors = ['goldenrod', 'royalblue', 'darkgreen', 'crimson'];
 
     const GATEWAY_PENDING = [GatewayStatus.Connecting, GatewayStatus.Waiting, GatewayStatus.Unknown];
 
@@ -63,7 +61,7 @@ export const PartyList = React.memo(() => {
                     className={party.id == active_party ? 'selected' : ''}>
                     <Link href={`/channels/${party.id}${last}`} onNavigate={() => dispatch(activateParty(party.id))}>
                         <Avatar rounded url={url} text={party.name.charAt(0)}
-                            username={party.name} span={{ title: party.name }} backgroundColor={colors[fnv1a(party.id) % colors.length]} />
+                            username={party.name} span={{ title: party.name }} backgroundColor={pickColorFromHash(party.id, is_light_theme)} />
                     </Link>
                 </li>
             );
