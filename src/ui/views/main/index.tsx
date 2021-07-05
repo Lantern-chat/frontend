@@ -52,7 +52,7 @@ import { Panel } from "state/reducers/window";
 export const MainView: React.FunctionComponent = React.memo(() => {
     //let { parts } = useSelector(selectPath);
 
-    let is_right_view = useSelector((state: RootState) => state.window.use_mobile_view && state.window.show_panel == Panel.RightSidebar);
+    let is_right_view = useSelector((state: RootState) => state.window.use_mobile_view && state.window.show_panel == Panel.RightUserList);
 
     let party_list = is_right_view ? null : <PartyList />;
 

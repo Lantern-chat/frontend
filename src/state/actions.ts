@@ -12,8 +12,8 @@ export enum Type {
     SESSION_EXPIRED = "SESSION_EXPIRED",
 
     WINDOW_RESIZE = "WINDOW_RESIZE",
-    WINDOW_TOGGLE_RIGHT_SIDEBAR = "WINDOW_TOGGLE_RIGHT_SIDEBAR",
-    WINDOW_TOGGLE_LEFT_SIDEBAR = "WINDOW_TOGGLE_LEFT_SIDEBAR",
+    WINDOW_TOGGLE_USER_LIST_SIDEBAR = "WINDOW_TOGGLE_USER_LIST_SIDEBAR",
+    WINDOW_TOGGLE_ROOM_LIST_SIDEBAR = "WINDOW_TOGGLE_ROOM_LIST_SIDEBAR",
 
     MODAL_OPEN_CREATE_PARTY = "MODAL_OPEN_CREATE_PARTY",
     MODAL_CLOSE_CREATE_PARTY = "MODAL_CLOSE_CREATE_PARTY",
@@ -47,8 +47,8 @@ export type Action =
     SessionExpired |
     SetTheme |
     WindowResize |
-    WindowToggleRightSidebar |
-    WindowToggleLeftSidebar |
+    WindowToggleUserListSidebar |
+    WindowToggleRoomListSidebar |
     ModalOpenCreateParty |
     ModalCloseCreateParty |
     GatewayEvent |
@@ -95,12 +95,12 @@ export interface WindowResize {
     type: Type.WINDOW_RESIZE,
 }
 
-export interface WindowToggleRightSidebar {
-    type: Type.WINDOW_TOGGLE_RIGHT_SIDEBAR,
+export interface WindowToggleUserListSidebar {
+    type: Type.WINDOW_TOGGLE_USER_LIST_SIDEBAR,
 }
 
-export interface WindowToggleLeftSidebar {
-    type: Type.WINDOW_TOGGLE_LEFT_SIDEBAR,
+export interface WindowToggleRoomListSidebar {
+    type: Type.WINDOW_TOGGLE_ROOM_LIST_SIDEBAR,
 }
 
 // MODAL ACTIONS

@@ -154,6 +154,13 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
             }
             break;
         }
+        case Type.WINDOW_TOGGLE_USER_LIST_SIDEBAR: {
+            let w = getState().window;
+            if(!w.use_mobile_view) {
+                localStorage.setItem('SHOW_USER_LIST', JSON.stringify(w.show_user_list));
+            }
+            break;
+        }
     }
 
     return res;

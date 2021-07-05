@@ -1,6 +1,30 @@
+@import "lib/variables";
+
 .ln-channel {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
     height: 100%;
+
+    &__local {
+        height: 100%;
+        display: flex;
+    }
+
+    &__feed {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+    }
+
+    &__members {
+        flex: 0 1 auto;
+        height: 100%;
+        width: 14em;
+
+        @media (max-width: $ln-min-channel-width) {
+            display: none;
+        }
+    }
 }

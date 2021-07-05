@@ -163,12 +163,12 @@ export const MessageFeed = React.memo((props: IMessageListProps) => {
     if(use_mobile_view && show_panel != Panel.Main) {
         let on_click = () => {
             switch(show_panel) {
-                case Panel.LeftSidebar: {
-                    dispatch({ type: Type.WINDOW_TOGGLE_LEFT_SIDEBAR });
+                case Panel.LeftRoomList: {
+                    dispatch({ type: Type.WINDOW_TOGGLE_ROOM_LIST_SIDEBAR });
                     break;
                 }
-                case Panel.RightSidebar: {
-                    dispatch({ type: Type.WINDOW_TOGGLE_RIGHT_SIDEBAR });
+                case Panel.RightUserList: {
+                    dispatch({ type: Type.WINDOW_TOGGLE_USER_LIST_SIDEBAR });
                     break;
                 }
             }

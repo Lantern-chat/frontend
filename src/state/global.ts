@@ -6,6 +6,7 @@ import { createBrowserHistory } from "history";
 import { loadSession } from "lib/session";
 import { loadTheme, setTheme } from "lib/theme";
 import { recomputeHistoryContext } from "ui/components/history";
+import { DEFAULT_STATE as DEFAULT_WINDOW } from "./reducers/window";
 
 export { DYNAMIC_MIDDLEWARE } from "./root";
 
@@ -20,6 +21,13 @@ export const STORE = createStore(initialReducer, {
     history: recomputeHistoryContext(HISTORY),
     user: { session: loadSession() },
     theme: loadTheme(),
+    window: {
+        ...DEFAULT_WINDOW,
+        show_user_list: (() => {
+            let show_user_list = localStorage.getItem('SHOW_USER_LIST');
+            return typeof show_user_list == 'string' ? JSON.parse(show_user_list) : DEFAULT_WINDOW.show_user_list;
+        })()
+    }
 }, enhancers);
 
 HISTORY.listen(update => STORE.dispatch({

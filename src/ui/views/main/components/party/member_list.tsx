@@ -24,9 +24,11 @@ export const MemberList = React.memo(() => {
         let user = member.user!;
         let nick = member.nick || user.username;
 
-        return <div>
-            {nick}
-        </div>
+        return (
+            <div key={user.id}>
+                {nick}
+            </div>
+        );
     });
 
     return (

@@ -29,31 +29,92 @@ export const Party = React.memo(() => {
 
     let classes = ["ln-party__channel"],
         sidebar_classes = ["ln-party__sidebar"],
-        user_list_classes = ["ln-party__user-list"],
-        left, right, show_left = true, show_right = true;
+        left, right,
+        on_touch_start, on_touch_end,
+        show_left = true; // always visible on Desktop
 
     if(use_mobile_view) {
-        let sc = sidebar_classes[0], ulc = user_list_classes[0];
+        on_touch_start = (e: React.TouchEvent<HTMLDivElement>) => {
+            let t = e.changedTouches[0];
+            setSwipeStart([t.screenX, t.screenY]);
+        };
+        on_touch_end = (e: React.TouchEvent<HTMLDivElement>) => {
+            let t = e.changedTouches[0],
+                end_x = t.screenX,
+                end_y = t.screenY,
+                [start_x, start_y] = swipe_start,
+                delta_x = end_x - start_x,
+                delta_y = end_y - start_y,
+                aspect = Math.abs(delta_x / delta_y);
+
+            if(Math.abs(delta_x) > 40 && aspect > 1.5) {
+                if(delta_x > 0) {
+                    // swiped RIGHT
+
+                    switch(show_panel) {
+                        case Panel.Main: {
+                            // swiped right on main, go to channel list
+                            dispatch({ type: Type.WINDOW_TOGGLE_ROOM_LIST_SIDEBAR });
+                            break;
+                        }
+                        case Panel.RightUserList: {
+                            // swiped right on users, go to main
+                            dispatch({ type: Type.WINDOW_TOGGLE_USER_LIST_SIDEBAR });
+                            break;
+                        }
+                    }
+
+                } else {
+                    // swiped LEFT
+
+                    switch(show_panel) {
+                        case Panel.Main: {
+                            // swiped left on main, go to users
+                            dispatch({ type: Type.WINDOW_TOGGLE_USER_LIST_SIDEBAR });
+                            break;
+                        }
+                        case Panel.LeftRoomList: {
+                            // swiped left on channels, go to main
+                            dispatch({ type: Type.WINDOW_TOGGLE_ROOM_LIST_SIDEBAR });
+                            break;
+                        }
+                    }
+                }
+            }
+        };
+
+        let user_list_classes = ["ln-party__user-list"],
+            sc = sidebar_classes[0],
+            ulc = user_list_classes[0],
+            show_right = true;
 
         switch(show_panel) {
-            case Panel.RightSidebar: {
+            case Panel.RightUserList: {
                 classes.push(classes[0] + '--expanded-right');
                 show_left = false;
                 break;
             }
-            case Panel.LeftSidebar: {
+            case Panel.LeftRoomList: {
                 classes.push(classes[0] + '--expanded-left');
                 show_right = false;
                 break;
             }
             case Panel.Main:
             default: {
-                show_left = last_panel == Panel.LeftSidebar;
-                show_right = last_panel == Panel.RightSidebar;
+                show_left = last_panel == Panel.LeftRoomList;
+                show_right = last_panel == Panel.RightUserList;
 
                 sidebar_classes.push(sc + '--closed');
                 user_list_classes.push(ulc + '--closed');
             }
+        }
+
+        if(show_right) {
+            right = (
+                <div className={user_list_classes.join(' ')}>
+                    <MemberList />
+                </div>
+            );
         }
     }
 
@@ -65,82 +126,6 @@ export const Party = React.memo(() => {
                 <PartyFooter />
             </div>
         );
-    }
-
-    if(show_right) {
-        right = (
-            <div className={user_list_classes.join(' ')}>
-                <MemberList />
-            </div>
-        );
-    }
-
-    let on_touch_start, on_touch_end;
-
-    if(use_mobile_view) {
-        //if(show_panel != Panel.Main) {
-        //    on_touch = () => {
-        //        switch(show_panel) {
-        //            case Panel.LeftSidebar: {
-        //                dispatch({ type: Type.WINDOW_TOGGLE_LEFT_SIDEBAR });
-        //                break;
-        //            }
-        //            case Panel.RightSidebar: {
-        //                dispatch({ type: Type.WINDOW_TOGGLE_RIGHT_SIDEBAR });
-        //                break;
-        //            }
-        //        }
-        //    };
-        //}
-
-        on_touch_start = (e: React.TouchEvent<HTMLDivElement>) => {
-            let t = e.changedTouches[0];
-            setSwipeStart([t.screenX, t.screenY]);
-        };
-        on_touch_end = (e: React.TouchEvent<HTMLDivElement>) => {
-            let t = e.changedTouches[0],
-                end_x = t.screenX,
-                end_y = t.screenY,
-                [start_x, start_y] = swipe_start,
-                moved_x = end_x - start_x,
-                moved_y = end_y - start_y,
-                aspect = Math.abs(moved_x / moved_y);
-
-            if(Math.abs(moved_x) > 40 && aspect > 1.5) {
-                if(moved_x > 0) {
-                    // swiped RIGHT
-
-                    switch(show_panel) {
-                        case Panel.Main: {
-                            // swiped right on main, go to channel list
-                            dispatch({ type: Type.WINDOW_TOGGLE_LEFT_SIDEBAR });
-                            break;
-                        }
-                        case Panel.RightSidebar: {
-                            // swiped right on users, go to main
-                            dispatch({ type: Type.WINDOW_TOGGLE_RIGHT_SIDEBAR });
-                            break;
-                        }
-                    }
-
-                } else {
-                    // swiped LEFT
-
-                    switch(show_panel) {
-                        case Panel.Main: {
-                            // swiped left on main, go to users
-                            dispatch({ type: Type.WINDOW_TOGGLE_RIGHT_SIDEBAR });
-                            break;
-                        }
-                        case Panel.LeftSidebar: {
-                            // swiped left on channels, go to main
-                            dispatch({ type: Type.WINDOW_TOGGLE_LEFT_SIDEBAR });
-                            break;
-                        }
-                    }
-                }
-            }
-        };
     }
 
     return (

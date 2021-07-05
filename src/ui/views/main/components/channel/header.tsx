@@ -14,14 +14,14 @@ export const ChannelHeader = React.memo(() => {
     return (
         <div className="ln-channel-header">
             <div className="ln-channel-header__hamburger"
-                onClick={() => dispatch({ type: Type.WINDOW_TOGGLE_LEFT_SIDEBAR })}>
+                onClick={() => dispatch({ type: Type.WINDOW_TOGGLE_ROOM_LIST_SIDEBAR })}>
                 <Glyphicon src={Menu} />
             </div>
 
             Channel Header
 
             <div className="ln-channel-header__users"
-                onClick={() => dispatch({ type: Type.WINDOW_TOGGLE_RIGHT_SIDEBAR })}>
+                onClick={() => dispatch({ type: Type.WINDOW_TOGGLE_USER_LIST_SIDEBAR })}>
                 <Glyphicon src={Users} />
             </div>
         </div>

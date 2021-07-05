@@ -1,7 +1,7 @@
 export enum Panel {
-    LeftSidebar,
+    LeftRoomList,
     Main,
-    RightSidebar,
+    RightUserList,
 }
 
 export interface IWindowState {
@@ -9,6 +9,7 @@ export interface IWindowState {
     use_mobile_view: boolean,
     show_panel: Panel,
     last_panel: Panel,
+    show_user_list: boolean,
 }
 
 export const MOBILE_MAX_SIZE: number = 640;
@@ -17,6 +18,7 @@ export const DEFAULT_STATE: IWindowState = {
     use_mobile_view: window.innerWidth < MOBILE_MAX_SIZE,
     show_panel: Panel.Main,
     last_panel: Panel.Main,
+    show_user_list: true,
 };
 
 import { Action, Type } from "../actions";
@@ -27,14 +29,18 @@ export function windowReducer(state: IWindowState = DEFAULT_STATE, action: Actio
             let width = window.innerWidth;
             return { ...state, width, use_mobile_view: width < MOBILE_MAX_SIZE };
         }
-        case Type.WINDOW_TOGGLE_RIGHT_SIDEBAR: {
-            let show_panel = state.show_panel === Panel.Main ? Panel.RightSidebar : Panel.Main;
-
-            return { ...state, show_panel, last_panel: state.show_panel };
+        case Type.WINDOW_TOGGLE_USER_LIST_SIDEBAR: {
+            if(state.use_mobile_view) {
+                let show_panel = state.show_panel === Panel.Main ? Panel.RightUserList : Panel.Main;
+                return { ...state, show_panel, last_panel: state.show_panel };
+            } else {
+                return { ...state, show_user_list: !state.show_user_list };
+            }
         }
-        case Type.WINDOW_TOGGLE_LEFT_SIDEBAR: {
-            let show_panel = state.show_panel === Panel.Main ? Panel.LeftSidebar : Panel.Main;
+        case Type.WINDOW_TOGGLE_ROOM_LIST_SIDEBAR: {
+            if(!state.use_mobile_view) break;
 
+            let show_panel = state.show_panel === Panel.Main ? Panel.LeftRoomList : Panel.Main;
             return { ...state, show_panel, last_panel: state.show_panel };
         }
     }
