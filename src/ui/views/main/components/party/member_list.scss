@@ -3,4 +3,74 @@
 .ln-member-list {
     background-color: $lnx-primary-surface-color;
     height: 100%;
+
+    &__item {
+        padding: 0.25em 0.75em;
+    }
+
+    .ln-avatar {
+        font-size: 1.5em;
+    }
+
+    li {
+        display: flex;
+        flex-wrap: nowrap;
+        line-height: normal;
+        cursor: pointer;
+        border-radius: 0.2em;
+
+        &:first-child {
+            margin-top: 1em;
+        }
+
+        &:last-child {
+            margin-bottom: 1em;
+        }
+
+        &:hover {
+            background-color: rgba(128, 128, 128, 0.1);
+        }
+    }
+}
+
+.ln-member {
+    &__name {
+        margin-left: 0.5em;
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: center;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+
+        span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    &__avatar {
+        position: relative;
+    }
+
+    &__status {
+        position: absolute;
+        bottom: -0.2em;
+        right: -0.2em;
+
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: center;
+
+        span {
+            border: 2px solid #333;
+
+            border-radius: 50%;
+            background-color: lightgreen;
+            width: 0.85em;
+            height: 0.85em;
+            display: inline-block;
+        }
+    }
 }
