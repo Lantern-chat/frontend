@@ -24,11 +24,10 @@ let Root = () => {
         let [pos, setPos] = useState<{ x: number, y: number } | null>(null);
 
         let debug = pos && <div style={{
-            position: 'absolute', width: '15px', height: '15px',
-            top: pos.y, left: pos.x,
-            borderRadius: '100%',
-            backgroundColor: 'rgba(128, 128, 128, 0.5)',
-            border: '2px solid blue',
+            position: 'absolute', width: '30px', height: '30px',
+            top: pos.y - 15, left: pos.x - 15, // make sure to offset by half dimensions
+            //borderRadius: '100%',
+            background: 'radial-gradient(#ccc, rgba(0, 0, 0, 0) 50%)',
             zIndex: 99999,
         }} />;
 

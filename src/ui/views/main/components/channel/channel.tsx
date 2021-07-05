@@ -34,6 +34,7 @@ export const Channel = React.memo((props: IChannelProps) => {
     }
 
     if(use_mobile_view) {
+        // mobile doesn't need to wrap anything or show the user-list
         inner = (
             <>
                 {feed_box}
@@ -50,7 +51,7 @@ export const Channel = React.memo((props: IChannelProps) => {
         }
 
         inner = (
-            <div className="ln-channel__local">
+            <div className="ln-channel__wrapper">
                 <div className="ln-channel__feed">
                     {feed_box}
                     <MessageBox channel={props.channel} />

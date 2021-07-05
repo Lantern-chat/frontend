@@ -88,6 +88,8 @@ export const Party = React.memo(() => {
             ulc = user_list_classes[0],
             show_right = true;
 
+        // handle switching between open panels on mobile
+        // Panels default to "show", so
         switch(show_panel) {
             case Panel.RightUserList: {
                 classes.push(classes[0] + '--expanded-right');
