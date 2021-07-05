@@ -14,7 +14,7 @@ export const GenericModal = React.memo((props: GenericModalProps) => {
     return (
         <Modal>
             <div className="ln-modal" onClick={props.onClose}>
-                <div onClick={e => e.stopPropagation()}>
+                <div className="ln-modal__inner" onClick={e => e.stopPropagation()}>
                     <div className="ln-modal__close" onClick={props.onClose}>
                         <Glyphicon src={MenuClose} />
                     </div>

@@ -38,11 +38,12 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
         }
         case Type.PARTY_LOADED: {
             let state = getState(),
-                room_id = state.history.parts[2],
-                room = action.rooms.find(room => room.id == room_id), chat_room;
+                room_id = state.chat.active_room,
+                room = room_id && action.rooms.find(room => room.id == room_id),
+                chat_room;
 
             // if there is a room selected, load messages for it
-            if(room) {
+            if(room && room_id) {
                 // if chat history of room exists already, try to only load new messages
                 // this really only happens on a gateway reconnect, which refreshes the whole party
                 // and triggers PARTY_LOADED again
@@ -78,14 +79,14 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
                 } else {
                     // if the history updated and gateway is good, load
                     // any new messages for the now-active channel
-                    let room_id = parts[2],
-                        room = state.chat.rooms.get(room_id);
+                    let room_id = state.chat.active_room,
+                        room = room_id && state.chat.rooms.get(room_id);
 
                     if(room) {
                         let last_msg = room.msgs[room.msgs.length - 1];
                         let last_msg_id = last_msg != null ? last_msg.msg.id : undefined;
 
-                        dispatch(loadMessages(room_id, last_msg_id, SearchMode.After));
+                        dispatch(loadMessages(room.room.id, last_msg_id, SearchMode.After));
                     }
                 }
             }
@@ -135,9 +136,11 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
                     break;
                 }
                 case GatewayMessageDiscriminator.Ready: {
-                    let state = getState(), parties = state.party.parties, party_id = state.history.parts[1];
+                    let state = getState(),
+                        parties = state.party.parties,
+                        party_id = state.chat.active_party;
 
-                    if(parties.has(party_id)) {
+                    if(party_id && parties.has(party_id)) {
                         // gateway has connected, so fetch the currently selected party id
                         // this is generally for fresh-loads, but reconnects trigger this as well
                         // so any reconnects will re-activate the selected party, which

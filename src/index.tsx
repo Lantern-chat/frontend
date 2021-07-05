@@ -37,7 +37,7 @@ let Root = () => {
         };
 
         app = (
-            <div onTouchMove={onTouch} onTouchStart={onTouch} onTouchEnd={onTouch} style={{ width: '100%', height: '100%' }}>
+            <div onTouchMove={onTouch} onTouchEnd={onTouch} style={{ width: '100%', height: '100%' }}>
                 {debug}
                 {app}
             </div>

@@ -1,0 +1,45 @@
+@import "lib/variables";
+
+@keyframes profile-zoom-in {
+    0% {
+        transform: scale(2);
+    }
+    100% {
+        transform: scale(1);
+        transform: unset;
+    }
+}
+
+@keyframes profile-fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.ln-profile {
+    background-color: $lnx-primary-surface-color;
+
+    //background: radial-gradient(blue, red, purple, green);
+
+    .ln-enable-motion & {
+        animation-duration: 0.2s;
+        animation-fill-mode: forwards;
+        animation-timing-function: ease-in;
+    }
+
+    @media (min-width: $ln-min-channel-width) {
+        animation-name: profile-zoom-in, profile-fade-in;
+    }
+
+    @media (max-width: $ln-min-channel-width) {
+        animation-name: profile-fade-in;
+    }
+
+    &__wrapper {
+        position: relative;
+        margin: auto auto;
+    }
+}

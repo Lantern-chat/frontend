@@ -66,6 +66,7 @@ export interface IRoomState {
 
 export interface IChatState {
     rooms: Map<Snowflake, IRoomState>,
+    active_party?: Snowflake,
     active_room?: Snowflake,
 }
 
@@ -78,6 +79,20 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
 
     switch(action.type) {
         case Type.SESSION_EXPIRED: return DEFAULT_STATE;
+
+        case Type.REFRESH_ACTIVE:
+        case Type.HISTORY_UPDATE: {
+            let parts = action.ctx.parts;
+            if(parts[0] == 'channels') {
+                return {
+                    ...state,
+                    active_party: parts[1],
+                    active_room: parts[2],
+                };
+            }
+
+            break;
+        }
 
         case Type.PARTY_LOADED: return produce(state, draft => {
             for(let room of action.rooms) {

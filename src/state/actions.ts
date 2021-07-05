@@ -11,6 +11,8 @@ export enum Type {
     SESSION_LOGIN = "SESSION_LOGIN",
     SESSION_EXPIRED = "SESSION_EXPIRED",
 
+    REFRESH_ACTIVE = "REFRESH_ACTIVE",
+
     WINDOW_RESIZE = "WINDOW_RESIZE",
     WINDOW_TOGGLE_USER_LIST_SIDEBAR = "WINDOW_TOGGLE_USER_LIST_SIDEBAR",
     WINDOW_TOGGLE_ROOM_LIST_SIDEBAR = "WINDOW_TOGGLE_ROOM_LIST_SIDEBAR",
@@ -56,6 +58,7 @@ export type Action =
     PartyLoaded |
     MessagesLoaded |
     MembersLoaded |
+    RefreshActive |
     MessageSend |
     MessageDiscordEdit |
     MessageEditPrev |
@@ -116,6 +119,7 @@ export interface ModalCloseCreateParty {
 // GATEWAY ACTIONS
 
 import { GatewayMessage } from "worker/gateway/msg";
+import { IHistoryContext } from "ui/components/history";
 export interface GatewayEvent {
     type: Type.GATEWAY_EVENT,
     payload: GatewayMessage
@@ -143,6 +147,11 @@ export interface MembersLoaded {
     type: Type.MEMBERS_LOADED,
     party_id: Snowflake,
     members: PartyMember[],
+}
+
+export interface RefreshActive {
+    type: Type.REFRESH_ACTIVE,
+    ctx: IHistoryState,
 }
 
 // MESSAGE ACTIONS

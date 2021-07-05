@@ -4,10 +4,12 @@ import { mainReducer, Type } from "state/main";
 import { GLOBAL, STORE, DYNAMIC_MIDDLEWARE, HISTORY } from "state/global";
 import { mainMiddleware } from "state/middleware/main";
 
-STORE.replaceReducer(mainReducer);
 DYNAMIC_MIDDLEWARE.addMiddleware(mainMiddleware);
+STORE.replaceReducer(mainReducer);
 
 let session = STORE.getState().user.session;
+
+STORE.dispatch({ type: Type.REFRESH_ACTIVE, ctx: STORE.getState().history });
 
 // if there is an existing session, fire off the login again to refresh parts of the state
 if(session) {

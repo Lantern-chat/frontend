@@ -13,7 +13,7 @@ import { MemberList } from "../party/member_list";
 
 export interface IChannelProps {
     channel?: Snowflake,
-    party: Snowflake,
+    //party: Snowflake,
 }
 
 let channel_selector = createStructuredSelector({

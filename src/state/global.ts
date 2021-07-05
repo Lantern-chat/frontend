@@ -17,6 +17,7 @@ interface IGlobalState {
 export const GLOBAL: IGlobalState = {};
 
 export const HISTORY = createBrowserHistory();
+
 export const STORE = createStore(initialReducer, {
     history: recomputeHistoryContext(HISTORY),
     user: { session: loadSession() },

@@ -28,11 +28,11 @@ const ListedChannel = React.memo(({ room }: { room: Room }) => {
 
 
 let channel_list_selector = createSelector(
-    (state: RootState) => state.history.parts[1], // party_id
-    (state: RootState) => state.history.parts[2], // room_id
+    (state: RootState) => state.chat.active_party, // party_id
+    (state: RootState) => state.chat.active_room, // room_id
     (state: RootState) => state.party.parties,
     (party_id, room_id, parties) => {
-        let party = parties.get(party_id);
+        let party = party_id ? parties.get(party_id) : null;
 
         return {
             selected: room_id,

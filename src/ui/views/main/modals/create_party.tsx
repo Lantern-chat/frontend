@@ -5,12 +5,7 @@ import { RootState, Type } from "state/root";
 import { GenericModal } from "./generic";
 
 export const CreatePartyModal = React.memo(() => {
-    let open = useSelector((state: RootState) => state.modals.create_party_open);
     let dispatch = useDispatch();
-
-    if(!open) {
-        return null;
-    }
 
     return (
         <GenericModal onClose={() => dispatch({ type: Type.MODAL_CLOSE_CREATE_PARTY })}>

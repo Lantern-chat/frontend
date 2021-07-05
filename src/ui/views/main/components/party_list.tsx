@@ -31,7 +31,7 @@ let party_list_selector = createStructuredSelector({
     last_channel: (state: RootState) => state.party.last_channel,
     create_party_open: (state: RootState) => state.modals.create_party_open,
     gateway_status: (state: RootState) => state.gateway.status,
-    active_party: (state: RootState) => state.history.parts[1] // /channels/:party_id/:channel_id
+    active_party: (state: RootState) => state.chat.active_party // /channels/:party_id/:channel_id
 });
 
 import "./party_list.scss";
