@@ -1,0 +1,7 @@
+@import "lib/variables";
+
+.ln-msg-list__timeline {
+    @media (max-width: $ln-min-channel-width) {
+        display: none;
+    }
+}

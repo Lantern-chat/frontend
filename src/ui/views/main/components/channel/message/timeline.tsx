@@ -45,6 +45,7 @@ function render_timeline(props: ITimelineProps, { width = 0, height = 0 }: { wid
     }
 }
 
+import "./timeline.scss";
 export const Timeline = React.memo((props: ITimelineProps) => {
     const { width, height, ref } = useResizeDetector();
 
