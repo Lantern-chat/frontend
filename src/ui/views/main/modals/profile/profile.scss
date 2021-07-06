@@ -10,12 +10,30 @@
     }
 }
 
+@keyframes profile-zoom-out {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(2);
+    }
+}
+
 @keyframes profile-fade-in {
     0% {
         opacity: 0;
     }
     100% {
         opacity: 1;
+    }
+}
+
+@keyframes profile-fade-out {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
     }
 }
 
@@ -26,16 +44,28 @@
 
     .ln-enable-motion & {
         animation-duration: 0.2s;
-        animation-fill-mode: forwards;
         animation-timing-function: ease-in;
+        animation-fill-mode: forwards;
     }
 
-    @media (min-width: $ln-min-channel-width) {
-        animation-name: profile-zoom-in, profile-fade-in;
+    &--opened {
+        @media (min-width: $ln-min-channel-width) {
+            animation-name: profile-zoom-in, profile-fade-in;
+        }
+
+        @media (max-width: $ln-min-channel-width) {
+            animation-name: profile-fade-in;
+        }
     }
 
-    @media (max-width: $ln-min-channel-width) {
-        animation-name: profile-fade-in;
+    &--closing {
+        @media (min-width: $ln-min-channel-width) {
+            animation-name: profile-zoom-out, profile-fade-out;
+        }
+
+        @media (max-width: $ln-min-channel-width) {
+            animation-name: profile-fade-out;
+        }
     }
 
     &__wrapper {
