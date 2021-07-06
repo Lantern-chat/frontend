@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
 import { RootState } from "state/root";
 
-import { Avatar } from "ui/components/common/avatar";
+import { UserAvatar } from "../user_avatar";
 
 let user_list_selector = createSelector(
     (state: RootState) => state.chat.active_party, // party_id
@@ -34,10 +34,7 @@ export const MemberList = React.memo(() => {
 
         return (
             <li key={user.id} className="ln-member-list__item">
-                <div className="ln-member__avatar">
-                    <Avatar username={nick} text={nick.charAt(0)} backgroundColor={pickColorFromHash(user.id, is_light_theme)} />
-                    <div className="ln-member__status"><span /></div>
-                </div>
+                <UserAvatar nickname={nick} user={user} status="online" is_light_theme={is_light_theme} />
                 <div className="ln-member__name">
                     <span>{nick}</span>
                 </div>

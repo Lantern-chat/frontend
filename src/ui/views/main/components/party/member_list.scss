@@ -49,28 +49,4 @@
             white-space: nowrap;
         }
     }
-
-    &__avatar {
-        position: relative;
-    }
-
-    &__status {
-        position: absolute;
-        bottom: -0.2em;
-        right: -0.2em;
-
-        display: inline-flex;
-        flex-direction: column;
-        justify-content: center;
-
-        span {
-            border: 2px solid #333;
-
-            border-radius: 50%;
-            background-color: lightgreen;
-            width: 0.85em;
-            height: 0.85em;
-            display: inline-block;
-        }
-    }
 }
