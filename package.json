@@ -26,6 +26,7 @@
     "katex": "^0.13.11",
     "list": "^2.0.19",
     "lodash": "^4.17.20",
+    "mdast-util-find-and-replace": "^2.0.1",
     "micromark": "^2.11.4",
     "mime": "^2.5.2",
     "pako": "^2.0.2",

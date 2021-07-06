@@ -10,6 +10,7 @@ import SyntaxHighlighter from 'react-syntax-highlighter'
 import "katex/contrib/mhchem/mhchem";
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+//import spoiler from "./plugins/spoiler";
 
 import 'katex/dist/katex.min.css'
 import "./advanced.scss";

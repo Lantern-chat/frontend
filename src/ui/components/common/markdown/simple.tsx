@@ -10,6 +10,7 @@ import external from 'remark-external-links';
 import "./markdown.scss";
 
 import { MarkdownProps } from "./types";
+//import spoiler from "./plugins/spoiler";
 
 export const renderers: Components = {
     a: ({ node, ...props }) => (<a target="_blank" {...props} />),
