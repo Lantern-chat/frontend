@@ -9,8 +9,83 @@
     border-top: 2px solid $lnx-secondary-surface-color;
     height: 3em;
     max-height: 3em;
+    margin: auto auto;
+    display: flex;
 
     @media (max-width: $ln-min-channel-width) {
         border-bottom-right-radius: 1em;
+    }
+
+    svg {
+        fill: $lnx-primary-text-color;
+    }
+
+    &__user {
+        display: flex;
+        flex-shrink: 0;
+
+        .ln-avatar {
+            font-size: 1.25em;
+            margin: auto 0;
+        }
+    }
+
+    .ln-username {
+        font-size: 0.8em;
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        margin: auto 0 auto 0.5em;
+
+        &__discrim {
+            color: $lnx-secondary-text-color;
+        }
+    }
+
+    &__settings {
+        //display: flex;
+        //justify-content: right;
+        text-align: right;
+        width: 100%;
+        font-size: 1.75em;
+
+        > * {
+            margin: auto 0;
+        }
+
+        a,
+        > div {
+            cursor: pointer;
+            display: inline-block;
+
+            &:hover {
+                background-color: rgba(128, 128, 128, 0.2);
+            }
+
+            border-radius: 20%;
+        }
+
+        .ln-enable-motion & > div:hover .ln-glyphicon {
+            animation: 0.4s cubic-bezier(0.29, 1.06, 0.56, 1.35) ln-wobble;
+        }
+
+        a[href="/profile"]:hover {
+            .ln-enable-motion & .ln-glyphicon {
+                transition: transform cubic-bezier(0.29, 1.06, 0.56, 1.35) 0.3s;
+                transform: rotate(90deg);
+            }
+        }
+    }
+}
+
+@keyframes ln-wobble {
+    33% {
+        transform: rotate(-5deg);
+    }
+    66% {
+        transform: rotate(5deg);
+    }
+    100% {
+        transform: rotate(0);
     }
 }
