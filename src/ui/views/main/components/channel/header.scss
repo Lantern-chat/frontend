@@ -41,11 +41,20 @@
     &__users {
         text-align: right;
         flex: 1 0 3em;
+
+        > span {
+            padding-right: 0;
+        }
     }
 
     &__hamburger {
         flex: 0 0 auto;
         text-align: left;
+
+        > span {
+            padding-left: 0;
+        }
+
         @media (min-width: $ln-min-channel-width) {
             display: none;
         }
