@@ -161,7 +161,7 @@ class Gateway {
         this.send({ o: GatewayClientCommandDiscriminator.Heartbeat });
 
         // in hbi milliseconds, check if an ACK has been received or disconnect/reconnect
-        setTimeout(() => { if(this.heartbeat_waiting_on_ack) { this.disconnect() } }, this.heartbeat_interval);
+        setTimeout(() => { if(this.heartbeat_waiting_on_ack) { this.disconnect() } }, this.heartbeat_interval * 2);
     }
 
     disconnect() {
