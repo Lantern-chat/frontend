@@ -8,32 +8,97 @@
     height: 3em;
     max-height: 3em;
     flex-shrink: 0;
-    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    &__wrapper {
+        display: flex;
+        flex-wrap: nowrap;
+    }
+
+    &__info {
+        flex: 1 1 auto;
+        display: flex;
+        flex-wrap: nowrap;
+
+        @media (min-width: $ln-min-channel-width) {
+            text-align: left;
+        }
+    }
 
     &__hamburger,
     &__users {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        cursor: pointer;
-
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-
-        padding: 0.25em;
-        font-size: 2em;
-    }
-
-    &__hamburger {
-        left: 0;
-
-        @media (min-width: $ln-min-channel-width) {
-            display: none;
+        > span {
+            display: block;
+            padding: 0.25em;
+            font-size: 2em;
+            cursor: pointer;
         }
     }
 
     &__users {
-        right: 0;
+        text-align: right;
+        flex: 1 0 3em;
+    }
+
+    &__hamburger {
+        flex: 0 0 auto;
+        text-align: left;
+        @media (min-width: $ln-min-channel-width) {
+            display: none;
+        }
+    }
+}
+
+.ln-vert {
+    display: inline-block;
+    margin: 0 0.75em;
+    width: 0;
+    border-left: 1px solid rgba(128, 128, 128, 0.5);
+}
+
+.ln-channel-icon {
+    font-size: 1.6em;
+    margin: auto 0.1em auto 0;
+    flex: 0 0 auto;
+
+    @media (max-width: $ln-min-channel-width) {
+        margin-right: 0;
+    }
+}
+
+.ln-channel-info {
+    line-height: normal;
+    color: $lnx-secondary-text-color;
+    text-align: left;
+
+    @media (min-width: $ln-min-channel-width) {
+        max-width: calc(97vw - 35.2rem); // 4.2 + 14*2 + 3
+    }
+
+    &__wrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-width: 0;
+        flex: 0 1 auto;
+    }
+
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+
+    &__name {
+        font-size: 1.1em;
+        color: $lnx-primary-text-color;
+    }
+
+    &__topic {
+        font-size: 0.9em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 }
