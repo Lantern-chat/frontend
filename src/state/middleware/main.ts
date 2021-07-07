@@ -56,6 +56,23 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
                 }
 
                 dispatch(loadMessages(room.id));
+            } else {
+                // otherwise, find the default room
+                let default_room, any_room;
+                for(let room_state of state.chat.rooms.values()) {
+                    let room = room_state.room;
+                    if(room.party_id == action.party_id) {
+                        any_room = room.id;
+                        if((room.flags & (1 << 5)) != 0) {
+                            default_room = room.id;
+                            break;
+                        }
+                    }
+                }
+
+                default_room = default_room || any_room;
+
+                HISTORY.replace(`/channels/${action.party_id}/${default_room}`);
             }
 
             break;
