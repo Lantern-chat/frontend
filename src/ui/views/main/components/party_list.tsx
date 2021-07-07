@@ -67,7 +67,6 @@ export const PartyList = React.memo(() => {
             );
         });
     } else {
-
         party_list = (
             <li id="connecting">
                 <div className="ln-center-standalone">
