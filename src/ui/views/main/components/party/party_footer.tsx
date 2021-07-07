@@ -6,6 +6,7 @@ import { RootState } from "state/root";
 import { UserAvatar } from "../user_avatar";
 import { Glyphicon } from "ui/components/common/glyphicon";
 import { Link } from "ui/components/history";
+import { Spinner } from "ui/components/common/spinners/spinner";
 
 import Cogwheel from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-137-cogwheel.svg";
 import Speaker from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-186-volume-up.svg";
@@ -25,11 +26,10 @@ export const PartyFooter = React.memo(() => {
     let [mute, setMute] = useState(false);
     let [deaf, setDeaf] = useState(false);
 
-    if(!user) return null;
-
-    return (
-        <footer className="ln-party-footer">
-            <div className="ln-party-footer__user">
+    let user_info;
+    if(user) {
+        user_info = (
+            <>
                 <UserAvatar nickname={user.username} user={user} status="online" is_light_theme={is_light_theme} />
 
                 <div className="ln-username">
@@ -40,6 +40,18 @@ export const PartyFooter = React.memo(() => {
                         #{user.discriminator.toString(16).toUpperCase().padStart(4, '0')}
                     </span>
                 </div>
+            </>
+        );
+    } else {
+        user_info = (
+            <Spinner size="100%" />
+        );
+    }
+
+    return (
+        <footer className="ln-party-footer">
+            <div className="ln-party-footer__user">
+                {user_info}
             </div>
 
             <div className="ln-party-footer__settings">

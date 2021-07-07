@@ -13,8 +13,8 @@ import { RootState, Type } from "state/root";
 import { Panel } from "state/reducers/window";
 
 let party_selector = createStructuredSelector({
-    //party: (state: RootState) => state.chat.active_party,
-    room: (state: RootState) => state.chat.active_room,
+    active_party: (state: RootState) => state.chat.active_party,
+    active_room: (state: RootState) => state.chat.active_room,
     show_panel: (state: RootState) => state.window.show_panel,
     last_panel: (state: RootState) => state.window.last_panel,
     use_mobile_view: (state: RootState) => state.window.use_mobile_view,
@@ -22,7 +22,7 @@ let party_selector = createStructuredSelector({
 
 import "./party.scss";
 export const Party = React.memo(() => {
-    let { show_panel, last_panel, /*party,*/ room, use_mobile_view } = useSelector(party_selector);
+    let { show_panel, last_panel, active_party, active_room, use_mobile_view } = useSelector(party_selector);
     let dispatch = useDispatch();
 
     let [swipe_start, setSwipeStart] = useState([0, 0]);
@@ -135,7 +135,7 @@ export const Party = React.memo(() => {
             {left}
 
             <div className={classes.join(' ')}>
-                <Channel channel={room} />
+                <Channel channel={active_room} />
             </div>
 
             {right}

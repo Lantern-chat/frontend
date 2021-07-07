@@ -24,9 +24,17 @@
         display: flex;
         flex-shrink: 0;
 
+        .ln-avatar,
+        .ln-spinner {
+            margin: auto 0;
+        }
+
         .ln-avatar {
             font-size: 1.25em;
-            margin: auto 0;
+        }
+
+        .ln-spinner {
+            font-size: 1.75em;
         }
     }
 
