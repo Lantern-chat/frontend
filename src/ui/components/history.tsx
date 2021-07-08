@@ -41,10 +41,11 @@ export const Link = React.memo(forwardRef((props: ILinkProps, ref: React.Mutable
         method = replace ? history.replace : history.push;
 
     if(href) {
+        var ran_onNavigate = false;
         props = {
             ...props,
             onClick: (event: React.MouseEvent<HTMLElement>) => {
-                callEventHandler(event, onNavigate);
+                !ran_onNavigate && callEventHandler(event, onNavigate); ran_onNavigate = true;
                 callEventHandler(event, onClick);
                 // canNavigate + ignore everything but left clicks
                 if(canNavigate(target, event) && event.button === 0) {
@@ -53,7 +54,7 @@ export const Link = React.memo(forwardRef((props: ILinkProps, ref: React.Mutable
                 }
             },
             onTouchEnd: (event: React.TouchEvent<HTMLElement>) => {
-                callEventHandler(event, onNavigate);
+                !ran_onNavigate && callEventHandler(event, onNavigate); ran_onNavigate = true;
                 callEventHandler(event, onTouchEnd);
                 if(canNavigate(target, event)) {
                     event.preventDefault();
