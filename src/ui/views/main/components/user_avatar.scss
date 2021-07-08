@@ -11,7 +11,29 @@
     flex-direction: column;
     justify-content: center;
 
-    span {
+    .ln-glyphicon {
+        svg {
+            fill: lightgreen;
+            z-index: 0;
+        }
+
+        &__wrapper {
+            position: relative;
+
+            &::before {
+                content: "";
+                background-color: #333;
+                position: absolute;
+                top: 0.15em;
+                left: 0.21em;
+                bottom: 0.12em;
+                right: 0.21em;
+                border-radius: 0.1em;
+            }
+        }
+    }
+
+    > span {
         border: 2px solid #333;
 
         border-radius: 50%;
