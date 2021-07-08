@@ -25,8 +25,7 @@ class Gateway {
     // heartbeat interval timer
     heartbeat_timer?: number;
 
-    // waiting on heartbeat ACK
-    heartbeat_waiting_on_ack: boolean = false;
+    heartbeat_timeout?: number;
 
     auth: string | null = null;
 
@@ -47,7 +46,7 @@ class Gateway {
 
             let delay = this.attempt ? 1000 : 0;
 
-            console.log("DELAY: ", delay);
+            __DEV__ && console.log("DELAY: ", delay);
 
             if(delay > 0) {
                 ctx.postMessage({ t: GatewayMessageDiscriminator.Waiting, p: Date.now() + delay })
@@ -82,7 +81,7 @@ class Gateway {
             return ctx.postMessage({ t: GatewayMessageDiscriminator.Error, p: { err: "WebSocket undefined" } });
         }
 
-        console.log("SENDING: ", value);
+        __DEV__ && console.log("SENDING: ", value);
 
         let str = JSON.stringify(value);
         let encoded = this.encoder.encode(str);
@@ -94,7 +93,7 @@ class Gateway {
     do_close() {
         if(this.ws) {
             this.ws = null;
-            this.heartbeat_waiting_on_ack = false;
+            clearTimeout(this.heartbeat_timeout);
             clearInterval(this.heartbeat_timer); // clear heartbeat
         }
     }
@@ -124,7 +123,8 @@ class Gateway {
 
         switch(msg.o) {
             case GatewayEventCode.Hello: {
-                console.log("GATEWAY: HELLO", msg);
+                __DEV__ && console.log("GATEWAY: HELLO", msg);
+
                 this.heartbeat_interval = msg.p.heartbeat_interval || 45000;
                 this.heartbeat_timer = setInterval(() => this.heartbeat(), this.heartbeat_interval) as any;
 
@@ -133,12 +133,14 @@ class Gateway {
                 break;
             }
             case GatewayEventCode.HeartbeatACK: {
-                console.log("GATEWAY: ACK", msg);
-                this.heartbeat_waiting_on_ack = false;
+                __DEV__ && console.log("GATEWAY: ACK", msg);
+
+                clearTimeout(this.heartbeat_timeout);
                 break;
             }
             case GatewayEventCode.Ready: {
-                console.log("GATEWAY READY", msg);
+                __DEV__ && console.log("GATEWAY READY", msg);
+
                 ctx.postMessage({
                     t: GatewayMessageDiscriminator.Ready,
                     p: msg.p,
@@ -156,12 +158,10 @@ class Gateway {
     }
 
     heartbeat() {
-        this.heartbeat_waiting_on_ack = true;
-
         this.send({ o: GatewayClientCommandDiscriminator.Heartbeat });
 
-        // in hbi milliseconds, check if an ACK has been received or disconnect/reconnect
-        setTimeout(() => { if(this.heartbeat_waiting_on_ack) { this.disconnect() } }, this.heartbeat_interval * 2);
+        // in `heartbeat_interval` milliseconds, check if an ACK has been received or disconnect/reconnect
+        this.heartbeat_timeout = setTimeout(() => this.disconnect(), this.heartbeat_interval) as any;
     }
 
     disconnect() {
