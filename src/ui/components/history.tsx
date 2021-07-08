@@ -16,7 +16,7 @@ export interface ILinkProps extends AnchorHTMLAttributes<HTMLElement> {
     state?: State,
     replace?: boolean,
     useDiv?: boolean,
-    onNavigate?: () => void,
+    onNavigate?: (e: React.MouseEvent<HTMLElement> | React.TouchEvent<HTMLElement>) => void,
 }
 
 export function canNavigate(target: string | undefined, event: React.MouseEvent<HTMLElement> | React.TouchEvent<HTMLElement>): boolean {
