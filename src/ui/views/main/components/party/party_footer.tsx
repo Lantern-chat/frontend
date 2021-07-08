@@ -55,10 +55,10 @@ export const PartyFooter = React.memo(() => {
             </div>
 
             <div className="ln-party-footer__settings">
-                <div onClick={() => setMute(!mute)}>
+                <div onClick={() => setMute(!mute)} title={mute ? 'Unmute' : 'Mute'}>
                     <Glyphicon src={mute ? MicrophoneMute : Microphone} />
                 </div>
-                <div onClick={() => setDeaf(!deaf)}>
+                <div onClick={() => setDeaf(!deaf)} title={deaf ? 'Undeafen' : 'Deafen'}>
                     <Glyphicon src={deaf ? SpeakerDeaf : Speaker} />
                 </div>
                 <Link href="/profile" title="Settings">
