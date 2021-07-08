@@ -4,4 +4,6 @@
     @media (max-width: $ln-min-channel-width) {
         display: none;
     }
+
+    user-select: none;
 }
