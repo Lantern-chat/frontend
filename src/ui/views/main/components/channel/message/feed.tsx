@@ -2,6 +2,8 @@ import React, { useContext, useRef, useMemo, useState, useEffect } from "react";
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import { createStructuredSelector } from 'reselect';
 
+import { useResizeDetector } from "react-resize-detector/build/withPolyfill";
+
 import dayjs from "lib/time";
 
 import { Snowflake } from "state/models";
@@ -16,7 +18,7 @@ import { Avatar } from "ui/components/common/avatar";
 import { Message } from "./msg";
 import { Timeline, ITimelineProps } from "./timeline";
 
-const hasTimeline = typeof window.ResizeObserver !== 'undefined';
+import throttle from 'lodash/throttle';
 
 export interface IMessageListProps {
     channel: Snowflake
@@ -77,7 +79,6 @@ const MessageGroup = ({ group, is_light_theme }: MessageGroupProps) => {
 };
 
 const feed_selector = createStructuredSelector({
-    width: (state: RootState) => state.window.width,
     is_light_theme: (state: RootState) => state.theme.is_light,
     use_mobile_view: (state: RootState) => state.window.use_mobile_view,
     show_panel: (state: RootState) => state.window.show_panel,
@@ -85,11 +86,11 @@ const feed_selector = createStructuredSelector({
 
 import "./feed.scss";
 export const MessageFeed = React.memo((props: IMessageListProps) => {
-    let [scrollTop, setScrollTop] = useState(0);
+    let [scrollPos, setScrollPos] = useState(0);
     let dispatch = useDispatch();
 
     let room = useSelector((state: RootState) => state.chat.rooms.get(props.channel));
-    let { width: windowWidth, is_light_theme, use_mobile_view, show_panel } = useSelector(feed_selector);
+    let { is_light_theme, use_mobile_view, show_panel } = useSelector(feed_selector);
 
     let groups: IMessageState[][] = useMemo(() => {
         if(room == null) return [];
@@ -115,23 +116,26 @@ export const MessageFeed = React.memo((props: IMessageListProps) => {
 
     }, [room?.msgs]);
 
+    let container_ref = useRef<HTMLDivElement>(null);
+    const { width, height, ref: ul_ref } = useResizeDetector<HTMLUListElement>();
+
     let feed = useMemo(() => {
         if(!room) {
             return <div className="ln-center-standalone">Channel does not exist</div>;
         }
 
-        let showTimeline = windowWidth > 640,
-            wrapperClasses = "ln-msg-list__wrapper ln-scroll-y",
+        let wrapperClasses = "ln-msg-list__wrapper ln-scroll-y",
             MaybeTimeline: React.FunctionComponent<ITimelineProps> = Timeline;
 
-        if(!hasTimeline || !showTimeline) {
+        if(use_mobile_view) {
             MaybeTimeline = () => <></>;
         } else {
             wrapperClasses += ' has-timeline';
         }
 
-        let on_scroll = (event: React.UIEvent<HTMLDivElement>) => {
+        let on_scroll = throttle((event: React.UIEvent<HTMLDivElement>) => {
             let t = event.currentTarget;
+            if(!t) return;
 
             let at_top = t.scrollTop == 0, at_bottom = (t.scrollTop == (t.scrollHeight - t.offsetHeight));
 
@@ -143,21 +147,28 @@ export const MessageFeed = React.memo((props: IMessageListProps) => {
             //}
 
 
-            setScrollTop(t.scrollTop);
-        };
+            setScrollPos(t.scrollTop);
+        }, 100);
 
 
         return (
             <>
                 <MaybeTimeline direction={0} position={0} />
-                <div className={wrapperClasses} onScroll={on_scroll} >
-                    <ul className="ln-msg-list" >
+                <div className={wrapperClasses} onScroll={on_scroll} ref={container_ref}>
+                    <ul className="ln-msg-list" ref={ul_ref}>
                         {groups.map(group => <MessageGroup key={group[0].msg.id} group={group} is_light_theme={is_light_theme} />)}
                     </ul>
                 </div>
             </>
         );
-    }, [groups]);
+    }, [groups, ul_ref]);
+
+    useEffect(() => {
+        let elem = container_ref.current;
+        if(elem) {
+            elem.scrollTo({ top: elem.scrollHeight });
+        }
+    }, [height, container_ref.current]);
 
     let cover;
     if(use_mobile_view && show_panel != Panel.Main) {

@@ -1,7 +1,6 @@
 import React, { useLayoutEffect, useEffect, useRef } from "react";
 
-import { useResizeDetector } from 'react-resize-detector';
-//import { useResizeDetector as useResizeDetectorPolyfill } from "react-resize-detector/build/withPolyfill";
+import { useResizeDetector } from "react-resize-detector/build/withPolyfill";
 
 export interface ITimelineProps {
     position: number,

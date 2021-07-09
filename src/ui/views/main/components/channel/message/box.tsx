@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { createStructuredSelector } from "reselect";
 
 import TextareaAutosize from 'react-textarea-autosize';
 
@@ -25,15 +26,17 @@ export interface IMessageBoxProps {
     channel?: Snowflake,
 }
 
+const msg_box_selector = createStructuredSelector({
+    msg: (state: RootState) => ({ messages: [] as any[], current_edit: null }),
+    use_mobile_view: (state: RootState) => state.window.use_mobile_view,
+});
+
 import "./box.scss";
 export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     let disabled = !channel;
 
+    let { msg: { messages, current_edit }, use_mobile_view } = useSelector(msg_box_selector);
     let dispatch = useDispatch();
-    let { msg: { messages, current_edit }, use_mobile_view } = useSelector((state: RootState) => ({
-        msg: { messages: [] as any[], current_edit: null },
-        use_mobile_view: state.window.use_mobile_view,
-    }));
 
     let ref = useRef<HTMLTextAreaElement>(null);
 

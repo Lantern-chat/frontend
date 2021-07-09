@@ -1,3 +1,5 @@
+@import "lib/variables";
+
 .ln-user-avatar {
     position: relative;
 }
@@ -22,7 +24,7 @@
 
             &::before {
                 content: "";
-                background-color: #333;
+                background-color: $lnx-primary-surface-color;
                 position: absolute;
                 top: 0.15em;
                 left: 0.21em;
@@ -34,7 +36,7 @@
     }
 
     > span {
-        border: 2px solid #333;
+        border: 2px solid $lnx-primary-surface-color;
 
         border-radius: 50%;
         width: 0.85em;

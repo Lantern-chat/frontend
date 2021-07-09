@@ -34,7 +34,7 @@ export const MemberList = React.memo(() => {
 
         return (
             <li key={user.id} className="ln-member-list__item">
-                <UserAvatar nickname={nick} user={user} status="online" is_light_theme={is_light_theme} />
+                <UserAvatar nickname={nick} user={user} status="online" is_light_theme={is_light_theme} is_mobile />
                 <div className="ln-member__name">
                     <span>{nick}</span>
                 </div>

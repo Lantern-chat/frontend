@@ -10,6 +10,8 @@ import { Glyphicon } from "ui/components/common/glyphicon";
 import SunIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-232-sun.svg";
 import MoonIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-231-moon.svg";
 
+import throttle from 'lodash/throttle';
+
 import "./theme_widget.scss";
 export const ThemeWidget: React.FunctionComponent = React.memo(() => {
     let input = useRef<HTMLInputElement>(null);
@@ -23,7 +25,7 @@ export const ThemeWidget: React.FunctionComponent = React.memo(() => {
         dispatch(setTheme(temperature, is_light));
     };
 
-    let onTempTouchMove = (e: React.TouchEvent<HTMLInputElement>) => {
+    let onTempTouchMove = throttle((e: React.TouchEvent<HTMLInputElement>) => {
         if(input.current) {
             let { width, x } = input.current.getBoundingClientRect();
             let touch = e.touches[0].clientX - x;
@@ -36,7 +38,7 @@ export const ThemeWidget: React.FunctionComponent = React.memo(() => {
 
             doSetTheme(temperature, interactive.is_light);
         }
-    };
+    }, 50, { trailing: true });
 
     return (
         <div className="ln-theme-widget" title="Change Theme">
