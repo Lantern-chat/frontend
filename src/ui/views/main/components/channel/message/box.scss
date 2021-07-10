@@ -1,9 +1,33 @@
 @import "lib/variables";
 
 .ln-typing {
-    &__bottom {
-        height: 1em;
-        padding-left: 2em;
+    height: 1em;
+    padding-left: 2em;
+
+    @media (max-width: $ln-min-channel-width) {
+        padding-left: 1em;
+
+        &__bottom {
+            display: none;
+        }
+    }
+
+    &__top {
+        @media (min-width: $ln-min-channel-width) {
+            display: none;
+        }
+
+        &:empty {
+            display: none;
+        }
+
+        position: absolute;
+        top: -1em;
+        z-index: 1;
+        left: 0;
+        right: 0;
+        text-align: left;
+        background-color: $lnx-tertiary-surface-color;
     }
 
     span {

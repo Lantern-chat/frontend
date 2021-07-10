@@ -45,7 +45,8 @@ const typing_selector = createSelector(
     typing_array_selector,
     (state: RootState) => state.chat.active_party,
     (state: RootState) => state.party.parties,
-    (users_typing, active_party, parties) => {
+    (state: RootState) => state.user.user!,
+    (users_typing, active_party, parties, user) => {
         if(!users_typing || !active_party) return;
 
         if(users_typing.length > 10) return "Many users are typing";
@@ -57,6 +58,9 @@ const typing_selector = createSelector(
         let typing_nicks = [];
 
         for(let entry of users_typing) {
+            // skip self
+            if(!__DEV__ && entry.user == user.id) continue;
+
             let member = party.members.get(entry.user);
             if(member) {
                 let nick = member.nick || member.user?.username;
@@ -67,7 +71,8 @@ const typing_selector = createSelector(
 
         let res, len = typing_nicks.length, remaining = users_typing.length - typing_nicks.length;
 
-        if(len == 1) {
+        if(len == 0) return;
+        else if(len == 1) {
             res = typing_nicks[0] + ' is typing...';
         } else if(remaining <= 0) {
             res = typing_nicks.slice(0, len - 1).join(', ') + ` and ${typing_nicks[len - 1]} are typing...`;
@@ -222,10 +227,11 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     // https://github.com/buildo/react-autosize-textarea/issues/52
     return (
         <>
-            <div className="ln-typing ln-typing__top">
-                <span>{use_mobile_view ? users_typing : null}</span>
-            </div>
             <div className={"ln-msg-box" + (disabled ? ' ln-msg-box--disabled' : '')} onClick={on_click_focus}>
+                <div className="ln-typing ln-typing__top">
+                    {(use_mobile_view && users_typing) ? <span>{users_typing}</span> : null}
+                </div>
+
                 <div className="ln-msg-box__emoji">
                     <Glyphicon src={SmileyHalf} />
                 </div>
@@ -234,16 +240,14 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
                         onBlur={() => setTimeout(() => setFocus(false), 0)} // don't run on same frame?
                         onFocus={() => setFocus(true)}
                         cacheMeasurements={true}
-                        ref={ref as any}
+                        ref={ref}
                         placeholder="Message..."
                         rows={1} maxRows={use_mobile_view ? 5 : 20}
                         value={state.value} onKeyDown={on_keydown} onChange={on_change} />
                 </div>
 
                 {
-                    __DEV__ ?
-                        <div className="ln-msg-box__debug"><span ref={keyRef}></span></div>
-                        : null
+                    __DEV__ && <div className="ln-msg-box__debug"><span ref={keyRef}></span></div>
                 }
 
                 <div className="ln-msg-box__send" onClick={is_empty ? open_upload_click : on_send_click}>
