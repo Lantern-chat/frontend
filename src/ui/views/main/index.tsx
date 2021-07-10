@@ -1,5 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
+import throttle from 'lodash/throttle';
+
+import { RootState } from "state/root";
 import { mainReducer, Type } from "state/main";
 import { GLOBAL, STORE, DYNAMIC_MIDDLEWARE, HISTORY } from "state/global";
 import { mainMiddleware } from "state/middleware/main";
@@ -7,9 +11,10 @@ import { mainMiddleware } from "state/middleware/main";
 DYNAMIC_MIDDLEWARE.addMiddleware(mainMiddleware);
 STORE.replaceReducer(mainReducer);
 
-let session = STORE.getState().user.session;
+let state = STORE.getState(),
+    session = state.user.session;
 
-STORE.dispatch({ type: Type.REFRESH_ACTIVE, ctx: STORE.getState().history });
+STORE.dispatch({ type: Type.REFRESH_ACTIVE, ctx: state.history });
 
 // if there is an existing session, fire off the login again to refresh parts of the state
 if(session) {
@@ -42,25 +47,43 @@ if(!GLOBAL.gateway) {
 //    STORE.dispatch({ type: 'GATEWAY_ERROR', payload: err });
 //});
 
+import { Panel } from "state/reducers/window";
+import { setPresence } from "state/commands/presence";
+
 import { PartyList } from "./components/party_list";
 import { Party } from "./components/party/party";
 import MainModals from "./modals";
 
 import "./main.scss";
-import { useSelector } from "react-redux";
-import { RootState } from "state/root";
-import { Panel } from "state/reducers/window";
-
 export const MainView: React.FunctionComponent = React.memo(() => {
     //let { parts } = useSelector(selectPath);
 
-    let is_right_view = useSelector((state: RootState) => state.window.use_mobile_view && state.window.show_panel == Panel.RightUserList);
+    let dispatch = useDispatch();
 
-    let party_list = is_right_view ? null : <PartyList />;
+    useEffect(() => {
+        let w = window,
+            timer_function = () => dispatch(setPresence(true)), // sets 'away' to true
+            timer: ReturnType<typeof setTimeout>,
+            events = ['mousemove', 'keydown', 'touchstart'],
+            listener = throttle(() => {
+                dispatch(setPresence(false)); // sets 'away' to false
+                clearTimeout(timer);
+
+                // since this listener function is run on any user movement,
+                // it's basically certain to run at least once, so we
+                // can cheat and set the first timeout here
+                timer = setTimeout(timer_function, 1000 * 60 * 10); // 10 minutes
+            }, 1000); // throttle to once per second at most
+
+        events.forEach(e => w.addEventListener(e, listener));
+        return () => { events.forEach(e => w.removeEventListener(e, listener)); clearTimeout(timer); }
+    }, []);
+
+    let is_right_view = useSelector((state: RootState) => state.window.use_mobile_view && state.window.show_panel == Panel.RightUserList);
 
     return (
         <div className="ln-main">
-            {party_list}
+            {is_right_view ? null : <PartyList />}
 
             <Party />
 

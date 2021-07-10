@@ -9,10 +9,6 @@ import { GatewayClientCommand, GatewayClientCommandDiscriminator } from "./clien
 
 __DEV__ && console.log("!!!!!GATEWAY LOADED!!!!!");
 
-function post() {
-
-}
-
 class Gateway {
     encoder: TextEncoder;
     decoder: TextDecoder;
@@ -174,6 +170,10 @@ class Gateway {
     identify() {
         this.send({ o: GatewayClientCommandDiscriminator.Identify, p: { auth: this.auth!, intent: 0 } });
     }
+
+    set_presence(away: boolean) {
+        this.send({ o: GatewayClientCommandDiscriminator.SetPresence, p: { away } });
+    }
 }
 
 var GATEWAY: Gateway = new Gateway();
@@ -195,6 +195,10 @@ ctx.addEventListener('message', msg => {
         case GatewayCommandDiscriminator.Disconnect: {
             GATEWAY.auth = null;
             GATEWAY.disconnect();
+            break;
+        }
+        case GatewayCommandDiscriminator.SetPresence: {
+
             break;
         }
         default: {

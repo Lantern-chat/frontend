@@ -8,9 +8,12 @@ export interface IUserState {
     user?: User,
     session?: ISession | null,
     friends?: User[],
+    presence: 'away' | 'online'
 }
 
-const DEFAULT_STATE: IUserState = {};
+export const DEFAULT_STATE: IUserState = {
+    presence: 'online'
+};
 
 export function userReducer(state: IUserState = DEFAULT_STATE, action: Action) {
     switch(action.type) {

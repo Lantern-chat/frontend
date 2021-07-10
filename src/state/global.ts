@@ -7,6 +7,7 @@ import { loadSession } from "lib/session";
 import { loadTheme, setTheme } from "lib/theme";
 import { recomputeHistoryContext } from "ui/components/history";
 import { DEFAULT_STATE as DEFAULT_WINDOW } from "./reducers/window";
+import { DEFAULT_STATE as DEFAULT_USER } from './reducers/user';
 
 export { DYNAMIC_MIDDLEWARE } from "./root";
 
@@ -20,7 +21,7 @@ export const HISTORY = createBrowserHistory();
 
 export const STORE = createStore(initialReducer, {
     history: recomputeHistoryContext(HISTORY),
-    user: { session: loadSession() },
+    user: { ...DEFAULT_USER, session: loadSession() },
     theme: loadTheme(),
     window: {
         ...DEFAULT_WINDOW,
