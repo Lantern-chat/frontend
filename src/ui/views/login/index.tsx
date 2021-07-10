@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useReducer, useEffect, useContext } from "react";
+import React, { useState, useMemo, useReducer, useEffect, useContext, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { Dispatch } from "state/actions";
 import { setSession } from "state/commands";
@@ -140,6 +140,9 @@ export default function LoginView() {
         );
     }
 
+    let on_email_change = useCallback(e => form_dispatch({ type: LoginActionType.UpdateEmail, value: e.currentTarget.value }), []);
+    let on_password_change = useCallback(e => form_dispatch({ type: LoginActionType.UpdatePass, value: e.currentTarget.value }), []);
+
     return (
         <form className="ln-form ln-login-form" onSubmit={on_submit}>
             <div id="title">
@@ -151,7 +154,7 @@ export default function LoginView() {
             <FormGroup>
                 <FormLabel htmlFor="email"><I18N t={Translation.EMAIL_ADDRESS} /></FormLabel>
                 <FormInput value={state.email} type="text" name="email" placeholder="example@example.com" required isValid={state.valid_email}
-                    onChange={e => form_dispatch({ type: LoginActionType.UpdateEmail, value: e.currentTarget.value })} />
+                    onChange={on_email_change} />
             </FormGroup>
 
             <FormGroup>
@@ -159,7 +162,7 @@ export default function LoginView() {
                     <I18N t={Translation.PASSWORD} />
                 </FormLabel>
                 <FormInput value={state.pass} type="password" name="password" placeholder="password" required
-                    onChange={e => form_dispatch({ type: LoginActionType.UpdatePass, value: e.currentTarget.value })} />
+                    onChange={on_password_change} />
             </FormGroup>
 
             <hr />

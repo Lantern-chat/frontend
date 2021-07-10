@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { createStructuredSelector } from "reselect";
 
@@ -30,15 +30,12 @@ export const Party = React.memo(() => {
     let classes = ["ln-party__channel"],
         sidebar_classes = ["ln-party__sidebar"],
         left, right,
-        on_touch_start, on_touch_end,
-        show_left = true; // always visible on Desktop
-
-    if(use_mobile_view) {
-        on_touch_start = (e: React.TouchEvent<HTMLDivElement>) => {
+        show_left = true, // always visible on Desktop
+        on_touch_start = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
             let t = e.changedTouches[0];
             setSwipeStart([t.screenX, t.screenY]);
-        };
-        on_touch_end = (e: React.TouchEvent<HTMLDivElement>) => {
+        }, []),
+        on_touch_end = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
             let t = e.changedTouches[0],
                 end_x = t.screenX,
                 end_y = t.screenY,
@@ -63,7 +60,6 @@ export const Party = React.memo(() => {
                             break;
                         }
                     }
-
                 } else {
                     // swiped LEFT
 
@@ -81,8 +77,9 @@ export const Party = React.memo(() => {
                     }
                 }
             }
-        };
+        }, [show_panel, swipe_start]);
 
+    if(use_mobile_view) {
         let user_list_classes = ["ln-party__user-list"],
             sc = sidebar_classes[0],
             ulc = user_list_classes[0],
@@ -131,7 +128,9 @@ export const Party = React.memo(() => {
     }
 
     return (
-        <div className="ln-party" onTouchStart={on_touch_start} onTouchEnd={on_touch_end}>
+        <div className="ln-party"
+            onTouchStart={use_mobile_view ? on_touch_start : undefined}
+            onTouchEnd={use_mobile_view ? on_touch_end : undefined}>
             {left}
 
             <div className={classes.join(' ')}>

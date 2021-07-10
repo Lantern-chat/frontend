@@ -26,11 +26,6 @@ export interface IMessageBoxProps {
     channel?: Snowflake,
 }
 
-const msg_box_selector = createStructuredSelector({
-    msg: (state: RootState) => ({ messages: [] as any[], current_edit: null }),
-    use_mobile_view: (state: RootState) => state.window.use_mobile_view,
-});
-
 const typing_array_selector = createSelector(
     (state: RootState) => state.chat.active_room,
     (state: RootState) => state.chat.rooms,
@@ -84,12 +79,22 @@ const typing_selector = createSelector(
     }
 )
 
+const msg_box_selector = createStructuredSelector({
+    msg: (state: RootState) => ({ messages: [] as any[], current_edit: null }),
+    use_mobile_view: (state: RootState) => state.window.use_mobile_view,
+    users_typing: typing_selector,
+});
+
+
 import "./box.scss";
 export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     let disabled = !channel;
 
-    let { msg: { messages, current_edit }, use_mobile_view } = useSelector(msg_box_selector);
-    let users_typing = useSelector(typing_selector);
+    let {
+        msg: { messages, current_edit },
+        use_mobile_view,
+        users_typing
+    } = useSelector(msg_box_selector);
 
     let dispatch = useDispatch();
 
@@ -128,7 +133,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
         });
     }
 
-    let do_nothing = () => { };
+    let do_nothing = useCallback(() => { }, []);
 
     let do_send = () => {
         dispatch(sendMessage(channel!, state.value));

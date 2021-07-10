@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useMemo, useState, useEffect } from "react";
+import React, { useContext, useRef, useMemo, useState, useEffect, useCallback } from "react";
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import { createStructuredSelector } from 'reselect';
 
@@ -29,51 +29,50 @@ interface MessageGroupProps {
     is_light_theme: boolean
 }
 
+// NOTE: Because `group` is recomputed below as part of `groups`, this will always render.
 const MessageGroup = ({ group, is_light_theme }: MessageGroupProps) => {
     let { msg } = group[0];
     let nickname = msg.member?.nick || msg.author.username;
 
-    let list = group.map((msg, i) => {
-        let message = <Message editing={false} msg={msg.msg} />;
-
-        let side, ts = msg.ts.format("dddd, MMMM DD, h:mm A");
-        if(i == 0) {
-            let title = (
-                <div className="ln-msg__title">
-                    <span className="ln-msg__username">{nickname}</span>
-                    <span className="ln-msg__ts" title={ts}>{msg.ts.calendar()}</span>
-                </div>
-            );
-
-            message = (
-                <div className="ln-msg__message">
-                    {title}
-                    {message}
-                </div>
-            );
-
-            side = (
-                <Avatar username={nickname} text={nickname.charAt(0)} backgroundColor={pickColorFromHash(msg.msg.author.id, is_light_theme)} />
-            );
-        } else {
-            side = (
-                <div className="ln-msg__sidets" title={ts}>{msg.ts.format('h:mm A')}</div>
-            );
-        }
-
-        return (
-            <div key={msg.msg.id} className="ln-msg__wrapper">
-                <div className="ln-msg__side">
-                    {side}
-                </div>
-                {message}
-            </div>
-        );
-    });
-
     return (
         <li className="ln-msg-list__group">
-            {list}
+            {group.map((msg, i) => {
+                let message = <Message editing={false} msg={msg.msg} />;
+
+                let side, ts = msg.ts.format("dddd, MMMM DD, h:mm A");
+                if(i == 0) {
+                    let title = (
+                        <div className="ln-msg__title">
+                            <span className="ln-msg__username">{nickname}</span>
+                            <span className="ln-msg__ts" title={ts}>{msg.ts.calendar()}</span>
+                        </div>
+                    );
+
+                    message = (
+                        <div className="ln-msg__message">
+                            {title}
+                            {message}
+                        </div>
+                    );
+
+                    side = (
+                        <Avatar username={nickname} text={nickname.charAt(0)} backgroundColor={pickColorFromHash(msg.msg.author.id, is_light_theme)} />
+                    );
+                } else {
+                    side = (
+                        <div className="ln-msg__sidets" title={ts}>{msg.ts.format('h:mm A')}</div>
+                    );
+                }
+
+                return (
+                    <div key={msg.msg.id} className="ln-msg__wrapper">
+                        <div className="ln-msg__side">
+                            {side}
+                        </div>
+                        {message}
+                    </div>
+                );
+            })}
         </li>
     );
 };
@@ -119,6 +118,23 @@ export const MessageFeed = React.memo((props: IMessageListProps) => {
     let container_ref = useRef<HTMLDivElement>(null);
     const { width, height, ref: ul_ref } = useResizeDetector<HTMLUListElement>();
 
+    let on_scroll = useCallback(throttle((event: React.UIEvent<HTMLDivElement>) => {
+        let t = event.currentTarget;
+        if(!t) return;
+
+        let at_top = t.scrollTop == 0, at_bottom = (t.scrollTop == (t.scrollHeight - t.offsetHeight));
+
+        //if(use_mobile_view) {
+        //    let delta = scrollTop - t.scrollTop;
+        //    if(delta != 0 && (at_top || at_bottom)) {
+        //        event.preventDefault();
+        //    }
+        //}
+
+
+        setScrollPos(t.scrollTop);
+    }, 100), []); // TODO: This will probably have dependencies
+
     let feed = useMemo(() => {
         if(!room) {
             return <div className="ln-center-standalone">Channel does not exist</div>;
@@ -133,24 +149,6 @@ export const MessageFeed = React.memo((props: IMessageListProps) => {
             wrapperClasses += ' has-timeline';
         }
 
-        let on_scroll = throttle((event: React.UIEvent<HTMLDivElement>) => {
-            let t = event.currentTarget;
-            if(!t) return;
-
-            let at_top = t.scrollTop == 0, at_bottom = (t.scrollTop == (t.scrollHeight - t.offsetHeight));
-
-            //if(use_mobile_view) {
-            //    let delta = scrollTop - t.scrollTop;
-            //    if(delta != 0 && (at_top || at_bottom)) {
-            //        event.preventDefault();
-            //    }
-            //}
-
-
-            setScrollPos(t.scrollTop);
-        }, 100);
-
-
         return (
             <>
                 <MaybeTimeline direction={0} position={0} />
@@ -161,7 +159,7 @@ export const MessageFeed = React.memo((props: IMessageListProps) => {
                 </div>
             </>
         );
-    }, [groups, ul_ref]);
+    }, [groups, ul_ref, on_scroll]);
 
     useEffect(() => {
         let elem = container_ref.current;

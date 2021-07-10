@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useReducer, useEffect, useContext } from "react";
+import React, { useState, useMemo, useReducer, useEffect, useContext, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { Dispatch } from "state/actions";
 import { setSession } from "state/commands";
@@ -267,6 +267,13 @@ export default function RegisterView() {
         );
     }
 
+    let on_email_change = useCallback(e => form_dispatch({ type: RegisterActionType.UpdateEmail, value: e.currentTarget.value }), []),
+        on_username_change = useCallback(e => form_dispatch({ type: RegisterActionType.UpdateUser, value: e.currentTarget.value }), []),
+        on_password_change = useCallback(e => form_dispatch({ type: RegisterActionType.UpdatePass, value: e.currentTarget.value }), []),
+        on_year_change = useCallback(e => form_dispatch({ type: RegisterActionType.UpdateYear, value: e.currentTarget.value }), []),
+        on_month_change = useCallback(e => form_dispatch({ type: RegisterActionType.UpdateMonth, value: e.currentTarget.value }), []),
+        on_day_change = useCallback(e => form_dispatch({ type: RegisterActionType.UpdateDay, value: e.currentTarget.value }), []);
+
     return (
         <form className="ln-form ln-login-form ln-register-form" onSubmit={on_submit}>
             <div id="title">
@@ -278,13 +285,13 @@ export default function RegisterView() {
             <FormGroup>
                 <FormLabel htmlFor="email"><I18N t={Translation.EMAIL_ADDRESS} /></FormLabel>
                 <FormInput value={state.email} type="email" name="email" placeholder="example@example.com" required isValid={state.valid_email}
-                    onChange={e => form_dispatch({ type: RegisterActionType.UpdateEmail, value: e.currentTarget.value })} />
+                    onChange={on_email_change} />
             </FormGroup>
 
             <FormGroup>
                 <FormLabel htmlFor="username"><I18N t={Translation.USERNAME} /></FormLabel>
                 <FormInput value={state.user} type="text" name="username" placeholder="username" required isValid={state.valid_user}
-                    onChange={e => form_dispatch({ type: RegisterActionType.UpdateUser, value: e.currentTarget.value })} />
+                    onChange={on_username_change} />
             </FormGroup>
 
             <FormGroup>
@@ -300,7 +307,7 @@ export default function RegisterView() {
                     </span>
                 </FormLabel>
                 <FormInput type="password" name="password" placeholder="password" required isValid={state.valid_pass}
-                    className={passwordClass} onChange={e => form_dispatch({ type: RegisterActionType.UpdatePass, value: e.currentTarget.value })} />
+                    className={passwordClass} onChange={on_password_change} />
                 <FormText>
                     Password must be at least 8 characters long and contain at least one number or one special character.
                 </FormText>
@@ -309,17 +316,17 @@ export default function RegisterView() {
             <FormGroup>
                 <FormLabel><I18N t={Translation.DATE_OF_BIRTH} /></FormLabel>
                 <FormSelectGroup>
-                    <FormSelect name="year" required value={state.dob.y || ""} onChange={e => form_dispatch({ type: RegisterActionType.UpdateYear, value: e.currentTarget.value })}>
+                    <FormSelect name="year" required value={state.dob.y || ""} onChange={on_year_change}>
                         <I18N t={Translation.YEAR} render={(value: string) => <option disabled hidden value="">{value}</option>} />
                         {useMemo(() => YEARS.map((year, i) => <option value={year} key={i}>{year}</option>), [])}
                     </FormSelect>
 
-                    <FormSelect name="month" required value={state.dob.m != null ? state.dob.m : ""} onChange={e => form_dispatch({ type: RegisterActionType.UpdateMonth, value: e.currentTarget.value })}>
+                    <FormSelect name="month" required value={state.dob.m != null ? state.dob.m : ""} onChange={on_month_change}>
                         <I18N t={Translation.MONTH} render={(value: string) => <option disabled hidden value="">{value}</option>} />
                         {useMemo(() => dayjs.months().map((month: string, i: number) => <option value={i} key={i}>{month}</option>), [dayjs.locale()])}
                     </FormSelect>
 
-                    <FormSelect name="day" required onChange={e => form_dispatch({ type: RegisterActionType.UpdateDay, value: e.currentTarget.value })}
+                    <FormSelect name="day" required onChange={on_day_change}
                         value={state.dob.d == null ? "" : state.dob.d}>
                         <I18N t={Translation.DAY} render={(value: string) => <option disabled hidden value="">{value}</option>} />
                         {useMemo(() => (new Array(state.days)).fill(undefined).map((_, i) => (

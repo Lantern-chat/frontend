@@ -38,6 +38,7 @@ function asTouchEvent(e: React.UIEvent<HTMLElement>): React.TouchEvent<HTMLEleme
 
 import "./party_list.scss";
 export const PartyList = React.memo(() => {
+    // TODO: Setting isScrolling will re-render, rewrite this to not do that
     let [isScrolling, setIsScrolling] = useState(0);
 
     let {
