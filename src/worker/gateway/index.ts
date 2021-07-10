@@ -143,6 +143,7 @@ class Gateway {
                 });
                 break;
             }
+            case GatewayEventCode.TypingStart:
             case GatewayEventCode.MessageCreate: return ctx.postMessage({
                 t: GatewayMessageDiscriminator.Event,
                 p: msg,

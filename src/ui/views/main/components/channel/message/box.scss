@@ -1,5 +1,18 @@
 @import "lib/variables";
 
+.ln-typing {
+    &__bottom {
+        height: 1em;
+        padding-left: 2em;
+    }
+
+    span {
+        font-size: 0.8em;
+        color: $lnx-secondary-text-color;
+        vertical-align: top;
+    }
+}
+
 .ln-msg-box {
     cursor: text;
     display: flex;
@@ -19,7 +32,7 @@
     // TODO: Fix textarea background color bleeding over border-radius in mobile-view and showing the sidebar
     @media (min-width: $ln-min-channel-width) {
         border-radius: 0.5em;
-        margin: 0 1em 1em 1em;
+        margin: 0 1em 0em 1em;
     }
 
     &--disabled * {

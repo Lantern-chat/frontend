@@ -12,6 +12,7 @@ export enum Type {
     SESSION_EXPIRED = "SESSION_EXPIRED",
 
     REFRESH_ACTIVE = "REFRESH_ACTIVE",
+    CLEANUP_TYPING = "CLEANUP_TYPING",
 
     WINDOW_RESIZE = "WINDOW_RESIZE",
     WINDOW_TOGGLE_USER_LIST_SIDEBAR = "WINDOW_TOGGLE_USER_LIST_SIDEBAR",
@@ -59,6 +60,7 @@ export type Action =
     MessagesLoaded |
     MembersLoaded |
     RefreshActive |
+    CleanupTyping |
     MessageSend |
     MessageDiscordEdit |
     MessageEditPrev |
@@ -119,7 +121,6 @@ export interface ModalCloseCreateParty {
 // GATEWAY ACTIONS
 
 import { GatewayMessage } from "worker/gateway/msg";
-import { IHistoryContext } from "ui/components/history";
 export interface GatewayEvent {
     type: Type.GATEWAY_EVENT,
     payload: GatewayMessage
@@ -176,4 +177,10 @@ export interface MessageEditNext {
 export interface MessageSendEdit {
     type: Type.MESSAGE_SEND_EDIT,
     payload: string,
+}
+
+// MISC ACTIONS
+
+export interface CleanupTyping {
+    type: Type.CLEANUP_TYPING
 }

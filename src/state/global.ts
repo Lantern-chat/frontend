@@ -13,6 +13,7 @@ export { DYNAMIC_MIDDLEWARE } from "./root";
 
 interface IGlobalState {
     gateway?: Worker,
+    cleanup_timer?: ReturnType<typeof setInterval>,
 }
 
 export const GLOBAL: IGlobalState = {};
@@ -47,11 +48,26 @@ window.addEventListener('beforeunload', () => {
     GLOBAL.gateway = undefined;
 });
 
+
+GLOBAL.cleanup_timer = setInterval(() => {
+    let state = STORE.getState(), chat = state.chat, has_typing = false;
+
+    if(!chat) return;
+
+    for(let room of chat.rooms.values()) {
+        if(room.typing.length > 0) {
+            has_typing = true;
+            break;
+        }
+    }
+
+    if(has_typing) {
+        STORE.dispatch({ type: Type.CLEANUP_TYPING });
+    }
+}, 2000); // every 2 seconds
+
+
 export const DEFAULT_LOGGED_IN_CHANNEL: string = "/channels/@me";
-
-
-
-
 
 const ACCEPTABLE_PATHS = ['login', 'register', 'channels', 'verify', 'reset', 'invite'];
 let first_part = HISTORY.location.pathname.slice(1).split('/', 1)[0];

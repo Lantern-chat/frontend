@@ -1,6 +1,6 @@
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createStructuredSelector } from "reselect";
+import { createSelector, createStructuredSelector } from "reselect";
 
 import TextareaAutosize from 'react-textarea-autosize';
 
@@ -8,7 +8,7 @@ import TextareaAutosize from 'react-textarea-autosize';
 import { RootState } from "state/root";
 import { Type } from "state/actions";
 import { Snowflake } from "state/models";
-import { sendMessage } from "state/commands";
+import { sendMessage, startTyping } from "state/commands";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
 
@@ -31,11 +31,61 @@ const msg_box_selector = createStructuredSelector({
     use_mobile_view: (state: RootState) => state.window.use_mobile_view,
 });
 
+const typing_array_selector = createSelector(
+    (state: RootState) => state.chat.active_room,
+    (state: RootState) => state.chat.rooms,
+    (active_room, rooms) => {
+        let typing = active_room && rooms.get(active_room)?.typing;
+        if(typing && typing.length > 0) return typing;
+        return;
+    }
+);
+
+const typing_selector = createSelector(
+    typing_array_selector,
+    (state: RootState) => state.chat.active_party,
+    (state: RootState) => state.party.parties,
+    (users_typing, active_party, parties) => {
+        if(!users_typing || !active_party) return;
+
+        if(users_typing.length > 10) return "Many users are typing";
+
+        let party = parties.get(active_party);
+
+        if(!party) return;
+
+        let typing_nicks = [];
+
+        for(let entry of users_typing) {
+            let member = party.members.get(entry.user);
+            if(member) {
+                let nick = member.nick || member.user?.username;
+                nick && typing_nicks.push(nick);
+                if(typing_nicks.length > 3) break;
+            }
+        }
+
+        let res, len = typing_nicks.length, remaining = users_typing.length - typing_nicks.length;
+
+        if(len == 1) {
+            res = typing_nicks[0] + ' is typing...';
+        } else if(remaining <= 0) {
+            res = typing_nicks.slice(0, len - 1).join(', ') + ` and ${typing_nicks[len - 1]} are typing...`;
+        } else {
+            res = typing_nicks.join(', ') + ` and ${remaining} users are typing...`;
+        }
+
+        return res;
+    }
+)
+
 import "./box.scss";
 export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     let disabled = !channel;
 
     let { msg: { messages, current_edit }, use_mobile_view } = useSelector(msg_box_selector);
+    let users_typing = useSelector(typing_selector);
+
     let dispatch = useDispatch();
 
     let ref = useRef<HTMLTextAreaElement>(null);
@@ -46,6 +96,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
         value: string,
         backup: string | null,
         isEditing: boolean,
+        ts: number,
     }
 
     let [focused, setFocus] = useState(false);
@@ -53,6 +104,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
         value: "",
         backup: null,
         isEditing: false,
+        ts: Date.now(),
     });
 
     if(state.isEditing === true && current_edit == null) { // in edit-mode but no message is selected for edit
@@ -67,6 +119,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
             backup: state.backup || state.value,
             value: messages.find((msg) => msg.id == current_edit)!.msg,
             isEditing: true,
+            ts: state.ts,
         });
     }
 
@@ -146,9 +199,17 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     };
 
     let on_change = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        let ts = Date.now();
+        if(channel && (ts - state.ts) > 1500) {
+            dispatch(startTyping(channel));
+        } else {
+            // use old value if not sent
+            ts = state.ts;
+        }
+
         // the "Enter" key newline is still present after keydown, so trim that
         // also prevents leading newlines
-        setState({ ...state, value: e.currentTarget.value.replace(/^\n+/, '') });
+        setState({ ...state, value: e.currentTarget.value.replace(/^\n+/, ''), ts });
     };
 
     let on_click_focus = disabled ? do_nothing : (e: React.MouseEvent<HTMLDivElement>) => {
@@ -160,30 +221,38 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
 
     // https://github.com/buildo/react-autosize-textarea/issues/52
     return (
-        <div className={"ln-msg-box" + (disabled ? ' ln-msg-box--disabled' : '')} onClick={on_click_focus}>
-            <div className="ln-msg-box__emoji">
-                <Glyphicon src={SmileyHalf} />
+        <>
+            <div className="ln-typing ln-typing__top">
+                <span>{use_mobile_view ? users_typing : null}</span>
             </div>
-            <div className="ln-msg-box__box">
-                <TextareaAutosize disabled={disabled}
-                    onBlur={() => setTimeout(() => setFocus(false), 0)} // don't run on same frame?
-                    onFocus={() => setFocus(true)}
-                    cacheMeasurements={true}
-                    ref={ref as any}
-                    placeholder="Message..."
-                    rows={1} maxRows={use_mobile_view ? 5 : 20}
-                    value={state.value} onKeyDown={on_keydown} onChange={on_change} />
-            </div>
+            <div className={"ln-msg-box" + (disabled ? ' ln-msg-box--disabled' : '')} onClick={on_click_focus}>
+                <div className="ln-msg-box__emoji">
+                    <Glyphicon src={SmileyHalf} />
+                </div>
+                <div className="ln-msg-box__box">
+                    <TextareaAutosize disabled={disabled}
+                        onBlur={() => setTimeout(() => setFocus(false), 0)} // don't run on same frame?
+                        onFocus={() => setFocus(true)}
+                        cacheMeasurements={true}
+                        ref={ref as any}
+                        placeholder="Message..."
+                        rows={1} maxRows={use_mobile_view ? 5 : 20}
+                        value={state.value} onKeyDown={on_keydown} onChange={on_change} />
+                </div>
 
-            {
-                __DEV__ ?
-                    <div className="ln-msg-box__debug"><span ref={keyRef}></span></div>
-                    : null
-            }
+                {
+                    __DEV__ ?
+                        <div className="ln-msg-box__debug"><span ref={keyRef}></span></div>
+                        : null
+                }
 
-            <div className="ln-msg-box__send" onClick={is_empty ? open_upload_click : on_send_click}>
-                <Glyphicon src={is_empty ? Plus : Send} />
+                <div className="ln-msg-box__send" onClick={is_empty ? open_upload_click : on_send_click}>
+                    <Glyphicon src={is_empty ? Plus : Send} />
+                </div>
             </div>
-        </div>
+            <div className="ln-typing ln-typing__bottom">
+                <span>{use_mobile_view ? null : users_typing}</span>
+            </div>
+        </>
     );
 });

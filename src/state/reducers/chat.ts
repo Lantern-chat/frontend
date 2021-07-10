@@ -57,11 +57,17 @@ export interface IMessageState {
     ts: Dayjs,
 }
 
+export interface ITypingState {
+    user: Snowflake,
+    ts: number,
+}
+
 export interface IRoomState {
     room: Room,
     msgs: IMessageState[],
     pending: IMessageState[],
     current_edit: null | Snowflake,
+    typing: ITypingState[],
 }
 
 export interface IChatState {
@@ -103,6 +109,7 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
                     msgs: [],
                     pending: [],
                     current_edit: null,
+                    typing: []
                 });
             }
         });
@@ -123,6 +130,14 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
             }
         });
 
+        case Type.CLEANUP_TYPING: return produce(state, draft => {
+            let now = Date.now();
+
+            for(let room of draft.rooms.values()) {
+                room.typing = room.typing.filter(entry => (now - entry.ts) < 7000);
+            }
+        });
+
         case Type.GATEWAY_EVENT: {
             switch(action.payload.t) {
                 case GatewayMessageDiscriminator.Event: {
@@ -137,15 +152,51 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
                             return produce(state, draft => {
                                 let room = draft.rooms.get(raw_msg.room_id);
 
-                                if(room) {
-                                    let { idx, found } = binarySearch(room.msgs, m => m.ts.diff(msg.ts));
+                                if(!room) return;
 
-                                    // message already exists
-                                    if(found && room.msgs[idx].msg.id == raw_msg.id) return;
+                                let { idx, found } = binarySearch(room.msgs, m => m.ts.diff(msg.ts));
 
-                                    room.msgs.splice(idx, 0, msg);
+                                // message already exists
+                                if(found && room.msgs[idx].msg.id == raw_msg.id) return;
 
-                                    console.log("Splicing message '%s' at index %d", raw_msg.content, idx);
+                                room.msgs.splice(idx, 0, msg);
+
+                                console.log("Splicing message '%s' at index %d", raw_msg.content, idx);
+
+                                // search for any users typing with this message's user ID
+                                let typing_idx = -1;
+                                for(let idx = 0; idx < room.typing.length; idx++) {
+                                    if(room.typing[idx].user == raw_msg.author.id) {
+                                        typing_idx = idx;
+                                        break;
+                                    }
+                                }
+                                // if found, remove them from the typing list, as the message that was just sent was
+                                // probably what they were typing
+                                if(typing_idx != -1) {
+                                    room.typing.splice(typing_idx, 1);
+                                }
+                            });
+                        }
+                        case GatewayEventCode.TypingStart: {
+                            let { user, room: room_id } = event.p;
+
+                            return produce(state, draft => {
+                                let room = draft.rooms.get(room_id), found_entry, ts = Date.now();
+
+                                if(!room) return;
+
+                                for(let entry of room.typing) {
+                                    if(entry.user == user) {
+                                        found_entry = entry;
+                                        break;
+                                    };
+                                }
+
+                                if(found_entry) {
+                                    found_entry.ts = ts;
+                                } else {
+                                    room.typing.push({ user, ts });
                                 }
                             });
                         }
