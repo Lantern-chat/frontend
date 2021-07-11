@@ -114,7 +114,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
         value: "",
         backup: null,
         isEditing: false,
-        ts: Date.now(),
+        ts: 0,
     });
 
     if(state.isEditing === true && current_edit == null) { // in edit-mode but no message is selected for edit
@@ -209,17 +209,19 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     };
 
     let on_change = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        let ts = Date.now();
-        if(channel && (ts - state.ts) > 3500) {
+        // the "Enter" key newline is still present after keydown, so trim that
+        // also prevents leading newlines
+        let ts = Date.now(), new_value = e.currentTarget.value.replace(/^\n+/, '');
+
+        // NOTE: Checking for empty value is a courtesy to users who erase their entire draft
+        if(channel && new_value.length > 0 && (ts - state.ts) > 3500) {
             dispatch(startTyping(channel));
         } else {
             // use old value if not sent
             ts = state.ts;
         }
 
-        // the "Enter" key newline is still present after keydown, so trim that
-        // also prevents leading newlines
-        setState({ ...state, value: e.currentTarget.value.replace(/^\n+/, ''), ts });
+        setState({ ...state, value: new_value, ts });
     };
 
     let on_click_focus = disabled ? do_nothing : (e: React.MouseEvent<HTMLDivElement>) => {
