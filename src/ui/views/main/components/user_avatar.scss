@@ -16,6 +16,11 @@
     .ln-glyphicon {
         svg {
             fill: lightgreen;
+
+            .ln-light-theme & {
+                fill: green;
+            }
+
             z-index: 0;
         }
 
