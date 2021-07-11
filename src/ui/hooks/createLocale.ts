@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { StorageKey } from "state/storage";
 import { LANGS, Language, ILocaleContext } from "ui/i18n";
 
-let initialLocale = localStorage.getItem('locale') as Language;
+let initialLocale = localStorage.getItem(StorageKey.LOCALE) as Language;
 if(LANGS.indexOf(initialLocale) === -1) {
     initialLocale = "en";
 }
@@ -11,8 +12,8 @@ export function createLocale(): ILocaleContext {
     locale.setLocale = (lang: Language) => setLocale({ ...locale, lang });
 
     useEffect(() => {
-        if(locale.lang !== localStorage.getItem('locale')) {
-            localStorage.setItem('locale', locale.lang);
+        if(locale.lang !== localStorage.getItem(StorageKey.LOCALE)) {
+            localStorage.setItem(StorageKey.LOCALE, locale.lang);
         }
     }, [locale.lang]);
 

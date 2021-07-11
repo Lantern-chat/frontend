@@ -1,15 +1,11 @@
 import { Dayjs } from "dayjs";
+import dayjs, { LongTimeout } from "lib/time";
 
 export interface ISession {
     auth: string,
     expires: Dayjs,
     timeout?: LongTimeout,
 }
-
-import dayjs, { LongTimeout, setLongTimeout } from "lib/time";
-import { Dispatch, Type } from "state/actions";
-
-const SESSION_KEY: string = 'session';
 
 export function parseSession(session: string | ISession | null): ISession | null {
     if(typeof session === 'string') {
@@ -25,25 +21,4 @@ export function parseSession(session: string | ISession | null): ISession | null
     }
 
     return session;
-}
-
-export function loadSession(): ISession | null {
-    return parseSession(localStorage.getItem(SESSION_KEY));
-}
-
-export function storeSession(dispatch: Dispatch, session: ISession | null) {
-    if(session != null) {
-        localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-
-        if(__DEV__) {
-            console.log("Setting session expiry timer for: ", session.expires.toISOString());
-        }
-
-        session.timeout = setLongTimeout(
-            () => dispatch({ type: Type.SESSION_EXPIRED }),
-            Math.max(0, session.expires.diff(dayjs()))
-        );
-    } else {
-        localStorage.removeItem(SESSION_KEY);
-    }
 }

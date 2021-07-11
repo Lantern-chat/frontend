@@ -3,11 +3,11 @@ import { enhancers, initialReducer, Type } from "./initial";
 
 import { createBrowserHistory } from "history";
 
-import { loadSession } from "lib/session";
-import { loadTheme, setTheme } from "lib/theme";
+import { setTheme } from "lib/theme";
 import { recomputeHistoryContext } from "ui/components/history";
 import { DEFAULT_STATE as DEFAULT_WINDOW } from "./reducers/window";
 import { DEFAULT_STATE as DEFAULT_USER } from './reducers/user';
+import { StorageKey, loadTheme, loadSession } from "./storage";
 
 export { DYNAMIC_MIDDLEWARE } from "./root";
 
@@ -27,7 +27,7 @@ export const STORE = createStore(initialReducer, {
     window: {
         ...DEFAULT_WINDOW,
         show_user_list: (() => {
-            let show_user_list = localStorage.getItem('SHOW_USER_LIST');
+            let show_user_list = localStorage.getItem(StorageKey.SHOW_USER_LIST);
             return typeof show_user_list == 'string' ? JSON.parse(show_user_list) : DEFAULT_WINDOW.show_user_list;
         })()
     }

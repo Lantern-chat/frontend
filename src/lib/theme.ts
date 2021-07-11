@@ -145,11 +145,3 @@ export function setThemeColors(colors: IThemeColors, animate: boolean, is_light:
         }, 1000);
     }
 }
-
-const THEME_KEY: string = 'theme';
-
-export function loadTheme(): ITheme {
-    let theme = localStorage.getItem(THEME_KEY);
-
-    return theme ? { ...DEFAULT_THEME, ...JSON.parse(theme) } : DEFAULT_THEME;
-}

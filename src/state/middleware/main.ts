@@ -5,6 +5,7 @@ import { loadMessages, SearchMode, activateParty } from "state/commands";
 import { DEFAULT_LOGGED_IN_CHANNEL, GLOBAL, HISTORY } from "state/global";
 import { GatewayStatus } from "state/reducers/gateway";
 import { Action, RootState, Type } from "state/root";
+import { StorageKey } from "state/storage";
 import { GatewayCommandDiscriminator } from "worker/gateway/cmd";
 import { GatewayMessage, GatewayMessageDiscriminator } from "worker/gateway/msg";
 
@@ -177,7 +178,7 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
         case Type.WINDOW_TOGGLE_USER_LIST_SIDEBAR: {
             let w = getState().window;
             if(!w.use_mobile_view) {
-                localStorage.setItem('SHOW_USER_LIST', JSON.stringify(w.show_user_list));
+                localStorage.setItem(StorageKey.SHOW_USER_LIST, JSON.stringify(w.show_user_list));
             }
             break;
         }
