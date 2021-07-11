@@ -213,8 +213,8 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
         // also prevents leading newlines
         let ts = Date.now(), new_value = e.currentTarget.value.replace(/^\n+/, '');
 
-        // NOTE: Checking for empty value is a courtesy to users who erase their entire draft
-        if(channel && new_value.length > 0 && (ts - state.ts) > 3500) {
+        // NOTE: What qualifies as "typing" is adding more characters
+        if(channel && new_value.length > state.value.length && (ts - state.ts) > 3500) {
             dispatch(startTyping(channel));
         } else {
             // use old value if not sent
