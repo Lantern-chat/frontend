@@ -1,15 +1,26 @@
 import { Middleware } from "redux";
 
+import { IS_MOBILE } from "lib/user_agent";
 import { Dispatch } from "state/actions";
 import { loadMessages, SearchMode, activateParty } from "state/commands";
 import { DEFAULT_LOGGED_IN_CHANNEL, GLOBAL, HISTORY } from "state/global";
 import { GatewayStatus } from "state/reducers/gateway";
 import { Action, RootState, Type } from "state/root";
 import { StorageKey } from "state/storage";
-import { GatewayCommandDiscriminator } from "worker/gateway/cmd";
+import { GatewayCommand, GatewayCommandDiscriminator } from "worker/gateway/cmd";
 import { GatewayMessage, GatewayMessageDiscriminator } from "worker/gateway/msg";
+import { Intent } from "state/models";
 
 const GATEWAY_ENABLED_ROUTES = ['channels', 'profile', 'invite'];
+
+function connect_gateway(state: RootState) {
+    GLOBAL.gateway!.postCmd({
+        t: GatewayCommandDiscriminator.Connect,
+        auth: state.user.session!.auth,
+        intent: Intent.ALL_DESKTOP,
+        //intent: IS_MOBILE ? Intent.ALL_MOBILE : Intent.ALL_DESKTOP
+    })
+}
 
 export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, getState }) => next => (action: Action) => {
     // run reducers first
@@ -25,16 +36,13 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
 
             // if we get the login after init, connect now
             if(state.gateway.status == GatewayStatus.Initialized && state.user.session) {
-                GLOBAL.gateway.postMessage({
-                    t: GatewayCommandDiscriminator.Connect,
-                    auth: state.user.session.auth
-                });
+                connect_gateway(state);
             }
 
             break;
         }
         case Type.SESSION_EXPIRED: {
-            GLOBAL.gateway.postMessage({ t: GatewayCommandDiscriminator.Disconnect });
+            GLOBAL.gateway.postCmd({ t: GatewayCommandDiscriminator.Disconnect });
             break;
         }
         case Type.PARTY_LOADED: {
@@ -84,16 +92,13 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
 
             if(GATEWAY_ENABLED_ROUTES.indexOf(parts[0]) < 0) {
                 // if the history updated and we're now on a page that doesn't need the gateway, disconnect
-                GLOBAL.gateway.postMessage({ t: GatewayCommandDiscriminator.Disconnect });
+                GLOBAL.gateway.postCmd({ t: GatewayCommandDiscriminator.Disconnect });
             } else {
                 const CONNECTABLE = [GatewayStatus.Disconnected, GatewayStatus.Initialized];
 
                 if(CONNECTABLE.indexOf(state.gateway.status) >= 0 && state.user.session) {
                     // if the history updated and we're now on a page that needs the gateway, connect
-                    GLOBAL.gateway.postMessage({
-                        t: GatewayCommandDiscriminator.Connect,
-                        auth: state.user.session.auth
-                    });
+                    connect_gateway(state);
                 } else {
                     // if the history updated and gateway is good, load
                     // any new messages for the now-active channel
@@ -118,10 +123,7 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
 
             // If the user requests a gateway connection retry, send the connect command
             if(CAN_RETRY_STATUSES.indexOf(state.gateway.status) >= 0 && state.user.session) {
-                GLOBAL.gateway.postMessage({
-                    t: GatewayCommandDiscriminator.Connect,
-                    auth: state.user.session.auth
-                });
+                connect_gateway(state);
             }
 
             break;
@@ -133,10 +135,7 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
                     let state = getState(), parts = state.history.parts;
                     // if we get the init after login, connect now
                     if(GATEWAY_ENABLED_ROUTES.indexOf(parts[0]) >= 0 && state.user.session) {
-                        GLOBAL.gateway.postMessage({
-                            t: GatewayCommandDiscriminator.Connect,
-                            auth: state.user.session.auth
-                        });
+                        connect_gateway(state);
                     }
                     break;
                 }
@@ -145,10 +144,7 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
 
                     // if we disconnect but are still on a gateway-enabled location, reconnect automatically
                     if(GATEWAY_ENABLED_ROUTES.indexOf(state.history.parts[0]) >= 0 && state.user.session) {
-                        GLOBAL.gateway.postMessage({
-                            t: GatewayCommandDiscriminator.Connect,
-                            auth: state.user.session.auth
-                        });
+                        connect_gateway(state);
                     }
 
                     break;

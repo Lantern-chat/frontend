@@ -8,11 +8,16 @@ import { recomputeHistoryContext } from "ui/components/history";
 import { DEFAULT_STATE as DEFAULT_WINDOW } from "./reducers/window";
 import { DEFAULT_STATE as DEFAULT_USER } from './reducers/user';
 import { StorageKey, loadTheme, loadSession } from "./storage";
+import { GatewayCommand } from "worker/gateway/cmd";
 
 export { DYNAMIC_MIDDLEWARE } from "./root";
 
+export interface IGatewayWorker extends Worker {
+    postCmd: (cmd: GatewayCommand) => void,
+}
+
 interface IGlobalState {
-    gateway?: Worker,
+    gateway?: IGatewayWorker,
     cleanup_timer?: ReturnType<typeof setInterval>,
 }
 

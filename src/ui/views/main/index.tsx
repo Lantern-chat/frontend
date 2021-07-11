@@ -5,7 +5,7 @@ import throttle from 'lodash/throttle';
 
 import { RootState } from "state/root";
 import { mainReducer, Type } from "state/main";
-import { GLOBAL, STORE, DYNAMIC_MIDDLEWARE, HISTORY } from "state/global";
+import { GLOBAL, STORE, DYNAMIC_MIDDLEWARE, HISTORY, IGatewayWorker } from "state/global";
 import { mainMiddleware } from "state/middleware/main";
 
 DYNAMIC_MIDDLEWARE.addMiddleware(mainMiddleware);
@@ -29,7 +29,9 @@ import Gateway from "worker-loader!worker/gateway";
 // this script may be run multiple times if unlucky,
 // so double-check the gateway hasn't already been created
 if(!GLOBAL.gateway) {
-    GLOBAL.gateway = new Gateway();
+    let gateway: any = new Gateway();
+    gateway.postCmd = (cmd: GatewayCommand) => gateway.postMessage(cmd);
+    GLOBAL.gateway = gateway as IGatewayWorker;
 
     GLOBAL.gateway.addEventListener('message', msg => {
         let data = msg.data;
@@ -55,6 +57,7 @@ import { Party } from "./components/party/party";
 import MainModals from "./modals";
 
 import "./main.scss";
+import { GatewayCommand } from "worker/gateway/cmd";
 export const MainView: React.FunctionComponent = React.memo(() => {
     //let { parts } = useSelector(selectPath);
 

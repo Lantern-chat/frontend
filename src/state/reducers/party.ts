@@ -1,6 +1,6 @@
 import produce from "immer";
 import { GatewayMessageDiscriminator } from "worker/gateway/msg";
-import { PartyMember } from "../../../../backend/crates/models/models";
+import { PartyMember } from "state/models";
 import { Action, Type } from "../actions";
 
 import { Snowflake, Party, Room } from "../models";
