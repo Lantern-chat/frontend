@@ -22,6 +22,8 @@
         &__wrapper {
             position: relative;
 
+            filter: drop-shadow(0 0 1px $lnx-primary-surface-color);
+
             &::before {
                 content: "";
                 background-color: $lnx-primary-surface-color;
