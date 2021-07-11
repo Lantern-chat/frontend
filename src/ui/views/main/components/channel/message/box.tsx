@@ -210,7 +210,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
 
     let on_change = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         let ts = Date.now();
-        if(channel && (ts - state.ts) > 1500) {
+        if(channel && (ts - state.ts) > 3500) {
             dispatch(startTyping(channel));
         } else {
             // use old value if not sent
