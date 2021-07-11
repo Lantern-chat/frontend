@@ -2,21 +2,31 @@ import { HelloEvent, Message, ReadyEvent, TypingStartEvent } from "state/models"
 
 export enum GatewayEventCode {
     Hello = 0,
-    HeartbeatACK = 2,
-    Ready = 3,
-    InvalidSession = 4,
-
-    ChannelCreate = 5,
-    ChannelUpdate = 6,
-    ChannelDelete = 7,
-
-    MessageCreate = 8,
-    MessageUpdate = 9,
-    MessageDelete = 10,
-
-    PresenceUpdate = 11,
-
-    TypingStart = 12,
+    HeartbeatACK = 1,
+    Ready = 2,
+    InvalidSession = 3,
+    PartyCreate = 4,
+    PartyUpdate = 5,
+    PartyDelete = 6,
+    RoleCreate = 7,
+    RoleUpdate = 8,
+    RoleDelete = 9,
+    MemberAdd = 10,
+    MemberUpdate = 11,
+    MemberRemove = 12,
+    RoomCreate = 13,
+    RoomUpdate = 14,
+    RoomDelete = 15,
+    RoomPinsUpdate = 16,
+    MessageCreate = 17,
+    MessageUpdate = 18,
+    MessageDelete = 19,
+    MessageReactionAdd = 20,
+    MessageReactionRemove = 21,
+    MessageReactionRemoveAll = 22,
+    MessageReactionRemoveEmote = 23,
+    PresenceUpdate = 24,
+    TypingStart = 25,
 }
 
 export interface GenericEvent<O, P = undefined> {

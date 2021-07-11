@@ -7,6 +7,7 @@ export enum GatewayCommandDiscriminator {
 export interface GatewayCommandConnect {
     t: GatewayCommandDiscriminator.Connect,
     auth: string,
+    intent: number,
 }
 export interface GatewayCommandDisconnect {
     t: GatewayCommandDiscriminator.Disconnect,

@@ -2,12 +2,16 @@ const ctx: Worker = self as any;
 
 import { zlibSync as compress, unzlibSync as decompress } from 'fflate';
 
-import { GatewayMessageDiscriminator } from "./msg";
+import { GatewayMessage, GatewayMessageDiscriminator } from "./msg";
 import { GatewayCommand, GatewayCommandDiscriminator } from "./cmd";
 import { GatewayEvent, GatewayEventCode } from "./event";
 import { GatewayClientCommand, GatewayClientCommandDiscriminator } from "./client";
 
 __DEV__ && console.log("!!!!!GATEWAY LOADED!!!!!");
+
+function postMsg(msg: GatewayMessage) {
+    ctx.postMessage(msg);
+}
 
 class Gateway {
     encoder: TextEncoder;
@@ -24,6 +28,7 @@ class Gateway {
     heartbeat_timeout?: number;
 
     auth: string | null = null;
+    intent: number = 0;
 
     attempt: number = 0;
 
@@ -45,7 +50,7 @@ class Gateway {
             __DEV__ && console.log("DELAY: ", delay);
 
             if(delay > 0) {
-                ctx.postMessage({ t: GatewayMessageDiscriminator.Waiting, p: Date.now() + delay })
+                postMsg({ t: GatewayMessageDiscriminator.Waiting, p: Date.now() + delay })
             }
 
             this.connecting_timeout = <any>setTimeout(() => this.do_connect(), delay);
@@ -54,7 +59,7 @@ class Gateway {
     }
 
     do_connect() {
-        ctx.postMessage({ t: GatewayMessageDiscriminator.Connecting });
+        postMsg({ t: GatewayMessageDiscriminator.Connecting });
 
         this.ws = new WebSocket(`wss://${self.location.host}/api/v1/gateway?compress=true&encoding=json`);
         this.ws.binaryType = "arraybuffer";
@@ -74,7 +79,7 @@ class Gateway {
     // TODO: Memoize?
     send(value: GatewayClientCommand) {
         if(!this.ws) {
-            return ctx.postMessage({ t: GatewayMessageDiscriminator.Error, p: { err: "WebSocket undefined" } });
+            return postMsg({ t: GatewayMessageDiscriminator.Error, p: { err: "WebSocket undefined" } });
         }
 
         __DEV__ && console.log("SENDING: ", value);
@@ -96,19 +101,19 @@ class Gateway {
 
     on_close(msg: CloseEvent) {
         this.do_close();
-        ctx.postMessage({ t: GatewayMessageDiscriminator.Disconnected, p: msg.code });
+        postMsg({ t: GatewayMessageDiscriminator.Disconnected, p: msg.code });
     }
 
     on_error(_err: Event) {
         // TODO: Handle this as a close event?
         this.do_close();
-        ctx.postMessage({ t: GatewayMessageDiscriminator.Error, p: { err: "WS Error" } });
+        postMsg({ t: GatewayMessageDiscriminator.Error, p: { err: "WS Error" } });
     }
 
     on_open() {
         this.attempt = 0;
 
-        ctx.postMessage({ t: GatewayMessageDiscriminator.Connected });
+        postMsg({ t: GatewayMessageDiscriminator.Connected });
         // NOTE: Nothing else to do on open except wait for the Hello event
     }
 
@@ -137,14 +142,14 @@ class Gateway {
             case GatewayEventCode.Ready: {
                 __DEV__ && console.log("GATEWAY READY", msg);
 
-                ctx.postMessage({
+                postMsg({
                     t: GatewayMessageDiscriminator.Ready,
                     p: msg.p,
                 });
                 break;
             }
             case GatewayEventCode.TypingStart:
-            case GatewayEventCode.MessageCreate: return ctx.postMessage({
+            case GatewayEventCode.MessageCreate: return postMsg({
                 t: GatewayMessageDiscriminator.Event,
                 p: msg,
             });
@@ -169,7 +174,9 @@ class Gateway {
     }
 
     identify() {
-        this.send({ o: GatewayClientCommandDiscriminator.Identify, p: { auth: this.auth!, intent: 0 } });
+        __DEV__ && console.log("Identifying with intent: ", this.intent.toString(2));
+
+        this.send({ o: GatewayClientCommandDiscriminator.Identify, p: { auth: this.auth!, intent: this.intent } });
     }
 
     set_presence(away: boolean) {
@@ -179,7 +186,7 @@ class Gateway {
 
 var GATEWAY: Gateway = new Gateway();
 
-ctx.postMessage({ t: GatewayMessageDiscriminator.Initialized });
+postMsg({ t: GatewayMessageDiscriminator.Initialized });
 
 ctx.addEventListener('message', msg => {
     let data: GatewayCommand = msg.data;
@@ -190,6 +197,7 @@ ctx.addEventListener('message', msg => {
     switch(data.t) {
         case GatewayCommandDiscriminator.Connect: {
             GATEWAY.auth = data.auth;
+            GATEWAY.intent = data.intent;
             GATEWAY.connect();
             break;
         }

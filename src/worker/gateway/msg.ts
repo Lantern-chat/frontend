@@ -35,11 +35,17 @@ export interface GatewayMessageReady {
 }
 export interface GatewayMessageDisconnected {
     t: GatewayMessageDiscriminator.Disconnected;
+    p: number,
 }
 
 export interface GatewayMessageEvent {
     t: GatewayMessageDiscriminator.Event;
     p: GatewayEvent
+}
+
+export interface GatewayMessageError {
+    t: GatewayMessageDiscriminator.Error;
+    p: any;
 }
 
 export type GatewayMessage =
@@ -50,4 +56,4 @@ export type GatewayMessage =
     GatewayMessageIdentifying |
     GatewayMessageReady |
     GatewayMessageDisconnected |
-    GatewayMessageEvent;
+    GatewayMessageEvent | GatewayMessageError;
