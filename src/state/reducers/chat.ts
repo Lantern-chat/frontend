@@ -125,6 +125,7 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
                 });
             }
 
+            // sort message by timestamp
             for(let room of draft.rooms.values()) {
                 room.msgs.sort((a, b) => a.ts.diff(b.ts));
             }
@@ -133,6 +134,7 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
         case Type.CLEANUP_TYPING: return produce(state, draft => {
             let now = Date.now();
 
+            // for all rooms, retain typing indicators if only in the last 7 seconds
             for(let room of draft.rooms.values()) {
                 room.typing = room.typing.filter(entry => (now - entry.ts) < 7000);
             }
@@ -151,30 +153,31 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
 
                             return produce(state, draft => {
                                 let room = draft.rooms.get(raw_msg.room_id);
-
                                 if(!room) return;
 
+                                // we try to keep the messages sorted by timestamp, and messages may not always
+                                // arrive in order, so find where it should be inserted
                                 let { idx, found } = binarySearch(room.msgs, m => m.ts.diff(msg.ts));
 
-                                // message already exists
+                                // message already exists (weird, but whatever)
                                 if(found && room.msgs[idx].msg.id == raw_msg.id) return;
 
+                                // insert message into the correct place to maintain sort order
                                 room.msgs.splice(idx, 0, msg);
 
-                                console.log("Splicing message '%s' at index %d", raw_msg.content, idx);
+                                __DEV__ && console.log("Splicing message '%s' at index %d", raw_msg.content, idx);
+
+                                // when a message is received, it should clear any typing indicator for the author
+                                // of that message
 
                                 // search for any users typing with this message's user ID
-                                let typing_idx = -1;
                                 for(let idx = 0; idx < room.typing.length; idx++) {
+                                    // if found, remove them from the typing list,
+                                    // as the message that was just sent was probably what they were typing
                                     if(room.typing[idx].user == raw_msg.author.id) {
-                                        typing_idx = idx;
+                                        room.typing.splice(idx, 1); // delete 1
                                         break;
                                     }
-                                }
-                                // if found, remove them from the typing list, as the message that was just sent was
-                                // probably what they were typing
-                                if(typing_idx != -1) {
-                                    room.typing.splice(typing_idx, 1);
                                 }
                             });
                         }
@@ -182,22 +185,20 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
                             let { user, room: room_id } = event.p;
 
                             return produce(state, draft => {
-                                let room = draft.rooms.get(room_id), found_entry, ts = Date.now();
-
+                                let room = draft.rooms.get(room_id), ts = Date.now();
                                 if(!room) return;
 
+                                // search through typing entries for this room for any existing
+                                // entries to refresh
                                 for(let entry of room.typing) {
                                     if(entry.user == user) {
-                                        found_entry = entry;
-                                        break;
+                                        entry.ts = ts; // refresh timestamp
+                                        return; // early exit
                                     };
                                 }
 
-                                if(found_entry) {
-                                    found_entry.ts = ts;
-                                } else {
-                                    room.typing.push({ user, ts });
-                                }
+                                // if not found above (and returned early), push new typing entry
+                                room.typing.push({ user, ts });
                             });
                         }
                     }
