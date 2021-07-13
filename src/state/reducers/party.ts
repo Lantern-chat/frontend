@@ -4,6 +4,7 @@ import { PartyMember } from "state/models";
 import { Action, Type } from "../actions";
 
 import { Snowflake, Party, Room } from "../models";
+import { GatewayEventCode } from "worker/gateway/event";
 
 export interface IParty {
     party: Party,
@@ -85,6 +86,28 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
                         });
                     }
                     return { ...state, parties };
+                }
+                case GatewayMessageDiscriminator.Event: {
+                    let p = action.payload.p;
+                    switch(p.o) {
+                        case GatewayEventCode.PresenceUpdate: {
+                            let { user, party: party_id, presence } = p.p;
+                            if(!party_id) break;
+
+                            return produce(state, draft => {
+                                let party = draft.parties.get(party_id!);
+                                if(!party) return;
+
+                                let member = party.members.get(user.id);
+                                if(!member) return;
+
+                                member.presence = presence;
+                            });
+                        }
+                        default: break;
+                    }
+
+                    break;
                 }
             }
             break;

@@ -1,3 +1,5 @@
+import { Activity } from "state/models";
+
 export enum GatewayClientCommandDiscriminator {
     Heartbeat = 0,
     Identify = 1,
@@ -24,7 +26,8 @@ export interface GatewayClientResume {
 export interface GatewayClientSetPresence {
     o: GatewayClientCommandDiscriminator.SetPresence,
     p: {
-        away: boolean,
+        flags: number,
+        activity?: Activity,
     }
 }
 

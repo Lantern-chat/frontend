@@ -1,26 +1,44 @@
 import { Action, Type } from "../actions";
 
-import { User } from "../models";
+import { User, UserPresence } from "../models";
 import { ISession } from "lib/session";
 import { GatewayMessageDiscriminator } from "worker/gateway/msg";
+import { GatewayEventCode } from "worker/gateway/event";
 
 export interface IUserState {
     user?: User,
     session?: ISession | null,
     friends?: User[],
-    presence: 'away' | 'online'
+    presence?: UserPresence,
 }
 
-export const DEFAULT_STATE: IUserState = {
-    presence: 'online'
-};
+export const DEFAULT_STATE: IUserState = {};
 
 export function userReducer(state: IUserState = DEFAULT_STATE, action: Action) {
     switch(action.type) {
         case Type.SESSION_EXPIRED: return DEFAULT_STATE;
         case Type.GATEWAY_EVENT: {
-            if(action.payload.t == GatewayMessageDiscriminator.Ready) {
-                return { ...state, user: action.payload.p.user };
+            switch(action.payload.t) {
+                case GatewayMessageDiscriminator.Ready: {
+                    return { ...state, user: action.payload.p.user };
+                }
+                case GatewayMessageDiscriminator.Event: {
+                    if(!state.user) break;
+
+                    let p = action.payload.p;
+
+                    switch(p.o) {
+                        case GatewayEventCode.PresenceUpdate: {
+                            if(p.p.user.id == state.user.id) {
+                                return { ...state, presence: p.p.presence };
+                            }
+
+                            break;
+                        }
+                    }
+
+                    break;
+                }
             }
             break;
         }

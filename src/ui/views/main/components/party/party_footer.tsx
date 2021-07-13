@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { createStructuredSelector } from "reselect";
+import { createSelector, createStructuredSelector } from "reselect";
+
 import { RootState } from "state/root";
+import { parse_presence } from "state/models";
 
 import { UserAvatar } from "../user_avatar";
 import { Glyphicon } from "ui/components/common/glyphicon";
@@ -14,14 +16,30 @@ import SpeakerDeaf from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individua
 import Microphone from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-341-mic.svg";
 import MicrophoneMute from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-342-mic-off.svg";
 
+let status_selector = createSelector(
+    (state: RootState) => state.user.user!,
+    (state: RootState) => state.party.parties,
+    (state: RootState) => state.chat.active_party,
+    (user, parties, active_party) => {
+        if(!active_party) return 'online';
+        let party = parties.get(active_party);
+        if(!party) return 'offline';
+        let member = party.members.get(user.id);
+        if(!member) return 'offline';
+
+        return parse_presence(member.presence).status;
+    }
+)
+
 let footer_selector = createStructuredSelector({
     user: (state: RootState) => state.user.user,
     is_light_theme: (state: RootState) => state.theme.is_light,
+    status: status_selector,
 });
 
 import "./party_footer.scss";
 export const PartyFooter = React.memo(() => {
-    let { user, is_light_theme } = useSelector(footer_selector);
+    let { user, is_light_theme, status } = useSelector(footer_selector);
 
     let [mute, setMute] = useState(false);
     let [deaf, setDeaf] = useState(false);
@@ -30,7 +48,7 @@ export const PartyFooter = React.memo(() => {
     if(user) {
         user_info = (
             <>
-                <UserAvatar nickname={user.username} user={user} status="online" is_light_theme={is_light_theme} />
+                <UserAvatar nickname={user.username} user={user} status={status} is_light_theme={is_light_theme} />
 
                 <div className="ln-username">
                     <span className="ln-username__name">

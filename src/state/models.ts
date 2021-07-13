@@ -102,6 +102,14 @@ export interface UserPreferences {
     locale: number,
 }
 
+export interface UserPresence {
+    flags: number,
+    updated_at?: string,
+    activity?: Activity,
+}
+
+export interface Activity { }
+
 export interface Friend {
     note?: string,
     flags: number,
@@ -162,6 +170,7 @@ export interface PartyMember {
     user?: User,
     nick?: string,
     roles?: Snowflake[],
+    presence?: UserPresence,
 }
 
 export interface Invite {
@@ -210,7 +219,11 @@ export type Emote = StandardEmote | CustomEmote;
 
 // GATEWAY
 
-export type GatewayEvent = HelloEvent | ReadyEvent | TypingStartEvent;
+export type GatewayEvent =
+    HelloEvent |
+    ReadyEvent |
+    TypingStartEvent |
+    UserPresenceUpdateEvent;
 
 export interface HelloEvent {
     heartbeat_interval: number,
@@ -228,4 +241,23 @@ export interface TypingStartEvent {
     party?: Snowflake,
     user: Snowflake,
     member?: PartyMember,
+}
+
+export interface UserPresenceUpdateEvent {
+    user: User,
+    party?: Snowflake,
+    presence: UserPresence,
+}
+
+export function parse_presence(p?: UserPresence): { status: "online" | "away" | "busy" | "offline", is_mobile: boolean } {
+    let status: "online" | "away" | "busy" | "offline" = "offline", is_mobile = false;
+
+    if(p) {
+        if((p.flags & 1) == 1) status = 'online';
+        else if((p.flags & 2) == 2) status = 'away';
+        else if((p.flags & 4) == 4) status = 'busy';
+        is_mobile = (p.flags & 8) == 8;
+    }
+
+    return { status, is_mobile };
 }

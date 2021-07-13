@@ -26,4 +26,4 @@ export const UserAvatar = React.memo(({ nickname, user, status, is_light_theme, 
             <div className="ln-user-status">{presence}</div>
         </div>
     )
-})
+});

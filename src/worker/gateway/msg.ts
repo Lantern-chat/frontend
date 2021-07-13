@@ -56,4 +56,5 @@ export type GatewayMessage =
     GatewayMessageIdentifying |
     GatewayMessageReady |
     GatewayMessageDisconnected |
-    GatewayMessageEvent | GatewayMessageError;
+    GatewayMessageEvent |
+    GatewayMessageError;

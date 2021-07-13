@@ -6,6 +6,7 @@ import { GatewayMessage, GatewayMessageDiscriminator } from "./msg";
 import { GatewayCommand, GatewayCommandDiscriminator } from "./cmd";
 import { GatewayEvent, GatewayEventCode } from "./event";
 import { GatewayClientCommand, GatewayClientCommandDiscriminator } from "./client";
+import { IS_MOBILE } from 'lib/user_agent';
 
 __DEV__ && console.log("!!!!!GATEWAY LOADED!!!!!");
 
@@ -148,6 +149,7 @@ class Gateway {
                 });
                 break;
             }
+            case GatewayEventCode.PresenceUpdate:
             case GatewayEventCode.TypingStart:
             case GatewayEventCode.MessageCreate: return postMsg({
                 t: GatewayMessageDiscriminator.Event,
@@ -180,7 +182,11 @@ class Gateway {
     }
 
     set_presence(away: boolean) {
-        this.send({ o: GatewayClientCommandDiscriminator.SetPresence, p: { away } });
+        this.send({
+            o: GatewayClientCommandDiscriminator.SetPresence, p: {
+                flags: (away ? 2 : 1) | (IS_MOBILE ? 8 : 0),
+            }
+        });
     }
 }
 
@@ -207,7 +213,7 @@ ctx.addEventListener('message', msg => {
             break;
         }
         case GatewayCommandDiscriminator.SetPresence: {
-
+            GATEWAY.set_presence(data.away);
             break;
         }
         default: {

@@ -27,17 +27,15 @@
         &__wrapper {
             position: relative;
 
-            filter: drop-shadow(0 0 1px $lnx-primary-surface-color);
-
             &::before {
                 content: "";
                 background-color: $lnx-primary-surface-color;
                 position: absolute;
-                top: 0.15em;
-                left: 0.21em;
-                bottom: 0.12em;
-                right: 0.21em;
-                border-radius: 0.1em;
+                top: -0.4px;
+                bottom: -0.4px;
+                left: 1.2px;
+                right: 1.2px;
+                border-radius: 0.2em;
             }
         }
     }

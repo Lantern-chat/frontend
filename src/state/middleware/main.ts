@@ -154,6 +154,8 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
                         parties = state.party.parties,
                         party_id = state.chat.active_party;
 
+                    GLOBAL.gateway.postCmd({ t: GatewayCommandDiscriminator.SetPresence, away: false });
+
                     if(party_id && parties.has(party_id)) {
                         // gateway has connected, so fetch the currently selected party id
                         // this is generally for fresh-loads, but reconnects trigger this as well
