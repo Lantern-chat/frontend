@@ -21,7 +21,7 @@ let status_selector = createSelector(
     (state: RootState) => state.party.parties,
     (state: RootState) => state.chat.active_party,
     (user, parties, active_party) => {
-        if(!active_party) return 'online';
+        if(!active_party || active_party == '@me') return 'online';
         let party = parties.get(active_party);
         if(!party) return 'offline';
         let member = party.members.get(user.id);

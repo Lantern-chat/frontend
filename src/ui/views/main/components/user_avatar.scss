@@ -50,14 +50,26 @@
 
         &.online {
             background-color: lightgreen;
+
+            .ln-light-theme & {
+                background-color: rgb(0, 180, 0);
+            }
         }
 
         &.busy {
             background-color: lightcoral;
+
+            .ln-light-theme & {
+                background-color: red;
+            }
         }
 
         &.away {
             background-color: gold;
+
+            .ln-light-theme & {
+                background-color: yellow;
+            }
         }
 
         &.offline {
