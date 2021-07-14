@@ -3,6 +3,8 @@ import ReactDOM from "react-dom";
 import { } from 'react-dom/experimental';
 import { } from 'react/experimental';
 
+import "lib/polyfills";
+
 import * as i18n from "ui/i18n";
 
 import "ui/styles/root.scss";
