@@ -1,0 +1,23 @@
+.ln-upload-preview {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+
+    img,
+    video,
+    audio {
+        width: auto;
+        height: auto;
+        max-width: calc(90vw - 4em);
+        max-height: calc(90vh - 5em);
+        display: block;
+        margin: 0 auto;
+    }
+
+    .ln-glyphicon {
+        font-size: 120px;
+        //text-align: center;
+        //width: 100%;
+    }
+}

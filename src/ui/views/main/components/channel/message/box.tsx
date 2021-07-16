@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { ChangeEventHandler, forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
 
@@ -87,6 +87,7 @@ const msg_box_selector = createStructuredSelector({
 
 
 import "./box.scss";
+import { FileUploadModal } from "ui/views/main/modals/file_upload";
 export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     let disabled = !channel;
 
@@ -99,6 +100,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     let dispatch = useDispatch();
 
     let ref = useRef<HTMLTextAreaElement>(null);
+    //let file_ref = useRef<HTMLInputElement>(null);
 
     let keyRef = __DEV__ ? useRef<HTMLSpanElement>(null) : undefined;
 
@@ -109,6 +111,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
         ts: number,
     }
 
+    let [files, setFiles] = useState<FileList | null>(null);
     let [focused, setFocus] = useState(false);
     let [state, setState] = useState<MsgBoxState>({
         value: "",
@@ -126,10 +129,10 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     } else if(state.isEditing === false && current_edit != null) { // not editing but there is a message that needs editing
         // backup value only if there isn't already a backup (like if the message being edited changed)
         setState({
+            ...state,
             backup: state.backup || state.value,
             value: messages.find((msg) => msg.id == current_edit)!.msg,
             isEditing: true,
-            ts: state.ts,
         });
     }
 
@@ -141,11 +144,19 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
         setState({ ...state, value: "" });
     };
 
-    let open_upload_click = disabled ? do_nothing : (e: React.MouseEvent<HTMLDivElement>) => {
-        alert("Upload is not yet implemented!");
+    let open_upload_click = disabled ? do_nothing : (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+        e.stopPropagation(); // prevent refocus if not focused
+
+        //if(file_ref.current) {
+        //    file_ref.current.click();
+        //}
+
+        if(focused) {
+            ref.current!.focus(); // refocus just in-case, since on Safari it blurs automatically
+        }
     };
 
-    let on_send_click = disabled ? do_nothing : (e: React.MouseEvent<HTMLDivElement>) => {
+    let on_send_click = disabled ? do_nothing : (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
         e.stopPropagation(); // prevent refocus if not focused
 
         if(state.value.length > 0) {
@@ -229,11 +240,25 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
         ref.current!.focus();
     };
 
+    let on_file_change = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        console.log("File list changed");
+
+        setFiles(e.currentTarget.files);
+    }, []);
+
+    let on_file_close = () => {
+        setFiles(null);
+    }
+
     let is_empty = state.value.length == 0;
+
+    let on_right_click = is_empty ? open_upload_click : on_send_click;
 
     // https://github.com/buildo/react-autosize-textarea/issues/52
     return (
         <>
+            {files?.length ? <FileUploadModal onClose={on_file_close} files={files} /> : null}
+
             <div className={"ln-msg-box" + (disabled ? ' ln-msg-box--disabled' : '')} onClick={on_click_focus}>
                 <div className="ln-typing ln-typing__top">
                     {(use_mobile_view && users_typing) ? <span>{users_typing}</span> : null}
@@ -242,6 +267,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
                 <div className="ln-msg-box__emoji">
                     <Glyphicon src={SmileyHalf} />
                 </div>
+
                 <div className="ln-msg-box__box">
                     <TextareaAutosize disabled={disabled}
                         onBlur={() => setTimeout(() => setFocus(false), 0)} // don't run on same frame?
@@ -257,7 +283,8 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
                     __DEV__ && <div className="ln-msg-box__debug"><span ref={keyRef}></span></div>
                 }
 
-                <div className="ln-msg-box__send" onClick={is_empty ? open_upload_click : on_send_click}>
+                <div className="ln-msg-box__send" onClick={on_right_click} onTouchEnd={on_right_click}>
+                    {is_empty ? <input multiple type="file" name="file_upload" onChange={on_file_change} /> : null}
                     <Glyphicon src={is_empty ? Plus : Send} />
                 </div>
             </div>

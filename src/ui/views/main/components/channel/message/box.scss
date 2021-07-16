@@ -99,6 +99,20 @@
     &__send {
         font-size: 1.75em;
         padding: 0 0.5em 0 0.5em;
+        position: relative;
+
+        input {
+            display: block;
+            position: absolute;
+            opacity: 0;
+            max-width: 100%;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 3;
+            cursor: pointer;
+        }
     }
 
     &__box {

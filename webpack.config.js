@@ -168,11 +168,11 @@ module.exports = (env, argv) => {
                 //TextDecoder: ['text-encoding', 'TextDecoder'],
                 //TextEncoder: ['text-encoding', 'TextEncoder']
             }),
-            new HtmlWebpackPlugin({
-                excludeChunks: ['index'],
-                template: path.resolve(__dirname, "src", "index.html"),
-                filename: 'testbed.html'
-            }),
+            //new HtmlWebpackPlugin({
+            //    excludeChunks: ['index'],
+            //    template: path.resolve(__dirname, "src", "index.html"),
+            //    filename: 'testbed.html'
+            //}),
             new HtmlWebpackPlugin({
                 excludeChunks: ['testbed'],
                 template: path.resolve(__dirname, "src", "index.html"),
