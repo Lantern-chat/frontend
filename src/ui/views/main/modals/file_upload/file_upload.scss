@@ -1,16 +1,23 @@
+.ln-upload-previews {
+    display: flex;
+    flex-wrap: wrap;
+}
+
 .ln-upload-preview {
     text-align: center;
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
+    margin: 0 auto;
+    padding: 0 0.5em;
 
-    img,
-    video,
-    audio {
+    .ln-media {
         width: auto;
         height: auto;
-        max-width: calc(90vw - 4em);
+
+        //max-width: calc(90vw - 4em);
         max-height: calc(90vh - 5em);
+
         display: block;
         margin: 0 auto;
     }
@@ -19,5 +26,22 @@
         font-size: 120px;
         //text-align: center;
         //width: 100%;
+    }
+}
+
+.ln-media {
+    .ln-multi-upload-2 & {
+        //max-width: calc(45vw - 4em);
+        max-height: calc(45vh - 5em);
+    }
+
+    .ln-multi-upload-3 & {
+        //max-width: calc(33vw - 4em);
+        max-height: calc(33vh - 5em);
+    }
+
+    .ln-multi-upload-4 & {
+        //max-width: calc(20vw - 4em);
+        max-height: calc(20vh - 5em);
     }
 }

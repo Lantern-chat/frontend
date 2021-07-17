@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useEffect, useState } from "react";
+import React, { useRef, useMemo, useEffect, useState, forwardRef, createRef } from "react";
 
 import { GenericModal, GenericModalProps } from "../generic";
 
@@ -6,27 +6,57 @@ export interface FileUploadModalProps extends GenericModalProps {
     files: FileList
 }
 
+interface FileUploadModalState {
+    files: File[],
+    media_refs: React.MutableRefObject<any>[];
+}
+
 import "./file_upload.scss";
-export const FileUploadModal = React.memo((props: FileUploadModalProps) => {
-    let files: File[] = [];
-    for(let idx = 0; idx < props.files.length; idx++) {
-        files.push(props.files.item(idx)!);
+export class FileUploadModal extends React.Component<FileUploadModalProps, FileUploadModalState> {
+    constructor(props: FileUploadModalProps) {
+        super(props);
+
+        this.state = {
+            files: [],
+            media_refs: []
+        }
+
+        for(let idx = 0; idx < this.props.files.length; idx++) {
+            this.state.files.push(this.props.files.item(idx)!);
+            this.state.media_refs.push(createRef());
+        }
     }
 
-    return (
-        <GenericModal {...props}>
-            <div>
-                {files.map((file) => {
-                    return <MediaPreview key={file.name} file={file} />
-                })}
-            </div>
-        </GenericModal>
-    )
-});
+    componentDidMount() {
+        console.log(this.state.media_refs.map(r => r.current));
+    }
 
-const MediaPreview = ({ file }: { file: File }) => {
-    let ref = useRef<any>(null),
-        [error, setError] = useState(false),
+    render() {
+        let { files, media_refs } = this.state;
+
+        let multiclass = ' ln-multi-upload-';
+        switch(files.length) {
+            case 1: multiclass = ''; break;
+            case 2: multiclass += '2'; break;
+            case 3: multiclass += '3'; break;
+            default: multiclass += '4'; break;
+        }
+
+        return (
+            <GenericModal {...this.props}>
+                <div className={"ln-upload-previews" + multiclass}>
+                    {files.map((file, i) => {
+                        return <MediaPreview key={file.name} file={file} ref={media_refs[i]} />
+                    })}
+                </div>
+            </GenericModal>
+        )
+    }
+}
+
+
+const MediaPreview = forwardRef(({ file }: { file: File }, ref: React.MutableRefObject<any>) => {
+    let [error, setError] = useState(false),
         t = file.type, media;
 
     useEffect(() => {
@@ -38,14 +68,14 @@ const MediaPreview = ({ file }: { file: File }) => {
     }, [ref.current, file]);
 
     while(!error && t.length) {
-        let on_error = () => setError(true);
+        let on_error = () => setError(true), className = 'ln-media';
 
         if(t.startsWith('image/')) {
-            media = <img ref={ref} onError={on_error} />;
+            media = <img className={className} ref={ref} onError={on_error} />;
         } else if(t.startsWith('video/')) {
-            media = <video ref={ref} controls loop onError={on_error} />;
+            media = <video className={className} ref={ref} controls loop onError={on_error} />;
         } else if(t.startsWith('audio/')) {
-            media = <audio ref={ref} controls onError={on_error} />;
+            media = <audio className={className} ref={ref} controls onError={on_error} />;
         } else {
             break;
         }
@@ -63,7 +93,7 @@ const MediaPreview = ({ file }: { file: File }) => {
             {media}
         </div>
     );
-}
+});
 
 import PlainTextIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-1-file-text.svg";
 import RichTextIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-2-file-rich-text.svg";
