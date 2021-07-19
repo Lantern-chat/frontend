@@ -7,6 +7,8 @@ const BYTE_OFFSETS = new Uint8Array([
     0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23, 0x4F, 0x00, 0x50, 0x00, 0x00,
 ]);
 
+const CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.-:+=^!/*?&<>()[]{}@%$#";
+
 export function decode(enc: Uint8Array): ArrayBuffer {
     let out = new ArrayBuffer(enc.length / 5 * 4), pos = 0, w = 0, view = new DataView(out);
     while(pos < enc.length) {
@@ -18,5 +20,32 @@ export function decode(enc: Uint8Array): ArrayBuffer {
         view.setInt32(w, block_num, false /* write Big-Endian to swap bytes */);
         w += 4; pos = next_pos;
     }
+    return out;
+}
+
+export function encode(data: Uint8Array): string {
+    let out = "", l = data.length;
+
+    if(l > 0 && l % 4 == 0) {
+        for(let offset = 0; offset < l; offset += 4) {
+            let block_num = 0, stack = [], i = 5, byte = 0;
+
+            while(byte < 4) {
+                block_num = (block_num << 8) | data[offset + byte++];
+            }
+
+            // i = 5 as per above, so iterate 5 times
+            while(i--) {
+                stack.push(CHARS.charAt(block_num % 85));
+                block_num /= 85;
+            }
+
+            // pop stack
+            for(i = 5; i--;) {
+                out += stack[i];
+            }
+        }
+    }
+
     return out;
 }
