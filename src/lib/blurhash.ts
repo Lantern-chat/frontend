@@ -88,15 +88,17 @@ export function decode(hash: ArrayBuffer, w: number, h: number, punch: number): 
     return out;
 }
 
-function multiply_basis_function(xc: number, yc: number, w: number, h: number, rgb: number[]): RGBColor {
+// bpp = bytes per pixel, which is 4 with alpha channel
+function multiply_basis_function(xc: number, yc: number, w: number, h: number, rgb: Uint8Array, bpp: number): RGBColor {
     let r, g, b = g = r = 0,
         nx = PI * xc / w,
-        ny = PI * yc / h;
+        ny = PI * yc / h,
+        scale = 1 / (w * h); // NOTE: This noramlization differs from reference, because I think it looks better
 
     for(let y = 0; y < h; y++) {
         for(let x = 0; x < w; x++) {
             let basis = cos(x * nx) * cos(y * ny),
-                i = 3 * (x + y * w);
+                i = bpp * (x + y * w);
 
             let c = srgb2linear({ r: rgb[i], g: rgb[i + 1], b: rgb[i + 2] });
 
@@ -106,11 +108,64 @@ function multiply_basis_function(xc: number, yc: number, w: number, h: number, r
         }
     }
 
-    let scale = 1 / (w * h);
-
     return {
         r: r * scale,
         g: g * scale,
         b: b * scale,
     };
+}
+
+function roundup4(len: number): number {
+    return (len + 3) & ~0x03;
+}
+
+export function encode(xc: number, yc: number, w: number, h: number, rgb: Uint8Array): ArrayBuffer {
+    xc = min(9, max(1, xc));
+    yc = min(9, max(1, yc));
+
+    // size_flag = 1 byte
+    // q_max_value = 1 byte
+    // (dc + ac) = 2 bytes + (2 * xc * yc) bytes, dc takes an extra 2 bytes
+
+    let buf_size = roundup4(4 + xc * yc * 2),
+        buffer = new ArrayBuffer(buf_size),
+        data = new DataView(buffer),
+        size_flag = (yc - 1) * 9 + (xc - 1),
+        factors: RGBColor[] = [];
+
+    for(let y = 0; y < yc; y++) {
+        for(let x = 0; x < xc; x++) {
+            factors.push(multiply_basis_function(xc, yc, w, h, rgb, 4));
+        }
+    }
+
+    let dc = factors[0],
+        ac = factors.slice(1),
+        max_value = 1,
+        // serves as both the real max when searching and as the written value
+        actual_max = 0;
+
+    if(ac.length) {
+        for(let i = 0; i < ac.length; i++) {
+            let { r, g, b } = ac[i];
+            actual_max = max(actual_max, r, g, b);
+        }
+
+        // quantize max and reassign it for writing to the buffer
+        actual_max = max(0, min(82, actual_max * 166.0 - 0.5)) | 0;
+
+        // compute max for encoding
+        max_value = (actual_max + 1) / 166.0;
+    }
+
+    data.setUint8(0, size_flag); // 1 byte
+    data.setInt8(1, actual_max); // 1 byte
+    data.setUint32(2, encode_dc(dc), true); // 4 bytes
+
+    for(let i = 0; i < ac.length; i++) {
+        // AC starts at 6 bytes, iterating by 2i bytes (i + i)
+        data.setUint16(6 + i + i, encode_ac(ac[i], max_value), true);
+    }
+
+    return buffer;
 }
