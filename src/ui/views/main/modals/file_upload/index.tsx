@@ -97,23 +97,57 @@ const MediaPreview = forwardRef(({ file }: { file: File }, ref: React.MutableRef
 
 import PlainTextIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-1-file-text.svg";
 import RichTextIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-2-file-rich-text.svg";
+import MusicIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-4-file-music.svg";
 import ImageIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-6-file-image.svg";
+import ScriptIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-15-file-script.svg";
+import TerminalIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-12-file-terminal.svg";
 import UnknownIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-38-file-question.svg";
 
 import { getType } from 'mime';
 
 import { Glyphicon } from "ui/components/common/glyphicon";
 
+const PREFIX_TYPEES = [
+    ['image', ImageIcon],
+    ['text/plain', PlainTextIcon],
+    ['text', RichTextIcon],
+    ['audio', MusicIcon],
+];
+
+const EXT_TYPES = [
+    {
+        ext: ['sh', 'bat'],
+        icon: TerminalIcon,
+    },
+    {
+        ext: ['perl', 'rs'],
+        icon: ScriptIcon,
+    }
+];
+
 const MimePreview = ({ file }: { file: File }) => {
     let ext = file.name.replace(/.*?\.(\w+)$/, '$1').toLowerCase(),
         t = file.type || getType(file.name) || ext;
 
-    let icon = UnknownIcon;
-    if(t.startsWith('image')) {
-        icon = ImageIcon;
+    let deduced_icon = UnknownIcon;
+
+    for(let [prefix, icon] of PREFIX_TYPEES) {
+        if(t.startsWith(prefix)) {
+            deduced_icon = icon;
+            break;
+        }
+    }
+
+    if(ext && deduced_icon == UnknownIcon) {
+        for(let test of EXT_TYPES) {
+            if(test.ext.indexOf(ext) > 0) {
+                deduced_icon = test.icon;
+                break;
+            }
+        }
     }
 
     return (
-        <Glyphicon src={icon} />
+        <Glyphicon src={deduced_icon} />
     );
 }
