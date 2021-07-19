@@ -220,6 +220,7 @@ function u82linear({ r, g, b }: RGBColor): RGBColor {
     return { r: k(r), g: k(g), b: k(b) }
 }
 
+/// Transforms a linear (0-1) RGB color into sRGB 0-255 (inclusive)
 export function linear2srgb({ r, g, b }: RGBColor): RGBColor {
     let l2s = (u: number) => u <= 0.0031308 ? (12.92 * u) : (1.055 * Math.pow(u, 1 / 2.4) - 0.055);
     return linear2u8({ r: l2s(r), g: l2s(g), b: l2s(b) });
