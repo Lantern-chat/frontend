@@ -1,5 +1,7 @@
 import React, { useRef, useMemo, useEffect, useState, forwardRef, createRef } from "react";
 
+import { MimeIcon } from "ui/components/mime_icon";
+
 import { GenericModal, GenericModalProps } from "../generic";
 
 export interface FileUploadModalProps extends GenericModalProps {
@@ -57,7 +59,8 @@ export class FileUploadModal extends React.Component<FileUploadModalProps, FileU
 
 const MediaPreview = forwardRef(({ file }: { file: File }, ref: React.MutableRefObject<any>) => {
     let [error, setError] = useState(false),
-        t = file.type, media;
+        t = file.type,
+        media;
 
     useEffect(() => {
         if(!ref.current) return;
@@ -84,7 +87,7 @@ const MediaPreview = forwardRef(({ file }: { file: File }, ref: React.MutableRef
     }
 
     if(!media) {
-        media = <MimePreview file={file} />;
+        media = <MimeIcon name={file.name} hint={file.type} />;
     }
 
     return (
@@ -94,60 +97,3 @@ const MediaPreview = forwardRef(({ file }: { file: File }, ref: React.MutableRef
         </div>
     );
 });
-
-import PlainTextIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-1-file-text.svg";
-import RichTextIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-2-file-rich-text.svg";
-import MusicIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-4-file-music.svg";
-import ImageIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-6-file-image.svg";
-import ScriptIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-15-file-script.svg";
-import TerminalIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-12-file-terminal.svg";
-import UnknownIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-38-file-question.svg";
-
-import { getType } from 'mime';
-
-import { Glyphicon } from "ui/components/common/glyphicon";
-
-const PREFIX_TYPEES = [
-    ['image', ImageIcon],
-    ['text/plain', PlainTextIcon],
-    ['text', RichTextIcon],
-    ['audio', MusicIcon],
-];
-
-const EXT_TYPES = [
-    {
-        ext: ['sh', 'bat'],
-        icon: TerminalIcon,
-    },
-    {
-        ext: ['perl', 'rs'],
-        icon: ScriptIcon,
-    }
-];
-
-const MimePreview = ({ file }: { file: File }) => {
-    let ext = file.name.replace(/.*?\.(\w+)$/, '$1').toLowerCase(),
-        t = file.type || getType(file.name) || ext;
-
-    let deduced_icon = UnknownIcon;
-
-    for(let [prefix, icon] of PREFIX_TYPEES) {
-        if(t.startsWith(prefix)) {
-            deduced_icon = icon;
-            break;
-        }
-    }
-
-    if(ext && deduced_icon == UnknownIcon) {
-        for(let test of EXT_TYPES) {
-            if(test.ext.indexOf(ext) > 0) {
-                deduced_icon = test.icon;
-                break;
-            }
-        }
-    }
-
-    return (
-        <Glyphicon src={deduced_icon} />
-    );
-}
