@@ -9,7 +9,7 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const TerserPlugin = require('terser-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const svgToMiniDataURI = require('mini-svg-data-uri');
-const SriPlugin = require('webpack-subresource-integrity');
+const { SubresourceIntegrityPlugin } = require('webpack-subresource-integrity');
 
 const distPath = path.join(__dirname, 'dist');
 
@@ -38,7 +38,7 @@ module.exports = (env, argv) => {
             chunkFilename: `${CHUNK_NAME}.js`,
             path: distPath,
             publicPath: '/static/',
-            //crossOriginLoading: 'use-credentials',
+            crossOriginLoading: 'use-credentials',
         },
         node: {
             global: true,
@@ -165,6 +165,7 @@ module.exports = (env, argv) => {
                 "__DEV__": JSON.stringify(!IS_PRODUCTION),
                 "__PRERELEASE__": JSON.stringify(JSON.parse(process.env.BUILD_PRERELEASE || 'false'))
             }),
+            new SubresourceIntegrityPlugin(),
             //new SriPlugin({
             //    hashFuncNames: ['sha256'],
             //    enabled: IS_PRODUCTION,

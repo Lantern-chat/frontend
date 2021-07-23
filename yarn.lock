@@ -4739,6 +4739,11 @@ type-is@~1.6.17, type-is@~1.6.18:
     media-typer "0.3.0"
     mime-types "~2.1.24"
 
+typed-assert@^1.0.4:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/typed-assert/-/typed-assert-1.0.8.tgz#4bf9f1ce7f3f974d09c3afd7c68d12e1391a233c"
+  integrity sha512-5NkbXZUlmCE73Fs7gvkp1XXJWHYetPkg60QnQ2NXQmBYNFxbBr2zA8GCtaH4K2s2WhOmSlgiSTmrjrcm5tnM5g==
+
 typedoc-default-themes@^0.12.10:
   version "0.12.10"
   resolved "https://registry.yarnpkg.com/typedoc-default-themes/-/typedoc-default-themes-0.12.10.tgz#614c4222fe642657f37693ea62cad4dafeddf843"
@@ -5125,6 +5130,13 @@ webpack-sources@^2.3.0:
   dependencies:
     source-list-map "^2.0.1"
     source-map "^0.6.1"
+
+webpack-subresource-integrity@^5.0.0-alpha.5:
+  version "5.0.0-alpha.5"
+  resolved "https://registry.yarnpkg.com/webpack-subresource-integrity/-/webpack-subresource-integrity-5.0.0-alpha.5.tgz#c674f7c536caa389c99ebfb4e3c80fe16bc40d44"
+  integrity sha512-bZVkt3W7wbvNXoM+vHNNTB9V6z0Xce1MJRcMeK7EwY0Nf4RpOxp8S5APRWKWDZX6ufxIZ9MZo8aISZRUcvO3uA==
+  dependencies:
+    typed-assert "^1.0.4"
 
 webpack@^5.10.1:
   version "5.40.0"
