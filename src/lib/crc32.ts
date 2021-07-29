@@ -1,10 +1,10 @@
 // Based on https://github.com/SheetJS/js-crc32
 
 function signed_crc_table(): Int32Array | Array<number> {
-    let c, table = new Array(256), n = 0;
+    var c = 0, table = new Array(256);
 
-    for(; n != 256;) {
-        c = ++n;
+    for(var n = 0; n != 256; ++n) {
+        c = n;
         c = ((c & 1) ? (-306674912 ^ (c >>> 1)) : (c >>> 1));
         c = ((c & 1) ? (-306674912 ^ (c >>> 1)) : (c >>> 1));
         c = ((c & 1) ? (-306674912 ^ (c >>> 1)) : (c >>> 1));
@@ -28,7 +28,9 @@ export function crc32_bstr(bstr: string, seed?: number): number {
         C = (C >>> 8) ^ T[(C ^ bstr.charCodeAt(i++)) & 0xFF];
         C = (C >>> 8) ^ T[(C ^ bstr.charCodeAt(i++)) & 0xFF];
     }
-    if(i === L) C = (C >>> 8) ^ T[(C ^ bstr.charCodeAt(i)) & 0xFF];
+
+    if(i === L) { C = (C >>> 8) ^ T[(C ^ bstr.charCodeAt(i)) & 0xFF]; }
+
     return C ^ -1;
 }
 
@@ -41,7 +43,9 @@ export function crc32_buf(buf: Uint8Array, seed?: number): number {
         C = (C >>> 8) ^ T[(C ^ buf[i++]) & 0xFF];
         C = (C >>> 8) ^ T[(C ^ buf[i++]) & 0xFF];
     }
-    while(i < L + 3) C = (C >>> 8) ^ T[(C ^ buf[i++]) & 0xFF];
+
+    while(i < L + 3) { C = (C >>> 8) ^ T[(C ^ buf[i++]) & 0xFF]; }
+
     return C ^ -1;
 }
 
@@ -57,7 +61,9 @@ export function crc32_buf_8(buf: Uint8Array, seed?: number): number {
         C = (C >>> 8) ^ T[(C ^ buf[i++]) & 0xFF];
         C = (C >>> 8) ^ T[(C ^ buf[i++]) & 0xFF];
     }
-    while(i < L + 7) C = (C >>> 8) ^ T[(C ^ buf[i++]) & 0xFF];
+
+    while(i < L + 7) { C = (C >>> 8) ^ T[(C ^ buf[i++]) & 0xFF]; }
+
     return C ^ -1;
 }
 
