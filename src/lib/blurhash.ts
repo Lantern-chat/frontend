@@ -56,9 +56,9 @@ export function decode(hash: ArrayBuffer, w: number, h: number, punch: number): 
         ih = PI / h,
         out = new Uint8ClampedArray(w * h * 4);
 
-    colors[0] = decode_dc(view.getUint32(byte, true)); byte += 4;
+    colors[0] = decode_dc(view.getUint32(byte)); byte += 4;
     for(let i = 1; i < num_colors; i++) {
-        colors[i] = decode_ac(view.getUint16(byte, true), mc); byte += 2;
+        colors[i] = decode_ac(view.getUint16(byte), mc); byte += 2;
     }
 
     for(let y = 0; y < h; y++) {
@@ -160,11 +160,11 @@ export function encode(xc: number, yc: number, w: number, h: number, rgb: Uint8A
 
     data.setUint8(0, size_flag); // 1 byte
     data.setInt8(1, actual_max); // 1 byte
-    data.setUint32(2, encode_dc(dc), true); // 4 bytes
+    data.setUint32(2, encode_dc(dc)); // 4 bytes
 
     for(let i = 0; i < ac.length; i++) {
         // AC starts at 6 bytes, iterating by 2i bytes (i + i)
-        data.setUint16(6 + i + i, encode_ac(ac[i], max_value), true);
+        data.setUint16(6 + i + i, encode_ac(ac[i], max_value));
     }
 
     return buffer;
