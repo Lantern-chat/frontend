@@ -27,11 +27,15 @@ export enum ErrorCode {
     InvalidAuthFormat = 40015,
     HeaderParseError = 40016,
     MissingFilename = 40017,
-    MissingFiletype = 40018,
+    MissingMime = 40018,
     AuthTokenParseError = 40019,
-    Base64DecodeError = 40020,
-    BodyDeserializationError = 40021,
+    DecodeError = 40020,
+    BodyDeserializeError = 40021,
     QueryParseError = 40022,
+    UploadError = 40023,
+    InvalidPreview = 40024,
+    MimeParseError = 40025,
+    InvalidImageFormat = 40026,
 }
 
 export function errorKind(err: ApiError): ErrorKind {
@@ -144,11 +148,43 @@ export interface Message {
     role_mentions?: Snowflake[],
     room_mentions?: Snowflake[],
     reactions?: Reaction[],
+    attachments?: Attachment[],
+    embeds?: Embed[],
 }
 
 export interface Reaction {
     emote: Emote,
     users: Snowflake[],
+}
+
+export interface EmbedMediaAttributes {
+    title?: string,
+    description?: string,
+    url?: string,
+    ts?: string,
+    color?: number,
+}
+
+export enum EmbedMediaKind {
+    Image = "image",
+    Video = "video",
+    Audio = "audio",
+    Thumbnail = "thumbnail",
+}
+
+export interface EmbedMedia extends EmbedMediaAttributes {
+    type: EmbedMediaKind,
+}
+
+export interface Embed {
+    // TODO
+}
+
+export interface Attachment extends EmbedMediaAttributes {
+    id: Snowflake,
+    filename: string,
+    size: number,
+    mime?: string,
 }
 
 export interface PartialParty {
