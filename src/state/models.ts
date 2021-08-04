@@ -87,7 +87,7 @@ export interface User {
     username: string,
     discriminator: number,
     flags: number,
-    avatar_id?: Snowflake,
+    avatar?: string,
     status?: string,
     bio?: string,
     email?: string,
