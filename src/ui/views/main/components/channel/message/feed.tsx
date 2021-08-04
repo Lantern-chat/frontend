@@ -6,7 +6,7 @@ import { useResizeDetector } from "react-resize-detector/build/withPolyfill";
 
 import dayjs from "lib/time";
 
-import { Snowflake } from "state/models";
+import { Attachment, Snowflake, Message as MessageModel } from "state/models";
 import { RootState, Type } from "state/root";
 import { IChatState, IWindowState } from "state/reducers";
 import { IMessageState } from "state/reducers/chat";
@@ -28,6 +28,37 @@ interface MessageGroupProps {
     group: IMessageState[],
     is_light_theme: boolean
 }
+
+const Attachment = React.memo(({ msg, attachment }: { msg: MessageModel, attachment: Attachment }) => {
+    let [error, setError] = useState(false);
+
+
+    let url = `https://cdn.lanternchat.net/attachments/${msg.room_id}/${attachment.id}/${attachment.filename}`;
+
+    let embed, mime = attachment.mime;
+
+    if(mime && !error) {
+        if(mime.startsWith('video')) {
+            embed = <video src={url} controls onError={() => setError(true)} />;
+        } else if(mime.startsWith('audio')) {
+            embed = <audio src={url} controls onError={() => setError(true)} />
+        } else if(mime.startsWith('image')) {
+            embed = <img src={url} onError={() => setError(true)} />;
+        }
+    }
+
+    if(!embed) {
+        embed = <a target="__blank" href={url}>{attachment.filename}</a>;
+    }
+
+    return (
+        <div className="ln-msg-attachment">
+            <div title={attachment.filename}>
+                {embed}
+            </div>
+        </div>
+    )
+});
 
 // NOTE: Because `group` is recomputed below as part of `groups`, this will always render.
 const MessageGroup = ({ group, is_light_theme }: MessageGroupProps) => {
@@ -64,12 +95,20 @@ const MessageGroup = ({ group, is_light_theme }: MessageGroupProps) => {
                     );
                 }
 
+                let attachments, a = msg.msg.attachments;
+                if(a && a.length) {
+                    attachments = a.map(attachment => <Attachment key={attachment.id} msg={msg.msg} attachment={attachment} />)
+                }
+
                 return (
-                    <div key={msg.msg.id} className="ln-msg__wrapper">
-                        <div className="ln-msg__side">
-                            {side}
+                    <div key={msg.msg.id}>
+                        <div className="ln-msg__wrapper">
+                            <div className="ln-msg__side">
+                                {side}
+                            </div>
+                            {message}
                         </div>
-                        {message}
+                        {attachments}
                     </div>
                 );
             })}

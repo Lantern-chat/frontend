@@ -144,3 +144,17 @@
         user-select: none;
     }
 }
+
+.ln-msg-attachment {
+    padding-left: 4.025em;
+
+    audio,
+    video,
+    img {
+        max-width: 40%;
+    }
+
+    audio {
+        width: 100%;
+    }
+}
