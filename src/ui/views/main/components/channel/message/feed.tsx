@@ -12,6 +12,8 @@ import { IChatState, IWindowState } from "state/reducers";
 import { IMessageState } from "state/reducers/chat";
 import { Panel } from "state/reducers/window";
 
+import { message_attachment_url, user_avatar_url } from "config/urls";
+
 import { pickColorFromHash } from "lib/palette";
 
 import { Avatar } from "ui/components/common/avatar";
@@ -32,10 +34,8 @@ interface MessageGroupProps {
 const Attachment = React.memo(({ msg, attachment }: { msg: MessageModel, attachment: Attachment }) => {
     let [error, setError] = useState(false);
 
-
-    let url = `https://cdn.lanternchat.net/attachments/${msg.room_id}/${attachment.id}/${attachment.filename}`;
-
-    let embed, mime = attachment.mime;
+    let embed, mime = attachment.mime,
+        url = message_attachment_url(msg.room_id, attachment.id, attachment.filename);
 
     if(mime && !error) {
         if(mime.startsWith('video')) {
@@ -86,8 +86,13 @@ const MessageGroup = ({ group, is_light_theme }: MessageGroupProps) => {
                         </div>
                     );
 
+                    let avatar_url, author = msg.msg.author;
+                    if(author.avatar) {
+                        avatar_url = user_avatar_url(author.id, author.avatar);
+                    }
+
                     side = (
-                        <Avatar username={nickname} text={nickname.charAt(0)} backgroundColor={pickColorFromHash(msg.msg.author.id, is_light_theme)} />
+                        <Avatar username={nickname} text={nickname.charAt(0)} url={avatar_url} backgroundColor={pickColorFromHash(msg.msg.author.id, is_light_theme)} />
                     );
                 } else {
                     side = (

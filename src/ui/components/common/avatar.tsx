@@ -20,7 +20,7 @@ export const Avatar = React.memo((props: IAvatarProps) => {
 
     return (
         <div className="ln-avatar" >
-            <span className="ln-avatar__wrapper" {...props.span}>
+            <span className="ln-avatar__wrapper" {...props.span} title={props.username}>
                 {is_image ?
                     <img src={props.url} className={className} alt={props.username} /> :
                     <span className={className} style={{ backgroundColor: props.backgroundColor }}>{props.children || props.text || '?'}</span>}
