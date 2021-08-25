@@ -17,6 +17,7 @@ export { enhancers } from "./root";
 
 export const initialReducer = combineReducers<RootState, Action>({
     chat: dummyReducer,
+    cache: dummyReducer,
     window: windowReducer,
     modals: dummyReducer,
     gateway: dummyReducer,

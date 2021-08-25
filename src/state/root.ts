@@ -1,4 +1,4 @@
-import { IChatState, IWindowState, IModalState, IGatewayState, IUserState, IPartyState, IThemeState, IHistoryState } from "./reducers";
+import { IChatState, IWindowState, IModalState, IGatewayState, IUserState, IPartyState, IThemeState, IHistoryState, ICacheState } from "./reducers";
 
 import { promiseMiddleware } from "./middleware/promise";
 import { applyMiddleware } from "redux";
@@ -10,6 +10,7 @@ export { Action, Type, DispatchableAction } from "./actions";
 
 export interface RootState {
     chat: IChatState,
+    cache: ICacheState,
     window: IWindowState,
     modals: IModalState,
     gateway: IGatewayState,

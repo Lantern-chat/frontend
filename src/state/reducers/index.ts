@@ -6,3 +6,4 @@ export { IUserState } from "./user";
 export { IPartyState } from "./party";
 export { IHistoryState } from "./history";
 export { IThemeState } from "./theme";
+export { ICacheState } from "./cache";
