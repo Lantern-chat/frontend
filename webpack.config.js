@@ -94,7 +94,11 @@ module.exports = (env, argv) => {
             },
             plugins: [
                 new TsconfigPathsPlugin({ configFile: "./tsconfig.json" }),
-            ]
+            ],
+            fallback: {
+                "assert": require.resolve("assert/"),
+                //"util": require.resolve("util/"),
+            }
         },
         module: {
             rules: [
@@ -106,7 +110,8 @@ module.exports = (env, argv) => {
                 {
                     test: /\.(sa|sc|c)ss$/,
                     use: [
-                        {
+                        // TODO: Investigate style-loader more
+                        false ? "style-loader" : {
                             loader: MiniCssExtractPlugin.loader,
                             options: {
                                 // you can specify a publicPath here
@@ -128,16 +133,11 @@ module.exports = (env, argv) => {
                     ],
                 },
                 {
-                    test: /fonts.*\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-                    use: [
-                        {
-                            loader: 'file-loader',
-                            options: {
-                                name: '[name].[ext]',
-                                outputPath: 'fonts/'
-                            }
-                        }
-                    ]
+                    test: /fonts.*\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/i,
+                    type: 'asset/resource',
+                    generator: {
+                        filename: 'static/fonts/[name].[ext]'
+                    },
                 },
                 {
                     test: /icons.*\.svg$/,
@@ -163,9 +163,14 @@ module.exports = (env, argv) => {
                 "typeof window": '"object"',
                 "typeof MessageChannel": '"function"',
                 "__DEV__": JSON.stringify(!IS_PRODUCTION),
-                "__PRERELEASE__": JSON.stringify(JSON.parse(process.env.BUILD_PRERELEASE || 'false'))
+                "__PRERELEASE__": JSON.stringify(JSON.parse(process.env.BUILD_PRERELEASE || 'false')),
+                "process.env": {
+                    'NODE_DEBUG': 'undefined',
+                    'NODE_ENV': JSON.stringify(IS_PRODUCTION ? 'production' : 'development'),
+                    'DEBUG': JSON.stringify(!IS_PRODUCTION),
+                },
             }),
-            new SubresourceIntegrityPlugin(),
+            //new SubresourceIntegrityPlugin(),
             //new SriPlugin({
             //    hashFuncNames: ['sha256'],
             //    enabled: IS_PRODUCTION,

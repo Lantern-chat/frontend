@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Components } from 'react-markdown/src/ast-to-react';
+import { Components } from 'react-markdown/lib/ast-to-react';
 
 import ReactMarkdown from 'react-markdown'
 import gfm from 'remark-gfm';
