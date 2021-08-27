@@ -210,7 +210,7 @@ export const Testbed = () => {
                 echoCancellation: false,
                 noiseSuppression: true,
                 autoGainControl: true,
-            }
+            } as any
         }).then(s => setMic(s)).catch(e => console.log(e));
     }, []);
 

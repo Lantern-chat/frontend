@@ -13,7 +13,7 @@ export enum XHRMethod {
 interface XHRParameters {
     url: string,
     type?: XMLHttpRequestResponseType,
-    body?: Document | BodyInit,
+    body?: Document | XMLHttpRequestBodyInit,
     method?: XHRMethod,
     timeout?: number,
     bearer?: string,
