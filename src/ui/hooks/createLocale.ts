@@ -3,7 +3,7 @@ import { StorageKey } from "state/storage";
 import { LANGS, Language, ILocaleContext } from "ui/i18n";
 
 let initialLocale = localStorage.getItem(StorageKey.LOCALE) as Language;
-if(LANGS.indexOf(initialLocale) === -1) {
+if(!LANGS.includes(initialLocale)) {
     initialLocale = "en";
 }
 

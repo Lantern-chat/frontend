@@ -17,7 +17,7 @@ export function createDynamicMiddlewares<DispatchExt, S, A extends AnyAction>():
         },
         addMiddleware = <T extends Middleware<DispatchExt, S, LanternDispatch>>(middleware: T) => {
             // deduplicate
-            if(middlewares.indexOf(middleware) == -1) {
+            if(!middlewares.includes(middleware)) {
                 middlewares.push(middleware);
                 composed = compose(...middlewares.map(middleware => middleware(store)));
             }

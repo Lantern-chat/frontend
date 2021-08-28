@@ -66,7 +66,7 @@ export const PartyList = React.memo(() => {
     }
 
     let party_list;
-    if(user_object && GATEWAY_PENDING.indexOf(gateway_status) == -1) {
+    if(user_object && !GATEWAY_PENDING.includes(gateway_status)) {
         party_list = parties.map(party => {
             let last = last_channel.get(party.id),
                 url = party.icon_id && `/avatars/${party.id}/${party.icon_id}`;

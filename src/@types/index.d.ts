@@ -7,3 +7,7 @@ interface String {
     padEnd(targetLength: number, padString?: string): string;
     padStart(targetLength: number, padString?: string): string;
 }
+
+interface Array<T> {
+    includes(item: T): boolean;
+}

@@ -90,13 +90,13 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
             let state = getState(),
                 parts = action.ctx.parts;
 
-            if(GATEWAY_ENABLED_ROUTES.indexOf(parts[0]) < 0) {
+            if(!GATEWAY_ENABLED_ROUTES.includes(parts[0])) {
                 // if the history updated and we're now on a page that doesn't need the gateway, disconnect
                 GLOBAL.gateway.postCmd({ t: GatewayCommandDiscriminator.Disconnect });
             } else {
                 const CONNECTABLE = [GatewayStatus.Disconnected, GatewayStatus.Initialized];
 
-                if(CONNECTABLE.indexOf(state.gateway.status) >= 0 && state.user.session) {
+                if(CONNECTABLE.includes(state.gateway.status) && state.user.session) {
                     // if the history updated and we're now on a page that needs the gateway, connect
                     connect_gateway(state);
                 } else {
@@ -122,7 +122,7 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
             const CAN_RETRY_STATUSES = [GatewayStatus.Waiting, GatewayStatus.Errored];
 
             // If the user requests a gateway connection retry, send the connect command
-            if(CAN_RETRY_STATUSES.indexOf(state.gateway.status) >= 0 && state.user.session) {
+            if(CAN_RETRY_STATUSES.includes(state.gateway.status) && state.user.session) {
                 connect_gateway(state);
             }
 
@@ -134,7 +134,7 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
                 case GatewayMessageDiscriminator.Initialized: {
                     let state = getState(), parts = state.history.parts;
                     // if we get the init after login, connect now
-                    if(GATEWAY_ENABLED_ROUTES.indexOf(parts[0]) >= 0 && state.user.session) {
+                    if(GATEWAY_ENABLED_ROUTES.includes(parts[0]) && state.user.session) {
                         connect_gateway(state);
                     }
                     break;
@@ -143,7 +143,7 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
                     let state = getState();
 
                     // if we disconnect but are still on a gateway-enabled location, reconnect automatically
-                    if(GATEWAY_ENABLED_ROUTES.indexOf(state.history.parts[0]) >= 0 && state.user.session) {
+                    if(GATEWAY_ENABLED_ROUTES.includes(state.history.parts[0]) && state.user.session) {
                         connect_gateway(state);
                     }
 

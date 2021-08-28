@@ -44,6 +44,7 @@ if(!String.prototype.trimStart) {
         configurable: true,
         writable: true,
         value: function() {
+            // TODO: Maybe manually slice the string instead of resorting to regex?
             return this.replace(/^\s+/, '');
         }
     });
@@ -55,6 +56,16 @@ if(!String.prototype.trimEnd) {
         writable: true,
         value: function() {
             return this.replace(/\s+$/, '');
+        }
+    });
+}
+
+if(!Array.prototype.includes) {
+    Object.defineProperty(Array.prototype, 'includes', {
+        configurable: true,
+        writable: true,
+        value: function(item: any) {
+            return !!~this.indexOf(item);
         }
     });
 }

@@ -78,11 +78,11 @@ const ACCEPTABLE_PATHS = ['login', 'register', 'channels', 'verify', 'reset', 'i
 let first_part = HISTORY.location.pathname.slice(1).split('/', 1)[0];
 
 let session = STORE.getState().user.session;
-if(ACCEPTABLE_PATHS.indexOf(first_part) == -1) {
+if(!ACCEPTABLE_PATHS.includes(first_part)) {
     __DEV__ && console.log("Redirecting to either main or login");
 
     HISTORY.replace(session != null ? DEFAULT_LOGGED_IN_CHANNEL : '/login')
-} else if(['login', 'register'].indexOf(first_part) >= 0 && session != null) {
+} else if(['login', 'register'].includes(first_part) && session != null) {
     __DEV__ && console.log("Redirecting to main because login/register have no point here");
 
     HISTORY.replace(DEFAULT_LOGGED_IN_CHANNEL);
