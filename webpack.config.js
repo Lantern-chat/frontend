@@ -2,7 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 const packageJson = require("./package.json");
 
-const { LoaderOptionsPlugin } = require('webpack');
+const { LoaderOptionsPlugin, DllPlugin, DllReferencePlugin } = require('webpack');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
@@ -18,7 +18,8 @@ module.exports = (env, argv) => {
     const IS_PRODUCTION = MODE === "production";
     const CHUNK_NAME = true ? "[id].[chunkhash]" : "[id]";
 
-    return {
+    let config = {
+        cache: !IS_PRODUCTION,
         entry: {
             index: "./src/index.tsx",
             testbed: "./src/testbed.tsx",
@@ -73,11 +74,6 @@ module.exports = (env, argv) => {
         // Enable sourcemaps for debugging webpack's output.
         devtool: "source-map",
 
-        devServer: {
-            contentBase: distPath,
-            compress: true,
-            port: 9000
-        },
         performance: {
             hints: false
         },
@@ -159,6 +155,7 @@ module.exports = (env, argv) => {
             ],
         },
         plugins: [
+            // NOTE: The first two plugins here are reused in `webpack.vendors.config.js`
             new webpack.DefinePlugin({
                 "typeof window": '"object"',
                 "typeof MessageChannel": '"function"',
@@ -170,16 +167,18 @@ module.exports = (env, argv) => {
                     'DEBUG': JSON.stringify(!IS_PRODUCTION),
                 },
             }),
-            //new SubresourceIntegrityPlugin(),
-            //new SriPlugin({
-            //    hashFuncNames: ['sha256'],
-            //    enabled: IS_PRODUCTION,
-            //}),
             new webpack.ProvidePlugin({
                 Buffer: ['buffer', 'Buffer'],
                 //TextDecoder: ['text-encoding', 'TextDecoder'],
                 //TextEncoder: ['text-encoding', 'TextEncoder']
             }),
+
+            //new SubresourceIntegrityPlugin(),
+            //new SriPlugin({
+            //    hashFuncNames: ['sha256'],
+            //    enabled: IS_PRODUCTION,
+            //}),
+
             //new HtmlWebpackPlugin({
             //    excludeChunks: ['index'],
             //    template: path.resolve(__dirname, "src", "index.html"),
@@ -194,10 +193,10 @@ module.exports = (env, argv) => {
             //    extraArgs: "--target web",
             //    outDir: path.resolve(__dirname, "build/worker/gateway"),
             //}),
-            new BundleAnalyzerPlugin({
-                analyzerMode: 'server',
-                openAnalyzer: true,
-            }),
+            //new BundleAnalyzerPlugin({
+            //    analyzerMode: 'server',
+            //    openAnalyzer: true,
+            //}),
             new MiniCssExtractPlugin({
                 // Options similar to the same options in webpackOptions.output
                 // both options are optional
@@ -205,5 +204,15 @@ module.exports = (env, argv) => {
                 chunkFilename: `${CHUNK_NAME}.css`,
             }),
         ],
+    };
+
+
+    if(!IS_PRODUCTION) {
+        config.plugins.push(new DllReferencePlugin({
+            context: path.join(__dirname, "build"),
+            manifest: require("./build/vendors-manifest.json"),
+        }))
     }
+
+    return config;
 };

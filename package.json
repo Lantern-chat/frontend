@@ -7,9 +7,9 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start:dev": "webpack serve --mode development",
     "build": "webpack --mode production",
-    "build:dev": "webpack --mode development",
+    "build:dev": "webpack --mode development -c ./webpack.vendor.config.js && webpack --mode development",
+    "build:vendor": "webpack --mode development -c ./webpack.vendor.config.js",
     "doc": "typedoc --entryPoints src --hideGenerator --theme minimal"
   },
   "dependencies": {
