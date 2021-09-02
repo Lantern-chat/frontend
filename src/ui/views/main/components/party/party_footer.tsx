@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
 
 import { RootState } from "state/root";
+import { activeParty } from "state/selectors/active";
 import { parse_presence } from "state/models";
 
 import { UserAvatar } from "../user_avatar";
@@ -19,7 +20,7 @@ import MicrophoneMute from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/indivi
 let status_selector = createSelector(
     (state: RootState) => state.user.user!,
     (state: RootState) => state.party.parties,
-    (state: RootState) => state.chat.active_party,
+    activeParty,
     (user, parties, active_party) => {
         if(!active_party || active_party == '@me') return 'online';
         let party = parties.get(active_party);

@@ -4,11 +4,12 @@ import { useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
 import { parse_presence } from "state/models";
 import { RootState } from "state/root";
+import { activeParty } from "state/selectors/active";
 
 import { UserAvatar } from "../user_avatar";
 
 let user_list_selector = createSelector(
-    (state: RootState) => state.chat.active_party, // party_id
+    activeParty, // party_id
     (state: RootState) => state.party.parties,
     (party_id, parties) => {
         let party = party_id ? parties.get(party_id) : null;

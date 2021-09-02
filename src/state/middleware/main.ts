@@ -10,6 +10,8 @@ import { StorageKey } from "state/storage";
 import { GatewayCommand, GatewayCommandDiscriminator } from "worker/gateway/cmd";
 import { GatewayMessage, GatewayMessageDiscriminator } from "worker/gateway/msg";
 import { Intent } from "state/models";
+import { room_url } from "config/urls";
+import { activeParty, activeRoom } from "state/selectors/active";
 
 const GATEWAY_ENABLED_ROUTES = ['channels', 'profile', 'invite'];
 
@@ -47,9 +49,11 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
         }
         case Type.PARTY_LOADED: {
             let state = getState(),
-                room_id = state.chat.active_room,
-                room = room_id && action.rooms.find(room => room.id == room_id),
-                chat_room;
+                [channels, party_id, room_id] = state.history.parts;
+
+            if(channels !== 'channels' || party_id != action.party_id) break;
+
+            let room = room_id && action.rooms.find(room => room.id == room_id), chat_room;
 
             // if there is a room selected, load messages for it
             if(room && room_id) {
@@ -65,23 +69,6 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
                 }
 
                 dispatch(loadMessages(room.id));
-            } else {
-                // otherwise, find the default room
-                let default_room, any_room;
-                for(let room_state of state.chat.rooms.values()) {
-                    let room = room_state.room;
-                    if(room.party_id == action.party_id) {
-                        any_room = room.id;
-                        if((room.flags & (1 << 5)) != 0) {
-                            default_room = room.id;
-                            break;
-                        }
-                    }
-                }
-
-                default_room = default_room || any_room;
-
-                HISTORY.replace(`/channels/${action.party_id}/${default_room}`);
             }
 
             break;
@@ -102,7 +89,7 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
                 } else {
                     // if the history updated and gateway is good, load
                     // any new messages for the now-active channel
-                    let room_id = state.chat.active_room,
+                    let room_id = activeRoom(state),
                         room = room_id && state.chat.rooms.get(room_id);
 
                     if(room) {
@@ -152,7 +139,7 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
                 case GatewayMessageDiscriminator.Ready: {
                     let state = getState(),
                         parties = state.party.parties,
-                        party_id = state.chat.active_party;
+                        party_id = activeParty(state);
 
                     GLOBAL.gateway.postCmd({ t: GatewayCommandDiscriminator.SetPresence, away: false });
 

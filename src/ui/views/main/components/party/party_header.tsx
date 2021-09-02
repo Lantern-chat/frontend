@@ -2,13 +2,14 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { createSelector } from "reselect";
 import { RootState } from "state/root";
+import { activeParty } from "state/selectors/active";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
 
 import Balloons from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-883-balloons.svg";
 
 const party_selector = createSelector(
-    (state: RootState) => state.chat.active_party,
+    activeParty,
     (state: RootState) => state.party.parties,
     (active_party, parties) => {
         return active_party && parties.get(active_party);

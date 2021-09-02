@@ -9,6 +9,7 @@ import { RootState } from "state/root";
 import { Type } from "state/actions";
 import { Snowflake } from "state/models";
 import { sendMessage, startTyping } from "state/commands";
+import { activeParty, activeRoom } from "state/selectors/active";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
 
@@ -27,7 +28,7 @@ export interface IMessageBoxProps {
 }
 
 const typing_array_selector = createSelector(
-    (state: RootState) => state.chat.active_room,
+    activeRoom,
     (state: RootState) => state.chat.rooms,
     (active_room, rooms) => {
         let typing = active_room && rooms.get(active_room)?.typing;
@@ -38,7 +39,7 @@ const typing_array_selector = createSelector(
 
 const typing_selector = createSelector(
     typing_array_selector,
-    (state: RootState) => state.chat.active_party,
+    activeParty,
     (state: RootState) => state.party.parties,
     (state: RootState) => state.user.user!,
     (users_typing, active_party, parties, user) => {
@@ -88,6 +89,7 @@ const msg_box_selector = createStructuredSelector({
 
 import "./box.scss";
 import { FileUploadModal } from "ui/views/main/modals/file_upload";
+
 export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     let disabled = !channel;
 

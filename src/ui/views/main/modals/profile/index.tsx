@@ -4,14 +4,15 @@ import { createStructuredSelector, createSelector } from "reselect";
 
 import { RootState } from "state/root";
 import { HISTORY } from "state/global";
+import { activeParty, activeRoom } from "state/selectors/active";
 
 import { Modal } from "ui/components/modal";
 
 import { Settings } from "./settings";
 
 let return_path_selector = createSelector(
-    (state: RootState) => state.chat.active_party,
-    (state: RootState) => state.chat.active_room,
+    activeParty,
+    activeRoom,
     (active_party, active_room) => {
         let path = '/channels/' + (active_party || '@me');
         if(active_room) {

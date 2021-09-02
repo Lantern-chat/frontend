@@ -10,11 +10,12 @@ import { Channel } from "../channel/channel";
 
 import { Snowflake } from "state/models";
 import { RootState, Type } from "state/root";
+import { activeParty, activeRoom } from "state/selectors/active";
 import { Panel } from "state/reducers/window";
 
 let party_selector = createStructuredSelector({
-    active_party: (state: RootState) => state.chat.active_party,
-    active_room: (state: RootState) => state.chat.active_room,
+    active_party: activeParty,
+    active_room: activeRoom,
     show_panel: (state: RootState) => state.window.show_panel,
     last_panel: (state: RootState) => state.window.last_panel,
     use_mobile_view: (state: RootState) => state.window.use_mobile_view,

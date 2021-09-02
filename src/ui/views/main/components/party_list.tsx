@@ -4,6 +4,7 @@ import { createSelector, createStructuredSelector } from "reselect";
 
 import { RootState, Type } from "state/root";
 import { activateParty } from "state/commands";
+import { activeParty } from "state/selectors/active";
 import { GatewayStatus } from "state/reducers/gateway";
 
 import { pickColorFromHash } from "lib/palette";
@@ -12,6 +13,7 @@ import { Link } from "ui/components/history";
 import { Avatar } from "ui/components/common/avatar";
 import { Spinner } from "ui/components/common/spinners/spinner";
 
+import { room_url } from "config/urls";
 
 let sorted_party_selector = createSelector((state: RootState) => state.party.parties, parties => {
     // this really just copies references into an array, so it should be fast
@@ -28,7 +30,7 @@ let party_list_selector = createStructuredSelector({
     last_channel: (state: RootState) => state.party.last_channel,
     create_party_open: (state: RootState) => state.modals.create_party_open,
     gateway_status: (state: RootState) => state.gateway.status,
-    active_party: (state: RootState) => state.chat.active_party // /channels/:party_id/:channel_id
+    active_party: activeParty,
 });
 
 function asTouchEvent(e: React.UIEvent<HTMLElement>): React.TouchEvent<HTMLElement> | undefined {
@@ -70,11 +72,11 @@ export const PartyList = React.memo(() => {
         party_list = parties.map(party => {
             let last = last_channel.get(party.id),
                 url = party.icon_id && `/avatars/${party.id}/${party.icon_id}`;
-            last = last ? '/' + last : '';
+
             return (
                 <li key={party.id}
                     className={party.id == active_party ? 'selected' : ''}>
-                    <Link href={`/channels/${party.id}${last}`} onNavigate={(e) => can_navigate ? dispatch(activateParty(party.id)) : e.preventDefault()}>
+                    <Link noAction href={room_url(party.id, last)} onNavigate={(e) => can_navigate && dispatch(activateParty(party.id, last))}>
                         <Avatar rounded url={url} text={party.name.charAt(0)}
                             username={party.name} span={{ title: party.name }} backgroundColor={pickColorFromHash(party.id, is_light_theme)} />
                     </Link>

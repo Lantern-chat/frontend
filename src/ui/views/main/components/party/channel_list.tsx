@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
 
 import { RootState, Type } from "state/root";
+import { activeParty, activeRoom } from "state/selectors/active";
 import { Room } from "state/models";
 import { Panel } from "state/reducers/window";
 
@@ -14,8 +15,8 @@ import { Link } from "ui/components/history";
 import Hash from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-740-hash.svg";
 
 let channel_list_selector = createSelector(
-    (state: RootState) => state.chat.active_party, // party_id
-    (state: RootState) => state.chat.active_room, // room_id
+    activeParty, // party_id
+    activeRoom, // room_id
     (state: RootState) => state.party.parties,
     (party_id, room_id, parties) => {
         let party = party_id ? parties.get(party_id) : null;

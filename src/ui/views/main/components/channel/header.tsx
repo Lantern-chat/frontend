@@ -4,6 +4,7 @@ import { createSelector } from 'reselect';
 
 import { Type } from "state/main";
 import { RootState } from "state/root";
+import { activeRoom } from "state/selectors/active";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
 
@@ -12,7 +13,7 @@ import Users from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/
 import Hash from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-740-hash.svg";
 
 const header_selector = createSelector(
-    (state: RootState) => state.chat.active_room,
+    activeRoom,
     (state: RootState) => state.chat.rooms,
     (active_room, rooms) => {
         return active_room && rooms.get(active_room);

@@ -13,6 +13,7 @@ export interface IHistoryContext {
 export const HistoryContext: Context<IHistoryState> = createContext<IHistoryState>(null!);
 
 export interface ILinkProps extends AnchorHTMLAttributes<HTMLElement> {
+    noAction?: boolean,
     state?: State,
     replace?: boolean,
     useDiv?: boolean,
@@ -34,8 +35,10 @@ function callEventHandler<T extends React.SyntheticEvent>(event: T, handler?: (e
     }
 }
 
+function noop() { }
+
 export const Link = React.memo(forwardRef((props: ILinkProps, ref: React.MutableRefObject<any>) => {
-    let { href, onClick, onTouchEnd, onNavigate, replace, state, target, useDiv } = props,
+    let { href, onClick, onTouchEnd, onNavigate, replace, state, target, useDiv, noAction } = props,
         ctx = useContext(HistoryContext),
         history = ctx.history,
         method = replace ? history.replace : history.push;
@@ -47,8 +50,11 @@ export const Link = React.memo(forwardRef((props: ILinkProps, ref: React.Mutable
             onClick: (event: React.MouseEvent<HTMLElement>) => {
                 !ran_onNavigate && callEventHandler(event, onNavigate); ran_onNavigate = true;
                 callEventHandler(event, onClick);
+
+                if(noAction) { event.preventDefault(); }
+
                 // canNavigate + ignore everything but left clicks
-                if(canNavigate(target, event) && event.button === 0) {
+                else if(canNavigate(target, event) && event.button === 0) {
                     event.preventDefault();
                     method(href!, state);
                 }
@@ -56,7 +62,9 @@ export const Link = React.memo(forwardRef((props: ILinkProps, ref: React.Mutable
             onTouchEnd: (event: React.TouchEvent<HTMLElement>) => {
                 !ran_onNavigate && callEventHandler(event, onNavigate); ran_onNavigate = true;
                 callEventHandler(event, onTouchEnd);
-                if(canNavigate(target, event)) {
+
+                if(noAction) { event.preventDefault(); }
+                else if(canNavigate(target, event)) {
                     event.preventDefault();
                     method(href!, state);
                 }
@@ -68,6 +76,7 @@ export const Link = React.memo(forwardRef((props: ILinkProps, ref: React.Mutable
             delete props['useDiv'];
             delete props['replace'];
             delete props['onNavigate'];
+            delete props['noAction'];
         }
     }
 
