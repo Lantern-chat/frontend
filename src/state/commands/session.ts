@@ -3,6 +3,7 @@ import { DEFAULT_LOGGED_IN_CHANNEL, HISTORY } from "state/global";
 import { DispatchableAction, Type } from "state/actions";
 import dayjs, { setLongTimeout } from "lib/time";
 import { storeSession } from "state/storage";
+import { fetch, XHRMethod } from "lib/fetch";
 
 export function setSession(session: ISession | null): DispatchableAction {
     return (dispatch) => {
@@ -32,3 +33,20 @@ export function setSession(session: ISession | null): DispatchableAction {
         }
     }
 };
+
+export function logout(): DispatchableAction {
+    return async (dispatch, getState) => {
+        let state = getState(),
+            session = state.user.session;
+
+        if(session) {
+            await fetch({
+                url: "/api/v1/user/@me",
+                method: XHRMethod.DELETE,
+                bearer: session.auth,
+            });
+
+            dispatch(setSession(null));
+        }
+    }
+}

@@ -1,0 +1,152 @@
+@import "lib/variables";
+
+@keyframes settings-zoom-in {
+    0% {
+        transform: scale(2);
+    }
+    100% {
+        transform: scale(1);
+        transform: unset;
+    }
+}
+
+@keyframes settings-zoom-out {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(2);
+    }
+}
+
+@keyframes settings-fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes settings-fade-out {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.ln-settings {
+    background-color: $lnx-primary-surface-color;
+
+    //background: radial-gradient(blue, red, purple, green);
+
+    .ln-enable-motion & {
+        animation-duration: 0.2s;
+        animation-timing-function: ease-in;
+        animation-fill-mode: forwards;
+    }
+
+    &--opened {
+        @media (min-width: $ln-min-channel-width) {
+            animation-name: settings-zoom-in, settings-fade-in;
+        }
+
+        @media (max-width: $ln-min-channel-width) {
+            animation-name: settings-fade-in;
+        }
+    }
+
+    &--closing {
+        @media (min-width: $ln-min-channel-width) {
+            animation-name: settings-zoom-out, settings-fade-out;
+        }
+
+        @media (max-width: $ln-min-channel-width) {
+            animation-name: settings-fade-out;
+        }
+    }
+
+    &__wrapper {
+        position: relative;
+        margin: auto auto;
+    }
+
+    display: flex;
+    flex-wrap: nowrap;
+
+    @media (min-width: $ln-min-channel-width) {
+        &__categories {
+            width: 20%;
+        }
+
+        &__page {
+            width: 80%;
+        }
+    }
+
+    &__page {
+        background-color: $lnx-tertiary-surface-color;
+
+        h3 {
+            text-align: center;
+            padding: 0.5em;
+            border-bottom: 1px solid $lnx-secondary-surface-color;
+        }
+    }
+
+    &__categories {
+        h3 {
+            text-align: center;
+            padding: 0.5em;
+        }
+
+        li {
+            text-align: center;
+            padding: 0.25em 2em;
+            width: 100%;
+
+            div {
+                padding: 0.2em 0;
+            }
+
+            &:hover {
+                div {
+                    background-color: $lnx-secondary-surface-color;
+                }
+            }
+        }
+
+        a,
+        &:hover,
+        &:active {
+            text-decoration: none;
+            color: $lnx-primary-text-color;
+        }
+
+        div#logout {
+            display: flex;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        br {
+            color: $lnx-primary-text-color;
+        }
+
+        div#logout > div {
+            position: relative;
+            margin-top: auto;
+            //font-size: 3em;
+            text-align: center;
+            padding: 0.2em;
+
+            //&:hover,
+            //&:focus,
+            //&:active {
+            //    filter: drop-shadow(0 0 0.07em $lnx-secondary-text-color);
+            //}
+        }
+    }
+}

@@ -62,7 +62,7 @@ const AppRouter = () => {
             return <LoginRoutes which={first_part} />;
         case 'channels':
         case 'invite':
-        case 'profile':
+        case 'settings':
             return <MainView />;
     }
 

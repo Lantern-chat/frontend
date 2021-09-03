@@ -131,7 +131,8 @@ export const Party = React.memo(() => {
     return (
         <div className="ln-party"
             onTouchStart={use_mobile_view ? on_touch_start : undefined}
-            onTouchEnd={use_mobile_view ? on_touch_end : undefined}>
+            onTouchEnd={use_mobile_view ? on_touch_end : undefined}
+        >
             {left}
 
             <div className={classes.join(' ')}>

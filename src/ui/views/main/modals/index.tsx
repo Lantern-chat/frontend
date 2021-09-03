@@ -4,20 +4,20 @@ import { createStructuredSelector } from 'reselect';
 import { RootState } from 'state/root';
 
 import { CreatePartyModal } from "./create_party";
-import { ProfileModal } from './profile';
+import { SettingsModal } from './settings';
 
 let modal_selector = createStructuredSelector({
     modals: (state: RootState) => state.modals,
-    profile: (state: RootState) => state.history.parts[0] == 'profile',
+    settings: (state: RootState) => state.history.parts[0] == 'settings',
 })
 
 const MainModals = React.memo(() => {
-    let { modals, profile } = useSelector(modal_selector);
+    let { modals, settings } = useSelector(modal_selector);
 
     return (
         <>
             {modals.create_party_open && <CreatePartyModal />}
-            {profile && <ProfileModal />}
+            {settings && <SettingsModal />}
         </>
     );
 });
