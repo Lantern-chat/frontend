@@ -67,6 +67,10 @@ a {
     &:active {
         text-decoration: underline;
     }
+
+    &:focus-visible {
+        outline: none;
+    }
 }
 
 :root {
