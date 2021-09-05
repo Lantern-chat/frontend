@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createStructuredSelector, createSelector } from "reselect";
 
@@ -22,15 +22,16 @@ import "./settings.scss";
 export const SettingsModal = React.memo(() => {
     let [closing, setClosing] = useState(false);
 
-    let return_path = useSelector(return_path_selector);
-
-    useEffect(() => {
-        let listener = (e: KeyboardEvent) => {
-            if(e.key == 'Escape' && !closing) {
+    let return_path = useSelector(return_path_selector),
+        do_return = useCallback(() => {
+            if(!closing) {
                 setClosing(true);
                 setTimeout(() => HISTORY.push(return_path), 200);
             }
-        }
+        }, [return_path, closing]);
+
+    useEffect(() => {
+        let listener = (e: KeyboardEvent) => { if(e.key == 'Escape') { do_return(); } };
         window.addEventListener('keyup', listener);
         return () => window.removeEventListener('keyup', listener);
     }, []);
@@ -38,7 +39,7 @@ export const SettingsModal = React.memo(() => {
     return (
         <Modal>
             <div className={"ln-modal ln-settings ln-settings--" + (closing ? 'closing' : 'opened')}>
-                <SettingsTabs />
+                <SettingsTabs do_return={do_return} />
             </div>
         </Modal>
     )
@@ -46,17 +47,33 @@ export const SettingsModal = React.memo(() => {
 
 import { ProfileSettingsTab } from "./tabs/profile";
 import { AppearanceSettingsTab } from "./tabs/appearance";
-import { logout } from "state/commands/session";
+import { AccountSettingsTab } from "./tabs/account";
+import { PrivacySettingsTab } from "./tabs/privacy";
+import { NotificationsSettingsTab } from "./tabs/notifications";
+import { AccessibilitySettingsTab } from "./tabs/accessibility";
+import { MediaSettingsTab } from "./tabs/media";
+import { LanguageSettingsTab } from "./tabs/language";
 
 import LogoutIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-432-log-out.svg";
 
-
 const TABS = [
+    { name: 'Account', path: 'account', comp: AccountSettingsTab },
     { name: 'Profile', path: 'profile', comp: ProfileSettingsTab },
+    { name: 'Privacy', path: 'privacy', comp: PrivacySettingsTab },
+    { name: 'Notifications', path: 'notifications', comp: NotificationsSettingsTab },
     { name: 'Appearance', path: 'appearance', comp: AppearanceSettingsTab },
+    { name: 'Accessibility', path: 'accessibility', comp: AccessibilitySettingsTab },
+    { name: 'Text & Media', path: 'media', comp: MediaSettingsTab },
+    { name: 'Language', path: 'language', comp: LanguageSettingsTab },
 ];
 
-const SettingsTabs = React.memo(() => {
+interface ISettingsTabsProps {
+    do_return: () => void,
+}
+
+import { logout } from "state/commands/session";
+
+const SettingsTabs = React.memo(({ do_return }: ISettingsTabsProps) => {
     let active_tab = useSelector((state: RootState) => state.history.parts[1]),
         tab = TABS.find(tab => tab.path == active_tab) || TABS[0],
         TabComponent = tab.comp,
@@ -70,30 +87,31 @@ const SettingsTabs = React.memo(() => {
 
                 <ul>
                     {TABS.map(({ name, path }) => (
-                        <li key={name}>
-                            <div className={(active_tab == path ? 'selected' : '')}>
-                                <Link href={`/settings/${path}`}> {name} </Link>
-                            </div>
+                        <li key={name} className={(active_tab == path ? 'selected' : '')}>
+                            <Link href={`/settings/${path}`}> <div><span>{name}</span></div> </Link>
                         </li>
                     ))}
+
+                    <div className="spacer" />
 
                     <hr />
 
                     <li>
                         <div id="logout" onClick={do_logout}>
-                            Logout
+                            <span>Logout</span>
                             <div title="Logout">
                                 <Glyphicon src={LogoutIcon} />
                             </div>
                         </div>
                     </li>
                 </ul>
-
-
             </div>
 
             <div className="ln-settings__page">
-                <h3>{tab.name}</h3>
+                <div className="ln-settings__header">
+                    <h3>{tab.name}</h3>
+                    <div onClick={do_return}><span>Return</span></div>
+                </div>
 
                 <div className="ln-settings__content">
                     <TabComponent />

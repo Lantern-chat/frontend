@@ -78,44 +78,66 @@
 
     @media (min-width: $ln-min-channel-width) {
         &__categories {
-            width: 20%;
+            min-width: 10%;
+            flex: 1 0 auto;
         }
 
         &__page {
-            width: 80%;
-        }
-    }
-
-    &__page {
-        background-color: $lnx-tertiary-surface-color;
-
-        h3 {
-            text-align: center;
-            padding: 0.5em;
-            border-bottom: 1px solid $lnx-secondary-surface-color;
+            width: 100%;
         }
     }
 
     &__categories {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+
         h3 {
             text-align: center;
             padding: 0.5em;
+            border-bottom: 1px solid $lnx-tertiary-surface-color;
+        }
+
+        ul {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            height: 100%;
+            // line-height: normal;
         }
 
         li {
+            font-size: 1.25rem;
             text-align: center;
-            padding: 0.25em 2em;
             width: 100%;
 
-            div {
-                padding: 0.2em 0;
+            > a {
+                line-height: normal;
+                font-family: Whitney, "Helvetica Neue", Helvetica, Arial, sans-serif;
+                padding: 0.35em 0;
             }
 
-            &:hover {
-                div {
-                    background-color: $lnx-secondary-surface-color;
-                }
+            &:not(:last-child) {
+                margin-bottom: 0.15em;
             }
+
+            //> div {
+            //    padding: 0.2em 0;
+            //}
+
+            &:hover {
+                background-color: rgba(128, 128, 128, 0.1);
+            }
+
+            &.selected {
+                background-color: $lnx-tertiary-surface-color;
+            }
+        }
+
+        hr {
+            width: 100%;
+            color: $lnx-secondary-text-color;
+            margin: 0;
         }
 
         a,
@@ -125,28 +147,78 @@
             color: $lnx-primary-text-color;
         }
 
+        a {
+            display: block; // fill whole li space
+
+            &:focus-visible {
+                outline: none;
+            }
+        }
+
+        .spacer {
+            height: 100%;
+            flex-grow: 1;
+        }
+
         div#logout {
             display: flex;
             justify-content: center;
             cursor: pointer;
-        }
+            padding: 0.35em 0;
 
-        br {
-            color: $lnx-primary-text-color;
-        }
+            > div {
+                position: relative;
+                margin-top: auto;
+                //font-size: 3em;
+                text-align: center;
+                padding: 0.2em;
+                line-height: 1;
 
-        div#logout > div {
-            position: relative;
-            margin-top: auto;
-            //font-size: 3em;
+                //&:hover,
+                //&:focus,
+                //&:active {
+                //    filter: drop-shadow(0 0 0.07em $lnx-secondary-text-color);
+                //}
+            }
+        }
+    }
+
+    &__page {
+        background-color: $lnx-tertiary-surface-color;
+
+        h3 {
             text-align: center;
-            padding: 0.2em;
-
-            //&:hover,
-            //&:focus,
-            //&:active {
-            //    filter: drop-shadow(0 0 0.07em $lnx-secondary-text-color);
-            //}
+            padding: 0.5em;
         }
+    }
+
+    &__header {
+        display: flex;
+        border-bottom: 1px solid $lnx-secondary-surface-color;
+
+        > h3 {
+            flex: 1;
+        }
+
+        > div {
+            font-size: 1.2;
+            padding: 0.5rem;
+            border: 2px solid $lnx-secondary-surface-color;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            background-color: $lnx-primary-surface-color;
+            margin: 0.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+
+    &__content {
+        margin: 2em;
     }
 }
