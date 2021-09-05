@@ -13,7 +13,7 @@ import { Intent } from "state/models";
 import { room_url } from "config/urls";
 import { activeParty, activeRoom } from "state/selectors/active";
 
-const GATEWAY_ENABLED_ROUTES = ['channels', 'profile', 'invite'];
+const GATEWAY_ENABLED_ROUTES = ['channels', 'settings', 'invite'];
 
 function connect_gateway(state: RootState) {
     GLOBAL.gateway!.postCmd({

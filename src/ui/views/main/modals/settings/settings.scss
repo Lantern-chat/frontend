@@ -149,10 +149,6 @@
 
         a {
             display: block; // fill whole li space
-
-            &:focus-visible {
-                outline: none;
-            }
         }
 
         .spacer {

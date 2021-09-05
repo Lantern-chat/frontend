@@ -87,8 +87,8 @@ const SettingsTabs = React.memo(({ do_return }: ISettingsTabsProps) => {
 
                 <ul>
                     {TABS.map(({ name, path }) => (
-                        <li key={name} className={(active_tab == path ? 'selected' : '')}>
-                            <Link href={`/settings/${path}`}> <div><span>{name}</span></div> </Link>
+                        <li key={name} className={(tab.path == path ? 'selected' : '')}>
+                            <Link href={`/settings/${path}`} title={name}> <div><span>{name}</span></div> </Link>
                         </li>
                     ))}
 
@@ -97,9 +97,9 @@ const SettingsTabs = React.memo(({ do_return }: ISettingsTabsProps) => {
                     <hr />
 
                     <li>
-                        <div id="logout" onClick={do_logout}>
+                        <div id="logout" onClick={do_logout} title="Logout">
                             <span>Logout</span>
-                            <div title="Logout">
+                            <div>
                                 <Glyphicon src={LogoutIcon} />
                             </div>
                         </div>

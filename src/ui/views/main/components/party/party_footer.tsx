@@ -80,7 +80,7 @@ export const PartyFooter = React.memo(() => {
                 <div onClick={() => setDeaf(!deaf)} title={deaf ? 'Undeafen' : 'Deafen'}>
                     <Glyphicon src={deaf ? SpeakerDeaf : Speaker} />
                 </div>
-                <Link href="/settings/profile" title="Settings">
+                <Link href="/settings" title="Settings">
                     <Glyphicon src={Cogwheel} />
                 </Link>
             </div>
