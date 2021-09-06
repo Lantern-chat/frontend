@@ -22,7 +22,7 @@ module.exports = (env, argv) => {
         cache: !IS_PRODUCTION,
         entry: {
             index: "./src/index.tsx",
-            testbed: "./src/testbed.tsx",
+            //testbed: "./src/testbed.tsx",
         },
         //stats: {
         //    children: true,
