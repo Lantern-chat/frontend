@@ -2,6 +2,7 @@ import React, { useState, useMemo, useReducer, useEffect, useContext, useCallbac
 import { useDispatch } from "react-redux";
 import { Dispatch } from "state/actions";
 import { setSession } from "state/commands";
+import { ErrorCode } from "state/models";
 
 import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
@@ -29,15 +30,21 @@ function preloadRegister() {
 interface LoginState {
     email: string,
     pass: string,
+    totp: string,
     valid_email: boolean | null,
     is_logging_in: boolean,
+    totp_required: boolean,
+    have_2fa: boolean,
 }
 
 const DEFAULT_LOGIN_STATE: LoginState = {
     email: "",
     pass: "",
+    totp: "",
     valid_email: null,
     is_logging_in: false,
+    totp_required: false,
+    have_2fa: false,
 };
 
 enum LoginActionType {
@@ -45,6 +52,9 @@ enum LoginActionType {
     NoLogin,
     UpdateEmail,
     UpdatePass,
+    UpdatedTOTP,
+    TOTPRequired,
+    IHave2FA,
 }
 
 interface LoginAction {
@@ -60,11 +70,20 @@ function login_state_reducer(state: LoginState, { value, type }: LoginAction): L
         case LoginActionType.UpdatePass: {
             return { ...state, pass: value };
         }
+        case LoginActionType.UpdatedTOTP: {
+            return { ...state, totp: value };
+        }
         case LoginActionType.Login: {
             return { ...state, is_logging_in: true };
         }
         case LoginActionType.NoLogin: {
             return { ...state, is_logging_in: false };
+        }
+        case LoginActionType.TOTPRequired: {
+            return { ...state, totp_required: true };
+        }
+        case LoginActionType.IHave2FA: {
+            return { ...state, have_2fa: !state.have_2fa };
         }
         default: return state;
     }
@@ -110,11 +129,15 @@ export default function LoginView() {
             }
         }).catch((req: XMLHttpRequest) => {
             try {
-                let response = req.response;
-                if(typeof response === 'string') {
-                    response = JSON.parse(response);
+                if(req.status == 401 && req.response.code == ErrorCode.TOTPRequired) {
+                    form_dispatch({ type: LoginActionType.TOTPRequired, value: '' });
+                } else {
+                    let response = req.response;
+                    if(typeof response === 'string') {
+                        response = JSON.parse(response);
+                    }
+                    on_error(response.message);
                 }
-                on_error(response.message);
             } catch(e) {
                 on_error("Unknown error: " + req.status);
 
@@ -125,10 +148,10 @@ export default function LoginView() {
         })
     };
 
-    let errorModal;
+    let error_modal, totp_modal;
 
     if(errorMsg != null) {
-        errorModal = (
+        error_modal = (
             <Modal>
                 <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, zIndex: 'inherit', backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
                     <div className="ln-center-standalone" style={{ color: 'white' }}>
@@ -140,8 +163,30 @@ export default function LoginView() {
         );
     }
 
-    let on_email_change = useCallback(e => form_dispatch({ type: LoginActionType.UpdateEmail, value: e.currentTarget.value }), []);
-    let on_password_change = useCallback(e => form_dispatch({ type: LoginActionType.UpdatePass, value: e.currentTarget.value }), []);
+    if(state.totp_required) {
+        totp_modal = (
+            <Modal>
+                <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, zIndex: 'inherit', backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
+                    TOTP Required
+                </div>
+            </Modal>
+        );
+    }
+
+    let on_email_change = useCallback(e => form_dispatch({ type: LoginActionType.UpdateEmail, value: e.currentTarget.value }), []),
+        on_password_change = useCallback(e => form_dispatch({ type: LoginActionType.UpdatePass, value: e.currentTarget.value }), []),
+        on_totp_change = useCallback(e => form_dispatch({ type: LoginActionType.UpdatedTOTP, value: e.currentTarget.value }), []);
+
+    let mfa_toggle_text = (state.have_2fa ? "Don't have" : "Have") + " a 2FA Code?",
+        mfa_toggle_flavor = (state.have_2fa ? "hide" : "show"),
+        mfa_toggle = (
+            <div id="mfa_toggle"
+                title={`${mfa_toggle_text} Click here to ${mfa_toggle_flavor} the input.`}
+                onClick={() => form_dispatch({ type: LoginActionType.IHave2FA, value: '' })}
+            >
+                {mfa_toggle_text}
+            </div>
+        );
 
     return (
         <form className="ln-form ln-login-form" onSubmit={on_submit}>
@@ -149,7 +194,8 @@ export default function LoginView() {
                 <h2><I18N t={Translation.LOGIN} /></h2>
             </div>
 
-            {errorModal}
+            {error_modal}
+            {totp_modal}
 
             <FormGroup>
                 <FormLabel htmlFor="email"><I18N t={Translation.EMAIL_ADDRESS} /></FormLabel>
@@ -163,7 +209,21 @@ export default function LoginView() {
                 </FormLabel>
                 <FormInput value={state.pass} type="password" name="password" placeholder="password" required
                     onChange={on_password_change} />
+
+                {!state.have_2fa && mfa_toggle}
             </FormGroup>
+
+            {state.have_2fa && (
+                <FormGroup>
+                    <FormLabel htmlFor="totp">
+                        <span>2FA Code</span>
+                    </FormLabel>
+                    <FormInput id="totp_input" value={state.totp} type="number" name="totp" placeholder="2FA Code" min="0" pattern="[0-9]*" required
+                        onChange={on_totp_change} />
+
+                    {mfa_toggle}
+                </FormGroup>
+            )}
 
             <hr />
 

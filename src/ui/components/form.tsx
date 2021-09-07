@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { InputHTMLAttributes, useMemo, useRef, useState } from "react";
 
 import classnames from "classnames";
 
@@ -29,13 +29,7 @@ export const FormText: React.FunctionComponent<IFormTextProps> = React.memo((pro
     return <p className="ln-form-text" {...props} />;
 });
 
-interface IFormInputProps {
-    type: string,
-    name: string,
-    value?: string,
-    placeholder?: string,
-    required?: boolean,
-    className?: string,
+interface IFormInputProps extends InputHTMLAttributes<HTMLInputElement> {
     isValid?: boolean | null,
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void,
 }
@@ -46,15 +40,14 @@ export const FormInput: React.FunctionComponent<IFormInputProps> = React.memo((p
         'ln-error': props.isValid === false,
     });
 
+    if(__DEV__) {
+        props = { ...props };
+        delete props['isValid'];
+    }
+
     return (
         <span className={classes}>
-            <input className="ln-form-control"
-                type={props.type}
-                name={props.name}
-                placeholder={props.placeholder}
-                required={props.required}
-                value={props.value}
-                onChange={props.onChange} />
+            <input {...props} className="ln-form-control" />
         </span>
     );
 });

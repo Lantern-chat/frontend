@@ -36,6 +36,7 @@ export enum ErrorCode {
     InvalidPreview = 40024,
     MimeParseError = 40025,
     InvalidImageFormat = 40026,
+    TOTPRequired = 40027,
 }
 
 export function errorKind(err: ApiError): ErrorKind {

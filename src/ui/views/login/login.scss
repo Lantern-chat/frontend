@@ -6,6 +6,28 @@
     @media (max-width: 49em) {
         width: 100%;
     }
+
+    div#mfa_toggle {
+        font-size: 0.75em;
+        text-align: right;
+        color: $lnx-secondary-text-color;
+        cursor: pointer;
+        float: right;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    input#totp_input {
+        -moz-appearance: textfield;
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    }
 }
 
 .ln-login-container {
