@@ -92,7 +92,7 @@ export interface User {
     status?: string,
     bio?: string,
     email?: string,
-    preferences?: UserPreferences
+    preferences?: Partial<UserPreferences>,
 }
 
 export interface AnonymousSession {
@@ -103,8 +103,27 @@ export interface Session extends AnonymousSession {
     auth: string,
 }
 
+export enum Font {
+    SansSerif = "sans_serif",
+    Serif = "serif",
+    OpenDyslexic = "open_dyslexic",
+    Monospace = "monospace",
+    Cursive = "cursive"
+}
+
 export interface UserPreferences {
     locale: number,
+    friend_add: number,
+    reduce_anim: boolean,
+    unfocus_pause: boolean,
+    is_light: boolean,
+    temp: number,
+    compact: boolean,
+    chat_font: Font,
+    ui_font: Font,
+    chat_font_size: number,
+    ui_font_size: number,
+    time_format: string,
 }
 
 export interface UserPresence {
