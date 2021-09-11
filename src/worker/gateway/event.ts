@@ -42,8 +42,10 @@ export type GatewayEventMsgCreate = GenericEvent<GatewayEventCode.MessageCreate,
 export type GatewayEventTypingStart = GenericEvent<GatewayEventCode.TypingStart, TypingStartEvent>;
 export type GatewayEventPresenceUpdate = GenericEvent<GatewayEventCode.PresenceUpdate, UserPresenceUpdateEvent>;
 export type GatewayEventUserUpdate = GenericEvent<GatewayEventCode.UserUpdate, UserUpdateEvent>;
+export type GatewayEventInvalidSession = GenericEvent<GatewayEventCode.InvalidSession>;
 
 export type GatewayEvent =
+    GatewayEventInvalidSession |
     GatewayEventHello |
     GatewayEventHeartbeatACK |
     GatewayEventReady |

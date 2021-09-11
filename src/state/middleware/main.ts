@@ -2,7 +2,7 @@ import { Middleware } from "redux";
 
 import { IS_MOBILE } from "lib/user_agent";
 import { Dispatch } from "state/actions";
-import { loadMessages, SearchMode, activateParty } from "state/commands";
+import { loadMessages, SearchMode, activateParty, setSession } from "state/commands";
 import { DEFAULT_LOGGED_IN_CHANNEL, GLOBAL, HISTORY } from "state/global";
 import { GatewayStatus } from "state/reducers/gateway";
 import { Action, RootState, Type } from "state/root";
@@ -155,6 +155,10 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
                         HISTORY.replace(DEFAULT_LOGGED_IN_CHANNEL);
                     }
 
+                    break;
+                }
+                case GatewayMessageDiscriminator.InvalidSession: {
+                    dispatch(setSession(null));
                     break;
                 }
             }

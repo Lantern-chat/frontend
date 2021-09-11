@@ -101,11 +101,14 @@ class Gateway {
     }
 
     on_close(msg: CloseEvent) {
+        __DEV__ && console.log("GATEWAY CLOSED");
         this.do_close();
         postMsg({ t: GatewayMessageDiscriminator.Disconnected, p: msg.code });
     }
 
     on_error(_err: Event) {
+        __DEV__ && console.log("GATEWAY ERROR: ", _err);
+
         // TODO: Handle this as a close event?
         this.do_close();
         postMsg({ t: GatewayMessageDiscriminator.Error, p: { err: "WS Error" } });
@@ -122,6 +125,8 @@ class Gateway {
         let decompressed = decompress(new Uint8Array(raw));
         let decoded = this.decoder.decode(decompressed);
         let msg: GatewayEvent = JSON.parse(decoded);
+
+        console.log("GATEWAY CODE: ", msg.o);
 
         switch(msg.o) {
             case GatewayEventCode.Hello: {
@@ -143,11 +148,16 @@ class Gateway {
             case GatewayEventCode.Ready: {
                 __DEV__ && console.log("GATEWAY READY", msg);
 
-                postMsg({
+                return postMsg({
                     t: GatewayMessageDiscriminator.Ready,
                     p: msg.p,
                 });
-                break;
+            }
+            case GatewayEventCode.InvalidSession: {
+                __DEV__ && console.log("GATEWAY INVALID SESSION");
+                return postMsg({
+                    t: GatewayMessageDiscriminator.InvalidSession,
+                });
             }
             case GatewayEventCode.PresenceUpdate:
             case GatewayEventCode.TypingStart:
@@ -170,6 +180,8 @@ class Gateway {
 
     disconnect() {
         if(this.ws) {
+            __DEV__ && console.log("GATEWAY DISCONNECTING!");
+
             // NOTE: This should trigger `on_close`
             this.ws.close();
         }

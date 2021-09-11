@@ -11,6 +11,7 @@ export enum GatewayMessageDiscriminator {
     Disconnected,
     Event,
     Error,
+    InvalidSession,
 }
 
 export interface GatewayMessageInitiatized {
@@ -48,6 +49,10 @@ export interface GatewayMessageError {
     p: any;
 }
 
+export interface GatewayMessageInvalidSession {
+    t: GatewayMessageDiscriminator.InvalidSession,
+}
+
 export type GatewayMessage =
     GatewayMessageInitiatized |
     GatewayMessageConnecting |
@@ -57,4 +62,4 @@ export type GatewayMessage =
     GatewayMessageReady |
     GatewayMessageDisconnected |
     GatewayMessageEvent |
-    GatewayMessageError;
+    GatewayMessageError | GatewayMessageInvalidSession;
