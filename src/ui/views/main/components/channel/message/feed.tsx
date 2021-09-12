@@ -122,7 +122,7 @@ const MessageGroup = ({ group, is_light_theme }: MessageGroupProps) => {
 };
 
 const feed_selector = createStructuredSelector({
-    is_light_theme: (state: RootState) => state.theme.is_light,
+    is_light_theme: (state: RootState) => state.prefs.light,
     use_mobile_view: (state: RootState) => state.window.use_mobile_view,
     show_panel: (state: RootState) => state.window.show_panel,
 });

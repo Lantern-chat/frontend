@@ -1,7 +1,7 @@
 import React, { useContext, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { RootState } from "state/root";
+import { themeSelector } from "state/selectors/theme";
 import { setTheme } from "state/commands/theme";
 
 import { MIN_TEMP, MAX_TEMP } from "lib/theme";
@@ -15,7 +15,7 @@ import throttle from 'lodash/throttle';
 import "./theme_widget.scss";
 export const ThemeWidget: React.FunctionComponent = React.memo(() => {
     let input = useRef<HTMLInputElement>(null);
-    let theme = useSelector((state: RootState) => state.theme);
+    let theme = useSelector(themeSelector);
     let dispatch = useDispatch();
 
     let [interactive, setInteractive] = useState(theme);

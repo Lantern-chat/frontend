@@ -1,4 +1,4 @@
-import { IChatState, IWindowState, IModalState, IGatewayState, IUserState, IPartyState, IThemeState, IHistoryState, ICacheState } from "./reducers";
+import { IChatState, IWindowState, IModalState, IGatewayState, IUserState, IPartyState, IPrefsState, IHistoryState, ICacheState } from "./reducers";
 
 import { promiseMiddleware } from "./middleware/promise";
 import { applyMiddleware } from "redux";
@@ -17,7 +17,7 @@ export interface RootState {
     user: IUserState,
     party: IPartyState,
     history: IHistoryState,
-    theme: IThemeState,
+    prefs: IPrefsState,
 }
 
 export const DYNAMIC_MIDDLEWARE = createDynamicMiddlewares();

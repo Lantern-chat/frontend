@@ -34,7 +34,7 @@ let status_selector = createSelector(
 
 let footer_selector = createStructuredSelector({
     user: (state: RootState) => state.user.user,
-    is_light_theme: (state: RootState) => state.theme.is_light,
+    is_light_theme: (state: RootState) => state.prefs.light,
     status: status_selector,
 });
 

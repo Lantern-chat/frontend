@@ -1,7 +1,7 @@
 import { Dispatch as ReduxDispatch } from "redux";
 import { History } from "history";
 import { IHistoryState } from "./reducers";
-import { Snowflake, Room, Message, PartyMember } from "./models";
+import { Snowflake, Room, Message, PartyMember, UserPreferences } from "./models";
 import { RootState } from "state/root";
 import { ISession } from "lib/session";
 
@@ -21,7 +21,7 @@ export enum Type {
     MODAL_OPEN_CREATE_PARTY = "MODAL_OPEN_CREATE_PARTY",
     MODAL_CLOSE_CREATE_PARTY = "MODAL_CLOSE_CREATE_PARTY",
 
-    SET_THEME = "SET_THEME",
+    UPDATE_PREFS = "UPDATE_PREFS",
 
     GATEWAY_EVENT = "GATEWAY_EVENT",
     GATEWAY_RETRY = "GATEWAY_RETRY",
@@ -48,7 +48,7 @@ export type Action =
     HistoryUpdate |
     SessionLogin |
     SessionExpired |
-    SetTheme |
+    UpdatePrefs |
     WindowResize |
     WindowToggleUserListSidebar |
     WindowToggleRoomListSidebar |
@@ -86,12 +86,11 @@ export interface SessionLogin {
     session: ISession,
 }
 
-// THEME ACTIONS
+// PREFS ACTIONS
 
-export interface SetTheme {
-    type: Type.SET_THEME,
-    temperature: number,
-    is_light: boolean,
+export interface UpdatePrefs {
+    type: Type.UPDATE_PREFS,
+    prefs: Partial<UserPreferences>,
 }
 
 // WINDOW ACTIONS

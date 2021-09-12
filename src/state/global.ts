@@ -7,8 +7,9 @@ import { setTheme } from "lib/theme";
 import { recomputeHistoryContext } from "ui/components/history";
 import { DEFAULT_STATE as DEFAULT_WINDOW } from "./reducers/window";
 import { DEFAULT_STATE as DEFAULT_USER } from './reducers/user';
-import { StorageKey, loadTheme, loadSession } from "./storage";
+import { StorageKey, loadSession, loadPrefs } from "./storage";
 import { GatewayCommand } from "worker/gateway/cmd";
+import { themeSelector } from "./selectors/theme";
 
 export { DYNAMIC_MIDDLEWARE } from "./root";
 
@@ -28,7 +29,7 @@ export const HISTORY = createBrowserHistory();
 export const STORE = createStore(initialReducer, {
     history: recomputeHistoryContext(HISTORY),
     user: { ...DEFAULT_USER, session: loadSession() },
-    theme: loadTheme(),
+    prefs: loadPrefs(),
     window: {
         ...DEFAULT_WINDOW,
         show_user_list: (() => {
@@ -88,4 +89,4 @@ if(!ACCEPTABLE_PATHS.includes(first_part)) {
     HISTORY.replace(DEFAULT_LOGGED_IN_CHANNEL);
 }
 
-setTheme(STORE.getState().theme, false);
+setTheme(themeSelector(STORE.getState()), false);

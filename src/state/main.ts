@@ -11,7 +11,7 @@ import { windowReducer } from "./reducers/window";
 import { gatewayReducer } from "./reducers/gateway";
 import { userReducer } from "./reducers/user";
 import { partyReducer } from "./reducers/party";
-import { themeReducer } from "./reducers/theme";
+import { prefsReducer } from "./reducers/prefs";
 import { historyReducer } from "./reducers/history";
 
 import { Action } from "./actions";
@@ -28,6 +28,6 @@ export const mainReducer = combineReducers<RootState, Action>({
     gateway: gatewayReducer,
     user: userReducer,
     party: partyReducer,
-    theme: themeReducer,
+    prefs: prefsReducer,
     history: historyReducer
 });

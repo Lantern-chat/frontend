@@ -1,0 +1,72 @@
+@use "sass:math";
+
+@import "lib/variables";
+
+@function gen_temp_gradient($stops) {
+    $gradient: (to right, #000 0%);
+
+    @for $i from 0 through $stops {
+        $t: math.div($i, $stops);
+        $temp: (1 - $t) * 965 + $t * 12000;
+        $color: kelvin2($temp);
+        $stop: $t * 100%;
+        $gradient: append($gradient, $color #{$stop});
+    }
+
+    @return $gradient;
+}
+
+.ln-theme-temp-slider {
+    height: 100%;
+
+    input[type="range"].ln-slider {
+        -webkit-appearance: none;
+        appearance: none;
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        outline: none;
+        border-radius: 0.3em;
+        border: none;
+        cursor: pointer;
+
+        &:focus {
+            outline: none;
+        }
+
+        $kelvin_gradient: gen_temp_gradient(20);
+
+        //@debug $kelvin_gradient;
+
+        background: linear-gradient($kelvin_gradient);
+
+        @mixin thumb() {
+            box-shadow: none;
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            max-width: 0.4em;
+            height: 3em;
+            height: 100%;
+            background: linear-gradient(to right, transparent 0%, #000 40%, #000 60%, transparent 100%);
+            //background: black;
+            cursor: pointer;
+            outline: none;
+            border: none;
+            border-radius: 0;
+        }
+
+        &::-webkit-slider-runnable-track {
+            height: 100%;
+            pointer-events: none;
+        }
+
+        &::-webkit-slider-thumb {
+            @include thumb();
+        }
+
+        &::-moz-range-thumb {
+            @include thumb();
+        }
+    }
+}

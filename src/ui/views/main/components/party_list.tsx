@@ -24,7 +24,7 @@ let sorted_party_selector = createSelector((state: RootState) => state.party.par
 
 let party_list_selector = createStructuredSelector({
     parties: sorted_party_selector,
-    is_light_theme: (state: RootState) => state.theme.is_light,
+    is_light_theme: (state: RootState) => state.prefs.light,
     use_mobile_view: (state: RootState) => state.window.use_mobile_view,
     user_object: (state: RootState) => state.user.user,
     last_channel: (state: RootState) => state.party.last_channel,

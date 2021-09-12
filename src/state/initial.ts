@@ -2,7 +2,7 @@ import { combineReducers } from "redux";
 
 import { windowReducer } from "./reducers/window";
 import { userReducer } from "./reducers/user";
-import { themeReducer } from "./reducers/theme";
+import { prefsReducer } from "./reducers/prefs";
 import { historyReducer } from "./reducers/history";
 
 import { Action } from "./actions";
@@ -23,7 +23,7 @@ export const initialReducer = combineReducers<RootState, Action>({
     gateway: dummyReducer,
     user: userReducer,
     party: dummyReducer,
-    theme: themeReducer,
+    prefs: prefsReducer,
     history: historyReducer,
 });
 

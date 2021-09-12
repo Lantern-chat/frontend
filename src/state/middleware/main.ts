@@ -5,13 +5,20 @@ import { Dispatch } from "state/actions";
 import { loadMessages, SearchMode, activateParty, setSession } from "state/commands";
 import { DEFAULT_LOGGED_IN_CHANNEL, GLOBAL, HISTORY } from "state/global";
 import { GatewayStatus } from "state/reducers/gateway";
+import { DEFAULT_STATE as DEFAULT_PREFS } from "state/reducers/prefs";
 import { Action, RootState, Type } from "state/root";
+
 import { StorageKey } from "state/storage";
+
 import { GatewayCommand, GatewayCommandDiscriminator } from "worker/gateway/cmd";
 import { GatewayMessage, GatewayMessageDiscriminator } from "worker/gateway/msg";
-import { Intent } from "state/models";
+
+import { Intent, UserPreferences } from "state/models";
+
 import { room_url } from "config/urls";
 import { activeParty, activeRoom } from "state/selectors/active";
+
+import { setTheme } from "lib/theme";
 
 const GATEWAY_ENABLED_ROUTES = ['channels', 'settings', 'invite'];
 
@@ -153,6 +160,17 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
                         __DEV__ && console.log("Ready event received but no party is active, redirecting to default");
 
                         HISTORY.replace(DEFAULT_LOGGED_IN_CHANNEL);
+                    }
+
+                    let prefs = msg.p.user.preferences;
+
+                    if(prefs) {
+                        let full_prefs = { ...DEFAULT_PREFS, ...prefs } as UserPreferences;
+
+                        localStorage.setItem(StorageKey.PREFS, JSON.stringify(full_prefs));
+
+                        setTheme({ temperature: full_prefs.temp, is_light: full_prefs.light }, false);
+                        dispatch({ type: Type.UPDATE_PREFS, prefs: full_prefs });
                     }
 
                     break;

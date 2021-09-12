@@ -117,7 +117,7 @@ export interface UserPreferences {
     friend_add: number,
     reduce_anim: boolean,
     unfocus_pause: boolean,
-    is_light: boolean,
+    light: boolean,
     temp: number,
     compact: boolean,
     chat_font: Font,

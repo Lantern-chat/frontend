@@ -21,7 +21,7 @@ let user_list_selector = createSelector(
 )
 
 let other_selector = createStructuredSelector({
-    is_light_theme: (state: RootState) => state.theme.is_light,
+    is_light_theme: (state: RootState) => state.prefs.light,
 });
 
 import "./member_list.scss";

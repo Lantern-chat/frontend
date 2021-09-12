@@ -15,11 +15,6 @@ export interface ITheme {
     is_light: boolean,
 }
 
-export const DEFAULT_THEME: ITheme = {
-    temperature: 7500,
-    is_light: false,
-};
-
 export const MIN_TEMP: number = 965.0;
 export const MAX_TEMP: number = 12000;
 
