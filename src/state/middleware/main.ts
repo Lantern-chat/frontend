@@ -143,22 +143,28 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
 
                     break;
                 }
+                case GatewayMessageDiscriminator.InvalidSession: {
+                    dispatch(setSession(null));
+                    break;
+                }
                 case GatewayMessageDiscriminator.Ready: {
                     let state = getState(),
                         parties = state.party.parties,
-                        party_id = activeParty(state);
+                        { active_party, active_room } = state.chat;
 
+                    // Once the gateway is ready, we can signal our presence
                     GLOBAL.gateway.postCmd({ t: GatewayCommandDiscriminator.SetPresence, away: false });
 
-                    if(party_id && parties.has(party_id)) {
+                    if(active_party && parties.has(active_party)) {
                         // gateway has connected, so fetch the currently selected party id
                         // this is generally for fresh-loads, but reconnects trigger this as well
                         // so any reconnects will re-activate the selected party, which
                         // will also trigger loading messages/users
-                        dispatch(activateParty(party_id));
-                    } else {
+                        dispatch(activateParty(active_party, active_room));
+                    }
+                    // TODO: Expand upon this or remove it entirely.
+                    else if(!['settings'].includes(state.history.parts[0])) {
                         __DEV__ && console.log("Ready event received but no party is active, redirecting to default");
-
                         HISTORY.replace(DEFAULT_LOGGED_IN_CHANNEL);
                     }
 
@@ -175,10 +181,7 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
 
                     break;
                 }
-                case GatewayMessageDiscriminator.InvalidSession: {
-                    dispatch(setSession(null));
-                    break;
-                }
+
             }
             break;
         }

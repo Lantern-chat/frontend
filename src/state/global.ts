@@ -75,7 +75,7 @@ GLOBAL.cleanup_timer = setInterval(() => {
 
 export const DEFAULT_LOGGED_IN_CHANNEL: string = "/channels/@me";
 
-const ACCEPTABLE_PATHS = ['login', 'register', 'channels', 'verify', 'reset', 'invite'];
+const ACCEPTABLE_PATHS = ['login', 'register', 'channels', 'verify', 'reset', 'invite', 'settings'];
 let first_part = HISTORY.location.pathname.slice(1).split('/', 1)[0];
 
 let session = STORE.getState().user.session;
