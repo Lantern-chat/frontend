@@ -1,5 +1,6 @@
 @import "lib/temperature.scss";
 @import "lib/color.scss";
+@import "lib/util.scss";
 
 $day-temp: 7500;
 $night-temp: 5000;
@@ -25,13 +26,6 @@ $ln-link-color: #0096cf;
 $ln-success-color: green;
 $ln-warning-color: orange;
 $ln-failure-color: red;
-
-@function varx($first, $x...) {
-    @if length($x) >= 1 {
-        @return var($first, varx($x...));
-    }
-    @return $first;
-}
 
 // See root.scss for the :root {}
 

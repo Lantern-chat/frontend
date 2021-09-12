@@ -13,7 +13,7 @@ import { StorageKey } from "state/storage";
 import { GatewayCommand, GatewayCommandDiscriminator } from "worker/gateway/cmd";
 import { GatewayMessage, GatewayMessageDiscriminator } from "worker/gateway/msg";
 
-import { Intent, UserPreferences } from "state/models";
+import { Font, Intent, UserPreferences } from "state/models";
 
 import { room_url } from "config/urls";
 import { activeParty, activeRoom } from "state/selectors/active";
@@ -189,7 +189,46 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
             }
             break;
         }
+        case Type.UPDATE_PREFS: {
+            let de = document.documentElement, { chat_font, ui_font } = action.prefs, changed = false;
+
+            if(chat_font) {
+                let chat_ff_var = font_to_css(chat_font), chat_ff_key = '--ln-chat-font-family';
+
+                if(de.style.getPropertyValue(chat_ff_key) != chat_ff_var) {
+                    de.style.setProperty(chat_ff_key, chat_ff_var);
+                    changed = true;
+                }
+            }
+
+            if(ui_font) {
+                let ui_ff_var = font_to_css(ui_font), ui_ff_key = '--ln-ui-font-family';
+
+                if(de.style.getPropertyValue(ui_ff_key) != ui_ff_var) {
+                    de.style.setProperty(ui_ff_key, ui_ff_var);
+                    changed = true;
+                }
+            }
+
+            if(changed && [chat_font, ui_font].includes(Font.OpenDyslexic)) {
+                import("ui/fonts/opendyslexic");
+            }
+        }
     }
 
     return res;
+}
+
+function font_to_css(font: Font): string {
+    let suffix = (() => {
+        switch(font) {
+            case Font.Cursive: return 'cursive';
+            case Font.Serif: return 'serif';
+            case Font.Monospace: return 'monospace';
+            case Font.OpenDyslexic: return 'opendyslexic';
+            case Font.SansSerif: return 'sansserif';
+        }
+    })();
+
+    return `var(--ln-font-family-${suffix}`;
 }

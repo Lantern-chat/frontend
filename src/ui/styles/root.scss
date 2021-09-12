@@ -84,6 +84,15 @@ a {
     --ln-success-color: #{$ln-success-color};
     --ln-warning-color: #{$ln-warning-color};
     --ln-failure-color: #{$ln-failure-color};
+
+    --ln-chat-font-family: #{$ln-font-family-sansserif};
+    --ln-ui-font-family: #{$ln-font-family-sansserif};
+
+    --ln-font-family-sansserif: #{$ln-font-family-sansserif};
+    --ln-font-family-serif: #{$ln-font-family-serif};
+    --ln-font-family-cursive: #{$ln-font-family-cursive};
+    --ln-font-family-monospace: #{$ln-font-family-monospace};
+    --ln-font-family-opendyslexic: #{$ln-font-family-opendyslexic};
 }
 
 .ln-theme-transition {

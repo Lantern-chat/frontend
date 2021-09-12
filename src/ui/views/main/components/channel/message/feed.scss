@@ -99,6 +99,7 @@
     }
 
     &__username {
+        font-family: $lnx-ui-font-family;
         margin-right: 0.5em;
         cursor: pointer;
         &:hover {
@@ -109,6 +110,7 @@
     &__ts,
     &__sidets {
         cursor: default;
+        font-family: $lnx-ui-font-family;
     }
 
     &__ts {

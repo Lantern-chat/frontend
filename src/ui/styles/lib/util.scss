@@ -1,0 +1,6 @@
+@function varx($first, $x...) {
+    @if length($x) >= 1 {
+        @return var($first, varx($x...));
+    }
+    @return $first;
+}
