@@ -1,1 +1,1 @@
-import "ui/styles/lib/opendyslexic.css";
+import "ui/styles/lib/fonts/opendyslexic.css";
