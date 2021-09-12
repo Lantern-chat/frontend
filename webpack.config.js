@@ -132,7 +132,7 @@ module.exports = (env, argv) => {
                     test: /fonts.*\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/i,
                     type: 'asset/resource',
                     generator: {
-                        filename: 'static/fonts/[name].[ext]'
+                        filename: 'fonts/[name][ext]'
                     },
                 },
                 {
