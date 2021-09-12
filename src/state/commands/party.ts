@@ -51,12 +51,16 @@ export function activateParty(party_id: Snowflake, room_id?: Snowflake): Dispatc
                 let new_room_id = room_id || get_default_room(rooms),
                     url = room_url(party_id, new_room_id);
 
-                // if the nav timeout hasn't run yet, just do a regular push
-                if(!navigated) {
-                    HISTORY.push(url);
-                } else if(!room_id || !rooms.find(room => room.id == room_id)) {
-                    // otherwise, if the room_id given was invalid, replace with a valid one
-                    HISTORY.replace(url);
+                if(HISTORY.location.pathname != url) {
+                    console.log("HERE: ", HISTORY.location.pathname, url);
+
+                    // if the nav timeout hasn't run yet, just do a regular push
+                    if(!navigated) {
+                        HISTORY.push(url);
+                    } else if(!room_id || !rooms.find(room => room.id == room_id)) {
+                        // otherwise, if the room_id given was invalid, replace with a valid one
+                        HISTORY.replace(url);
+                    }
                 }
             }
 
