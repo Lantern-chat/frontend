@@ -130,7 +130,7 @@
 
     pre,
     code {
-        font-family: Consolas, Liberation Mono, Menlo, Courier, monospace;
+        font-family: Hasklig, $ln-font-family-monospace;
         // TODO: Figure out light theme background
         background-color: $lnx-primary-surface-color;
         border: 0.125em solid rgba(32, 34, 37, 0.3);
