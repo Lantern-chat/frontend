@@ -105,11 +105,12 @@ export interface Session extends AnonymousSession {
 }
 
 export enum Font {
-    SansSerif = "sans_serif",
-    Serif = "serif",
-    OpenDyslexic = "open_dyslexic",
-    Monospace = "monospace",
-    Cursive = "cursive"
+    SansSerif = 0,
+    Serif,
+    Monospace,
+    Cursive,
+
+    OpenDyslexic,
 }
 
 export interface UserPreferences {
