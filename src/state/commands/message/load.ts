@@ -24,9 +24,6 @@ export function loadMessages(room_id: Snowflake, search?: Snowflake, mode: Searc
                 url: `/api/v1/room/${room_id}/messages${query}`,
                 method: XHRMethod.GET,
                 bearer: state.user.session!.auth,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
             });
 
             if(res.status == 200) {
