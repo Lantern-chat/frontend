@@ -1,0 +1,31 @@
+@font-face {
+    font-family: "Hasklig";
+    src: url(Hasklig/Hasklig-Regular.woff2) format("woff2"), url(Hasklig/Hasklig-Regular.woff) format("woff"),
+        url(Hasklig/Hasklig-Regular.otf) format("otf");
+    font-style: normal;
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: "Hasklig";
+    src: url(Hasklig/Hasklig-It.woff2) format("woff2"), url(Hasklig/Hasklig-It.woff) format("woff"),
+        url(Hasklig/Hasklig-It.otf) format("otf");
+    font-style: italic;
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: "Hasklig";
+    src: url(Hasklig/Hasklig-Bold.woff2) format("woff2"), url(Hasklig/Hasklig-Bold.woff) format("woff"),
+        url(Hasklig/Hasklig-Bold.otf) format("otf");
+    font-style: normal;
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: "Hasklig";
+    src: url(Hasklig/Hasklig-BoldIt.woff2) format("woff2"), url(Hasklig/Hasklig-BoldIt.woff) format("woff"),
+        url(Hasklig/Hasklig-BoldIt.otf) format("otf");
+    font-style: italic;
+    font-weight: bold;
+}
