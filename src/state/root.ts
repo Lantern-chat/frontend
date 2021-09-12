@@ -5,6 +5,7 @@ import { applyMiddleware } from "redux";
 import thunk from 'redux-thunk';
 import { createLogger } from "redux-logger";
 import { createDynamicMiddlewares } from "./middleware";
+import { composeWithDevTools } from 'redux-devtools-extension';
 
 export { Action, Type, DispatchableAction } from "./actions";
 
@@ -23,5 +24,5 @@ export interface RootState {
 export const DYNAMIC_MIDDLEWARE = createDynamicMiddlewares();
 
 export const enhancers = __DEV__ ?
-    applyMiddleware(thunk, DYNAMIC_MIDDLEWARE.enhancers, promiseMiddleware, createLogger()) :
+    composeWithDevTools(applyMiddleware(thunk, DYNAMIC_MIDDLEWARE.enhancers, promiseMiddleware, createLogger())) :
     applyMiddleware(thunk, DYNAMIC_MIDDLEWARE.enhancers, promiseMiddleware);

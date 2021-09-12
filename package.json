@@ -40,6 +40,7 @@
     "react-virtualized-auto-sizer": "^1.0.4",
     "react-window": "^1.8.6",
     "redux": "^4.1.1",
+    "redux-devtools-extension": "^2.13.9",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
     "rehype-katex": "^6.0.1",
