@@ -24,7 +24,7 @@ module.exports = (env, argv) => {
         ...fullConfig(env, argv),
         watch: false,
         entry: {
-            vendors: "vendors.js",
+            vendors: "./vendors.js",
         },
         target: "web",
         mode: "development",
@@ -32,7 +32,6 @@ module.exports = (env, argv) => {
     };
 
     config.output = {
-        ...config.output,
         path: buildPath,
         filename: "dll.[name].js",
         library: '[name]'

@@ -208,10 +208,16 @@ module.exports = (env, argv) => {
 
 
     if(!IS_PRODUCTION) {
-        config.plugins.push(new DllReferencePlugin({
-            context: path.join(__dirname, "build"),
-            manifest: require("./build/vendors-manifest.json"),
-        }))
+        try {
+            let vendors = require("./build/vendors-manifest.json");
+
+            config.plugins.push(new DllReferencePlugin({
+                context: path.join(__dirname, "build"),
+                manifest: vendors,
+            }));
+        } catch(e) {
+            console.warn(e);
+        }
     }
 
     return config;
