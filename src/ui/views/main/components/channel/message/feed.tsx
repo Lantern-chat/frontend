@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useMemo, useState, useEffect, useCallback } from "react";
+import React, { useContext, useRef, useMemo, useState, useEffect, useCallback, useReducer } from "react";
 import { useSelector, shallowEqual, useDispatch } from "react-redux";
 import { createStructuredSelector } from 'reselect';
 
@@ -127,9 +127,43 @@ const feed_selector = createStructuredSelector({
     show_panel: (state: RootState) => state.window.show_panel,
 });
 
+enum ScrollAnchor {
+    Top,
+    Scrolling,
+    Bottom,
+}
+
+interface IScrollState {
+    pos: number,
+    anchor: ScrollAnchor,
+}
+
+const SCROLL_STATE: IScrollState = {
+    anchor: ScrollAnchor.Bottom,
+    pos: 0,
+};
+
+enum ScrollActionType {
+    Scroll,
+}
+
+interface ScrollActionScroll {
+    type: ScrollActionType.Scroll,
+    payload: number,
+}
+
+type ScrollAction = ScrollActionScroll;
+
+function scrollStateReducer(state: IScrollState, action: ScrollAction): IScrollState {
+    switch(action.type) {
+        case ScrollActionType.Scroll: return { ...state, pos: action.payload };
+    }
+
+    return state;
+}
+
 import "./feed.scss";
 export const MessageFeed = React.memo((props: IMessageListProps) => {
-    let [scrollPos, setScrollPos] = useState(0);
     let dispatch = useDispatch();
 
     let room = useSelector((state: RootState) => state.chat.rooms.get(props.channel));
@@ -162,6 +196,8 @@ export const MessageFeed = React.memo((props: IMessageListProps) => {
     let container_ref = useRef<HTMLDivElement>(null);
     const { width, height, ref: ul_ref } = useResizeDetector<HTMLUListElement>();
 
+    let [state, scrollDispatch] = useReducer(scrollStateReducer, SCROLL_STATE);
+
     let on_scroll = useCallback(throttle((event: React.UIEvent<HTMLDivElement>) => {
         let t = event.currentTarget;
         if(!t) return;
@@ -175,8 +211,7 @@ export const MessageFeed = React.memo((props: IMessageListProps) => {
         //    }
         //}
 
-
-        setScrollPos(t.scrollTop);
+        scrollDispatch({ type: ScrollActionType.Scroll, payload: t.scrollTop });
     }, 100), []); // TODO: This will probably have dependencies
 
     let feed = useMemo(() => {
@@ -203,7 +238,7 @@ export const MessageFeed = React.memo((props: IMessageListProps) => {
                 </div>
             </>
         );
-    }, [groups, ul_ref, on_scroll]);
+    }, [groups, ul_ref.current, on_scroll]);
 
     useEffect(() => {
         let elem = container_ref.current;
