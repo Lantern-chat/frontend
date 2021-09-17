@@ -243,7 +243,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     };
 
     let on_file_change = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        console.log("File list changed");
+        __DEV__ && console.log("File list changed");
 
         setFiles(e.currentTarget.files);
     }, []);

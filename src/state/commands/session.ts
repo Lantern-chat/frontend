@@ -13,9 +13,7 @@ export function setSession(session: ISession | null): DispatchableAction {
         storeSession(session);
 
         if(session != null) {
-            if(__DEV__) {
-                console.log("Setting session expiry timer for: ", session.expires.toISOString());
-            }
+            __DEV__ && console.log("Setting session expiry timer for: ", session.expires.toISOString());
 
             // TODO: Double-check this gets cleared eventually
             session.timeout = setLongTimeout(

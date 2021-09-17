@@ -126,7 +126,7 @@ class Gateway {
         let decoded = this.decoder.decode(decompressed);
         let msg: GatewayEvent = JSON.parse(decoded);
 
-        console.log("GATEWAY CODE: ", msg.o);
+        __DEV__ && console.log("GATEWAY CODE: ", msg.o);
 
         switch(msg.o) {
             case GatewayEventCode.Hello: {
@@ -166,7 +166,7 @@ class Gateway {
                 p: msg,
             });
             default: {
-                console.log("GATEWAY UNKNOWN", msg);
+                __DEV__ && console.log("GATEWAY UNKNOWN", msg);
             }
         }
     }

@@ -30,7 +30,7 @@ export class FileUploadModal extends React.Component<FileUploadModalProps, FileU
     }
 
     componentDidMount() {
-        console.log(this.state.media_refs.map(r => r.current));
+        __DEV__ && console.log(this.state.media_refs.map(r => r.current));
     }
 
     render() {
