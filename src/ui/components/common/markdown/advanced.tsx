@@ -22,7 +22,7 @@ import { renderers as simple_renderers } from "./simple";
 const renderers = {
     ...simple_renderers,
     code: ({ node, inline, className, ...props }: any) => {
-        console.log({ node, inline, className, ...props });
+        __DEV__ && console.log({ node, inline, className, ...props });
 
         if(inline === true) {
             return <code {...props} />;
