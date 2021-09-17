@@ -6,6 +6,7 @@ export enum Panel {
 
 export interface IWindowState {
     width: number,
+    height: number,
     use_mobile_view: boolean,
     show_panel: Panel,
     last_panel: Panel,
@@ -15,6 +16,7 @@ export interface IWindowState {
 export const MOBILE_MAX_SIZE: number = 640;
 export const DEFAULT_STATE: IWindowState = {
     width: window.innerWidth,
+    height: window.innerHeight,
     use_mobile_view: window.innerWidth < MOBILE_MAX_SIZE,
     show_panel: Panel.Main,
     last_panel: Panel.Main,
@@ -27,7 +29,7 @@ export function windowReducer(state: IWindowState = DEFAULT_STATE, action: Actio
     switch(action.type) {
         case Type.WINDOW_RESIZE: {
             let width = window.innerWidth;
-            return { ...state, width, use_mobile_view: width < MOBILE_MAX_SIZE };
+            return { ...state, width, use_mobile_view: width < MOBILE_MAX_SIZE, height: window.innerHeight };
         }
         case Type.WINDOW_TOGGLE_USER_LIST_SIDEBAR: {
             if(state.use_mobile_view) {
