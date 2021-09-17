@@ -253,6 +253,7 @@ export interface Overwrite {
 export interface Role {
     id: Snowflake,
     party_id: Snowflake,
+    icon_id?: Snowflake,
     name: string | null,
     permissions: Permission,
     color: number | null,
