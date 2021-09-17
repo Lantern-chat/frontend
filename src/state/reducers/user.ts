@@ -20,7 +20,9 @@ export function userReducer(state: IUserState = DEFAULT_STATE, action: Action) {
         case Type.GATEWAY_EVENT: {
             switch(action.payload.t) {
                 case GatewayMessageDiscriminator.Ready: {
-                    return { ...state, user: action.payload.p.user };
+                    // Initialize the user with `online` presence to start with
+                    // TODO: Improve this
+                    return { ...state, user: action.payload.p.user, presence: { flags: 1 } };
                 }
                 case GatewayMessageDiscriminator.Event: {
                     if(!state.user) break;
