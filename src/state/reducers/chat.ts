@@ -1,7 +1,6 @@
 import produce from "immer";
 
 import dayjs, { Dayjs } from "dayjs";
-import _ from "lodash";
 
 import { Action, Type } from "../actions";
 
@@ -113,23 +112,46 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
             }
         });
 
-        case Type.MESSAGES_LOADED: return produce(state, draft => {
-            for(let msg of action.msgs) {
-                let room = draft.rooms.get(msg.room_id);
-                if(!room) continue;
+        case Type.MESSAGES_LOADED: {
+            let raw_msgs = action.msgs;
+            if(raw_msgs.length == 0) break;
 
-                room.msgs.push({
-                    msg,
-                    ts: dayjs(msg.created_at),
-                });
-            }
+            return produce(state, draft => {
+                let room_id = raw_msgs[0].room_id,
+                    room = draft.rooms.get(room_id);
 
-            // sort message by timestamp
-            for(let room of draft.rooms.values()) {
-                room.msgs.sort((a, b) => a.ts.diff(b.ts));
-            }
-        });
+                if(!room) return;
 
+                // TODO: Test if this matters, because of immer
+                let old_msgs = room.msgs,
+                    new_msgs = raw_msgs.map(msg => ({
+                        msg,
+                        ts: dayjs(msg.created_at)
+                    })),
+                    final_msgs: Array<IMessageState> = [];
+
+                new_msgs.sort((a, b) => a.ts.diff(b.ts));
+
+                while(new_msgs.length && old_msgs.length) {
+                    let d = new_msgs[0].ts.diff(old_msgs[0].ts),
+                        same = new_msgs[0].msg.id == old_msgs[0].msg.id;
+
+                    if(d < 0) {
+                        final_msgs.push(new_msgs.shift()!);
+                    } else if(d >= 0) {
+                        final_msgs.push(old_msgs.shift()!);
+
+                        if(same) {
+                            // skip new message if same
+                            new_msgs.shift();
+                        }
+                    }
+                }
+
+                room.msgs = [...final_msgs, ...new_msgs, ...old_msgs];
+            });
+
+        }
         case Type.CLEANUP_TYPING: return produce(state, draft => {
             let now = Date.now();
 
