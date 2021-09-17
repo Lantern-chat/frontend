@@ -71,12 +71,13 @@ export const PartyList = React.memo(() => {
     if(user_object && !GATEWAY_PENDING.includes(gateway_status)) {
         party_list = parties.map(party => {
             let last = last_channel.get(party.id),
-                url = party.icon_id && `/avatars/${party.id}/${party.icon_id}`;
+                url = party.icon_id && `/avatars/${party.id}/${party.icon_id}`,
+                do_navigate = can_navigate && party.id != active_party;
 
             return (
                 <li key={party.id}
                     className={party.id == active_party ? 'selected' : ''}>
-                    <Link noAction href={room_url(party.id, last)} onNavigate={(e) => can_navigate && dispatch(activateParty(party.id, last))}>
+                    <Link noAction href={room_url(party.id, last)} onNavigate={(e) => do_navigate && dispatch(activateParty(party.id, last))}>
                         <Avatar rounded url={url} text={party.name.charAt(0)}
                             username={party.name} span={{ title: party.name }} backgroundColor={pickColorFromHash(party.id, is_light_theme)} />
                     </Link>
@@ -98,7 +99,7 @@ export const PartyList = React.memo(() => {
             <ol className="ln-party-list ln-scroll-y ln-scroll-y--invisible ln-scroll-fixed"
                 onScroll={on_scroll} onTouchStart={on_touchstart} onTouchEnd={on_touchend}>
                 <li id="user-home" className={'@me' == active_party ? 'selected' : ''}>
-                    <Link href="/channels/@me" onNavigate={e => can_navigate || e.preventDefault()} >
+                    <Link href="/channels/@me" onNavigate={e => ('@me' != active_party && can_navigate) || e.preventDefault()} >
                         <Avatar rounded text="@" username="Home" span={{ title: "Home" }} />
                     </Link>
                 </li>

@@ -46,7 +46,8 @@ export const ChannelList = React.memo(() => {
         </div> :
         rooms.map(room =>
             <li key={room.id} className={room.id == selected ? 'selected' : undefined}>
-                <Link className="ln-channel-list__channel" href={`/channels/${room.party_id || '@me'}/${room.id}`} onNavigate={on_navigate}>
+                <Link className="ln-channel-list__channel" href={`/channels/${room.party_id || '@me'}/${room.id}`}
+                    onNavigate={on_navigate} noAction={room.id == selected}>
                     <div className="ln-channel-list__icon">
                         {room.icon_id ?
                             <Avatar url={`/avatars/${room.id}/${room.icon_id}`} username={room.name} /> :
