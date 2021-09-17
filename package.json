@@ -49,6 +49,7 @@
     "remark-gfm": "^2.0.0",
     "remark-math": "^5.1.0",
     "reselect": "^4.0.0",
+    "resize-observer-polyfill": "^1.5.1",
     "webrtc-adapter": "^8.0.0",
     "zxcvbn": "^4.4.2"
   },
