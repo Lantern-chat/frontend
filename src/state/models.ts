@@ -145,7 +145,7 @@ export interface Friend {
 export interface Room {
     id: Snowflake,
     party_id?: Snowflake,
-    icon_id?: Snowflake,
+    avatar?: string,
     name: string,
     topic?: string,
     sort_order: number,
@@ -220,7 +220,7 @@ export interface Party extends PartialParty {
     security: number,
     roles?: Role[],
     emotes?: Emote[],
-    icon_id?: Snowflake,
+    avatar?: string,
     sort_order: number,
 }
 
@@ -253,7 +253,7 @@ export interface Overwrite {
 export interface Role {
     id: Snowflake,
     party_id: Snowflake,
-    icon_id?: Snowflake,
+    icon?: string,
     name: string | null,
     permissions: Permission,
     color: number | null,

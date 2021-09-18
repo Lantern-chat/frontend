@@ -13,7 +13,7 @@ import { Link } from "ui/components/history";
 import { Avatar } from "ui/components/common/avatar";
 import { Spinner } from "ui/components/common/spinners/spinner";
 
-import { room_url } from "config/urls";
+import { party_avatar_url, room_url } from "config/urls";
 
 let sorted_party_selector = createSelector((state: RootState) => state.party.parties, parties => {
     // this really just copies references into an array, so it should be fast
@@ -71,7 +71,7 @@ export const PartyList = React.memo(() => {
     if(user_object && !GATEWAY_PENDING.includes(gateway_status)) {
         party_list = parties.map(party => {
             let last = last_channel.get(party.id),
-                url = party.icon_id && `/avatars/${party.id}/${party.icon_id}`,
+                url = party.avatar && party_avatar_url(party.id, party.avatar),
                 do_navigate = can_navigate && party.id != active_party;
 
             return (

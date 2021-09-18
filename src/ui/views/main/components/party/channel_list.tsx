@@ -6,6 +6,7 @@ import { RootState, Type } from "state/root";
 import { activeParty, activeRoom } from "state/selectors/active";
 import { Room } from "state/models";
 import { Panel } from "state/reducers/window";
+import { room_avatar_url } from "config/urls";
 
 import { Bounce } from "ui/components/common/spinners/bounce";
 import { Glyphicon } from "ui/components/common/glyphicon";
@@ -49,8 +50,8 @@ export const ChannelList = React.memo(() => {
                 <Link className="ln-channel-list__channel" href={`/channels/${room.party_id || '@me'}/${room.id}`}
                     onNavigate={on_navigate} noAction={room.id == selected}>
                     <div className="ln-channel-list__icon">
-                        {room.icon_id ?
-                            <Avatar url={`/avatars/${room.id}/${room.icon_id}`} username={room.name} /> :
+                        {room.avatar ?
+                            <Avatar url={room_avatar_url(room.id, room.avatar)} username={room.name} /> :
                             <Glyphicon src={Hash} />}
                     </div>
                     <div className="ln-channel-list__name"><span>{room.name}</span></div>
