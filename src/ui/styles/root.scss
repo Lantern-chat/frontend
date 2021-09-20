@@ -95,6 +95,30 @@ a {
     --ln-font-family-opendyslexic: #{$ln-font-family-opendyslexic};
 }
 
+.ln-font {
+    &-sansserif {
+        font-family: $ln-font-family-sansserif;
+    }
+
+    &-serif {
+        font-family: $ln-font-family-serif;
+    }
+
+    &-cursive {
+        font-family: $ln-font-family-cursive;
+        font-size: 1.4em;
+    }
+
+    &-monospace {
+        font-family: $ln-font-family-monospace;
+    }
+
+    &-opendyslexic {
+        font-family: $ln-font-family-opendyslexic;
+        font-size: 0.8em;
+    }
+}
+
 .ln-theme-transition {
     *,
     *::before,

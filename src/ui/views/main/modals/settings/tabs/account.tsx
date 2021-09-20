@@ -2,7 +2,13 @@ import { useSelector } from "react-redux";
 import { RootState } from "state/root";
 
 export const AccountSettingsTab = () => {
-    let user = useSelector((state: RootState) => state.user.user!);
+    let user = useSelector((state: RootState) => state.user.user);
+
+    if(!user) {
+        return (
+            <div>Loading...</div>
+        )
+    }
 
     return (
         <>

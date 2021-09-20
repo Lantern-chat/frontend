@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import throttle from "lodash/throttle";
@@ -8,7 +8,7 @@ import { savePrefs } from "state/commands/prefs";
 import { themeSelector } from "state/selectors/theme";
 import { RootState } from "state/root";
 
-import { FormGroup, FormInput, FormLabel } from "ui/components/form";
+import { FormGroup, FormInput, FormLabel, FormSelect } from "ui/components/form";
 
 import { MIN_TEMP, MAX_TEMP } from "lib/theme";
 
@@ -17,9 +17,12 @@ export const AppearanceSettingsTab = () => {
     let dispatch = useDispatch();
 
     return (
-        <form className="ln-form">
+        <form className="ln-settings-form">
             <ThemeSetting onChange={(temp, light) => dispatch(savePrefs({ temp, light }))} />
 
+            <FontSelector which="chat" />
+
+            <FontSelector which="ui" />
         </form>
     );
 };
@@ -51,13 +54,13 @@ const ThemeSetting = React.memo(({ onChange }: IThemeSettingsProps) => {
 
     return (
         <>
-            <div>
+            <div className="ln-settings-theme">
                 <label htmlFor="light_theme">Light Theme</label>
                 <input type="checkbox" name="light_theme" checked={interactive.is_light}
                     onChange={(e => doSetTheme(interactive.temperature, e.currentTarget.checked))} />
             </div>
 
-            <div>
+            <div className="ln-settings-temperature">
                 <label htmlFor="temperature">Temperature</label>
                 <div className="ln-theme-temp-slider" title="Change Theme Temperature">
                     <input ref={input} type="range" className="ln-slider" name="temperature"
@@ -65,6 +68,63 @@ const ThemeSetting = React.memo(({ onChange }: IThemeSettingsProps) => {
                         value={interactive.temperature}
                         onInput={e => doSetTheme(parseFloat(e.currentTarget.value), interactive.is_light)}
                         onTouchMove={onTempTouchMove} onTouchStart={onTempTouchMove} />
+                </div>
+            </div>
+        </>
+    )
+});
+
+const Fonts = {
+    'sansserif': 'Sans Serif',
+    'serif': 'Serif',
+    'monospace': 'Monospace',
+    'cursive': 'Cursive',
+    'opendyslexic': 'Open Dyslexic',
+};
+
+interface IFontSelectorProps {
+    which: 'chat' | 'ui',
+}
+
+const FontSelector = React.memo(({ which }: IFontSelectorProps) => {
+    let name, label;
+
+    let [font, setFont] = useState('sansserif');
+
+    useEffect(() => {
+        if(font == 'opendyslexic') {
+            import("ui/fonts/opendyslexic");
+        }
+    }, [font]);
+
+    if(which == 'chat') {
+        name = "Chat Font";
+        label = 'chat_font';
+    } else {
+        name = "UI Font";
+        label = 'ui_font';
+    }
+
+    let font_class = "ln-font-" + font;
+
+    return (
+        <>
+            <div className="ln-settings-font">
+                <label htmlFor={label}>{name}</label>
+                <div className="ln-settings-font__wrapper">
+                    <div className="ln-settings-font__selector">
+                        <FormSelect name={label} value={font} onChange={(e) => setFont(e.currentTarget.value)}>
+                            {Object.keys(Fonts).map((font) => (
+                                <option value={font} key={font}
+                                    className={"ln-font-" + font}>
+                                    {Fonts[font]}
+                                </option>
+                            ))}
+                        </FormSelect>
+                    </div>
+                    <div className={"ln-settings-font__example " + font_class}>
+                        The wizard quickly jinxed the gnomes before they vaporized.
+                    </div>
                 </div>
             </div>
         </>

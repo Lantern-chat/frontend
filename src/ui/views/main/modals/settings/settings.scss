@@ -87,6 +87,13 @@
         }
     }
 
+    @media (max-width: $ln-min-channel-width) {
+        &__categories,
+        &__page {
+            width: 100%;
+        }
+    }
+
     &__categories {
         display: flex;
         flex-direction: column;
@@ -194,6 +201,10 @@
 
         > h3 {
             flex: 1;
+            font-size: min(2em, 6vw);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         > div {

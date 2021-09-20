@@ -1,1 +1,23 @@
 @import "lib/variables";
+
+.ln-settings-form {
+    color: $lnx-primary-text-color;
+    max-width: 80%;
+
+    @media (max-width: $ln-min-channel-width) {
+        max-width: 100%;
+    }
+
+    label {
+        display: inline-block;
+        margin-bottom: 0.2em;
+    }
+
+    > div:not(:first-child) {
+        margin-top: 1.8em;
+    }
+
+    .ln-form-select-wrapper {
+        height: auto;
+    }
+}

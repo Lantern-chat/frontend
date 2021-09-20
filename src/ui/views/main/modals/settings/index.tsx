@@ -19,6 +19,7 @@ let return_path_selector = createSelector(
 
 import "../modal.scss";
 import "./settings.scss";
+import "./tabs/_tab.scss";
 export const SettingsModal = React.memo(() => {
     let [closing, setClosing] = useState(false);
 
@@ -73,24 +74,45 @@ interface ISettingsTabsProps {
 
 import { logout } from "state/commands/session";
 
+const settings_selector = createStructuredSelector({
+    active_tab: (state: RootState) => state.history.parts[1],
+    use_mobile_view: (state: RootState) => state.window.use_mobile_view,
+});
+
 const SettingsTabs = React.memo(({ do_return }: ISettingsTabsProps) => {
-    let active_tab = useSelector((state: RootState) => state.history.parts[1]),
+    let { active_tab, use_mobile_view } = useSelector(settings_selector),
         tab = TABS.find(tab => tab.path == active_tab) || TABS[0],
         TabComponent = tab.comp,
         dispatch = useDispatch(),
         do_logout = () => dispatch(logout());
 
-    return (
-        <>
+    let needs_categories = true, needs_page = true;
+
+    if(use_mobile_view) {
+        needs_categories = !active_tab;
+        needs_page = !needs_categories;
+    }
+
+    let categories, page;
+
+    if(needs_categories) {
+        categories = (
             <div className="ln-settings__categories">
                 <h3>Settings</h3>
 
                 <ul>
-                    {TABS.map(({ name, path }) => (
-                        <li key={name} className={(tab.path == path ? 'selected' : '')}>
-                            <Link href={`/settings/${path}`} title={name}> <div><span>{name}</span></div> </Link>
-                        </li>
-                    ))}
+                    {TABS.map(({ name, path }) => {
+                        let selected = tab.path == path;
+                        if(use_mobile_view && !active_tab) {
+                            selected = false;
+                        }
+
+                        return (
+                            <li key={name} className={(selected ? 'selected' : '')}>
+                                <Link href={`/settings/${path}`} title={name}> <div><span>{name}</span></div> </Link>
+                            </li>
+                        );
+                    })}
 
                     <div className="spacer" />
 
@@ -106,9 +128,14 @@ const SettingsTabs = React.memo(({ do_return }: ISettingsTabsProps) => {
                     </li>
                 </ul>
             </div>
+        );
+    }
 
+    if(needs_page) {
+        page = (
             <div className="ln-settings__page">
                 <div className="ln-settings__header">
+                    {use_mobile_view && <div onClick={() => HISTORY.back()}><span>Settings</span></div>}
                     <h3>{tab.name}</h3>
                     <div onClick={do_return}><span>Return</span></div>
                 </div>
@@ -117,6 +144,21 @@ const SettingsTabs = React.memo(({ do_return }: ISettingsTabsProps) => {
                     <TabComponent />
                 </div>
             </div>
+        );
+    } else {
+        page = (
+            <div className="ln-settings__page">
+                <div className="ln-settings__content">
+                    Select any category to view settings
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <>
+            {categories}
+            {page}
         </>
     );
 });
