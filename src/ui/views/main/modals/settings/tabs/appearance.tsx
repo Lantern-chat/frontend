@@ -130,3 +130,11 @@ const FontSelector = React.memo(({ which }: IFontSelectorProps) => {
         </>
     )
 });
+
+const FontScale = React.memo(() => {
+    return (
+        <div>
+            <input type="slider"></input>
+        </div>
+    )
+})

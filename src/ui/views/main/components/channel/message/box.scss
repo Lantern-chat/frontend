@@ -2,10 +2,10 @@
 
 .ln-typing {
     height: 1em;
-    padding-left: 2em;
+    padding-left: 2rem;
 
     @media (max-width: $ln-min-channel-width) {
-        padding-left: 1em;
+        padding-left: 1rem;
 
         &__bottom {
             display: none;
@@ -55,8 +55,8 @@
 
     // TODO: Fix textarea background color bleeding over border-radius in mobile-view and showing the sidebar
     @media (min-width: $ln-min-channel-width) {
-        border-radius: 0.5em;
-        margin: 0 1em 0em 1em;
+        border-radius: 0.5rem;
+        margin: 0 1rem 0em 1rem;
     }
 
     &--disabled * {

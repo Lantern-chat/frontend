@@ -9,14 +9,14 @@
     flex-direction: column;
     flex-wrap: nowrap;
     margin: 0 auto;
-    padding: 0 0.5em;
+    padding: 0 0.5rem;
 
     .ln-media {
         width: auto;
         height: auto;
 
-        //max-width: calc(90vw - 4em);
-        max-height: calc(90vh - 5em);
+        //max-width: calc(90vw - 4rem);
+        max-height: calc(90vh - 5rem);
 
         display: block;
         margin: 0 auto;
@@ -31,17 +31,17 @@
 
 .ln-media {
     .ln-multi-upload-2 & {
-        //max-width: calc(45vw - 4em);
-        max-height: calc(45vh - 5em);
+        //max-width: calc(45vw - 4rem);
+        max-height: calc(45vh - 5rem);
     }
 
     .ln-multi-upload-3 & {
-        //max-width: calc(33vw - 4em);
-        max-height: calc(33vh - 5em);
+        //max-width: calc(33vw - 4rem);
+        max-height: calc(33vh - 5rem);
     }
 
     .ln-multi-upload-4 & {
-        //max-width: calc(20vw - 4em);
-        max-height: calc(20vh - 5em);
+        //max-width: calc(20vw - 4rem);
+        max-height: calc(20vh - 5rem);
     }
 }

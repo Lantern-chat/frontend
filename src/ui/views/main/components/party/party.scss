@@ -76,14 +76,14 @@
 
             &--expanded-right {
                 transform: translateX(-71vw);
-                border-top-left-radius: 1em;
-                border-bottom-left-radius: 1em;
+                border-top-left-radius: 1rem;
+                border-bottom-left-radius: 1rem;
             }
 
             &--expanded-left {
                 transform: translateX(87vw);
-                border-top-right-radius: 1em;
-                border-bottom-right-radius: 1em;
+                border-top-right-radius: 1rem;
+                border-bottom-right-radius: 1rem;
             }
         }
     }

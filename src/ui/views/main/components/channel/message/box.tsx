@@ -274,7 +274,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
                     <TextareaAutosize disabled={disabled}
                         onBlur={() => setTimeout(() => setFocus(false), 0)} // don't run on same frame?
                         onFocus={() => setFocus(true)}
-                        cacheMeasurements={true}
+                        cacheMeasurements={false}
                         ref={ref}
                         placeholder="Message..."
                         rows={1} maxRows={use_mobile_view ? 5 : 20}

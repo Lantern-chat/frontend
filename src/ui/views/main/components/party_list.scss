@@ -126,6 +126,7 @@
     @include scrollbar($lnx-secondary-text-color, $lnx-secondary-surface-color);
 
     &__wrapper {
+        font-size: 1rem;
         width: 4.2em;
         display: flex;
         flex-direction: column;
