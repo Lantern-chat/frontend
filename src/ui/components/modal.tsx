@@ -17,13 +17,8 @@ export class Modal extends React.Component<ModalProps> {
         this.e = document.createElement('div');
     }
 
-    componentDidMount() {
-        MODAL_ROOT.appendChild(this.e);
-    }
-
-    componentWillUnmount() {
-        MODAL_ROOT.removeChild(this.e);
-    }
+    componentDidMount() { MODAL_ROOT.appendChild(this.e); }
+    componentWillUnmount() { MODAL_ROOT.removeChild(this.e); }
 
     render() {
         return createPortal(this.props.children, this.e);
