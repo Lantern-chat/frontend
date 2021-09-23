@@ -2,7 +2,7 @@ import React from "react";
 
 import classnames from "classnames";
 
-import { Markdown, MarkdownProps } from "ui/components/common/markdown";
+import { Markdown } from "ui/components/common/markdown";
 
 import { Message as MessageModel } from "state/models";
 
