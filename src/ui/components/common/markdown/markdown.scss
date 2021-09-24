@@ -8,6 +8,8 @@
 }
 
 .ln-markdown {
+    content-visibility: auto;
+
     span.spoiler {
         position: relative;
         text-decoration: inherit;
@@ -33,7 +35,8 @@
         }
     }
 
-    p {
+    p,
+    div.p {
         word-wrap: break-word;
         white-space: break-spaces;
     }

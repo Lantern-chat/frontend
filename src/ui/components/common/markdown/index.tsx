@@ -12,8 +12,6 @@ export const Markdown = React.memo(({ body }: { body: string }) => {
         .replace(/^>{5,}/g, '>>>>>'); // limit blockquote depth to 5
 
     return (
-        <div className="ln-markdown">
-            <ReactMarkdown source={body} />
-        </div>
+        <ReactMarkdown source={body} className="ln-markdown" />
     );
 });

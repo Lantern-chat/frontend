@@ -1225,9 +1225,12 @@ export var defaultRules: DefaultRules = {
         parse: parseCaptureInline,
         react: function(node, output, state) {
             return reactElement(
-                'p',
+                'div',
                 state.key,
-                { children: output(node.content, state) }
+                {
+                    className: 'p',
+                    children: output(node.content, state)
+                }
             );
         }
     },
@@ -1337,7 +1340,7 @@ export var defaultRules: DefaultRules = {
         react: (node, output, state) => {
             // Unescaped dollar signs render correctly, but result in
             // untranslatable text after the i18n python linter flags it
-            return <>$</>;
+            return "$" as any;
         },
     },
     link: {
