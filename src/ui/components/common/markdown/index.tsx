@@ -15,3 +15,7 @@ export const Markdown = React.memo(({ body }: { body: string }) => {
         <ReactMarkdown source={body} className="ln-markdown" />
     );
 });
+
+if(__DEV__) {
+    Markdown.displayName = "MarkdownWrapper";
+}

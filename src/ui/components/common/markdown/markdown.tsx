@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Mention } from "./components/mention";
+import { Spoiler } from "./components/spoiler";
 import { Code, Math } from "./lazy";
 
 export interface Capture extends Array<string> {
@@ -178,6 +180,7 @@ export interface DefaultRules extends DefaultRulesIndexer {
     readonly image: DefaultInOutRule,
     readonly reflink: DefaultInRule,
     readonly refimage: DefaultInRule,
+    readonly mention: DefaultInRule,
     readonly em: DefaultInOutRule,
     readonly strong: DefaultInOutRule,
     readonly u: DefaultInOutRule,
@@ -706,8 +709,7 @@ var TABLES = (function() {
  * This can also match block-math, which is math alone in a paragraph.
  */
 var mathMatcher = (source: string, state: State, isBlock: boolean) => {
-    var length = source.length;
-    var index = 0;
+    var length = source.length, index = 0;
 
     // When looking for blocks, skip over leading spaces
     if(isBlock) {
@@ -724,9 +726,7 @@ var mathMatcher = (source: string, state: State, isBlock: boolean) => {
         return null;
     }
 
-    index++;
-    var startIndex = index;
-    var braceLevel = 0;
+    var startIndex = ++index, braceLevel = 0;
 
     // Loop through the source, looking for a closing '$'
     // closing '$'s only count if they are not escaped with
@@ -764,7 +764,7 @@ var mathMatcher = (source: string, state: State, isBlock: boolean) => {
                     source.substring(startIndex, index),
                 ];
             }
-            return null;
+            break;
         } else if(character === "{") {
             braceLevel++;
         } else if(character === "}") {
@@ -775,7 +775,7 @@ var mathMatcher = (source: string, state: State, isBlock: boolean) => {
             // math. I'm preserving it for now because content
             // creators might have questions with single '$'s
             // in paragraphs...
-            return null;
+            break;
         }
 
         index++;
@@ -825,11 +825,10 @@ function parseRef(capture: Capture, state: State, refNode: RefNode): RefNode {
 
 var currOrder = 0;
 
-export var defaultRules: DefaultRules = {
+export const defaultRules: DefaultRules = {
     Array: {
         react: function(arr, output, state) {
-            var oldKey = state.key;
-            var result: Array<ReactElements> = [];
+            var oldKey = state.key, result: Array<ReactElements> = [];
 
             // map output over the ast, except group any text
             // nodes together into a single string output.
@@ -856,7 +855,7 @@ export var defaultRules: DefaultRules = {
     },
     heading: {
         order: currOrder++,
-        match: blockRegex(/^ *(#{1,6})([^\n]+?)#* *(?:\n *)+\n/),
+        match: blockRegex(/^(#{1,6}) +([^\n]+?)#* *(?:\n *)+\n/),
         parse: function(capture, parse, state) {
             return {
                 level: capture[1].length,
@@ -905,7 +904,10 @@ export var defaultRules: DefaultRules = {
     },
     codeBlock: {
         order: currOrder++,
-        match: blockRegex(/^(?:    [^\n]+\n*)+(?:\n *)+\n/),
+        //match: blockRegex(/^(?:    [^\n]+\n*)+(?:\n *)+\n/),
+        match: function(source) {
+            return null;
+        },
         parse: function(capture, parse, state) {
             var content = capture[0]
                 .replace(/^    /gm, '')
@@ -938,12 +940,13 @@ export var defaultRules: DefaultRules = {
         match: blockRegex(/^ *(`{3,}|~{3,}) *(?:(\S+) *)?\n([\s\S]+?)\n?\1 *(?:\n *)+\n/),
         parse: function(capture, parse, state) {
             return {
-                type: "codeBlock",
                 lang: capture[2] || undefined,
                 content: capture[3]
             };
         },
-        react: null,
+        react: function(node, output, state) {
+            return <Code key={state.key} src={node.content} language={node.lang} />
+        }
     },
     blockQuote: {
         order: currOrder++,
@@ -996,8 +999,6 @@ export var defaultRules: DefaultRules = {
 
             // We know this will match here, because of how the regexes are
             // defined
-            /*:: items = ((items : any) : Array<string>) */
-
             var lastItemWasAParagraph = false;
             var itemContent = items.map(function(item: string, i: number) {
                 // We need to see how far indented this item is:
@@ -1013,9 +1014,6 @@ export var defaultRules: DefaultRules = {
                     .replace(spaceRegex, '')
                     // remove the bullet:
                     .replace(LIST_ITEM_PREFIX_R, '');
-
-                // I'm not sur4 why this is necessary again?
-                /*:: items = ((items : any) : Array<string>) */
 
                 // Handling "loose" lists, like:
                 //
@@ -1349,12 +1347,11 @@ export var defaultRules: DefaultRules = {
             "^\\[(" + LINK_INSIDE + ")\\]\\(" + LINK_HREF_AND_TITLE + "\\)"
         )),
         parse: function(capture, parse, state) {
-            var link = {
+            return {
                 content: parse(capture[1], state),
                 target: unescapeUrl(capture[2]),
                 title: capture[3]
             };
-            return link;
         },
         react: function(node, output, state) {
             return reactElement(
@@ -1375,12 +1372,11 @@ export var defaultRules: DefaultRules = {
             "^!\\[(" + LINK_INSIDE + ")\\]\\(" + LINK_HREF_AND_TITLE + "\\)"
         )),
         parse: function(capture, parse, state) {
-            var image = {
+            return {
                 alt: capture[1],
                 target: unescapeUrl(capture[2]),
                 title: capture[3]
             };
-            return image;
         },
         react: function(node, output, state) {
             return reactElement(
@@ -1425,6 +1421,19 @@ export var defaultRules: DefaultRules = {
             });
         },
         react: null
+    },
+    mention: {
+        order: currOrder,
+        match: inlineRegex(/<([@#])(\d+)>/),
+        parse: function(capture, parse, state) {
+            return {
+                prefix: capture[1],
+                id: capture[2],
+            };
+        },
+        react: function(node, output, state) {
+            return <Mention prefix={node.prefix} id={node.id} key={state.key} />;
+        },
     },
     em: {
         order: currOrder /* same as strong/u */,
@@ -1586,16 +1595,6 @@ export var defaultRules: DefaultRules = {
         }
     }
 };
-
-const Spoiler = React.memo(({ children }: { children: React.ReactNode }) => {
-    let [visible, setVisible] = useState(false);
-
-    return (
-        <span onClick={() => setVisible(true)} className={"spoiler" + (visible ? ' visible' : '')}>
-            {children}
-        </span>
-    )
-})
 
 export function outputFor(
     rules: OutputRules<'react'>,

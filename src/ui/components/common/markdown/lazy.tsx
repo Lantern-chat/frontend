@@ -1,9 +1,9 @@
 import React from "react";
-import { ICodeProps } from "./code";
-import { IMathProps } from "./math";
+import { ICodeProps } from "./components/code";
+import { IMathProps } from "./components/math";
 
-const LazyMath = React.lazy(() => import("./math"));
-const LazyCode = React.lazy(() => import("./code"));
+const LazyMath = React.lazy(() => import("./components/math"));
+const LazyCode = React.lazy(() => import("./components/code"));
 
 const MathFallback = React.memo((props: IMathProps) => {
     return <pre>{props.src}</pre>
