@@ -2,6 +2,7 @@ import React, { AnchorHTMLAttributes, forwardRef, useContext, createContext, Con
 import { History, State, Location } from 'history';
 
 import { IHistoryState } from "state/reducers/history";
+import { HISTORY } from 'state/global';
 export { recomputeHistoryContext } from "state/reducers/history";
 
 export interface IHistoryContext {
@@ -33,6 +34,10 @@ function callEventHandler<T extends React.SyntheticEvent>(event: T, handler?: (e
             throw ex;
         }
     }
+}
+
+function isSameHistory(a: Location) {
+    return a.pathname == HISTORY.location.pathname;
 }
 
 function noop() { }

@@ -74,8 +74,10 @@
         flex-direction: row;
         flex-wrap: nowrap;
         padding: 0.25rem 0;
+        position: relative;
 
-        &:hover {
+        &:hover,
+        &.highlighted {
             background-color: rgba(0, 0, 0, 0.1);
 
             .ln-light-theme & {
@@ -86,6 +88,16 @@
                 color: $lnx-secondary-text-color;
             }
         }
+    }
+
+    &__cm {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 
     //&__message {

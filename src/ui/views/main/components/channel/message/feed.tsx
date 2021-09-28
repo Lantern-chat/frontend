@@ -9,6 +9,7 @@ import dayjs from "lib/time";
 import { Attachment, Snowflake, Message as MessageModel, Room } from "state/models";
 import { RootState, Type } from "state/root";
 import { IChatState, IWindowState } from "state/reducers";
+import { loadMessages, SearchMode } from "state/commands";
 import { IMessageState } from "state/reducers/chat";
 import { Panel } from "state/reducers/window";
 
@@ -16,6 +17,7 @@ import { message_attachment_url, user_avatar_url } from "config/urls";
 
 import { pickColorFromHash } from "lib/palette";
 
+import { useTitle } from "ui/hooks/useTitle";
 import { Avatar } from "ui/components/common/avatar";
 import { Message } from "./msg";
 import { Timeline, ITimelineProps } from "./timeline";
@@ -24,6 +26,13 @@ import throttle from 'lodash/throttle';
 
 export interface IMessageListProps {
     channel: Snowflake
+}
+
+interface GroupMessageProps {
+    msg: IMessageState,
+    is_light_theme: boolean,
+    nickname: string,
+    first: boolean,
 }
 
 interface MessageGroupProps {
@@ -60,6 +69,85 @@ const Attachment = React.memo(({ msg, attachment }: { msg: MessageModel, attachm
     )
 });
 
+const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: GroupMessageProps) => {
+    let message = <Message editing={false} msg={msg.msg} />;
+
+    let side, ts = msg.ts.format("dddd, MMMM DD, h:mm A");
+    if(first) {
+        let title = (
+            <div className="ln-msg__title">
+                <span className="ln-msg__username">{nickname}</span>
+                <span className="ln-msg__ts" title={ts}>{msg.ts.calendar()}</span>
+            </div>
+        );
+
+        message = (
+            <div className="ln-msg__message">
+                {title}
+                {message}
+            </div>
+        );
+
+        let avatar_url, author = msg.msg.author;
+        if(author.avatar) {
+            avatar_url = user_avatar_url(author.id, author.avatar);
+        }
+
+        side = (
+            <Avatar username={nickname} text={nickname.charAt(0)} url={avatar_url} backgroundColor={pickColorFromHash(msg.msg.author.id, is_light_theme)} />
+        );
+    } else {
+        side = (
+            <div className="ln-msg__sidets" title={ts}>{msg.ts.format('h:mm A')}</div>
+        );
+    }
+
+    let attachments, a = msg.msg.attachments;
+    if(a && a.length) {
+        attachments = a.map(attachment => <Attachment key={attachment.id} msg={msg.msg} attachment={attachment} />)
+    }
+
+    let [pos, setPos] = useState<{ top: number, left: number } | null>(null);
+
+    let cm;
+
+    if(pos) {
+        cm = (
+            <div className="ln-msg__cm">
+                <PositionedModal top={pos.top} left={pos.left}>
+                    <MsgContextMenu msg={msg} />
+                </PositionedModal>
+            </div>
+        );
+    }
+
+    let on_cm = useCallback((e: React.MouseEvent) => {
+        setPos({ top: e.clientY, left: e.clientX });
+        e.preventDefault();
+    }, []);
+
+    //let on_ml = () => { };
+    let on_ml = useCallback(() => setPos(null), []);
+
+    let wrapper_class = "ln-msg__wrapper";
+    if(cm) {
+        wrapper_class += " highlighted";
+    }
+
+    return (
+        <div key={msg.msg.id} onContextMenu={on_cm} onMouseLeave={on_ml} onClick={on_ml}>
+            <div className={wrapper_class}>
+                <div className="ln-msg__side">
+                    {side}
+                </div>
+                {message}
+                {cm}
+            </div>
+            {attachments}
+        </div>
+    );
+});
+
 // NOTE: Because `group` is recomputed below as part of `groups`, this will always render.
 const MessageGroup = ({ group, is_light_theme }: MessageGroupProps) => {
     let { msg } = group[0];
@@ -67,56 +155,7 @@ const MessageGroup = ({ group, is_light_theme }: MessageGroupProps) => {
 
     return (
         <li className="ln-msg-list__group">
-            {group.map((msg, i) => {
-                let message = <Message editing={false} msg={msg.msg} />;
-
-                let side, ts = msg.ts.format("dddd, MMMM DD, h:mm A");
-                if(i == 0) {
-                    let title = (
-                        <div className="ln-msg__title">
-                            <span className="ln-msg__username">{nickname}</span>
-                            <span className="ln-msg__ts" title={ts}>{msg.ts.calendar()}</span>
-                        </div>
-                    );
-
-                    message = (
-                        <div className="ln-msg__message">
-                            {title}
-                            {message}
-                        </div>
-                    );
-
-                    let avatar_url, author = msg.msg.author;
-                    if(author.avatar) {
-                        avatar_url = user_avatar_url(author.id, author.avatar);
-                    }
-
-                    side = (
-                        <Avatar username={nickname} text={nickname.charAt(0)} url={avatar_url} backgroundColor={pickColorFromHash(msg.msg.author.id, is_light_theme)} />
-                    );
-                } else {
-                    side = (
-                        <div className="ln-msg__sidets" title={ts}>{msg.ts.format('h:mm A')}</div>
-                    );
-                }
-
-                let attachments, a = msg.msg.attachments;
-                if(a && a.length) {
-                    attachments = a.map(attachment => <Attachment key={attachment.id} msg={msg.msg} attachment={attachment} />)
-                }
-
-                return (
-                    <div key={msg.msg.id}>
-                        <div className="ln-msg__wrapper">
-                            <div className="ln-msg__side">
-                                {side}
-                            </div>
-                            {message}
-                        </div>
-                        {attachments}
-                    </div>
-                );
-            })}
+            {group.map((msg, i) => <GroupMessage msg={msg} nickname={nickname} is_light_theme={is_light_theme} first={i == 0} />)}
         </li>
     );
 };
@@ -129,12 +168,16 @@ const feed_selector = createStructuredSelector({
 
 
 import "./feed.scss";
-import { loadMessages, SearchMode } from "state/commands";
+import { AnchoredModal } from "ui/components/anchored_modal";
+import { PositionedModal } from "ui/components/positioned_modal";
+import { MsgContextMenu } from "../../menus/msg_context";
 export const MessageFeed = React.memo((props: IMessageListProps) => {
     let dispatch = useDispatch();
 
     let room = useSelector((state: RootState) => state.chat.rooms.get(props.channel));
     let { is_light_theme, use_mobile_view, show_panel } = useSelector(feed_selector);
+
+    //useTitle(room?.room.name);
 
     let groups: Array<IMessageState[]> = useMemo(() => {
         if(room == null) return [];
