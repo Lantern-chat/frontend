@@ -9,15 +9,9 @@ export interface IAnchoredModalProps {
 }
 
 export const AnchoredModal = React.memo((props: IAnchoredModalProps) => {
-    let anchor_ref = useRef<HTMLSpanElement>(null);
-
-    let forceRender = useForceRender();
-
-    let modal, rect = props.show && anchor_ref.current?.getBoundingClientRect();
-
-
-    useEffect(() => forceRender(), []);
-
+    let anchor_ref = useRef<HTMLSpanElement>(null),
+        rect = props.show && anchor_ref.current?.getBoundingClientRect(),
+        modal;
 
     if(props.show && rect) {
         let { top, left, bottom } = rect;

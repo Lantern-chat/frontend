@@ -21,6 +21,11 @@ import { useTitle } from "ui/hooks/useTitle";
 import { Avatar } from "ui/components/common/avatar";
 import { Message } from "./msg";
 import { Timeline, ITimelineProps } from "./timeline";
+import { AnchoredModal } from "ui/components/anchored_modal";
+import { PositionedModal } from "ui/components/positioned_modal";
+import { MsgContextMenu } from "../../menus/msg_context";
+
+import { MainContext } from "ui/views/main";
 
 import throttle from 'lodash/throttle';
 
@@ -121,13 +126,21 @@ const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: Group
         );
     }
 
+    let main = useContext(MainContext);
+
     let on_cm = useCallback((e: React.MouseEvent) => {
+        main.clickAll(e);
         setPos({ top: e.clientY, left: e.clientX });
         e.preventDefault();
     }, []);
 
-    //let on_ml = () => { };
-    let on_ml = useCallback(() => setPos(null), []);
+    useEffect(() => {
+        if(!pos) return;
+
+        let listener = () => setPos(null);
+        main.addOnClick(listener);
+        return () => main.removeOnClick(listener);
+    }, [main, pos]);
 
     let wrapper_class = "ln-msg__wrapper";
     if(cm) {
@@ -135,7 +148,7 @@ const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: Group
     }
 
     return (
-        <div key={msg.msg.id} onContextMenu={on_cm} onMouseLeave={on_ml} onClick={on_ml}>
+        <div key={msg.msg.id} onContextMenu={on_cm}>
             <div className={wrapper_class}>
                 <div className="ln-msg__side">
                     {side}
@@ -155,7 +168,7 @@ const MessageGroup = ({ group, is_light_theme }: MessageGroupProps) => {
 
     return (
         <li className="ln-msg-list__group">
-            {group.map((msg, i) => <GroupMessage msg={msg} nickname={nickname} is_light_theme={is_light_theme} first={i == 0} />)}
+            {group.map((msg, i) => <GroupMessage key={msg.msg.id} msg={msg} nickname={nickname} is_light_theme={is_light_theme} first={i == 0} />)}
         </li>
     );
 };
@@ -168,9 +181,6 @@ const feed_selector = createStructuredSelector({
 
 
 import "./feed.scss";
-import { AnchoredModal } from "ui/components/anchored_modal";
-import { PositionedModal } from "ui/components/positioned_modal";
-import { MsgContextMenu } from "../../menus/msg_context";
 export const MessageFeed = React.memo((props: IMessageListProps) => {
     let dispatch = useDispatch();
 

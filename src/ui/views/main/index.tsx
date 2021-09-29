@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { createContext, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import throttle from 'lodash/throttle';
@@ -51,18 +51,28 @@ if(!GLOBAL.gateway) {
 
 import { Panel } from "state/reducers/window";
 import { setPresence } from "state/commands/presence";
-
+import { GatewayCommand } from "worker/gateway/cmd";
 import { PartyList } from "./components/party_list";
 import { Party } from "./components/party/party";
 import MainModals from "./modals";
 
+export type OnClickHandler = (e: React.MouseEvent) => void;
+
+export interface IMainContext {
+    addOnClick: (listener: OnClickHandler) => void,
+    removeOnClick: (listener: OnClickHandler) => void,
+    clickAll: (e: React.MouseEvent) => void,
+}
+
+export const MainContext = createContext<IMainContext>({ addOnClick: () => { }, removeOnClick: () => { }, clickAll: () => { } });
+
 import "./main.scss";
-import { GatewayCommand } from "worker/gateway/cmd";
 export const MainView: React.FunctionComponent = React.memo(() => {
     //let { parts } = useSelector(selectPath);
 
     let dispatch = useDispatch();
 
+    // User presence idle timer
     useEffect(() => {
         let w = window,
             timer_function = () => dispatch(setPresence(true)), // sets 'away' to true
@@ -84,13 +94,46 @@ export const MainView: React.FunctionComponent = React.memo(() => {
 
     let is_right_view = useSelector((state: RootState) => state.window.use_mobile_view && state.window.show_panel == Panel.RightUserList);
 
+    let handlers = useMemo(() => {
+        var listeners: OnClickHandler[] = [];
+        let on_click = (e: React.MouseEvent) => {
+            for(let listener of listeners) {
+                listener(e);
+            }
+        };
+
+        let addOnClick = (listener: OnClickHandler) => {
+            listeners.push(listener);
+        };
+
+        let removeOnClick = (listener: OnClickHandler) => {
+            listeners = listeners.filter(l => l != listener);
+        };
+
+        let clickAll = (e: React.MouseEvent) => {
+            on_click(e);
+        };
+
+        return {
+            on_click,
+            on_cm: (e: React.MouseEvent) => e.preventDefault(),
+            value: {
+                addOnClick,
+                removeOnClick,
+                clickAll,
+            }
+        }
+    }, []);
+
     return (
-        <div className="ln-main">
-            {is_right_view ? null : <PartyList />}
+        <div className="ln-main" onClick={handlers.on_click} onContextMenu={handlers.on_cm}>
+            <MainContext.Provider value={handlers.value}>
+                {is_right_view ? null : <PartyList />}
 
-            <Party />
+                <Party />
 
-            <MainModals />
+                <MainModals />
+            </MainContext.Provider>
         </div>
     );
 });
