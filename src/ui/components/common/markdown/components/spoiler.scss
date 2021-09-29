@@ -1,9 +1,13 @@
+@import "lib/variables";
+
 .ln-markdown {
     span.spoiler {
         position: relative;
         text-decoration: inherit;
         color: inherit;
         cursor: pointer;
+        display: inline-block;
+        white-space: pre;
 
         &::after {
             content: "";
@@ -16,6 +20,7 @@
         }
 
         &.visible {
+            background-color: rgba(128, 128, 128, 0.3);
             cursor: inherit;
 
             &::after {
