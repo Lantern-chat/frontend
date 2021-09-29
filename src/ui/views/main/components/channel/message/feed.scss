@@ -117,6 +117,14 @@
         &:hover {
             text-decoration: underline;
         }
+
+        position: relative;
+
+        .ln-context-anchor {
+            position: absolute;
+            bottom: 0;
+            top: 0;
+        }
     }
 
     &__ts,

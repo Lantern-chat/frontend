@@ -1,13 +1,14 @@
 import produce from "immer";
 import { Action, Type } from "state/actions";
 import { PartyMember, Snowflake, User, UserPresence } from "state/models";
+import { genCachedUserKey } from "state/selectors/selectCachedUser";
 import { GatewayEventCode } from "worker/gateway/event";
 import { GatewayMessageDiscriminator } from "worker/gateway/msg";
 
 export interface CachedUserPresence {
     user: User,
     party?: Snowflake,
-    presence: UserPresence,
+    presence?: UserPresence,
 }
 
 export interface CachedMember {
@@ -27,7 +28,26 @@ const DEFAULT_STATE: ICacheState = {
 export function cacheReducer(state: ICacheState | null | undefined, action: Action): ICacheState {
     state = state || DEFAULT_STATE;
 
+    console.log("HERE CACHE");
+
     switch(action.type) {
+        case Type.MEMBERS_LOADED: return produce(state, draft => {
+            let { members, party_id } = action;
+
+            for(let member of members) {
+                let user = member.user;
+                if(!user) continue;
+
+                console.log("SETTING ", user.id, party_id);
+
+                draft.users.set(genCachedUserKey(user.id, party_id), {
+                    user,
+                    party: party_id,
+                    presence: member.presence
+                });
+            }
+        });
+
         case Type.GATEWAY_EVENT: {
             let msg = action.payload;
             switch(msg.t) {
@@ -39,7 +59,7 @@ export function cacheReducer(state: ICacheState | null | undefined, action: Acti
                             let payload = event.p, user = payload.user;
 
                             return produce(state, draft => {
-                                draft.users.set(payload.party ? (user.id + payload.party) : user.id, payload);
+                                draft.users.set(genCachedUserKey(user.id, payload.party), payload);
                             });
                         }
                         //case GatewayEventCode.MemberUpdate: {

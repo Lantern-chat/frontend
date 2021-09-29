@@ -1,0 +1,9 @@
+@import "lib/variables";
+
+.ln-user-card {
+    background-color: $lnx-primary-surface-color;
+    border: 1px solid $lnx-secondary-surface-color;
+    box-shadow: 0.25rem 0.25rem 0.5rem $lnx-primary-surface-color;
+
+    padding: 0.9em 0.8em;
+}

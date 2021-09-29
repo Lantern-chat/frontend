@@ -6,7 +6,7 @@ import { useResizeDetector } from "react-resize-detector/build/withPolyfill";
 
 import dayjs from "lib/time";
 
-import { Attachment, Snowflake, Message as MessageModel, Room } from "state/models";
+import { Attachment, Snowflake, Message as MessageModel, Room, User } from "state/models";
 import { RootState, Type } from "state/root";
 import { IChatState, IWindowState } from "state/reducers";
 import { loadMessages, SearchMode } from "state/commands";
@@ -24,6 +24,7 @@ import { Timeline, ITimelineProps } from "./timeline";
 import { AnchoredModal } from "ui/components/anchored_modal";
 import { PositionedModal } from "ui/components/positioned_modal";
 import { MsgContextMenu } from "../../menus/msg_context";
+import { UserCard } from "../../menus/user_card";
 
 import { MainContext } from "ui/views/main";
 
@@ -74,6 +75,22 @@ const Attachment = React.memo(({ msg, attachment }: { msg: MessageModel, attachm
     )
 });
 
+interface IUserNameProps {
+    name: string,
+    user: User,
+}
+
+const UserName = React.memo((props: IUserNameProps) => {
+    return (
+        <span className="ln-msg__username">
+            <AnchoredModal>
+                <UserCard user={props.user} />
+            </AnchoredModal>
+            {props.name}
+        </span>
+    )
+})
+
 const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: GroupMessageProps) => {
     let message = <Message editing={false} msg={msg.msg} />;
 
@@ -81,7 +98,8 @@ const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: Group
     if(first) {
         let title = (
             <div className="ln-msg__title">
-                <span className="ln-msg__username">{nickname}</span>
+                <UserName name={nickname} user={msg.msg.author} />
+
                 <span className="ln-msg__ts" title={ts}>{msg.ts.calendar()}</span>
             </div>
         );
