@@ -1,21 +1,26 @@
 import React from "react";
 
 import { ReactMarkdown } from "./markdown";
+import { ReactMarkdownExtra } from "./extra";
+
+export interface IMarkdownProps {
+    body: string,
+}
 
 import "./markdown.scss";
-export const Markdown = React.memo(({ body }: { body: string }) => {
-    // TODO: Escape backslashes before underscores, but also escape the underscore
-    // TODO: Only apply these tweaks outside of code blocks
-    body = body
-        .replace(/^>(?=[^\s>])/g, '\\>') // change emotes like >.< to \>.< automatically
-        .replace(/^>\s(.*)\n>/g, '>$1\n>\n>') // always split paragraphs in blockquotes
-        .replace(/^>{5,}/g, '>>>>>'); // limit blockquote depth to 5
-
+export const Markdown = React.memo(({ body }: IMarkdownProps) => {
     return (
-        <ReactMarkdown source={body} className="ln-markdown" />
+        <ReactMarkdownExtra source={body} className="ln-markdown ln-markdown-full" />
+    );
+});
+
+export const SimpleMarkdown = React.memo(({ body }: IMarkdownProps) => {
+    return (
+        <ReactMarkdown source={body} className="ln-markdown ln-markdown-full" />
     );
 });
 
 if(__DEV__) {
     Markdown.displayName = "MarkdownWrapper";
+    SimpleMarkdown.displayName = "SimpleMarkdownWrapper";
 }

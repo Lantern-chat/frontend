@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Mention } from "./components/mention";
+
 import { Spoiler } from "./components/spoiler";
 import { Code, Math } from "./lazy";
 
@@ -145,6 +145,7 @@ export interface TextReactOutputRule extends ReactOutputRule {
 
 export interface ReactMarkdownProps {
     source: string,
+    inline?: boolean,
     [prop: string]: any,
 }
 
@@ -180,7 +181,6 @@ export interface DefaultRules extends DefaultRulesIndexer {
     readonly image: DefaultInOutRule,
     readonly reflink: DefaultInRule,
     readonly refimage: DefaultInRule,
-    readonly mention: DefaultInRule,
     readonly em: DefaultInOutRule,
     readonly strong: DefaultInOutRule,
     readonly u: DefaultInOutRule,
@@ -950,8 +950,10 @@ export const defaultRules: DefaultRules = {
     },
     blockQuote: {
         order: currOrder++,
-        match: blockRegex(/^( *>[^\n]+(\n[^\n]+)*\n*)+\n{2,}/),
+        // NOTE: Modified from original to take up to 5 levels and require a space after >
+        match: blockRegex(/^( *>{1,5} +[^\n]+(\n[^\n]+)*\n*)+\n{2,}/),
         parse: function(capture, parse, state) {
+            // trim first blockquote >
             var content = capture[0].replace(/^ *> ?/gm, '');
             return {
                 content: parse(content, state)
@@ -1422,19 +1424,7 @@ export const defaultRules: DefaultRules = {
         },
         react: null
     },
-    mention: {
-        order: currOrder,
-        match: inlineRegex(/<([@#])(\d+)>/),
-        parse: function(capture, parse, state) {
-            return {
-                prefix: capture[1],
-                id: capture[2],
-            };
-        },
-        react: function(node, output, state) {
-            return <Mention prefix={node.prefix} id={node.id} key={state.key} />;
-        },
-    },
+
     em: {
         order: currOrder /* same as strong/u */,
         match: inlineRegex(
@@ -1622,8 +1612,10 @@ export function outputFor(
     return outerOutput;
 };
 
-export var defaultRawParse = parserFor(defaultRules);
+export const defaultRawParse = parserFor(defaultRules);
+export const defaultReactOutput: ReactOutput = outputFor(defaultRules as any);
 
+/*
 export function defaultBlockParse(source: string, state?: State): Array<SingleASTNode> {
     state = state || {};
     state.inline = false;
@@ -1642,12 +1634,7 @@ export function defaultImplicitParse(source: string, state?: State): Array<Singl
     state.inline = !isBlock;
     return defaultRawParse(source, state);
 }
-
-export var defaultReactOutput: ReactOutput = outputFor(defaultRules as any);
-
-export function markdownToReact(source: string, state?: State): ReactElements {
-    return defaultReactOutput(defaultBlockParse(source, state), state);
-};
+*/
 
 export function ReactMarkdown(props: ReactMarkdownProps): ReactElement {
     var divProps: any = {};
@@ -1657,7 +1644,9 @@ export function ReactMarkdown(props: ReactMarkdownProps): ReactElement {
             divProps[prop] = props[prop];
         }
     }
-    divProps.children = markdownToReact(props.source);
+
+    let state = { inline: !!props.inline };
+    divProps.children = defaultReactOutput(defaultRawParse(props.source, state), state);
 
     return reactElement(
         'div',

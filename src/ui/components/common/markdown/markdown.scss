@@ -7,13 +7,19 @@
     margin-right: 0.5em;
 }
 
+.ln-markdown-full {
+    p,
+    div.p {
+        white-space: break-spaces;
+    }
+}
+
 .ln-markdown {
     content-visibility: auto;
 
     p,
     div.p {
         word-wrap: break-word;
-        white-space: break-spaces;
     }
 
     em {
