@@ -10,7 +10,11 @@ import PencilIcon from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/indivi
 import TrashIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-17-bin.svg";
 import CopyIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-614-copy.svg";
 
-export const MsgContextMenu = React.memo(({ msg }: { msg: IMessageState }) => {
+export interface IMsgContextMenuProps {
+    msg: IMessageState,
+}
+
+export const MsgContextMenu = React.memo(({ msg }: IMsgContextMenuProps) => {
     let copy_msg = useCallback(() => {
         navigator.clipboard.writeText(msg.msg.content);
     }, [msg.msg.content]);
@@ -36,3 +40,7 @@ export const MsgContextMenu = React.memo(({ msg }: { msg: IMessageState }) => {
         </ContextMenu>
     )
 });
+
+if(__DEV__) {
+    MsgContextMenu.displayName = "MsgContextMenu";
+}
