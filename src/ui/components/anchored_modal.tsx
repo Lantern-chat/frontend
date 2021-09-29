@@ -23,7 +23,7 @@ export const AnchoredModal = React.memo((props: IAnchoredModalProps) => {
         let { top, left, bottom } = rect;
 
         modal = (
-            <PositionedModal top={top} left={left}>
+            <PositionedModal top={top} left={left} bottom={bottom}>
                 {props.children}
             </PositionedModal>
         );

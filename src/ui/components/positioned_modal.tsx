@@ -6,6 +6,8 @@ export interface IPositionedModalProps {
     children?: React.ReactChild,
     top: number,
     left: number,
+    bottom?: number,
+    right?: number,
 }
 
 interface WindowDim {
@@ -39,6 +41,10 @@ export const PositionedModal = React.memo((props: IPositionedModalProps) => {
         };
 
     if(on_top) {
+        if(props.bottom !== undefined) {
+            top = props.bottom;
+        }
+
         style.top = '0%';
     } else {
         style.bottom = '100%';
