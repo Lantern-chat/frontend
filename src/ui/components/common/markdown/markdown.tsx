@@ -187,6 +187,7 @@ export interface DefaultRules extends DefaultRulesIndexer {
     readonly u: DefaultInOutRule,
     readonly spoiler: DefaultInOutRule,
     readonly del: DefaultInOutRule,
+    readonly tags: DefaultInOutRule,
     readonly inlineCode: DefaultInOutRule,
     readonly br: DefaultInOutRule,
     readonly text: TextInOutRule,
@@ -908,7 +909,8 @@ export const defaultRules: DefaultRules = {
     codeBlock: {
         order: currOrder++,
         //match: blockRegex(/^(?:    [^\n]+\n*)+(?:\n *)+\n/),
-        match: blockRegex(/^ *(`{3,}|~{3,}) *(?:(\S+) *)?\n([\s\S]+?)\n?\1 *(?:\n *)+\n/),
+        //match: blockRegex(/^ *(`{3,}|~{3,}) *(?:(\S+) *)?\n([\s\S]+?)\n?\1 *(?:\n *)+\n/),
+        match: anyScopeRegex(/^ *(`{3,}|~{3,}) *(?:(\S+) *)?\n([\s\S]+?)\n?\1/),
         parse: function(capture, parse, state) {
             //var content = capture[0]
             //    .replace(/^    /gm, '')
@@ -1528,6 +1530,43 @@ export const defaultRules: DefaultRules = {
                     children: output(node.content, state)
                 }
             );
+        }
+    },
+    tags: {
+        order: currOrder++,
+        match: inlineRegex(/^<(sup|sub)>([^\n]+)<\/\1>/),
+        parse: function(capture, parse, state) {
+            let tag = capture[1], content = capture[2], tagDepth = state.tagDepth || 0;
+
+            if(tagDepth < 2) {
+                state.tagDepth = tagDepth + 1;
+                let parsed = parse(content, state);
+                state.tagDepth -= 1;
+
+                return { tag, content: parsed };
+            }
+
+            return [
+                {
+                    type: "text",
+                    content: "<" + tag + ">",
+                },
+                parse(content, state),
+                {
+                    type: "text",
+                    content: "</" + tag + ">"
+                }
+            ];
+
+        },
+        react: function(node, output, state) {
+            return reactElement(
+                node.tag,
+                state.key,
+                {
+                    children: output(node.content, state),
+                }
+            )
         }
     },
     spoiler: {
