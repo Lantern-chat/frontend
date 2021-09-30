@@ -1267,14 +1267,20 @@ export const defaultRules: DefaultRules = {
         order: currOrder++,
         match: inlineRegex(/^<([^: >]+:\/[^ >]+)>/),
         parse: function(capture, parse, state) {
+            // NOTE: This disables links and embeds
             return {
-                type: "link",
-                content: [{
-                    type: "text",
-                    content: capture[1]
-                }],
-                target: capture[1]
+                type: "text",
+                content: capture[1],
             };
+
+            //return {
+            //    type: "link",
+            //    content: [{
+            //        type: "text",
+            //        content: capture[1]
+            //    }],
+            //    target: capture[1]
+            //};
         },
         react: null
     },
