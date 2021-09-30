@@ -5,6 +5,8 @@
     overflow-x: auto;
     padding: 0.5em;
     margin-right: 0.5em;
+    -webkit-overflow-scrolling: touch;
+    //display: table;
 }
 
 .ln-markdown-full {
@@ -126,6 +128,10 @@
         }
     }
 
+    pre {
+        white-space: pre;
+    }
+
     pre,
     code {
         font-family: Hasklig, $ln-font-family-monospace;
@@ -133,6 +139,7 @@
         background-color: $lnx-primary-surface-color;
         border: 0.125em solid rgba(32, 34, 37, 0.3);
         border-radius: 0.3125em;
+        margin-right: 1em;
     }
 
     code {
