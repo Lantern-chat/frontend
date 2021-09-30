@@ -164,10 +164,10 @@ export interface DefaultRules extends DefaultRulesIndexer {
     readonly hr: DefaultInOutRule,
     readonly codeBlock: DefaultInOutRule,
     readonly blockMath: DefaultInOutRule,
-    readonly fence: DefaultInRule,
+    //readonly fence: DefaultInRule,
     readonly blockQuote: DefaultInOutRule,
-    readonly list: DefaultInOutRule,
-    readonly def: LenientInOutRule,
+    //readonly list: DefaultInOutRule,
+    //readonly def: LenientInOutRule,
     readonly table: DefaultInOutRule,
     readonly tableSeparator: DefaultInRule,
     readonly newline: TextInOutRule,
@@ -180,8 +180,8 @@ export interface DefaultRules extends DefaultRulesIndexer {
     readonly unescapedDollar: DefaultInOutRule,
     readonly link: DefaultInOutRule,
     readonly image: DefaultInOutRule,
-    readonly reflink: DefaultInRule,
-    readonly refimage: DefaultInRule,
+    //readonly reflink: DefaultInRule,
+    //readonly refimage: DefaultInRule,
     readonly em: DefaultInOutRule,
     readonly strong: DefaultInOutRule,
     readonly u: DefaultInOutRule,
@@ -908,16 +908,20 @@ export const defaultRules: DefaultRules = {
     codeBlock: {
         order: currOrder++,
         //match: blockRegex(/^(?:    [^\n]+\n*)+(?:\n *)+\n/),
-        match: function(source) {
-            return null;
-        },
+        match: blockRegex(/^ *(`{3,}|~{3,}) *(?:(\S+) *)?\n([\s\S]+?)\n?\1 *(?:\n *)+\n/),
         parse: function(capture, parse, state) {
-            var content = capture[0]
-                .replace(/^    /gm, '')
-                .replace(/\n+$/, '');
+            //var content = capture[0]
+            //    .replace(/^    /gm, '')
+            //    .replace(/\n+$/, '');
+            //return {
+            //    lang: undefined,
+            //    content: content
+            //};
+
             return {
-                lang: undefined,
-                content: content
+                //type: "codeBlock",
+                lang: capture[2] || undefined,
+                content: capture[3]
             };
         },
         react: function(node, output, state) {
@@ -928,29 +932,20 @@ export const defaultRules: DefaultRules = {
         order: currOrder++,
         match: blockMathMatch,
         parse: (capture, parse, state) => {
-            return {
-                content: capture[1],
-            };
+            return { content: capture[1] };
         },
         react: (node, output, state) => {
-            return (
-                <Math key={state.key} src={node.content} />
-            );
+            return <Math key={state.key} src={node.content} />;
         },
     },
-    fence: {
-        order: currOrder++,
-        match: blockRegex(/^ *(`{3,}|~{3,}) *(?:(\S+) *)?\n([\s\S]+?)\n?\1 *(?:\n *)+\n/),
-        parse: function(capture, parse, state) {
-            return {
-                lang: capture[2] || undefined,
-                content: capture[3]
-            };
-        },
-        react: function(node, output, state) {
-            return <Code key={state.key} src={node.content} language={node.lang} />
-        }
-    },
+    //fence: {
+    //    order: currOrder++,
+    //    match: ,
+    //    parse: function(capture, parse, state) {
+    //
+    //    },
+    //    react: null,
+    //},
     blockQuote: {
         order: currOrder++,
         // NOTE: Modified from original to take up to 5 levels and require a space after >
@@ -972,178 +967,180 @@ export const defaultRules: DefaultRules = {
             );
         }
     },
-    list: {
-        order: currOrder++,
-        match: function(source, state) {
-            // We only want to break into a list if we are at the start of a
-            // line. This is to avoid parsing "hi * there" with "* there"
-            // becoming a part of a list.
-            // You might wonder, "but that's inline, so of course it wouldn't
-            // start a list?". You would be correct! Except that some of our
-            // lists can be inline, because they might be inside another list,
-            // in which case we can parse with inline scope, but need to allow
-            // nested lists inside this inline scope.
-            var prevCaptureStr = state.prevCapture == null ? "" : state.prevCapture[0];
-            var isStartOfLineCapture = LIST_LOOKBEHIND_R.exec(prevCaptureStr);
-            var isListBlock = state._list || !state.inline;
+    // list: {
+    //     order: currOrder++,
+    //     match: function(source, state) {
+    //         // We only want to break into a list if we are at the start of a
+    //         // line. This is to avoid parsing "hi * there" with "* there"
+    //         // becoming a part of a list.
+    //         // You might wonder, "but that's inline, so of course it wouldn't
+    //         // start a list?". You would be correct! Except that some of our
+    //         // lists can be inline, because they might be inside another list,
+    //         // in which case we can parse with inline scope, but need to allow
+    //         // nested lists inside this inline scope.
+    //         var prevCaptureStr = state.prevCapture == null ? "" : state.prevCapture[0];
+    //         var isStartOfLineCapture = LIST_LOOKBEHIND_R.exec(prevCaptureStr);
+    //         var isListBlock = state._list || !state.inline;
 
-            if(isStartOfLineCapture && isListBlock) {
-                source = isStartOfLineCapture[1] + source;
-                return LIST_R.exec(source);
-            } else {
-                return null;
-            }
-        },
-        parse: function(capture, parse, state) {
-            var bullet = capture[2];
-            var ordered = bullet.length > 1;
-            var start = ordered ? +bullet : undefined;
-            var items: string[] = capture[0]
-                .replace(LIST_BLOCK_END_R, "\n")
-                .match(LIST_ITEM_R)!;
+    //         if(isStartOfLineCapture && isListBlock) {
+    //             source = isStartOfLineCapture[1] + source;
+    //             return LIST_R.exec(source);
+    //         } else {
+    //             return null;
+    //         }
+    //     },
+    //     parse: function(capture, parse, state) {
+    //         var bullet = capture[2];
+    //         var ordered = bullet.length > 1;
+    //         var start = ordered ? +bullet : undefined;
+    //         var items: string[] = capture[0]
+    //             .replace(LIST_BLOCK_END_R, "\n")
+    //             .match(LIST_ITEM_R)!;
 
-            // We know this will match here, because of how the regexes are
-            // defined
-            var lastItemWasAParagraph = false;
-            var itemContent = items.map(function(item: string, i: number) {
-                // We need to see how far indented this item is:
-                var prefixCapture = LIST_ITEM_PREFIX_R.exec(item);
-                var space = prefixCapture ? prefixCapture[0].length : 0;
-                // And then we construct a regex to "unindent" the subsequent
-                // lines of the items by that amount:
-                var spaceRegex = new RegExp("^ {1, " + space + "}", "gm");
+    //         // We know this will match here, because of how the regexes are
+    //         // defined
+    //         var lastItemWasAParagraph = false;
+    //         var itemContent = items.map(function(item: string, i: number) {
+    //             // We need to see how far indented this item is:
+    //             var prefixCapture = LIST_ITEM_PREFIX_R.exec(item);
+    //             var space = prefixCapture ? prefixCapture[0].length : 0;
+    //             // And then we construct a regex to "unindent" the subsequent
+    //             // lines of the items by that amount:
+    //             var spaceRegex = new RegExp("^ {1, " + space + "}", "gm");
 
-                // Before processing the item, we need a couple things
-                var content = item
-                    // remove indents on trailing lines:
-                    .replace(spaceRegex, '')
-                    // remove the bullet:
-                    .replace(LIST_ITEM_PREFIX_R, '');
+    //             // Before processing the item, we need a couple things
+    //             var content = item
+    //                 // remove indents on trailing lines:
+    //                 .replace(spaceRegex, '')
+    //                 // remove the bullet:
+    //                 .replace(LIST_ITEM_PREFIX_R, '');
 
-                // Handling "loose" lists, like:
-                //
-                //  * this is wrapped in a paragraph
-                //
-                //  * as is this
-                //
-                //  * as is this
-                var isLastItem = (i === items.length - 1);
-                var containsBlocks = content.indexOf("\n\n") !== -1;
+    //             // Handling "loose" lists, like:
+    //             //
+    //             //  * this is wrapped in a paragraph
+    //             //
+    //             //  * as is this
+    //             //
+    //             //  * as is this
+    //             var isLastItem = (i === items.length - 1);
+    //             var containsBlocks = content.indexOf("\n\n") !== -1;
 
-                // Any element in a list is a block if it contains multiple
-                // newlines. The last element in the list can also be a block
-                // if the previous item in the list was a block (this is
-                // because non-last items in the list can end with \n\n, but
-                // the last item can't, so we just "inherit" this property
-                // from our previous element).
-                var thisItemIsAParagraph = containsBlocks ||
-                    (isLastItem && lastItemWasAParagraph);
-                lastItemWasAParagraph = thisItemIsAParagraph;
+    //             // Any element in a list is a block if it contains multiple
+    //             // newlines. The last element in the list can also be a block
+    //             // if the previous item in the list was a block (this is
+    //             // because non-last items in the list can end with \n\n, but
+    //             // the last item can't, so we just "inherit" this property
+    //             // from our previous element).
+    //             var thisItemIsAParagraph = containsBlocks ||
+    //                 (isLastItem && lastItemWasAParagraph);
+    //             lastItemWasAParagraph = thisItemIsAParagraph;
 
-                // backup our state for restoration afterwards. We're going to
-                // want to set state._list to true, and state.inline depending
-                // on our list's looseness.
-                var oldStateInline = state.inline;
-                var oldStateList = state._list;
-                state._list = true;
+    //             // backup our state for restoration afterwards. We're going to
+    //             // want to set state._list to true, and state.inline depending
+    //             // on our list's looseness.
+    //             var oldStateInline = state.inline;
+    //             var oldStateList = state._list;
+    //             state._list = true;
 
-                // Parse inline if we're in a tight list, or block if we're in
-                // a loose list.
-                var adjustedContent;
-                if(thisItemIsAParagraph) {
-                    state.inline = false;
-                    adjustedContent = content.replace(LIST_ITEM_END_R, "\n\n");
-                } else {
-                    state.inline = true;
-                    adjustedContent = content.replace(LIST_ITEM_END_R, "");
-                }
+    //             // Parse inline if we're in a tight list, or block if we're in
+    //             // a loose list.
+    //             var adjustedContent;
+    //             if(thisItemIsAParagraph) {
+    //                 state.inline = false;
+    //                 adjustedContent = content.replace(LIST_ITEM_END_R, "\n\n");
+    //             } else {
+    //                 state.inline = true;
+    //                 adjustedContent = content.replace(LIST_ITEM_END_R, "");
+    //             }
 
-                var result = parse(adjustedContent, state);
+    //             var result = parse(adjustedContent, state);
 
-                // Restore our state before returning
-                state.inline = oldStateInline;
-                state._list = oldStateList;
-                return result;
-            });
+    //             // Restore our state before returning
+    //             state.inline = oldStateInline;
+    //             state._list = oldStateList;
+    //             return result;
+    //         });
 
-            return {
-                ordered: ordered,
-                start: start,
-                items: itemContent
-            };
-        },
-        react: function(node, output, state) {
-            var ListWrapper = node.ordered ? "ol" : "ul";
+    //         return {
+    //             ordered: ordered,
+    //             start: start,
+    //             items: itemContent
+    //         };
+    //     },
+    //     react: function(node, output, state) {
+    //         var ListWrapper = node.ordered ? "ol" : "ul";
 
-            return reactElement(
-                ListWrapper,
-                state.key,
-                {
-                    start: node.start,
-                    children: node.items.map(function(item: ASTNode, i: number) {
-                        return reactElement(
-                            'li',
-                            '' + i,
-                            {
-                                children: output(item, state)
-                            }
-                        );
-                    })
-                }
-            );
-        }
-    },
-    def: {
-        order: currOrder++,
-        // TODO(aria): This will match without a blank line before the next
-        // block element, which is inconsistent with most of the rest of
-        // simple-markdown.
-        match: blockRegex(
-            /^ *\[([^\]]+)\]: *<?([^\s>]*)>?(?: +["(]([^\n]+)[")])? *\n(?: *\n)*/
-        ),
-        parse: function(capture, parse, state) {
-            var def = capture[1]
-                .replace(/\s+/g, ' ')
-                .toLowerCase();
-            var target = capture[2];
-            var title = capture[3];
+    //         return reactElement(
+    //             ListWrapper,
+    //             state.key,
+    //             {
+    //                 start: node.start,
+    //                 children: node.items.map(function(item: ASTNode, i: number) {
+    //                     return reactElement(
+    //                         'li',
+    //                         '' + i,
+    //                         {
+    //                             children: output(item, state)
+    //                         }
+    //                     );
+    //                 })
+    //             }
+    //         );
+    //     }
+    // },
 
-            // Look for previous links/images using this def
-            // If any links/images using this def have already been declared,
-            // they will have added themselves to the state._refs[def] list
-            // (_ to deconflict with client-defined state). We look through
-            // that list of reflinks for this def, and modify those AST nodes
-            // with our newly found information now.
-            // Sorry :(.
-            if(state._refs && state._refs[def]) {
-                // `refNode` can be a link or an image
-                state._refs[def].forEach(function(refNode: RefNode) {
-                    refNode.target = target;
-                    refNode.title = title;
-                });
-            }
+    // def: {
+    //     order: currOrder++,
+    //     // TODO(aria): This will match without a blank line before the next
+    //     // block element, which is inconsistent with most of the rest of
+    //     // simple-markdown.
+    //     match: blockRegex(
+    //         /^ *\[([^\]]+)\]: *<?([^\s>]*)>?(?: +["(]([^\n]+)[")])? *\n(?: *\n)*/
+    //     ),
+    //     parse: function(capture, parse, state) {
+    //         var def = capture[1]
+    //             .replace(/\s+/g, ' ')
+    //             .toLowerCase();
+    //         var target = capture[2];
+    //         var title = capture[3];
 
-            // Add this def to our map of defs for any future links/images
-            // In case we haven't found any or all of the refs referring to
-            // this def yet, we add our def to the table of known defs, so
-            // that future reflinks can modify themselves appropriately with
-            // this information.
-            state._defs = state._defs || {};
-            state._defs[def] = {
-                target: target,
-                title: title,
-            };
+    //         // Look for previous links/images using this def
+    //         // If any links/images using this def have already been declared,
+    //         // they will have added themselves to the state._refs[def] list
+    //         // (_ to deconflict with client-defined state). We look through
+    //         // that list of reflinks for this def, and modify those AST nodes
+    //         // with our newly found information now.
+    //         // Sorry :(.
+    //         if(state._refs && state._refs[def]) {
+    //             // `refNode` can be a link or an image
+    //             state._refs[def].forEach(function(refNode: RefNode) {
+    //                 refNode.target = target;
+    //                 refNode.title = title;
+    //             });
+    //         }
 
-            // return the relevant parsed information
-            // for debugging only.
-            return {
-                def: def,
-                target: target,
-                title: title,
-            };
-        },
-        react: function() { return null; }
-    },
+    //         // Add this def to our map of defs for any future links/images
+    //         // In case we haven't found any or all of the refs referring to
+    //         // this def yet, we add our def to the table of known defs, so
+    //         // that future reflinks can modify themselves appropriately with
+    //         // this information.
+    //         state._defs = state._defs || {};
+    //         state._defs[def] = {
+    //             target: target,
+    //             title: title,
+    //         };
+
+    //         // return the relevant parsed information
+    //         // for debugging only.
+    //         return {
+    //             def: def,
+    //             target: target,
+    //             title: title,
+    //         };
+    //     },
+    //     react: function() { return null; }
+    // },
+
     table: {
         order: currOrder++,
         match: blockRegex(TABLES.TABLE_REGEX),
@@ -1395,38 +1392,38 @@ export const defaultRules: DefaultRules = {
             );
         }
     },
-    reflink: {
-        order: currOrder++,
-        match: inlineRegex(new RegExp(
-            // The first [part] of the link
-            "^\\[(" + LINK_INSIDE + ")\\]" +
-            // The [ref] target of the link
-            "\\s*\\[([^\\]]*)\\]"
-        )),
-        parse: function(capture, parse, state) {
-            return parseRef(capture, state, {
-                type: "link",
-                content: parse(capture[1], state)
-            });
-        },
-        react: null
-    },
-    refimage: {
-        order: currOrder++,
-        match: inlineRegex(new RegExp(
-            // The first [part] of the link
-            "^!\\[(" + LINK_INSIDE + ")\\]" +
-            // The [ref] target of the link
-            "\\s*\\[([^\\]]*)\\]"
-        )),
-        parse: function(capture, parse, state) {
-            return parseRef(capture, state, {
-                type: "image",
-                alt: capture[1]
-            });
-        },
-        react: null
-    },
+    //reflink: {
+    //    order: currOrder++,
+    //    match: inlineRegex(new RegExp(
+    //        // The first [part] of the link
+    //        "^\\[(" + LINK_INSIDE + ")\\]" +
+    //        // The [ref] target of the link
+    //        "\\s*\\[([^\\]]*)\\]"
+    //    )),
+    //    parse: function(capture, parse, state) {
+    //        return parseRef(capture, state, {
+    //            type: "link",
+    //            content: parse(capture[1], state)
+    //        });
+    //    },
+    //    react: null
+    //},
+    //refimage: {
+    //    order: currOrder++,
+    //    match: inlineRegex(new RegExp(
+    //        // The first [part] of the link
+    //        "^!\\[(" + LINK_INSIDE + ")\\]" +
+    //        // The [ref] target of the link
+    //        "\\s*\\[([^\\]]*)\\]"
+    //    )),
+    //    parse: function(capture, parse, state) {
+    //        return parseRef(capture, state, {
+    //            type: "image",
+    //            alt: capture[1]
+    //        });
+    //    },
+    //    react: null
+    //},
 
     em: {
         order: currOrder /* same as strong/u */,
