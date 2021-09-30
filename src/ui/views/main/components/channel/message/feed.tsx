@@ -26,7 +26,7 @@ import { PositionedModal } from "ui/components/positioned_modal";
 import { MsgContextMenu } from "../../menus/msg_context";
 import { UserCard } from "../../menus/user_card";
 
-import { MainContext } from "ui/views/main";
+import { useMainClick } from "ui/hooks/useMainClick";
 
 import throttle from 'lodash/throttle';
 
@@ -81,15 +81,26 @@ interface IUserNameProps {
 }
 
 const UserName = React.memo((props: IUserNameProps) => {
+    let [show, setShow] = useState(false);
+
+    let main_click_props = useMainClick({
+        active: show,
+        onMainClick: () => setShow(false),
+        onClick: (e: React.MouseEvent) => {
+            setShow(true);
+            e.stopPropagation();
+        }
+    }, []);
+
     return (
-        <span className="ln-msg__username">
-            <AnchoredModal>
+        <span className="ln-msg__username" {...main_click_props}>
+            <AnchoredModal show={show}>
                 <UserCard user={props.user} />
             </AnchoredModal>
             {props.name}
         </span>
     )
-})
+});
 
 const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: GroupMessageProps) => {
     let message = <Message editing={false} msg={msg.msg} />;
@@ -144,21 +155,13 @@ const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: Group
         );
     }
 
-    let main = useContext(MainContext);
-
-    let on_cm = useCallback((e: React.MouseEvent) => {
-        main.clickAll(e);
-        setPos({ top: e.clientY, left: e.clientX });
-        e.preventDefault();
+    let main_click_props = useMainClick({
+        active: !!pos,
+        onMainClick: () => setPos(null),
+        onContextMenu: (e: React.MouseEvent) => {
+            setPos({ top: e.clientY, left: e.clientX })
+        },
     }, []);
-
-    useEffect(() => {
-        if(!pos) return;
-
-        let listener = () => setPos(null);
-        main.addOnClick(listener);
-        return () => main.removeOnClick(listener);
-    }, [main, pos]);
 
     let wrapper_class = "ln-msg__wrapper";
     if(cm) {
@@ -166,7 +169,7 @@ const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: Group
     }
 
     return (
-        <div key={msg.msg.id} onContextMenu={on_cm}>
+        <div key={msg.msg.id} {...main_click_props}>
             <div className={wrapper_class}>
                 <div className="ln-msg__side">
                     {side}

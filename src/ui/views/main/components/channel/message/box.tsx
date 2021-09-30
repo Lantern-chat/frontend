@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, forwardRef, useCallback, useEffect, useRef, useState } from "react";
+import React, { ChangeEventHandler, forwardRef, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
 
@@ -10,6 +10,9 @@ import { Type } from "state/actions";
 import { Snowflake } from "state/models";
 import { sendMessage, startTyping } from "state/commands";
 import { activeParty, activeRoom } from "state/selectors/active";
+
+import { FileUploadModal } from "ui/views/main/modals/file_upload";
+import { MainContext } from "ui/hooks/useMainClick";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
 
@@ -88,8 +91,6 @@ const msg_box_selector = createStructuredSelector({
 
 
 import "./box.scss";
-import { FileUploadModal } from "ui/views/main/modals/file_upload";
-
 export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     let disabled = !channel;
 
@@ -237,10 +238,14 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
         setState({ ...state, value: new_value, ts });
     };
 
-    let on_click_focus = disabled ? do_nothing : (e: React.MouseEvent<HTMLDivElement>) => {
+    let main = useContext(MainContext);
+
+    let on_click_focus = useCallback((e: React.MouseEvent) => {
+        if(disabled) return;
+        main.clickAll(e);
         e.stopPropagation();
         ref.current!.focus();
-    };
+    }, [disabled]);
 
     let on_file_change = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         __DEV__ && console.log("File list changed");

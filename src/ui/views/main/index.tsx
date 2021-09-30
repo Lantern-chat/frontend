@@ -56,15 +56,7 @@ import { PartyList } from "./components/party_list";
 import { Party } from "./components/party/party";
 import MainModals from "./modals";
 
-export type OnClickHandler = (e: React.MouseEvent) => void;
-
-export interface IMainContext {
-    addOnClick: (listener: OnClickHandler) => void,
-    removeOnClick: (listener: OnClickHandler) => void,
-    clickAll: (e: React.MouseEvent) => void,
-}
-
-export const MainContext = createContext<IMainContext>({ addOnClick: () => { }, removeOnClick: () => { }, clickAll: () => { } });
+import { MainContext, OnClickHandler } from "ui/hooks/useMainClick";
 
 import "./main.scss";
 export const MainView: React.FunctionComponent = React.memo(() => {
