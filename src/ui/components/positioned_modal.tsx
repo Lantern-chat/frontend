@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useForceRender } from "ui/hooks/useForceRender";
 import { Modal } from "./modal";
 
@@ -8,6 +8,7 @@ export interface IPositionedModalProps {
     left: number,
     bottom?: number,
     right?: number,
+    eat?: string[],
 }
 
 interface WindowDim {
@@ -56,9 +57,18 @@ export const PositionedModal = React.memo((props: IPositionedModalProps) => {
         style.right = '100%';
     }
 
+    let stop_prop = useCallback((e: React.SyntheticEvent) => e.stopPropagation(), []);
+
+    let eat_props = {};
+    if(Array.isArray(props.eat) && props.eat.length) {
+        for(let event of props.eat) {
+            eat_props[event] = stop_prop;
+        }
+    }
+
     return (
         <Modal>
-            <div style={{ position: 'absolute', left, top }}>
+            <div style={{ position: 'absolute', left, top }} {...eat_props}>
                 <div style={style}>
                     {props.children}
                 </div>
