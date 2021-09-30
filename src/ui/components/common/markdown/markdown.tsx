@@ -25,6 +25,7 @@ export type ASTNode = SingleASTNode | Array<SingleASTNode>;
 export interface State {
     key?: string | number | undefined;
     inline?: boolean | undefined;
+    pos?: number,
     [prop: string]: any,
 }
 export type OptionalState = State | null | undefined;
@@ -408,6 +409,7 @@ export function parserFor(rules: ParserRules, defaultState?: State): Parser {
             }
 
             state.prevCapture = capture;
+            state.pos! += capture[0].length;
             source = source.substring(state.prevCapture[0].length);
         }
         return result;
@@ -423,6 +425,7 @@ export function parserFor(rules: ParserRules, defaultState?: State): Parser {
         // ensure they don't match arbitrary '- ' or '* ' in inline
         // text (see the list rule for more information). This stores
         // the full regex capture object, if there is one.
+        latestState.pos = 0;
         latestState.prevCapture = null;
         return nestedParse(preprocess(source), latestState);
     };
