@@ -6,6 +6,7 @@ import { PositionedModal } from "./positioned_modal";
 export interface IAnchoredModalProps {
     children?: React.ReactChild,
     show?: boolean,
+    eat?: string[],
 }
 
 export const AnchoredModal = React.memo((props: IAnchoredModalProps) => {
@@ -17,7 +18,7 @@ export const AnchoredModal = React.memo((props: IAnchoredModalProps) => {
         let { top, left, bottom } = rect;
 
         modal = (
-            <PositionedModal top={top} left={left} bottom={bottom}>
+            <PositionedModal eat={props.eat} top={top} left={left} bottom={bottom}>
                 {props.children}
             </PositionedModal>
         );
