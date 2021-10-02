@@ -155,11 +155,10 @@
         }
     }
 
-    max-width: calc(100% - 4.025em);
-
-    @media (min-width: $ln-min-channel-width) {
-        max-width: calc(100% - 4.425em);
-    }
+    //max-width: calc(100% - 4.025em);
+    //@media (min-width: $ln-min-channel-width) {
+    //    max-width: calc(100% - 4.425em);
+    //}
 
     &__sidets {
         font-size: 0.6em;
