@@ -12,7 +12,7 @@ import { sendMessage, startTyping } from "state/commands";
 import { activeParty, activeRoom } from "state/selectors/active";
 
 import { FileUploadModal } from "ui/views/main/modals/file_upload";
-import { MainContext } from "ui/hooks/useMainClick";
+import { Hotkey, MainContext, parseHotkey, useMainHotkey } from "ui/hooks/useMainClick";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
 import { EmotePicker } from "./emote_picker";
@@ -24,11 +24,6 @@ import Plus from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/g
 // TODO: Move elsewhere
 function countLines(str: string): number {
     return (str.match(/\n/g) || '').length;
-}
-
-function isHotkey(e: React.KeyboardEvent): boolean {
-    // !!! TODO: Search a list of hotkeys provided by user configuration
-    return e.ctrlKey;
 }
 
 export interface IMessageBoxProps {
@@ -176,18 +171,19 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
         }
     };
 
+    let on_keyup = useCallback((e: React.KeyboardEvent) => {
+        if(!parseHotkey(e)) {
+            // not-hotkeys shouldn't escape, to save on processing time of keypress
+            e.stopPropagation();
+        }
+    }, []);
+
     let on_keydown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if(__DEV__) {
             keyRef!.current!.innerText = (e.ctrlKey ? 'Ctrl+' : '') + (e.altKey ? 'Alt+' : '') + (e.shiftKey ? 'Shift+' : '') + (e.key === ' ' ? 'Spacebar' : e.key);
         }
 
-        if(!isHotkey(e)) {
-            // not-hotkeys shouldn't escape, to save on processing time of keypress
-            e.stopPropagation();
-        } else {
-            // yes-hotkeys shouldn't affect state
-            return;
-        }
+        e.stopPropagation();
 
         switch(e.key) {
             case 'Enter': {
@@ -215,8 +211,9 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
                 // TODO: Remove this?
                 if(e.shiftKey) {
                     setState({ ...state, value: state.value + '\t' });
-                    e.preventDefault();
                 }
+
+                e.preventDefault();
 
                 break;
             }
@@ -269,6 +266,11 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
         ref.current!.focus();
     }, [disabled]);
 
+    useMainHotkey(Hotkey.FocusTextArea, () => {
+        if(disabled) return;
+        ref.current!.focus();
+    });
+
     let on_file_change = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         __DEV__ && console.log("File list changed");
 
@@ -305,7 +307,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
                         ref={ref}
                         placeholder="Message..."
                         rows={1} maxRows={use_mobile_view ? 5 : 20}
-                        value={state.value} onKeyDown={on_keydown} onChange={on_change} />
+                        value={state.value} onKeyDown={on_keydown} onChange={on_change} onKeyUp={on_keyup} />
                 </div>
 
                 {

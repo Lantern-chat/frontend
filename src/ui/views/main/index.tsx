@@ -56,7 +56,7 @@ import { PartyList } from "./components/party_list";
 import { Party } from "./components/party/party";
 import MainModals from "./modals";
 
-import { MainContext, OnClickHandler } from "ui/hooks/useMainClick";
+import { Hotkey, MainContext, OnClickHandler, OnKeyHandler, parseHotkey } from "ui/hooks/useMainClick";
 
 import "./main.scss";
 export const MainView: React.FunctionComponent = React.memo(() => {
@@ -87,38 +87,78 @@ export const MainView: React.FunctionComponent = React.memo(() => {
     let is_right_view = useSelector((state: RootState) => state.window.use_mobile_view && state.window.show_panel == Panel.RightUserList);
 
     let handlers = useMemo(() => {
-        var listeners: OnClickHandler[] = [];
-        let on_click = (e: React.MouseEvent) => {
-            for(let listener of listeners) {
-                listener(e);
-            }
-        };
+        var click_listeners: OnClickHandler[] = [];
+        var key_listeners: { [key: number]: OnKeyHandler[] } = {};
 
         let addOnClick = (listener: OnClickHandler) => {
+            click_listeners.push(listener);
+        };
+
+        let addOnHotkey = (hotkey: Hotkey, listener: OnKeyHandler) => {
+            let listeners = key_listeners[hotkey];
+            if(!listeners) {
+                listeners = key_listeners[hotkey] = [];
+            }
             listeners.push(listener);
         };
 
         let removeOnClick = (listener: OnClickHandler) => {
-            listeners = listeners.filter(l => l != listener);
+            click_listeners = click_listeners.filter(l => l != listener);
+        };
+
+        let removeOnHotkey = (hotkey: Hotkey, listener: OnKeyHandler) => {
+            let listeners;
+            if(listeners = key_listeners[hotkey]) {
+                key_listeners[hotkey] = listeners.filter(l => l != listener);
+            }
         };
 
         let clickAll = (e: React.MouseEvent) => {
-            on_click(e);
+            for(let listener of click_listeners) {
+                listener(e);
+            }
         };
 
+        let triggerHotkey = (hotkey: Hotkey, e: React.KeyboardEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            let listeners = key_listeners[hotkey];
+            if(listeners) {
+                for(let listener of listeners) {
+                    listener(e);
+                }
+            }
+        };
+
+        let triggerAnyHotkey = (e: React.KeyboardEvent) => {
+            let hotkey = parseHotkey(e);
+            if(hotkey) {
+                triggerHotkey(hotkey, e);
+            }
+        }
+
         return {
-            on_click,
+            on_click: (e: React.MouseEvent) => clickAll(e),
+            // by default, block real context menu. Placing it here caches it with memo
             on_cm: (e: React.MouseEvent) => e.preventDefault(),
+            on_ku: (e: React.KeyboardEvent) => triggerAnyHotkey(e),
+            // certain hotkeys cause side-effects, like Tab, so kill those
+            on_kd: (e: React.KeyboardEvent) => { if(parseHotkey(e)) { e.preventDefault(); e.stopPropagation() } },
             value: {
                 addOnClick,
+                addOnHotkey,
                 removeOnClick,
+                removeOnHotkey,
                 clickAll,
+                triggerHotkey,
+                triggerAnyHotkey,
             }
         }
     }, []);
 
     return (
-        <div className="ln-main" onClick={handlers.on_click} onContextMenu={handlers.on_cm}>
+        <div className="ln-main" onClick={handlers.on_click} onContextMenu={handlers.on_cm} onKeyUp={handlers.on_ku} onKeyDown={handlers.on_kd} onKeyPress={handlers.on_kd}>
             <MainContext.Provider value={handlers.value}>
                 {is_right_view ? null : <PartyList />}
 
