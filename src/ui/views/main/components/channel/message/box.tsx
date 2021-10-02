@@ -26,6 +26,11 @@ function countLines(str: string): number {
     return (str.match(/\n/g) || '').length;
 }
 
+function isHotkey(e: React.KeyboardEvent): boolean {
+    // !!! TODO: Search a list of hotkeys provided by user configuration
+    return e.ctrlKey;
+}
+
 export interface IMessageBoxProps {
     channel?: Snowflake,
 }
@@ -174,6 +179,14 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     let on_keydown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if(__DEV__) {
             keyRef!.current!.innerText = (e.ctrlKey ? 'Ctrl+' : '') + (e.altKey ? 'Alt+' : '') + (e.shiftKey ? 'Shift+' : '') + (e.key === ' ' ? 'Spacebar' : e.key);
+        }
+
+        if(!isHotkey(e)) {
+            // not-hotkeys shouldn't escape, to save on processing time of keypress
+            e.stopPropagation();
+        } else {
+            // yes-hotkeys shouldn't affect state
+            return;
         }
 
         switch(e.key) {
