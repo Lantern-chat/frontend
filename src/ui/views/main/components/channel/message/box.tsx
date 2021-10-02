@@ -211,6 +211,15 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
 
                 break;
             }
+            case 'Tab': {
+                // TODO: Remove this?
+                if(e.shiftKey) {
+                    setState({ ...state, value: state.value + '\t' });
+                    e.preventDefault();
+                }
+
+                break;
+            }
             case 'ArrowUp':
             case 'ArrowDown': {
                 let total_lines = countLines(state.value);
