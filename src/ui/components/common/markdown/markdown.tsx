@@ -1288,7 +1288,8 @@ export const defaultRules: DefaultRules = {
     },
     mailto: {
         order: currOrder++,
-        match: inlineRegex(/^<([^ >]+@[^ >]+)>/),
+        match: inlineRegex(/^<([^@\s]{1,64}@[^@\s]+\.[^@\s]+)>/),
+        //match: inlineRegex(/^<([^ >]+@[^ >]+)>/),
         parse: function(capture, parse, state) {
             var address = capture[1];
             var target = capture[1];
