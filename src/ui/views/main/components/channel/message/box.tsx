@@ -15,9 +15,9 @@ import { FileUploadModal } from "ui/views/main/modals/file_upload";
 import { MainContext } from "ui/hooks/useMainClick";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
+import { EmotePicker } from "./emote_picker";
 
 //import Smiley from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-901-slightly-smiling.svg";
-import SmileyHalf from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-243-slightly-smiling.svg";
 import Send from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-461-send.svg";
 import Plus from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-371-plus.svg";
 
@@ -289,6 +289,8 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
             {files?.length ? <FileUploadModal onClose={on_file_close} files={files} /> : null}
 
             <div className={"ln-msg-box" + (disabled ? ' ln-msg-box--disabled' : '')} onClick={on_click_focus}>
+                {disabled ? <span className="ln-msg-box__disable"></span> : null}
+
                 <div className="ln-typing ln-typing__top">
                     {(use_mobile_view && users_typing) ? <span>{users_typing}</span> : null}
                 </div>
@@ -315,6 +317,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
                     <Glyphicon src={is_empty ? Plus : Send} />
                 </div>
             </div>
+
             <div className="ln-typing ln-typing__bottom">
                 <span>{use_mobile_view ? null : users_typing}</span>
             </div>

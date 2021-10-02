@@ -63,6 +63,16 @@
         cursor: not-allowed !important;
     }
 
+    &__disable {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        cursor: not-allowed !important;
+        z-index: 10; // ensure this is greater than the file-upload input z-index
+    }
+
     * {
         user-select: none;
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
