@@ -488,7 +488,6 @@ export function reactElement(
     } as ReactElement;
 };
 
-
 var EMPTY_PROPS = {};
 
 export function sanitizeUrl(url?: string): string | null {
@@ -508,8 +507,8 @@ export function sanitizeUrl(url?: string): string | null {
     return url;
 }
 
+/*
 var SANITIZE_TEXT_R = /[<>&"']/g;
-
 var SANITIZE_TEXT_CODES = {
     '<': '&lt;',
     '>': '&gt;',
@@ -525,6 +524,7 @@ export function sanitizeText(text: Attr): string {
         return SANITIZE_TEXT_CODES[chr];
     });
 };
+*/
 
 var UNESCAPE_URL_R = /\\([^0-9A-Za-z\s])/g;
 
@@ -590,7 +590,7 @@ var LIST_ITEM_END_R = / *\n+$/;
 // we leave the newlines at the end
 var LIST_R = new RegExp(
     "^( *)(" + LIST_BULLET + ") " +
-    "[\\s\\S]+?(?:\n{2,}(?! )" +
+    "[^]+?(?:\n{2,}(?! )" +
     "(?!\\1" + LIST_BULLET + " )\\n*" +
     // the \\s*$ here is so that we can parse the inside of nested
     // lists, where our content might end before we receive two `\n`s
@@ -793,7 +793,7 @@ function blockMathMatch(source: string, state: State) { return mathMatcher(sourc
 
 var LINK_INSIDE = "(?:\\[[^\\]]*\\]|[^\\[\\]]|\\](?=[^\\[]*\\]))*";
 var LINK_HREF_AND_TITLE =
-    "\\s*<?((?:\\([^)]*\\)|[^\\s\\\\]|\\\\.)*?)>?(?:\\s+['\"]([\\s\\S]*?)['\"])?\\s*";
+    "\\s*<?((?:\\([^)]*\\)|[^\\s\\\\]|\\\\.)*?)>?(?:\\s+['\"]([^]*?)['\"])?\\s*";
 var AUTOLINK_MAILTO_CHECK_R = /mailto:/i;
 
 function parseRef(capture: Capture, state: State, refNode: RefNode): RefNode {
@@ -909,8 +909,8 @@ export const defaultRules: DefaultRules = {
     codeBlock: {
         order: currOrder++,
         //match: blockRegex(/^(?:    [^\n]+\n*)+(?:\n *)+\n/),
-        //match: blockRegex(/^ *(`{3,}|~{3,}) *(?:(\S+) *)?\n([\s\S]+?)\n?\1 *(?:\n *)+\n/),
-        match: anyScopeRegex(/^ *(`{3,}|~{3,}) *(?:(\S+) *)?\n([\s\S]+?)\n?\1/),
+        //match: blockRegex(/^ *(`{3,}|~{3,}) *(?:(\S+) *)?\n([^]+?)\n?\1 *(?:\n *)+\n/),
+        match: anyScopeRegex(/^ *(`{3,}|~{3,}) *(?:(\S+) *)?\n([^]+?)\n?\1/),
         parse: function(capture, parse, state) {
             //var content = capture[0]
             //    .replace(/^    /gm, '')
@@ -1440,7 +1440,7 @@ export const defaultRules: DefaultRules = {
             new RegExp(
                 // only match _s surrounding words.
                 "^\\b_" +
-                "((?:__|\\\\[\\s\\S]|[^\\\\_])+?)_" +
+                "((?:__|\\\\[^]|[^\\\\_])+?)_" +
                 "\\b" +
                 // Or match *s:
                 "|" +
@@ -1452,11 +1452,11 @@ export const defaultRules: DefaultRules = {
                 //          italics
                 "\\*\\*|" +
                 //  - escape sequence: so escaped *s don't close us
-                "\\\\[\\s\\S]|" +
+                "\\\\[^]|" +
                 //  - whitespace: followed by a non-* (we don't
                 //          want ' *' to close an italics--it might
                 //          start a list)
-                "\\s+(?:\\\\[\\s\\S]|[^\\s\\*\\\\]|\\*\\*)|" +
+                "\\s+(?:\\\\[^]|[^\\s\\*\\\\]|\\*\\*)|" +
                 //  - non-whitespace, non-*, non-backslash characters
                 "[^\\s\\*\\\\]" +
                 ")+?" +
@@ -1485,7 +1485,7 @@ export const defaultRules: DefaultRules = {
     },
     strong: {
         order: currOrder /* same as em */,
-        match: inlineRegex(/^\*\*((?:\\[\s\S]|[^\\])+?)\*\*(?!\*)/),
+        match: inlineRegex(/^\*\*((?:\\[^]|[^\\])+?)\*\*(?!\*)/),
         quality: function(capture) {
             // precedence by length, wins ties vs `u`:
             return capture[0].length + 0.1;
@@ -1503,7 +1503,7 @@ export const defaultRules: DefaultRules = {
     },
     u: {
         order: currOrder++ /* same as em&strong; increment for next rule */,
-        match: inlineRegex(/^__((?:\\[\s\S]|[^\\])+?)__(?!_)/),
+        match: inlineRegex(/^__((?:\\[^]|[^\\])+?)__(?!_)/),
         quality: function(capture) {
             // precedence by length, loses all ties
             return capture[0].length;
@@ -1521,7 +1521,7 @@ export const defaultRules: DefaultRules = {
     },
     del: {
         order: currOrder++,
-        match: inlineRegex(/^~~(?=\S)((?:\\[\s\S]|~(?!~)|[^\s~\\]|\s(?!~~))+?)~~/),
+        match: inlineRegex(/^~~(?=\S)((?:\\[^]|~(?!~)|[^\s~\\]|\s(?!~~))+?)~~/),
         parse: parseCaptureInline,
         react: function(node, output, state) {
             return reactElement(
@@ -1573,7 +1573,7 @@ export const defaultRules: DefaultRules = {
     spoiler: {
         order: currOrder,
         match: function(source) {
-            return /^\|\|([\s\S]+?)\|\|(?!\|)/.exec(source);
+            return /^\|\|([^]+?)\|\|(?!\|)/.exec(source);
         },
         parse: function(capture, parse, state) {
             return { content: parse(capture[1], state) };
@@ -1584,7 +1584,7 @@ export const defaultRules: DefaultRules = {
     },
     inlineCode: {
         order: currOrder++,
-        match: inlineRegex(/^(`+)([\s\S]*?[^`])\1(?!`)/),
+        match: inlineRegex(/^(`+)([^]*?[^`])\1(?!`)/),
         parse: function(capture, parse, state) {
             return {
                 content: capture[2].replace(INLINE_CODE_ESCAPE_BACKTICKS_R, "$1")
@@ -1619,7 +1619,7 @@ export const defaultRules: DefaultRules = {
         // We break on any symbol characters so that this grammar
         // is easy to extend without needing to modify this regex
         match: anyScopeRegex(
-            /^[\s\S]+?(?=[^0-9A-Za-z\s\u00c0-\uffff]|\n\n| {2,}\n|\w+:\S|$)/
+            /^[^]+?(?=[^0-9A-Za-z\s\u00c0-\uffff]|\n\n| {2,}\n|\w+:\S|$)/
         ),
         parse: function(capture, parse, state) {
             return {
