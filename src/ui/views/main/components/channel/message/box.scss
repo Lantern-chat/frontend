@@ -83,7 +83,8 @@
         justify-content: center;
         cursor: pointer;
         fill: $lnx-secondary-text-color;
-        &:hover {
+        &:hover,
+        &.active {
             fill: $lnx-primary-text-color;
 
             .ln-msg-box--disabled & {

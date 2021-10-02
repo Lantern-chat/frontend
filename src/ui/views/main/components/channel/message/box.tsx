@@ -293,9 +293,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
                     {(use_mobile_view && users_typing) ? <span>{users_typing}</span> : null}
                 </div>
 
-                <div className="ln-msg-box__emoji">
-                    <Glyphicon src={SmileyHalf} />
-                </div>
+                <EmotePicker />
 
                 <div className="ln-msg-box__box">
                     <TextareaAutosize disabled={disabled}
