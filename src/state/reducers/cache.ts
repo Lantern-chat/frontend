@@ -28,8 +28,6 @@ const DEFAULT_STATE: ICacheState = {
 export function cacheReducer(state: ICacheState | null | undefined, action: Action): ICacheState {
     state = state || DEFAULT_STATE;
 
-    console.log("HERE CACHE");
-
     switch(action.type) {
         case Type.MEMBERS_LOADED: return produce(state, draft => {
             let { members, party_id } = action;
