@@ -176,7 +176,7 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
                         localStorage.setItem(StorageKey.PREFS, JSON.stringify(full_prefs));
 
                         setTheme({ temperature: full_prefs.temp, is_light: full_prefs.light }, false);
-                        dispatch({ type: Type.UPDATE_PREFS, prefs: full_prefs });
+                        dispatch({ type: Type.UPDATE_PREFS, prefs: full_prefs }); // do side-effects
                     }
 
                     break;
@@ -192,28 +192,53 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
             }
             break;
         }
+        // all DOM side-effects for preferences
         case Type.UPDATE_PREFS: {
-            let de = document.documentElement, { chat_font, ui_font } = action.prefs, changed = false;
+            let de = document.documentElement,
+                state = getState(),
+                prefs = state.prefs,
+                { chat_font, ui_font } = prefs,
+                font_changed = false;
 
-            if(chat_font) {
+            if(chat_font !== undefined) {
                 let chat_ff_var = font_to_css(chat_font), chat_ff_key = '--ln-chat-font-family';
 
                 if(de.style.getPropertyValue(chat_ff_key) != chat_ff_var) {
                     de.style.setProperty(chat_ff_key, chat_ff_var);
-                    changed = true;
+                    font_changed = true;
                 }
             }
 
-            if(ui_font) {
+            //if(typeof prefs.chat_font_size == 'number' || chat_font) {
+            //    let fs = font_size(chat_font) * ((prefs.chat_font_size || 1));
+            //
+            //    de.style.setProperty('--ln-chat-font-size', `${fs}rem`);
+            //}
+
+            if(ui_font !== undefined) {
                 let ui_ff_var = font_to_css(ui_font), ui_ff_key = '--ln-ui-font-family';
 
                 if(de.style.getPropertyValue(ui_ff_key) != ui_ff_var) {
                     de.style.setProperty(ui_ff_key, ui_ff_var);
-                    changed = true;
+                    font_changed = true;
                 }
             }
 
-            if(changed && [chat_font, ui_font].includes(Font.OpenDyslexic)) {
+            //if(typeof prefs.ui_font_size == 'number' || ui_font) {
+            //    let fs = font_size(ui_font) * (prefs.ui_font_size || 1);
+            //
+            //    de.style.setProperty('--ln-ui-font-size', `${fs}rem`);
+            //}
+
+            if(typeof prefs.tab_size == 'number') {
+                let ts_var = prefs.tab_size.toString(), ts_key = '--ln-chat-tabsize';
+
+                if(de.style.getPropertyPriority(ts_key) != ts_var) {
+                    de.style.setProperty(ts_key, ts_var);
+                }
+            }
+
+            if(font_changed && [chat_font, ui_font].includes(Font.OpenDyslexic)) {
                 import("ui/fonts/opendyslexic");
             }
         }
@@ -233,5 +258,13 @@ function font_to_css(font: Font): string {
         }
     })();
 
-    return `var(--ln-font-family-${suffix}`;
+    return `var(--ln-font-family-${suffix})`;
+}
+
+function font_size(font?: Font): number {
+    switch(font || Font.SansSerif) {
+        case Font.Cursive: return 1.4;
+        case Font.OpenDyslexic: return 0.8;
+        default: return 1;
+    }
 }

@@ -5,6 +5,7 @@ import throttle from "lodash/throttle";
 
 import { setTheme } from "state/commands/theme";
 import { savePrefs } from "state/commands/prefs";
+import { Font, UserPreferences } from "state/models";
 import { themeSelector } from "state/selectors/theme";
 import { RootState } from "state/root";
 
@@ -87,9 +88,11 @@ interface IFontSelectorProps {
 }
 
 const FontSelector = React.memo(({ which }: IFontSelectorProps) => {
-    let name, label;
+    let name, label, prefs_key = which == 'chat' ? 'chat_font' : 'ui_font';
 
-    let [font, setFont] = useState('sansserif');
+    let dispatch = useDispatch();
+    let current_font = useSelector((state: RootState) => state.prefs[prefs_key]);
+    let [font, setFont] = useState(Font[current_font].toLowerCase());
 
     useEffect(() => {
         if(font == 'opendyslexic') {
@@ -107,13 +110,35 @@ const FontSelector = React.memo(({ which }: IFontSelectorProps) => {
 
     let font_class = "ln-font-" + font;
 
+    let onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        let font_name: keyof typeof Fonts = e.currentTarget.value as any;
+        if(!Fonts.hasOwnProperty(font_name)) return;
+
+        setFont(font_name);
+
+        let font = (() => {
+            switch(font_name) {
+                case 'serif': return Font.Serif;
+                case 'cursive': return Font.Cursive;
+                case 'monospace': return Font.Monospace;
+                case 'opendyslexic': return Font.OpenDyslexic;
+                case 'sansserif': return Font.SansSerif;
+            }
+        })();
+
+        let prefs: Partial<UserPreferences> = {};
+        prefs[prefs_key] = font;
+
+        dispatch(savePrefs(prefs));
+    };
+
     return (
         <>
             <div className="ln-settings-font">
                 <label htmlFor={label}>{name}</label>
                 <div className="ln-settings-font__wrapper">
                     <div className="ln-settings-font__selector">
-                        <FormSelect name={label} value={font} onChange={(e) => setFont(e.currentTarget.value)}>
+                        <FormSelect name={label} value={font} onChange={onChange}>
                             {Object.keys(Fonts).map((font) => (
                                 <option value={font} key={font}
                                     className={"ln-font-" + font}>

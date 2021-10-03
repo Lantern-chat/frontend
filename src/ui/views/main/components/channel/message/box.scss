@@ -130,6 +130,7 @@
         width: 100%;
 
         textarea {
+            tab-size: $lnx-chat-tabsize;
             margin: 0.5em 0;
             color: $lnx-primary-text-color;
             width: 100%;

@@ -38,6 +38,7 @@ export enum ErrorCode {
     InvalidImageFormat = 40026,
     TOTPRequired = 40027,
     InvalidPreferences = 40028,
+    TemporarilyDisabled = 40029,
 }
 
 export function errorKind(err: ApiError): ErrorKind {
@@ -125,7 +126,9 @@ export interface UserPreferences {
     ui_font: Font,
     chat_font_size: number,
     ui_font_size: number,
+    tab_size: number,
     time_format: string,
+    dev_mode: boolean,
 }
 
 export interface UserPresence {

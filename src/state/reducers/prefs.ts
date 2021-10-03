@@ -15,8 +15,9 @@ export const DEFAULT_STATE: IPrefsState = {
     ui_font: Font.SansSerif,
     chat_font_size: 1.0,
     ui_font_size: 1.0,
+    tab_size: 4,
     time_format: "",
-
+    dev_mode: false,
 };
 
 export function prefsReducer(state: IPrefsState = DEFAULT_STATE, action: Action) {
