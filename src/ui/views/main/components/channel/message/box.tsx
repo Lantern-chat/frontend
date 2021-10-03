@@ -172,8 +172,10 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     };
 
     let on_keyup = useCallback((e: React.KeyboardEvent) => {
-        if(!parseHotkey(e)) {
+        let hotkey = parseHotkey(e);
+        if(!hotkey || hotkey == Hotkey.FocusTextArea) {
             // not-hotkeys shouldn't escape, to save on processing time of keypress
+            // or if the textarea is already focused, don't refocus
             e.stopPropagation();
         }
     }, []);
@@ -185,21 +187,24 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
 
         e.stopPropagation();
 
+        let isInsideCodeblock = () => {
+            let cursor = ref.current!.selectionStart;
+
+            // check if the cursor is inside a code block, in which case allow plain newlines
+            let prev = { index: 0 }, delim, re = /`{3}/g, inside = false;
+            for(let idx = 0; delim = re.exec(state.value); idx++) {
+                if(prev.index <= cursor && cursor > delim.index) {
+                    inside = !inside;
+                }
+                prev = delim;
+            }
+
+            return inside;
+        };
+
         switch(e.key) {
             case 'Enter': {
-                if(use_mobile_view || e.shiftKey || state.value.length === 0) return;
-
-                let cursor = ref.current!.selectionStart;
-
-                // check if the cursor is inside a code block, in which case allow plain newlines
-                let prev = { index: 0 }, delim, re = /`{3}/g, inside = false;
-                for(let idx = 0; delim = re.exec(state.value); idx++) {
-                    if(prev.index <= cursor && cursor > delim.index) {
-                        inside = !inside;
-                    }
-                    prev = delim;
-                }
-                if(inside) return;
+                if(use_mobile_view || e.shiftKey || state.value.length === 0 || isInsideCodeblock()) return;
 
                 e.preventDefault(); // don't add the newline
 
@@ -209,7 +214,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
             }
             case 'Tab': {
                 // TODO: Remove this?
-                if(e.shiftKey) {
+                if(e.shiftKey || isInsideCodeblock()) {
                     setState({ ...state, value: state.value + '\t' });
                 }
 
@@ -266,8 +271,15 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
         ref.current!.focus();
     }, [disabled]);
 
+    //let [tabIndex, setTabIndex] = useState(0);
+
     useMainHotkey(Hotkey.FocusTextArea, () => {
         if(disabled) return;
+
+        // TODO: Iterate over items in box
+        //let c = ref.current!, is_focused = document.activeElement == c;
+        //if(!is_focused) {}
+
         ref.current!.focus();
     });
 
