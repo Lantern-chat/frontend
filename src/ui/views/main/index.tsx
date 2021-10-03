@@ -134,6 +134,9 @@ export const MainView: React.FunctionComponent = React.memo(() => {
         let triggerAnyHotkey = (e: React.KeyboardEvent) => {
             let hotkey = parseHotkey(e);
             if(hotkey) {
+                if(__DEV__) {
+                    console.log("Hotkey %s triggered", Hotkey[hotkey]);
+                }
                 triggerHotkey(hotkey, e);
             }
         }
@@ -144,7 +147,7 @@ export const MainView: React.FunctionComponent = React.memo(() => {
             on_cm: (e: React.MouseEvent) => e.preventDefault(),
             on_ku: (e: React.KeyboardEvent) => triggerAnyHotkey(e),
             // certain hotkeys cause side-effects, like Tab, so kill those
-            on_kd: (e: React.KeyboardEvent) => { if(parseHotkey(e)) { e.preventDefault(); e.stopPropagation() } },
+            on_kd: (e: React.KeyboardEvent) => { if(parseHotkey(e)) { e.preventDefault(); e.stopPropagation(); } },
             value: {
                 addOnClick,
                 addOnHotkey,
@@ -158,7 +161,7 @@ export const MainView: React.FunctionComponent = React.memo(() => {
     }, []);
 
     return (
-        <div className="ln-main" onClick={handlers.on_click} onContextMenu={handlers.on_cm} onKeyUp={handlers.on_ku} onKeyDown={handlers.on_kd} onKeyPress={handlers.on_kd}>
+        <div className="ln-main" onClick={handlers.on_click} onContextMenu={handlers.on_cm} onKeyUp={handlers.on_ku} onKeyDown={handlers.on_kd}>
             <MainContext.Provider value={handlers.value}>
                 {is_right_view ? null : <PartyList />}
 
