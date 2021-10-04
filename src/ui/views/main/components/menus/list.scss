@@ -3,9 +3,23 @@
 ul.ln-contextmenu {
     background-color: $lnx-primary-surface-color;
     border: 1px solid $lnx-secondary-surface-color;
-    box-shadow: 0.25rem 0.25rem 0.5rem $lnx-primary-surface-color;
+
     border-radius: 0.5rem;
     overflow: hidden;
+
+    // TODO: Keep this or go back?
+    &::before {
+        box-shadow: 0.25rem 0.25rem 0.5rem $lnx-primary-surface-color;
+        mix-blend-mode: darken;
+        border-radius: 0.5rem;
+
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+    }
 
     .ln-modal-right.ln-modal-top & {
         border-top-right-radius: 0;
