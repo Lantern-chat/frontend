@@ -21,6 +21,12 @@ ul.ln-contextmenu {
             height: 100%;
         }
 
+        .ui-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
         .ln-glyphicon {
             margin-right: 0.5rem;
             font-size: 1.2em;
