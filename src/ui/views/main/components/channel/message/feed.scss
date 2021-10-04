@@ -85,7 +85,7 @@
             }
 
             .ln-msg__sidets {
-                color: $lnx-secondary-text-color;
+                opacity: 1;
             }
         }
     }
@@ -170,7 +170,8 @@
 
     &__sidets {
         font-size: 0.6em;
-        color: transparent;
+        color: $lnx-secondary-text-color;
+        opacity: 0;
         //text-align: center;
         display: flex;
         flex-direction: column;
