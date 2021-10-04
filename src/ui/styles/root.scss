@@ -22,6 +22,7 @@ body {
     overflow: hidden;
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans",
         sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-variant-ligatures: none;
 }
 
 #ln-root {
@@ -95,6 +96,7 @@ a {
     --ln-font-family-cursive: #{$ln-font-family-cursive};
     --ln-font-family-monospace: #{$ln-font-family-monospace};
     --ln-font-family-opendyslexic: #{$ln-font-family-opendyslexic};
+    --ln-font-family-comicsans: #{$ln-font-family-comicsans};
 }
 
 .ln-font {
@@ -118,6 +120,10 @@ a {
     &-opendyslexic {
         font-family: $ln-font-family-opendyslexic;
         font-size: 0.8em;
+    }
+
+    &-comicsans {
+        font-family: $ln-font-family-comicsans;
     }
 }
 

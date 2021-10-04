@@ -110,8 +110,18 @@ export enum Font {
     Serif,
     Monospace,
     Cursive,
+    ComicSans,
 
-    OpenDyslexic,
+    OpenDyslexic = 30,
+}
+
+export const FONT_NAMES: { [key in keyof typeof Font]: string } = {
+    "SansSerif": "Sans Serif",
+    "Serif": "Serif",
+    "Monospace": "Monospace",
+    "Cursive": "Cursive",
+    "ComicSans": "Comis Sans MS",
+    "OpenDyslexic": "Open Dyslexic",
 }
 
 export interface UserPreferences {

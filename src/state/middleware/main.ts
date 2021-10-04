@@ -173,8 +173,6 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
                     if(prefs) {
                         let full_prefs = { ...DEFAULT_PREFS, ...prefs } as UserPreferences;
 
-                        localStorage.setItem(StorageKey.PREFS, JSON.stringify(full_prefs));
-
                         setTheme({ temperature: full_prefs.temp, is_light: full_prefs.light }, false);
                         dispatch({ type: Type.UPDATE_PREFS, prefs: full_prefs }); // do side-effects
                     }
@@ -240,9 +238,13 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
                 }
             }
 
-            if(font_changed && [chat_font, ui_font].includes(Font.OpenDyslexic)) {
-                import("ui/fonts/opendyslexic");
+            if(font_changed) {
+                if([chat_font, ui_font].includes(Font.OpenDyslexic)) import("ui/fonts/opendyslexic");
+                if([chat_font, ui_font].includes(Font.ComicSans)) import("ui/fonts/dramasans");
             }
+
+            // NOTE: Because this runs after the reducers, and the prefs reducer fills in defaults, this is the full prefs
+            localStorage.setItem(StorageKey.PREFS, JSON.stringify(prefs));
         }
     }
 
@@ -250,17 +252,7 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
 }
 
 function font_to_css(font: Font): string {
-    let suffix = (() => {
-        switch(font) {
-            case Font.Cursive: return 'cursive';
-            case Font.Serif: return 'serif';
-            case Font.Monospace: return 'monospace';
-            case Font.OpenDyslexic: return 'opendyslexic';
-            case Font.SansSerif: return 'sansserif';
-        }
-    })();
-
-    return `var(--ln-font-family-${suffix})`;
+    return `var(--ln-font-family-${Font[font].toLowerCase()})`;
 }
 
 function font_size(font?: Font): number {

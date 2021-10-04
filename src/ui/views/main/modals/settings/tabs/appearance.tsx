@@ -5,7 +5,7 @@ import throttle from "lodash/throttle";
 
 import { setTheme } from "state/commands/theme";
 import { savePrefs } from "state/commands/prefs";
-import { Font, UserPreferences } from "state/models";
+import { Font, FONT_NAMES, UserPreferences } from "state/models";
 import { themeSelector } from "state/selectors/theme";
 import { RootState } from "state/root";
 
@@ -75,14 +75,6 @@ const ThemeSetting = React.memo(({ onChange }: IThemeSettingsProps) => {
     )
 });
 
-const Fonts = {
-    'sansserif': 'Sans Serif',
-    'serif': 'Serif',
-    'monospace': 'Monospace',
-    'cursive': 'Cursive',
-    'opendyslexic': 'Open Dyslexic',
-};
-
 interface IFontSelectorProps {
     which: 'chat' | 'ui',
 }
@@ -90,13 +82,17 @@ interface IFontSelectorProps {
 const FontSelector = React.memo(({ which }: IFontSelectorProps) => {
     let name, label, prefs_key = which == 'chat' ? 'chat_font' : 'ui_font';
 
-    let dispatch = useDispatch();
     let current_font = useSelector((state: RootState) => state.prefs[prefs_key]);
-    let [font, setFont] = useState(Font[current_font].toLowerCase());
+    let dispatch = useDispatch();
+
+    // if we get new state from the server while this component is running, force an update to the selection
+    let [font, setFont] = useState(Font[current_font]);
+    useEffect(() => setFont(Font[current_font]), [current_font]);
 
     useEffect(() => {
-        if(font == 'opendyslexic') {
-            import("ui/fonts/opendyslexic");
+        switch(Font[font]) {
+            case Font.OpenDyslexic: { import("ui/fonts/opendyslexic"); break; }
+            case Font.ComicSans: { import("ui/fonts/dramasans"); break; }
         }
     }, [font]);
 
@@ -108,28 +104,16 @@ const FontSelector = React.memo(({ which }: IFontSelectorProps) => {
         label = 'ui_font';
     }
 
-    let font_class = "ln-font-" + font;
+    let font_class = "ln-font-" + font.toLowerCase();
 
     let onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        let font_name: keyof typeof Fonts = e.currentTarget.value as any;
-        if(!Fonts.hasOwnProperty(font_name)) return;
+        let font_name: keyof typeof Font = e.currentTarget.value as any;
+        if(!Font.hasOwnProperty(font_name)) return;
 
         setFont(font_name);
-
-        let font = (() => {
-            switch(font_name) {
-                case 'serif': return Font.Serif;
-                case 'cursive': return Font.Cursive;
-                case 'monospace': return Font.Monospace;
-                case 'opendyslexic': return Font.OpenDyslexic;
-                case 'sansserif': return Font.SansSerif;
-            }
-        })();
-
-        let prefs: Partial<UserPreferences> = {};
-        prefs[prefs_key] = font;
-
-        dispatch(savePrefs(prefs));
+        dispatch(savePrefs({
+            [prefs_key]: Font[font_name]
+        }));
     };
 
     return (
@@ -139,10 +123,10 @@ const FontSelector = React.memo(({ which }: IFontSelectorProps) => {
                 <div className="ln-settings-font__wrapper">
                     <div className="ln-settings-font__selector">
                         <FormSelect name={label} value={font} onChange={onChange}>
-                            {Object.keys(Fonts).map((font) => (
+                            {Object.keys(FONT_NAMES).map((font) => (
                                 <option value={font} key={font}
-                                    className={"ln-font-" + font}>
-                                    {Fonts[font]}
+                                    className={"ln-font-" + font.toLowerCase()}>
+                                    {FONT_NAMES[font]}
                                 </option>
                             ))}
                         </FormSelect>

@@ -1,0 +1,7 @@
+@font-face {
+    font-family: "Drama Sans";
+    src: url("DramaSans/DramaSans.eot");
+    src: url("DramaSans/DramaSans.eot?#iefix") format("embedded-opentype"),
+        url("DramaSans/DramaSans.woff2") format("woff2"), url("DramaSans/DramaSans.woff") format("woff"),
+        url("DramaSans/DramaSans.ttf") format("truetype");
+}

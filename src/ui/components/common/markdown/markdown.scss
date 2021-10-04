@@ -28,6 +28,13 @@
         font-style: italic;
     }
 
+    //u {
+    //    // TODO: Revisit this, Drama Sans has odd behavior with underline, too close
+    //    text-decoration: none;
+    //    border-bottom: 1px solid $lnx-primary-text-color;
+    //    border-bottom: 1px solid currentColor;
+    //}
+
     sub,
     sup {
         font-size: 0.7em;
@@ -139,16 +146,17 @@
         background-color: $lnx-primary-surface-color;
         border: 0.125em solid rgba(32, 34, 37, 0.3);
         border-radius: 0.3125em;
-        margin-right: 1em;
     }
 
     code {
         padding: 0.05em 0.2em;
         border: none;
+        font-variant-ligatures: normal;
     }
 
     pre code {
         padding: 0;
         line-height: normal;
+        margin-right: 1em;
     }
 }
