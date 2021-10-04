@@ -78,6 +78,7 @@ const Attachment = React.memo(({ msg, attachment }: { msg: MessageModel, attachm
 interface IUserNameProps {
     name: string,
     user: User,
+    is_light_theme?: boolean,
 }
 
 const UserName = React.memo((props: IUserNameProps) => {
@@ -99,6 +100,40 @@ const UserName = React.memo((props: IUserNameProps) => {
             </AnchoredModal>
             {props.name}
         </span>
+    )
+});
+
+const UserAvatar = React.memo(({ name, user, is_light_theme }: IUserNameProps) => {
+    let [show, setShow] = useState(false);
+
+    let main_click_props = useMainClick({
+        active: show,
+        onMainClick: () => setShow(false),
+        onClick: (e: React.MouseEvent) => {
+            setShow(true);
+            e.stopPropagation();
+        }
+    }, []);
+
+    let avatar_url;
+    if(user.avatar) {
+        avatar_url = user_avatar_url(user.id, user.avatar);
+    }
+
+    let anchor = (
+        <AnchoredModal show={show}>
+            <UserCard user={user} />
+        </AnchoredModal>
+    );
+
+    return (
+        <Avatar
+            username={name}
+            text={name.charAt(0)}
+            url={avatar_url}
+            backgroundColor={pickColorFromHash(user.id, !!is_light_theme)}
+            props={main_click_props}
+            anchor={anchor} />
     )
 });
 
@@ -124,13 +159,8 @@ const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: Group
             </div>
         );
 
-        let avatar_url, author = msg.msg.author;
-        if(author.avatar) {
-            avatar_url = user_avatar_url(author.id, author.avatar);
-        }
-
         side = (
-            <Avatar username={nickname} text={nickname.charAt(0)} url={avatar_url} backgroundColor={pickColorFromHash(msg.msg.author.id, is_light_theme)} />
+            <UserAvatar user={msg.msg.author} name={nickname} is_light_theme={is_light_theme} />
         );
     } else {
         side = (

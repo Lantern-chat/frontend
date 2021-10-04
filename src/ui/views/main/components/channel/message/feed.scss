@@ -140,6 +140,7 @@
         min-width: 4.025em;
         flex-shrink: 0;
         padding-left: 0.75em;
+        position: relative;
         //padding-right: 0.6em;
 
         @media (min-width: $ln-min-channel-width) {
@@ -150,6 +151,15 @@
 
         .ln-avatar {
             font-size: 1.75em;
+        }
+
+        .ln-context-anchor {
+            position: absolute;
+            bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: -10;
         }
     }
 
