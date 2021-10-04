@@ -39,7 +39,10 @@ export const PositionedModal = React.memo((props: IPositionedModalProps) => {
         on_left = left < (dim.width * 0.5),
         style: any = {
             position: 'absolute'
-        };
+        }, cnp = 'ln-modal-', cns = [];
+
+    cns.push(cnp + (on_top ? 'top' : 'bottom'));
+    cns.push(cnp + (on_left ? 'left' : 'right'));
 
     if(on_top) {
         if(props.bottom !== undefined) {
@@ -68,7 +71,7 @@ export const PositionedModal = React.memo((props: IPositionedModalProps) => {
 
     return (
         <Modal>
-            <div style={{ position: 'absolute', left, top }} {...eat_props}>
+            <div style={{ position: 'absolute', left, top }} {...eat_props} className={cns.join(' ')}>
                 <div style={style}>
                     {props.children}
                 </div>
