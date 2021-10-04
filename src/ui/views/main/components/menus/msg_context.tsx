@@ -24,6 +24,7 @@ function copyText(txt: string): Promise<void> {
 }
 
 /// Menu shown when right-clicking on a message in chat
+import "./msg_context.scss";
 export const MsgContextMenu = React.memo(({ msg }: IMsgContextMenuProps) => {
     let copy_msg = useCallback(() => {
         copyText(msg.msg.content);
@@ -56,14 +57,23 @@ export const MsgContextMenu = React.memo(({ msg }: IMsgContextMenuProps) => {
 
     let [shownConfirmation, setShownConfirmation] = useState(false);
 
-    let on_delete = (e: React.MouseEvent) => {
-        if(shownConfirmation) {
-            // TODO: Do delete
-        } else {
-            setShownConfirmation(true);
-            e.stopPropagation();
-        }
-    };
+    let on_delete = useMemo(() => {
+        var timer: number | null = null, delayed = false;
+
+        return (e: React.MouseEvent) => {
+            if(timer === null) {
+                timer = setTimeout(() => { delayed = true; }, 120);
+                setShownConfirmation(true);
+                e.stopPropagation();
+            }
+
+            if(delayed) {
+                // Do delete
+            } else {
+                e.stopPropagation();
+            }
+        };
+    }, []);
 
     return (
         <ContextMenu>
@@ -97,9 +107,9 @@ export const MsgContextMenu = React.memo(({ msg }: IMsgContextMenuProps) => {
                 <span className="ui-text">Report Message</span>
             </div>
 
-            <div style={{ color: '#ff5555', fill: '#ff5555' }} onClick={on_delete}>
+            <div className={shownConfirmation ? 'ln-contextmenu-confirm' : 'ln-contextmenu-delete'} onClick={on_delete}>
                 <Glyphicon src={TrashIcon} />
-                <span className="ui-text" style={{ textDecoration: shownConfirmation ? 'underline' : '' }}>
+                <span className="ui-text">
                     {shownConfirmation ? "Are you sure?" : "Delete Message"}
                 </span>
             </div>

@@ -6,6 +6,7 @@
 
     border-radius: 0.5rem;
     overflow: hidden;
+    user-select: none;
 
     // TODO: Keep this or go back?
     &::before {

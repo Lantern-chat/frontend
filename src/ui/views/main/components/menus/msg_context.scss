@@ -1,0 +1,14 @@
+.ln-contextmenu {
+    &-delete {
+        color: #ff5555;
+        fill: #ff5555;
+    }
+
+    &-confirm {
+        background-color: #ff5555;
+
+        .ui-text {
+            text-decoration: underline;
+        }
+    }
+}
