@@ -111,7 +111,6 @@
     }
 
     &__username {
-        font-family: $lnx-ui-font-family;
         margin-right: 0.5rem;
         cursor: pointer;
         &:hover {
@@ -130,7 +129,6 @@
     &__ts,
     &__sidets {
         cursor: default;
-        font-family: $lnx-ui-font-family;
     }
 
     &__ts {
@@ -141,7 +139,7 @@
     &__side {
         min-width: 4.025em;
         flex-shrink: 0;
-        padding-left: 0.8em;
+        padding-left: 0.75em;
         //padding-right: 0.6em;
 
         @media (min-width: $ln-min-channel-width) {
@@ -163,7 +161,7 @@
     &__sidets {
         font-size: 0.6em;
         color: transparent;
-        text-align: center;
+        //text-align: center;
         display: flex;
         flex-direction: column;
         height: 100%;

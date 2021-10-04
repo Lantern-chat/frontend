@@ -21,14 +21,14 @@ export const UserCard = React.memo((props: IUserCardProps) => {
     });
 
     if(!cached_user) {
-        return <span>User Not Found</span>
+        return <span className="ui-text">User Not Found</span>
     }
 
     let { user, party, presence } = cached_user;
 
     return (
         <div className="ln-user-card">
-            User: {user.username}
+            <span className="ui-text">User: {user.username}</span>
         </div>
     );
 });

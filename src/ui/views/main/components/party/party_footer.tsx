@@ -52,10 +52,10 @@ export const PartyFooter = React.memo(() => {
                 <UserAvatar nickname={user.username} user={user} status={status} is_light_theme={is_light_theme} />
 
                 <div className="ln-username">
-                    <span className="ln-username__name">
+                    <span className="ln-username__name ui-text">
                         {user.username}
                     </span>
-                    <span className="ln-username__discrim">
+                    <span className="ln-username__discrim ui-text">
                         #{user.discriminator.toString(16).toUpperCase().padStart(4, '0')}
                     </span>
                 </div>

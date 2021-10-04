@@ -25,7 +25,7 @@ export const PartyHeader = React.memo(() => {
     return (
         <header className="ln-party-header">
             <div className="ln-party-header__name">
-                <span>{party.party.name}</span>
+                <span className="ui-text">{party.party.name}</span>
             </div>
             <Glyphicon src={Balloons} />
         </header>

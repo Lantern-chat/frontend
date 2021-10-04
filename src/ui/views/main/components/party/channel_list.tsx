@@ -54,7 +54,9 @@ export const ChannelList = React.memo(() => {
                             <Avatar url={room_avatar_url(room.id, room.avatar)} username={room.name} /> :
                             <Glyphicon src={Hash} />}
                     </div>
-                    <div className="ln-channel-list__name"><span>{room.name}</span></div>
+                    <div className="ln-channel-list__name">
+                        <span className="ui-text">{room.name}</span>
+                    </div>
                 </Link>
             </li>
         );

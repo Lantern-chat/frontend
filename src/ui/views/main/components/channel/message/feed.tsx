@@ -93,7 +93,7 @@ const UserName = React.memo((props: IUserNameProps) => {
     }, []);
 
     return (
-        <span className="ln-msg__username" {...main_click_props}>
+        <span className="ln-msg__username ui-text" {...main_click_props}>
             <AnchoredModal show={show}>
                 <UserCard user={props.user} />
             </AnchoredModal>
@@ -111,7 +111,9 @@ const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: Group
             <div className="ln-msg__title">
                 <UserName name={nickname} user={msg.msg.author} />
 
-                <span className="ln-msg__ts" title={ts}>{msg.ts.calendar()}</span>
+                <span className="ln-msg__ts" title={ts}>
+                    <span className="ui-text">{msg.ts.calendar()}</span>
+                </span>
             </div>
         );
 
@@ -132,7 +134,9 @@ const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: Group
         );
     } else {
         side = (
-            <div className="ln-msg__sidets" title={ts}>{msg.ts.format('h:mm A')}</div>
+            <div className="ln-msg__sidets" title={ts}>
+                <span className="ui-text">{msg.ts.format('h:mm A')}</span>
+            </div>
         );
     }
 

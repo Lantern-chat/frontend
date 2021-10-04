@@ -31,9 +31,9 @@ const Math = React.memo((props: IMathProps) => {
     };
 
     if(props.inline) {
-        return <span {...inner_props} />
+        return <span className="ln-math" {...inner_props} />
     } else {
-        return <div {...inner_props} />
+        return <div className="ln-math" {...inner_props} />
     }
 });
 

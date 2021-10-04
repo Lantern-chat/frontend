@@ -6,5 +6,18 @@
     height: 100%;
     flex-wrap: nowrap;
     background-color: $lnx-tertiary-surface-color;
+
     font-size: var(--ln-ui-font-size, 1rem);
+}
+
+.ui-text {
+    // TODO: Fix line height in context menu?
+    //line-height: normal;
+    font-family: $lnx-ui-font-family;
+    font-size: var(--ln-ui-font-size-adjust, 1em);
+}
+
+.chat-text {
+    font-family: $lnx-chat-font-family;
+    font-size: var(--ln-chat-font-size-adjust, 1em);
 }

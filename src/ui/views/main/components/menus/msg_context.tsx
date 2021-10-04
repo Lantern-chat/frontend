@@ -23,19 +23,19 @@ export const MsgContextMenu = React.memo(({ msg }: IMsgContextMenuProps) => {
         <ContextMenu>
             <div>
                 <Glyphicon src={PencilIcon} />
-                <span>Edit Message</span>
+                <span className="ui-text">Edit Message</span>
             </div>
 
             <div onClick={copy_msg}>
                 <Glyphicon src={CopyIcon} />
-                <span>Copy Message</span>
+                <span className="ui-text">Copy Message</span>
             </div>
 
             <hr />
 
             <div style={{ color: '#ff5555', fill: '#ff5555' }}>
                 <Glyphicon src={TrashIcon} />
-                <span >Delete Message</span>
+                <span className="ui-text">Delete Message</span>
             </div>
         </ContextMenu>
     )

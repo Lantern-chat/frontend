@@ -32,7 +32,7 @@ export const ChannelHeader = React.memo(() => {
         topic = (
             <>
                 <span className="ln-vert">&nbsp;</span>
-                <span className="ln-channel-info__topic">{room.room.topic}</span>
+                <span className="ln-channel-info__topic ui-text">{room.room.topic}</span>
             </>
         );
     }
@@ -52,7 +52,7 @@ export const ChannelHeader = React.memo(() => {
 
                 <div className="ln-channel-info__wrapper">
                     <div className="ln-channel-info">
-                        <span className="ln-channel-info__name">{room.room.name}</span>
+                        <span className="ln-channel-info__name ui-text">{room.room.name}</span>
                         {topic}
                     </div>
                 </div>

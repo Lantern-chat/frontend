@@ -209,11 +209,12 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
                 }
             }
 
-            //if(typeof prefs.chat_font_size == 'number' || chat_font) {
-            //    let fs = font_size(chat_font) * ((prefs.chat_font_size || 1));
-            //
-            //    de.style.setProperty('--ln-chat-font-size', `${fs}rem`);
-            //}
+            if(typeof prefs.chat_font_size == 'number' || chat_font) {
+                let fs = (prefs.chat_font_size || 1);
+
+                de.style.setProperty('--ln-chat-font-size', `${fs}rem`);
+                de.style.setProperty('--ln-chat-font-size-adjust', `${font_size(chat_font)}`);
+            }
 
             if(ui_font !== undefined) {
                 let ui_ff_var = font_to_css(ui_font), ui_ff_key = '--ln-ui-font-family';
@@ -224,11 +225,12 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
                 }
             }
 
-            //if(typeof prefs.ui_font_size == 'number' || ui_font) {
-            //    let fs = font_size(ui_font) * (prefs.ui_font_size || 1);
-            //
-            //    de.style.setProperty('--ln-ui-font-size', `${fs}rem`);
-            //}
+            if(typeof prefs.ui_font_size == 'number' || ui_font) {
+                let fs = (prefs.ui_font_size || 1);
+
+                de.style.setProperty('--ln-ui-font-size', `${fs}rem`);
+                de.style.setProperty('--ln-ui-font-size-adjust', `${font_size(ui_font)}em`);
+            }
 
             if(typeof prefs.tab_size == 'number') {
                 let ts_var = prefs.tab_size.toString(), ts_key = '--ln-chat-tabsize';
@@ -264,7 +266,7 @@ function font_to_css(font: Font): string {
 function font_size(font?: Font): number {
     switch(font || Font.SansSerif) {
         case Font.Cursive: return 1.4;
-        case Font.OpenDyslexic: return 0.8;
+        case Font.OpenDyslexic: return 0.85;
         default: return 1;
     }
 }
