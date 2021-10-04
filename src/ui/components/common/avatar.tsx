@@ -10,6 +10,8 @@ export interface IAvatarProps {
     username: string,
     span?: React.HTMLAttributes<HTMLSpanElement>,
     children?: React.ReactNode,
+    props?: React.HTMLProps<HTMLDivElement>,
+    anchor?: React.ReactNode,
 }
 
 export const Avatar = React.memo((props: IAvatarProps) => {
@@ -19,12 +21,13 @@ export const Avatar = React.memo((props: IAvatarProps) => {
     className = (props.rounded ? [className, className + "--rounded"] : [className]).join(' ');
 
     return (
-        <div className="ln-avatar" >
+        <div className="ln-avatar" {...(props.props || {})}>
             <span className="ln-avatar__wrapper" {...props.span} title={props.username}>
                 {is_image ?
                     <img src={props.url} className={className} alt={props.username} /> :
                     <span className={className} style={{ backgroundColor: props.backgroundColor }}>{props.children || props.text || '?'}</span>}
             </span>
+            {props.anchor}
         </div>
     );
 });
