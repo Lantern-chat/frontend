@@ -297,6 +297,11 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
 
     let on_right_click = is_empty ? open_upload_click : on_send_click;
 
+    let on_cm = useCallback((e: React.MouseEvent) => {
+        main.clickAll(e);
+        e.stopPropagation();
+    }, []);
+
     // https://github.com/buildo/react-autosize-textarea/issues/52
     return (
         <>
@@ -319,7 +324,9 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
                         ref={ref}
                         placeholder="Message..."
                         rows={1} maxRows={use_mobile_view ? 5 : 20}
-                        value={state.value} onKeyDown={on_keydown} onChange={on_change} onKeyUp={on_keyup} />
+                        value={state.value} onKeyDown={on_keydown} onChange={on_change} onKeyUp={on_keyup}
+                        onContextMenu={on_cm}
+                    />
                 </div>
 
                 {

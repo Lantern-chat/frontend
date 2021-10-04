@@ -11,6 +11,7 @@ export interface IUserCardProps {
     party_id?: Snowflake,
 }
 
+import "./list.scss";
 import "./user_card.scss";
 export const UserCard = React.memo((props: IUserCardProps) => {
     let nick = props.member?.nick;
@@ -27,7 +28,7 @@ export const UserCard = React.memo((props: IUserCardProps) => {
     let { user, party, presence } = cached_user;
 
     return (
-        <div className="ln-user-card">
+        <div className="ln-user-card ln-contextmenu">
             <span className="ui-text">User: {user.username}</span>
         </div>
     );
