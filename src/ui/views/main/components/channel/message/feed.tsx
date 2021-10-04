@@ -146,6 +146,8 @@ const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: Group
             <div className="ln-msg__title">
                 <UserName name={nickname} user={msg.msg.author} />
 
+                <span className="ln-separator"> - </span>
+
                 <span className="ln-msg__ts" title={ts}>
                     <span className="ui-text">{msg.ts.calendar()}</span>
                 </span>
@@ -451,7 +453,7 @@ const MessageFeedInner = React.memo(({ room, groups, use_mobile_view, is_light_t
         <>
             <MaybeTimeline direction={0} position={0} />
             <div className={wrapperClasses} onScroll={on_scroll} ref={container_ref}>
-                <ul className="ln-msg-list" ref={ul_ref}>
+                <ul className="ln-msg-list" id="ln-msg-list" ref={ul_ref}>
                     {groups.map(group => <MessageGroup key={group[0].msg.id} group={group} is_light_theme={is_light_theme} />)}
                 </ul>
             </div>

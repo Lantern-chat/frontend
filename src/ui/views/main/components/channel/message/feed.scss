@@ -194,3 +194,11 @@
         width: 100%;
     }
 }
+
+.ln-separator {
+    position: absolute;
+    width: 0;
+    opacity: 0;
+    display: inline-block;
+    font-style: normal;
+}

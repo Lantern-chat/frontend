@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 import { IMessageState } from "state/reducers/chat";
 import { useSelector } from "react-redux";
@@ -10,6 +10,7 @@ import { ContextMenu } from "./list";
 
 import PencilIcon from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-13-pencil.svg";
 import TrashIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-17-bin.svg";
+import ClipboardIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-30-clipboard.svg";
 import CopyIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-614-copy.svg";
 import ChatMessageIcon from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-135-chat-message.svg";
 import TriangleIcon from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-42-triangle-alert.svg";
@@ -32,6 +33,25 @@ export const MsgContextMenu = React.memo(({ msg }: IMsgContextMenuProps) => {
         copyText(msg.msg.id);
     }, [msg.msg.id]);
 
+    // it's fine to memoize this since any attempts to select more would trigger a click event and close the context menu
+    let selected = useMemo(() => {
+        let selection = window.getSelection(),
+            msg_list = document.getElementById("ln-msg-list");
+
+        if(!selection || !msg_list || !msg_list.contains(selection.anchorNode)) return;
+
+        let selected = selection.toString();
+        if(selected.length == 0) return;
+
+        return selected;
+    }, []);
+
+    let copy_selection = useCallback(() => {
+        if(selected) {
+            copyText(selected);
+        }
+    }, [selected]);
+
     let dev_mode = useSelector((state: RootState) => state.prefs.dev_mode);
 
     let [shownConfirmation, setShownConfirmation] = useState(false);
@@ -47,6 +67,19 @@ export const MsgContextMenu = React.memo(({ msg }: IMsgContextMenuProps) => {
 
     return (
         <ContextMenu>
+            {
+                !selected ? null : (
+                    <>
+                        <div onClick={copy_selection}>
+                            <Glyphicon src={ClipboardIcon} />
+                            <span className="ui-text">Copy Selection</span>
+                        </div>
+
+                        <hr />
+                    </>
+                )
+            }
+
             <div>
                 <Glyphicon src={PencilIcon} />
                 <span className="ui-text">Edit Message</span>
