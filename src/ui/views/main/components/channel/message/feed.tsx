@@ -54,7 +54,8 @@ const Attachment = React.memo(({ msg, attachment }: { msg: MessageModel, attachm
 
     if(mime && !error) {
         if(mime.startsWith('video')) {
-            embed = <video src={url} controls onError={() => setError(true)} />;
+            // the #t=0.0001 forces iOS Safari to preload the first frame and display that as a preview
+            embed = <video preload="metadata" src={url + '#t=0.0001'} controls onError={() => setError(true)} />;
         } else if(mime.startsWith('audio')) {
             embed = <audio src={url} controls onError={() => setError(true)} />
         } else if(mime.startsWith('image')) {
