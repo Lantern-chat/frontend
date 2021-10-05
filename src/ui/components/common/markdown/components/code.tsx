@@ -11,6 +11,14 @@ export interface ICodeProps {
 }
 
 const Code = React.memo(({ language, src }: ICodeProps) => {
+    if(!language) {
+        return (
+            <pre className="hljs">
+                <code>{src.trim()}</code>
+            </pre>
+        );
+    }
+
     return (
         <SyntaxHighlighter useInlineStyles={false} language={language} children={src.trim()} />
     );
