@@ -60,9 +60,9 @@
     &:last-child {
         margin-bottom: 1em;
 
-        @media (max-width: $ln-min-channel-width) {
-            margin-bottom: 1.5em;
-        }
+        //@media (max-width: $ln-min-channel-width) {
+        //    margin-bottom: 1.5em;
+        //}
     }
 
     //padding-top: 1em;
