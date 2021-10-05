@@ -23,7 +23,8 @@ const Math = React.memo((props: IMathProps) => {
         strict: false,
         throwOnError: false,
         macros: katexMacros,
-        output: 'html',
+        output: 'htmlAndMathml',
+        maxSize: 5,
     });
 
     let inner_props = {
