@@ -185,7 +185,7 @@ const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: Group
         cm = (
             <div className="ln-msg__cm">
                 <PositionedModal top={pos.top} left={pos.left}>
-                    <MsgContextMenu msg={msg} />
+                    <MsgContextMenu msg={msg} pos={pos} />
                 </PositionedModal>
             </div>
         );

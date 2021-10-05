@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { IMessageState } from "state/reducers/chat";
 import { useSelector } from "react-redux";
@@ -17,6 +17,7 @@ import TriangleIcon from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/indi
 
 export interface IMsgContextMenuProps {
     msg: IMessageState,
+    pos: any,
 }
 
 function copyText(txt: string): Promise<void> {
@@ -25,37 +26,31 @@ function copyText(txt: string): Promise<void> {
 
 /// Menu shown when right-clicking on a message in chat
 import "./msg_context.scss";
-export const MsgContextMenu = React.memo(({ msg }: IMsgContextMenuProps) => {
-    let copy_msg = useCallback(() => {
-        copyText(msg.msg.content);
-    }, [msg.msg.content]);
+export const MsgContextMenu = React.memo(({ msg, pos }: IMsgContextMenuProps) => {
+    let dev_mode = useSelector((state: RootState) => state.prefs.dev_mode);
 
-    let copy_id = useCallback(() => {
-        copyText(msg.msg.id);
-    }, [msg.msg.id]);
+    let [shownConfirmation, setShownConfirmation] = useState(false);
+
+    // if context menu changes position, remove the dialogue
+    useEffect(() => setShownConfirmation(false), [pos]);
+
+    let copy_msg = useCallback(() => copyText(msg.msg.content), [msg.msg.content]);
+    let copy_id = useCallback(() => copyText(msg.msg.id), [msg.msg.id]);
 
     // it's fine to memoize this since any attempts to select more would trigger a click event and close the context menu
     let selected = useMemo(() => {
         let selection = window.getSelection(),
             msg_list = document.getElementById("ln-msg-list");
 
-        if(!selection || !msg_list || !msg_list.contains(selection.anchorNode)) return;
+        if(selection && msg_list && msg_list.contains(selection.anchorNode)) {
+            let selected = selection.toString();
+            if(selected.length > 0) return selected;
+        }
 
-        let selected = selection.toString();
-        if(selected.length == 0) return;
-
-        return selected;
+        return;
     }, []);
 
-    let copy_selection = useCallback(() => {
-        if(selected) {
-            copyText(selected);
-        }
-    }, [selected]);
-
-    let dev_mode = useSelector((state: RootState) => state.prefs.dev_mode);
-
-    let [shownConfirmation, setShownConfirmation] = useState(false);
+    let copy_selection = useCallback(() => selected && copyText(selected), [selected]);
 
     let on_delete = useMemo(() => {
         var timer: number | null = null, delayed = false;
@@ -73,7 +68,7 @@ export const MsgContextMenu = React.memo(({ msg }: IMsgContextMenuProps) => {
                 e.stopPropagation();
             }
         };
-    }, []);
+    }, [pos]);
 
     return (
         <ContextMenu>
