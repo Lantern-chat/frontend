@@ -353,7 +353,7 @@ const MessageFeedInner = React.memo(({ room, groups, use_mobile_view, is_light_t
 
     let container_ref = useRef<HTMLDivElement>(null);
 
-    let { on_resize, on_state } = useMemo(() => {
+    let { on_resize, on_state, state } = useMemo(() => {
         var state = SCROLL_STATE;
 
         let on_state = (new_state: Partial<IScrollState>) => {
@@ -361,6 +361,7 @@ const MessageFeedInner = React.memo(({ room, groups, use_mobile_view, is_light_t
             for(let prop in new_state) {
                 state[prop] = new_state[prop];
             }
+            //console.info(state);
         };
 
         let on_resize = (_width: number | undefined, height: number | undefined) => {
@@ -371,18 +372,17 @@ const MessageFeedInner = React.memo(({ room, groups, use_mobile_view, is_light_t
                 if(state.anchor == ScrollAnchor.Bottom) {
                     top = container.scrollHeight;
                     __DEV__ && console.log("SCROLLING TO BOTTOM: ", top);
-                    container.scrollTo({ top });
+
                 } else {
                     //console.log("HEIGHTS: ", container.scrollHeight, list.clientHeight, state.height, state.old_height);
                     //console.log("HEIGHTS: ", container.scrollHeight, height, state.height, state.pos, container.scrollTop);
 
                     let diff = height - state.height;
+                    top = top + diff;
+                }
 
-                    if(diff != -top) {
-
-                        top = top + diff;
-                        container.scrollTo({ top });
-                    }
+                if(top != container.scrollTop) {
+                    container.scrollTo({ top });
                 }
 
                 state.pos = top;
@@ -390,17 +390,29 @@ const MessageFeedInner = React.memo(({ room, groups, use_mobile_view, is_light_t
             }
         };
 
-        return { on_resize, on_state };
+        return { on_resize, on_state, state };
     }, [container_ref.current]);
 
     // force resize check when we absolutely know the DOM just changed
     useLayoutEffect(() => on_resize(undefined, container_ref.current?.scrollHeight), [groups, on_resize]);
+    useLayoutEffect(() => {
+        // force to bottom when changing rooms
+        on_state({ anchor: ScrollAnchor.Bottom });
+        on_resize(undefined, container_ref.current?.scrollHeight)
+    }, [active_room, on_resize]);
 
     //let on_resize_throttled = useCallback(throttle(on_resize, 100), [on_resize]);
 
-    //const { ref: ul_ref } = useResizeDetector<HTMLUListElement>({
-    //    onResize: on_resize_throttled,
-    //});
+    // only use the resize observer to stick to the bottom on tiny changes
+    const { ref: ul_ref } = useResizeDetector<HTMLDivElement>({
+        onResize: useCallback((width, height) => {
+            if(state.anchor == ScrollAnchor.Bottom) {
+                //console.log("HEREERERERER");
+                on_resize(width, height);
+            }
+        }, [on_resize]),
+        observerOptions: { box: 'border-box' },
+    });
 
     let load_messages = useCallback(throttle(() => {
         if(active_room && groups[0]) {
@@ -408,20 +420,20 @@ const MessageFeedInner = React.memo(({ room, groups, use_mobile_view, is_light_t
         }
     }, 500), [active_room, groups]);
 
-    let on_scroll = useCallback(throttle((event: React.UIEvent<HTMLDivElement>) => {
+    let on_scroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
         let t = event.currentTarget;
         if(!t) return;
 
         //__DEV__ && console.log("SCROLLED");
 
-        let anchor = compute_at(t, window_height * 0.75, window_height * 0.35);
+        let anchor = compute_at(t, window_height * 0.25, window_height * 0.25);
 
         if(anchor == ScrollAnchor.Top) {
             load_messages();
         }
 
         on_state({ pos: t.scrollTop, anchor });
-    }, 100), [load_messages, window_height, on_state]); // TODO: This will probably have dependencies
+    }, [load_messages, window_height, on_state]); // TODO: This will probably have dependencies
 
     if(!room) {
         return <div className="ln-center-standalone">Channel does not exist</div>;
@@ -440,9 +452,11 @@ const MessageFeedInner = React.memo(({ room, groups, use_mobile_view, is_light_t
         <>
             <MaybeTimeline direction={0} position={0} />
             <div className={wrapperClasses} onScroll={on_scroll} ref={container_ref}>
-                <ul className="ln-msg-list" id="ln-msg-list">
-                    {groups.map(group => <MessageGroup key={group[0].msg.id} group={group} is_light_theme={is_light_theme} />)}
-                </ul>
+                <div className="ln-msg-list__wrapper__inner" ref={ul_ref}>
+                    <ul className="ln-msg-list" id="ln-msg-list" >
+                        {groups.map(group => <MessageGroup key={group[0].msg.id} group={group} is_light_theme={is_light_theme} />)}
+                    </ul>
+                </div>
             </div>
         </>
     );

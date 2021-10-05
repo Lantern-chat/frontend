@@ -32,13 +32,31 @@
         padding: 0;
         line-height: normal;
 
-        scrollbar-width: none;
+        overflow-anchor: none;
+
+        //scrollbar-width: none;
         &::-webkit-scrollbar {
             display: none;
         }
 
         &.has-timeline {
             margin-right: 2rem;
+        }
+
+        &__inner {
+            display: flex;
+            overflow-anchor: none;
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+            -ms-flex-direction: column;
+            flex-direction: column;
+            -webkit-box-pack: end;
+            -ms-flex-pack: end;
+            justify-content: flex-end;
+            -webkit-box-align: stretch;
+            -ms-flex-align: stretch;
+            align-items: stretch;
+            min-height: 100%;
         }
     }
 
