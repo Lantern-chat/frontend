@@ -712,7 +712,8 @@ var TABLES = (function() {
  *
  * This can also match block-math, which is math alone in a paragraph.
  */
-var mathMatcher = (source: string, state: State, isBlock: boolean) => {
+const MATH_SKIP_REGEX = /^[^\\${}\n]+/;
+function mathMatcher(source: string, state: State, isBlock: boolean) {
     var length = source.length, index = 0;
 
     // When looking for blocks, skip over leading spaces
@@ -720,22 +721,30 @@ var mathMatcher = (source: string, state: State, isBlock: boolean) => {
         if(state.inline) {
             return null;
         }
-        while(index < length && source[index] === " ") {
-            index++;
+
+        // match whitespace and increment index it to skip it
+        let ws = /^\s+/.exec(source);
+        if(ws) {
+            index += ws[0].length;
         }
     }
 
-    // Our source must start with a "$"
-    if(!(index < length && source[index] === "$")) {
-        return null;
-    }
+    // Our source must start with a "$", or "$$" for blocks
+    if(index >= length || source[index++] !== '$') return null;
+    if(isBlock && source[index++] !== '$') return null;
 
-    var startIndex = ++index, braceLevel = 0;
+    var startIndex = index, braceLevel = 0, skip;
 
     // Loop through the source, looking for a closing '$'
     // closing '$'s only count if they are not escaped with
     // a `\`, and we are not in nested `{}` braces.
     while(index < length) {
+        // TODO: Benchmark this
+        if(skip = MATH_SKIP_REGEX.exec(source.slice(index))) {
+            index += skip[0].length;
+            if(index >= length) break;
+        }
+
         var character = source[index];
 
         if(character === "\\") {
@@ -752,7 +761,7 @@ var mathMatcher = (source: string, state: State, isBlock: boolean) => {
             var endIndex: number | null = index + 1;
             if(isBlock) {
                 // Look for two trailing newlines after the closing `$`
-                var match = /^(?: *\n){2,}/.exec(source.slice(endIndex));
+                var match = /^\$(?: *\n){2,}/.exec(source.slice(endIndex));
                 endIndex = match ? endIndex + match[0].length : null;
             }
 
@@ -763,22 +772,15 @@ var mathMatcher = (source: string, state: State, isBlock: boolean) => {
             //   content of the math here, as if we wrote the regex
             //   /\$([^\$]*)\$/
             if(endIndex) {
-                return [
-                    source.substring(0, endIndex),
-                    source.substring(startIndex, index),
-                ];
+                let content = source.substring(startIndex, index);
+                if(content.length > 0) return [source.substring(0, endIndex), content];
             }
             break;
         } else if(character === "{") {
             braceLevel++;
         } else if(character === "}") {
             braceLevel--;
-        } else if(character === "\n" && source[index - 1] === "\n") {
-            // This is a weird case we supported in the old
-            // math implementation--double newlines break
-            // math. I'm preserving it for now because content
-            // creators might have questions with single '$'s
-            // in paragraphs...
+        } else if(character === "\n" && !isBlock) {
             break;
         }
 
