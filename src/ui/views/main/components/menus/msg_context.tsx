@@ -10,6 +10,7 @@ import { ContextMenu } from "./list";
 
 import PencilIcon from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-13-pencil.svg";
 import TrashIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-17-bin.svg";
+import TrashOpenIcon from "icons/glyphicons-pro/custom/glyphicons-basic-17b-bin-open.svg";
 import ClipboardIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-30-clipboard.svg";
 import CopyIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-614-copy.svg";
 import ChatMessageIcon from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-135-chat-message.svg";
@@ -103,7 +104,7 @@ export const MsgContextMenu = React.memo(({ msg, pos }: IMsgContextMenuProps) =>
             </div>
 
             <div className={shownConfirmation ? 'ln-contextmenu-confirm' : 'ln-contextmenu-delete'} onClick={on_delete}>
-                <Glyphicon src={TrashIcon} />
+                {shownConfirmation ? <Glyphicon src={TrashOpenIcon} /> : <Glyphicon src={TrashIcon} />}
                 <span className="ui-text">
                     {shownConfirmation ? "Are you sure?" : "Delete Message"}
                 </span>
