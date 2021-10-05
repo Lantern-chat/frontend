@@ -88,6 +88,10 @@
                 opacity: 1;
             }
         }
+
+        &.highlighted.warning {
+            background-color: rgb(255, 85, 85, 0.3);
+        }
     }
 
     &__cm {

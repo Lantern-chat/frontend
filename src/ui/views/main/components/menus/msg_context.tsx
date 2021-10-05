@@ -19,6 +19,7 @@ import TriangleIcon from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/indi
 export interface IMsgContextMenuProps {
     msg: IMessageState,
     pos: any,
+    onConfirmChange: (pending: boolean) => void,
 }
 
 function copyText(txt: string): Promise<void> {
@@ -27,13 +28,14 @@ function copyText(txt: string): Promise<void> {
 
 /// Menu shown when right-clicking on a message in chat
 import "./msg_context.scss";
-export const MsgContextMenu = React.memo(({ msg, pos }: IMsgContextMenuProps) => {
+export const MsgContextMenu = React.memo(({ msg, pos, onConfirmChange }: IMsgContextMenuProps) => {
     let dev_mode = useSelector((state: RootState) => state.prefs.dev_mode);
 
     let [shownConfirmation, setShownConfirmation] = useState(false);
 
     // if context menu changes position, remove the dialogue
     useEffect(() => setShownConfirmation(false), [pos]);
+    useEffect(() => onConfirmChange(shownConfirmation), [shownConfirmation]);
 
     let copy_msg = useCallback(() => copyText(msg.msg.content), [msg.msg.content]);
     let copy_id = useCallback(() => copyText(msg.msg.id), [msg.msg.id]);

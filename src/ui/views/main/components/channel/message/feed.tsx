@@ -178,6 +178,7 @@ const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: Group
     }
 
     let [pos, setPos] = useState<{ top: number, left: number } | null>(null);
+    let [warn, setWarn] = useState(false);
 
     let cm;
 
@@ -185,7 +186,7 @@ const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: Group
         cm = (
             <div className="ln-msg__cm">
                 <PositionedModal top={pos.top} left={pos.left}>
-                    <MsgContextMenu msg={msg} pos={pos} />
+                    <MsgContextMenu msg={msg} pos={pos} onConfirmChange={(pending: boolean) => setWarn(pending)} />
                 </PositionedModal>
             </div>
         );
@@ -193,7 +194,7 @@ const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: Group
 
     let main_click_props = useMainClick({
         active: !!pos,
-        onMainClick: () => setPos(null),
+        onMainClick: () => { setPos(null); setWarn(false); },
         onContextMenu: (e: React.MouseEvent) => {
             setPos({ top: e.clientY, left: e.clientX })
         },
@@ -202,6 +203,10 @@ const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: Group
     let wrapper_class = "ln-msg__wrapper";
     if(cm) {
         wrapper_class += " highlighted";
+
+        if(warn) {
+            wrapper_class += " warning";
+        }
     }
 
     return (
