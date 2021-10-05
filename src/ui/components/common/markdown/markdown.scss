@@ -17,7 +17,8 @@
 }
 
 .ln-markdown {
-    content-visibility: auto;
+    // causes scrolling size issues on chrome
+    //content-visibility: auto;
 
     p,
     div.p {
@@ -86,7 +87,7 @@
     }
 
     hr {
-        color: $lnx-primary-text-color;
+        border-color: $lnx-primary-text-color;
     }
 
     h1 {
