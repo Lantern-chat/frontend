@@ -712,7 +712,6 @@ var TABLES = (function() {
  *
  * This can also match block-math, which is math alone in a paragraph.
  */
-const MATH_SKIP_REGEX = /^[^\\${}\n]+/;
 function mathMatcher(source: string, state: State, isBlock: boolean) {
     var length = source.length, index = 0;
 
@@ -739,12 +738,6 @@ function mathMatcher(source: string, state: State, isBlock: boolean) {
     // closing '$'s only count if they are not escaped with
     // a `\`, and we are not in nested `{}` braces.
     while(index < length) {
-        // TODO: Benchmark this
-        if(skip = MATH_SKIP_REGEX.exec(source.slice(index))) {
-            index += skip[0].length;
-            if(index >= length) break;
-        }
-
         var character = source[index];
 
         if(character === "\\") {
