@@ -68,7 +68,7 @@ const Attachment = React.memo(({ msg, attachment }: { msg: MessageModel, attachm
 
     return (
         <div className="ln-msg-attachment">
-            <div title={attachment.filename}>
+            <div title={attachment.filename} onContextMenu={(e) => e.stopPropagation()}>
                 {embed}
             </div>
         </div>
@@ -200,18 +200,18 @@ const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: Group
         },
     }, []);
 
-    let wrapper_class = "ln-msg__wrapper";
+    let outer_class = "ln-msg__outer";
     if(cm) {
-        wrapper_class += " highlighted";
+        outer_class += " highlighted";
 
         if(warn) {
-            wrapper_class += " warning";
+            outer_class += " warning";
         }
     }
 
     return (
-        <div key={msg.msg.id} {...main_click_props}>
-            <div className={wrapper_class}>
+        <div key={msg.msg.id} className={outer_class} {...main_click_props}>
+            <div className="ln-msg__wrapper">
                 <div className="ln-msg__side">
                     {side}
                 </div>
@@ -428,7 +428,7 @@ const MessageFeedInner = React.memo(({ room, groups, use_mobile_view, is_light_t
 
         let anchor = compute_at(t, window_height * 0.25, window_height * 0.25);
 
-        if(anchor == ScrollAnchor.Top) {
+        if(anchor == ScrollAnchor.Top && state.anchor != ScrollAnchor.Top) {
             load_messages();
         }
 

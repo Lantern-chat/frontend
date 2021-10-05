@@ -93,7 +93,9 @@
         flex-wrap: nowrap;
         padding: 0.25rem 0;
         position: relative;
+    }
 
+    &__outer {
         &:hover,
         &.highlighted {
             background-color: rgba(0, 0, 0, 0.1);
@@ -204,12 +206,28 @@
 }
 
 .ln-msg-attachment {
-    padding-left: 4.025rem;
+    padding-left: 4.425rem;
+    display: flex;
+
+    @media (max-width: $ln-min-channel-width) {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
 
     audio,
     video,
     img {
-        max-width: 40%;
+        max-width: 35em;
+
+        @media (max-width: $ln-min-channel-width) {
+            max-width: 100%;
+        }
+
+        max-height: 40em;
+    }
+
+    video {
+        background-color: black;
     }
 
     audio {
