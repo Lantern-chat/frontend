@@ -2,11 +2,12 @@ import React from "react";
 import { ICodeProps } from "./components/code";
 import { IMathProps } from "./components/math";
 
-const LazyMath = React.lazy(() => import("./components/math"));
-const LazyCode = React.lazy(() => import("./components/code"));
+const LazyMath = React.lazy(() => import(/* webpackChunkName: 'MarkdownMath' */"./components/math"));
+const LazyCode = React.lazy(() => import(/* webpackChunkName: 'MarkdownCode' */"./components/code"));
 
 const MathFallback = React.memo((props: IMathProps) => {
-    return <pre>{props.src}</pre>
+    let inner = <code>{props.src}</code>;
+    return props.inline ? inner : <pre>{inner}</pre>;
 });
 
 const CodeFallback = React.memo((props: ICodeProps) => {
