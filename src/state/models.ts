@@ -120,7 +120,7 @@ export const FONT_NAMES: { [key in keyof typeof Font]: string } = {
     "Serif": "Serif",
     "Monospace": "Monospace",
     "Cursive": "Cursive",
-    "ComicSans": "Comis Sans MS",
+    "ComicSans": "Comis Sans",
     "OpenDyslexic": "Open Dyslexic",
 }
 
