@@ -21,7 +21,7 @@ const ResetView: React.FunctionComponent = React.lazy(() => import(     /* webpa
 
 const Fallback = <div className="ln-center-standalone"><Ripple size={120} /></div>;
 
-const ValidLoginLikePaths: ['login', 'register', 'verify', 'reset'] = ['login', 'register', 'verify', 'reset']
+const ValidLoginLikePaths = ['login', 'register', 'verify', 'reset'] as const;
 
 const LoginRoutes = React.memo(({ which }: { which: typeof ValidLoginLikePaths[number] }) => {
     let View;
