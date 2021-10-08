@@ -166,6 +166,19 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
                 case GatewayMessageDiscriminator.Event: {
                     let event = action.payload.p;
                     switch(event.o) {
+                        case GatewayEventCode.MessageDelete: {
+                            let raw = event.p;
+
+                            return produce(state, draft => {
+                                let room = draft.rooms.get(raw.room_id);
+                                if(!room) return;
+
+                                let msg_idx = room.msgs.findIndex(msg => msg.msg.id == raw.id);
+                                if(msg_idx < 0) return;
+
+                                room.msgs.splice(msg_idx, 1);
+                            });
+                        }
                         case GatewayEventCode.MessageCreate: {
                             let raw_msg = event.p, msg = {
                                 msg: raw_msg,

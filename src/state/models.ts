@@ -296,7 +296,7 @@ export type GatewayEvent =
     ReadyEvent |
     TypingStartEvent |
     UserPresenceUpdateEvent |
-    UserUpdateEvent;
+    UserUpdateEvent | MessageDeleteEvent;
 
 export interface HelloEvent {
     heartbeat_interval: number,
@@ -324,6 +324,12 @@ export interface UserPresenceUpdateEvent {
 
 export interface UserUpdateEvent {
     user: User,
+}
+
+export interface MessageDeleteEvent {
+    id: Snowflake,
+    room_id: Snowflake,
+    party_id?: Snowflake,
 }
 
 export function parse_presence(p?: UserPresence): { status: "online" | "away" | "busy" | "offline", is_mobile: boolean } {

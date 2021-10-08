@@ -29,10 +29,7 @@ export function sendMessage(room_id: Snowflake, content: string): DispatchableAc
             url: `/api/v1/room/${room_id}/messages`,
             method: XHRMethod.POST,
             bearer: session!.auth,
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ content })
+            json: { content },
         });
 
         // TODO: Handle errors

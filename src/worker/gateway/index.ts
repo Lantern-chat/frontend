@@ -161,6 +161,7 @@ class Gateway {
             }
             case GatewayEventCode.PresenceUpdate:
             case GatewayEventCode.TypingStart:
+            case GatewayEventCode.MessageDelete:
             case GatewayEventCode.MessageCreate: return postMsg({
                 t: GatewayMessageDiscriminator.Event,
                 p: msg,
