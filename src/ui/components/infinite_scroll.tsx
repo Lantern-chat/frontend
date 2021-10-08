@@ -107,7 +107,7 @@ export const InfiniteScroll = React.memo((props: IInfiniteScrollProps) => {
 
             let max_frame = 1.0 / state.frame_time;
 
-            if(state.frame++ < max_frame) {
+            if(state.frame++ < max_frame && state.active) {
                 let prev = high_res_now();
                 requestAnimationFrame(() => {
                     state.frame_time = ema(state.frame_time, high_res_now() - prev);
@@ -165,6 +165,7 @@ export const InfiniteScroll = React.memo((props: IInfiniteScrollProps) => {
         onResize: useCallback((_width, height) => {
             if(state.anchor == props.start) {
                 //console.log("HEREERERERER");
+                state.active = false;
                 state.resize(height);
             }
         }, [state]),
