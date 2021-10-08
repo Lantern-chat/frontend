@@ -17,16 +17,22 @@
     flex-basis: 100%;
 
     &__user-list {
+        overflow: hidden;
+
         @media (max-width: $ln-min-channel-width) {
             max-width: calc(70vw);
             position: absolute;
             right: 0;
+            border-radius: 1em 0 0 1em;
         }
     }
 
     &__sidebar {
+        overflow: hidden;
+
         @media (max-width: $ln-min-channel-width) {
             max-width: calc(86vw - 4.2em);
+            border-radius: 0 1em 1em 0;
         }
     }
 
@@ -76,14 +82,14 @@
 
             &--expanded-right {
                 transform: translateX(-71vw);
-                border-top-left-radius: 1rem;
-                border-bottom-left-radius: 1rem;
+                border-top-right-radius: 1rem;
+                border-bottom-right-radius: 1rem;
             }
 
             &--expanded-left {
                 transform: translateX(87vw);
-                border-top-right-radius: 1rem;
-                border-bottom-right-radius: 1rem;
+                border-top-left-radius: 1rem;
+                border-bottom-left-radius: 1rem;
             }
         }
     }

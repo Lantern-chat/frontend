@@ -12,10 +12,6 @@
     margin: auto auto;
     display: flex;
 
-    @media (max-width: $ln-min-channel-width) {
-        border-bottom-right-radius: 1em;
-    }
-
     svg {
         fill: $lnx-primary-text-color;
     }

@@ -13,6 +13,10 @@
     flex-direction: column;
     justify-content: center;
 
+    //box-shadow: 0em 0.1rem 0.2em $lnx-primary-surface-color;
+    //box-shadow: 0em 0.1rem 0.2em $lnx-secondary-surface-color;
+    //z-index: 1;
+
     &__wrapper {
         display: flex;
         flex-wrap: nowrap;

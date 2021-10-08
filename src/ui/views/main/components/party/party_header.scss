@@ -30,8 +30,4 @@
         flex-direction: column;
         justify-content: center;
     }
-
-    @media (max-width: $ln-min-channel-width) {
-        border-top-right-radius: 1em;
-    }
 }
