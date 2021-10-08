@@ -8,7 +8,6 @@ import dayjs from "lib/time";
 
 import { Attachment, Snowflake, Message as MessageModel, Room, User } from "state/models";
 import { RootState, Type } from "state/root";
-import { IChatState, IWindowState } from "state/reducers";
 import { loadMessages, SearchMode } from "state/commands";
 import { IMessageState } from "state/reducers/chat";
 import { Panel } from "state/reducers/window";
@@ -16,6 +15,7 @@ import { Panel } from "state/reducers/window";
 import { message_attachment_url, user_avatar_url } from "config/urls";
 
 import { pickColorFromHash } from "lib/palette";
+import { IS_MOBILE } from "lib/user_agent";
 
 import { useTitle } from "ui/hooks/useTitle";
 import { Avatar } from "ui/components/common/avatar";
@@ -27,8 +27,6 @@ import { MsgContextMenu } from "../../menus/msg_context";
 import { UserCard } from "../../menus/user_card";
 
 import { useMainClick } from "ui/hooks/useMainClick";
-
-import throttle from 'lodash/throttle';
 
 export interface IMessageListProps {
     channel: Snowflake
@@ -54,8 +52,12 @@ const Attachment = React.memo(({ msg, attachment }: { msg: MessageModel, attachm
 
     if(mime && !error) {
         if(mime.startsWith('video')) {
+            if(IS_MOBILE) {
+                url += '#t=0.0001';
+            }
+
             // the #t=0.0001 forces iOS Safari to preload the first frame and display that as a preview
-            embed = <video preload="metadata" src={url + '#t=0.0001'} controls onError={() => setError(true)} />;
+            embed = <video preload="metadata" src={url} controls onError={() => setError(true)} />;
         } else if(mime.startsWith('audio')) {
             embed = <audio src={url} controls onError={() => setError(true)} />
         } else if(mime.startsWith('image')) {
@@ -237,18 +239,16 @@ const MessageGroup = ({ group, is_light_theme }: MessageGroupProps) => {
 };
 
 const feed_selector = createStructuredSelector({
-    is_light_theme: (state: RootState) => state.prefs.light,
     use_mobile_view: (state: RootState) => state.window.use_mobile_view,
     show_panel: (state: RootState) => state.window.show_panel,
 });
-
 
 import "./feed.scss";
 export const MessageFeed = React.memo((props: IMessageListProps) => {
     let dispatch = useDispatch();
 
     let room = useSelector((state: RootState) => state.chat.rooms.get(props.channel));
-    let { is_light_theme, use_mobile_view, show_panel } = useSelector(feed_selector);
+    let { use_mobile_view, show_panel } = useSelector(feed_selector);
 
     //useTitle(room?.room.name);
 
@@ -299,166 +299,69 @@ export const MessageFeed = React.memo((props: IMessageListProps) => {
     return (
         <div className="ln-msg-list__flex-container">
             {cover}
-            <MessageFeedInner room={!!room} groups={groups} use_mobile_view={use_mobile_view} is_light_theme={is_light_theme} />
+            <MessageFeedInner room={!!room} groups={groups} />
         </div>
     );
 });
 
-enum ScrollAnchor {
-    Top,
-    Scrolling,
-    Bottom,
-}
+const MsgList = React.memo(({ groups, is_light_theme }: { groups: IMessageState[][], is_light_theme: boolean }) => {
+    return (
+        <ul className="ln-msg-list" id="ln-msg-list" >
+            {groups.map(group => <MessageGroup key={group[0].msg.id} group={group} is_light_theme={is_light_theme} />)}
+        </ul>
+    );
+});
 
-interface IScrollState {
-    pos: number,
-    anchor: ScrollAnchor,
-    height: number,
-}
-
-const SCROLL_STATE: IScrollState = {
-    anchor: ScrollAnchor.Bottom,
-    pos: 0,
-    height: 0,
-};
+const NoTimeline = React.memo(() => <></>);
 
 interface IMessageFeedInnerProps {
     room: boolean,
     groups: Array<IMessageState[]>,
-    use_mobile_view: boolean,
-    is_light_theme: boolean,
 }
 
-function compute_at(e: HTMLElement, top_threshold: number, bottom_threshold: number): ScrollAnchor {
-    let scroll_height = e.scrollHeight - e.offsetHeight,
-        scroll_top = e.scrollTop;
-
-    if(scroll_top < top_threshold) {
-        return ScrollAnchor.Top;
-    } else if((scroll_height - scroll_top) < bottom_threshold) {
-        return ScrollAnchor.Bottom;
-    } else {
-        return ScrollAnchor.Scrolling;
-    }
-}
-
-const inner_selector = createStructuredSelector({
+const inner_feed_selector = createStructuredSelector({
     active_room: (state: RootState) => state.chat.active_room,
-    window_height: (state: RootState) => state.window.height,
-})
+    use_mobile_view: (state: RootState) => state.window.use_mobile_view,
+    is_light_theme: (state: RootState) => state.prefs.light,
+});
 
-const MessageFeedInner = React.memo(({ room, groups, use_mobile_view, is_light_theme }: IMessageFeedInnerProps) => {
+import { Anchor, InfiniteScroll } from "ui/components/infinite_scroll";
 
-    let { active_room, window_height } = useSelector(inner_selector);
+const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) => {
+    let { active_room, use_mobile_view, is_light_theme } = useSelector(inner_feed_selector);
     let dispatch = useDispatch();
 
-    let container_ref = useRef<HTMLDivElement>(null);
-
-    let { on_resize, on_state, state } = useMemo(() => {
-        var state = SCROLL_STATE;
-
-        let on_state = (new_state: Partial<IScrollState>) => {
-            // copy into referenced state
-            for(let prop in new_state) {
-                state[prop] = new_state[prop];
-            }
-            //console.info(state);
-        };
-
-        let on_resize = (_width: number | undefined, height: number | undefined) => {
-            let container = container_ref.current;
-            if(container && height !== undefined && height != state.height) {
-                let top = state.pos;
-
-                if(state.anchor == ScrollAnchor.Bottom) {
-                    top = container.scrollHeight;
-                    __DEV__ && console.log("SCROLLING TO BOTTOM: ", top);
-
-                } else {
-                    //console.log("HEIGHTS: ", container.scrollHeight, list.clientHeight, state.height, state.old_height);
-                    //console.log("HEIGHTS: ", container.scrollHeight, height, state.height, state.pos, container.scrollTop);
-
-                    let diff = height - state.height;
-                    top = top + diff;
-                }
-
-                if(top != container.scrollTop) {
-                    container.scrollTo({ top });
-                }
-
-                state.pos = top;
-                state.height = height;
-            }
-        };
-
-        return { on_resize, on_state, state };
-    }, [container_ref.current]);
-
-    // force resize check when we absolutely know the DOM just changed
-    useLayoutEffect(() => on_resize(undefined, container_ref.current?.scrollHeight), [groups, on_resize]);
-    useLayoutEffect(() => {
-        // force to bottom when changing rooms
-        on_state({ anchor: ScrollAnchor.Bottom });
-        on_resize(undefined, container_ref.current?.scrollHeight)
-    }, [active_room, on_resize]);
-
-    //let on_resize_throttled = useCallback(throttle(on_resize, 100), [on_resize]);
-
-    // only use the resize observer to stick to the bottom on tiny changes
-    const { ref: ul_ref } = useResizeDetector<HTMLDivElement>({
-        onResize: useCallback((width, height) => {
-            if(state.anchor == ScrollAnchor.Bottom) {
-                //console.log("HEREERERERER");
-                on_resize(width, height);
-            }
-        }, [on_resize]),
-        observerOptions: { box: 'border-box' },
-    });
-
-    let load_messages = useCallback(throttle(() => {
+    let load_next = useCallback(() => { }, []);
+    let load_prev = useCallback(() => {
         if(active_room && groups[0]) {
             dispatch(loadMessages(active_room, groups[0][0].msg.id, SearchMode.Before));
         }
-    }, 500), [active_room, groups]);
-
-    let on_scroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
-        let t = event.currentTarget;
-        if(!t) return;
-
-        //__DEV__ && console.log("SCROLLED");
-
-        let anchor = compute_at(t, window_height * 0.25, window_height * 0.25);
-
-        if(anchor == ScrollAnchor.Top && state.anchor != ScrollAnchor.Top) {
-            load_messages();
-        }
-
-        on_state({ pos: t.scrollTop, anchor });
-    }, [load_messages, window_height, on_state]); // TODO: This will probably have dependencies
+    }, [groups, active_room]);
 
     if(!room) {
         return <div className="ln-center-standalone">Channel does not exist</div>;
     }
 
-    let wrapperClasses = "ln-msg-list__wrapper ln-scroll-y",
+    let wrapperClasses,
         MaybeTimeline: React.FunctionComponent<ITimelineProps> = Timeline;
 
     if(use_mobile_view) {
-        MaybeTimeline = () => <></>;
+        MaybeTimeline = NoTimeline;
     } else {
-        wrapperClasses += ' has-timeline';
+        wrapperClasses = 'has-timeline';
     }
 
     return (
         <>
             <MaybeTimeline direction={0} position={0} />
-            <div className={wrapperClasses} onScroll={on_scroll} ref={container_ref}>
-                <div className="ln-msg-list__wrapper__inner" ref={ul_ref}>
-                    <ul className="ln-msg-list" id="ln-msg-list" >
-                        {groups.map(group => <MessageGroup key={group[0].msg.id} group={group} is_light_theme={is_light_theme} />)}
-                    </ul>
-                </div>
-            </div>
+            <InfiniteScroll start={Anchor.Bottom}
+                load_next={load_next} load_prev={load_prev}
+                reset_on_changed={active_room}
+                containerClassName={wrapperClasses}
+            >
+                <MsgList groups={groups} is_light_theme={is_light_theme} />
+            </InfiniteScroll>
         </>
-    );
-})
+    )
+});
+

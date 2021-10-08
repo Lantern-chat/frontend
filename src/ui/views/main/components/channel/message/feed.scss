@@ -1,5 +1,9 @@
 @import "lib/variables";
 
+.ln-inf-scroll__container.has-timeline {
+    margin-right: 2rem;
+}
+
 .ln-msg-list {
     &__flex-container {
         flex: 1;
@@ -18,45 +22,6 @@
         &::after {
             // ensures it blocks hover stuff
             content: "";
-        }
-    }
-
-    &__wrapper {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-
-        z-index: 1;
-        padding: 0;
-        line-height: normal;
-
-        overflow-anchor: none;
-
-        //scrollbar-width: none;
-        &::-webkit-scrollbar {
-            display: none;
-        }
-
-        &.has-timeline {
-            margin-right: 2rem;
-        }
-
-        &__inner {
-            display: flex;
-            overflow-anchor: none;
-            -webkit-box-orient: vertical;
-            -webkit-box-direction: normal;
-            -ms-flex-direction: column;
-            flex-direction: column;
-            -webkit-box-pack: end;
-            -ms-flex-pack: end;
-            justify-content: flex-end;
-            -webkit-box-align: stretch;
-            -ms-flex-align: stretch;
-            align-items: stretch;
-            min-height: 100%;
         }
     }
 
