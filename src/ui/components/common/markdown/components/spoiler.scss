@@ -7,7 +7,7 @@
         color: inherit;
         cursor: pointer;
         display: inline-block;
-        white-space: pre;
+        white-space: pre-wrap;
 
         &::after {
             content: "";
