@@ -15,7 +15,15 @@ dayjs.extend(localeData);
 import calendar from 'dayjs/plugin/calendar';
 dayjs.extend(calendar);
 
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+dayjs.extend(customParseFormat);
+
 export default dayjs;
+
+export function parse_shorthand(s: string): dayjs.Dayjs {
+    // ISO 8061 without punctuation like [-:.]
+    return dayjs(s, 'YYYYMMDDTHHmmss.SSSZ');
+}
 
 const MAX_DURATION: number = 0x7FFFFFFF;
 
