@@ -84,7 +84,7 @@ export const InfiniteScroll = React.memo((props: IInfiniteScrollProps) => {
         if(!container) return state;
 
         state.scroll = () => {
-            let anchor = compute_at(container, window.innerHeight * 0.5, window.innerHeight * 0.25),
+            let anchor = compute_at(container, container.clientHeight, container.clientHeight * 0.3),
                 reached_top = anchor == Anchor.Top && state.anchor != Anchor.Top,
                 reached_bottom = anchor == Anchor.Bottom && state.anchor != Anchor.Bottom;
 
@@ -94,7 +94,7 @@ export const InfiniteScroll = React.memo((props: IInfiniteScrollProps) => {
             state.pos = new_pos;
             state.anchor = anchor;
 
-            let predicted_pos = state.velocity + new_pos;
+            let predicted_pos = state.velocity * 2 + new_pos;
             //console.log(state.frame_time, state.velocity, new_pos, predicted_pos);
 
             if(reached_top || predicted_pos < 0) {
