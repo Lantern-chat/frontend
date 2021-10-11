@@ -56,6 +56,8 @@ const Attachment = React.memo(({ msg, attachment }: { msg: MessageModel, attachm
                 url += '#t=0.0001';
             }
 
+            // TODO: Record playback position for moving into a modal and continuing playback?
+
             // the #t=0.0001 forces iOS Safari to preload the first frame and display that as a preview
             embed = <video preload="metadata" src={url} controls onError={() => setError(true)} />;
         } else if(mime.startsWith('audio')) {
