@@ -20,9 +20,11 @@ dayjs.extend(customParseFormat);
 
 export default dayjs;
 
-export function parse_shorthand(s: string): dayjs.Dayjs {
+export function parse_shorthand(s: dayjs.ConfigType): dayjs.Dayjs {
     // ISO 8061 without punctuation like [-:.]
-    return dayjs(s, 'YYYYMMDDTHHmmss.SSSZ');
+    let res = dayjs(s, 'YYYYMMDDTHHmmss.SSSZ');
+    // try shorthand first, and if that doesn't work just try regular.
+    return res.isValid() ? res : dayjs(s);
 }
 
 const MAX_DURATION: number = 0x7FFFFFFF;

@@ -8,6 +8,7 @@ import { Message, Snowflake, Room } from "../models";
 import { GatewayMessageDiscriminator } from "worker/gateway/msg";
 import { GatewayEventCode } from "worker/gateway/event";
 import { binarySearch } from "lib/util";
+import { parse_shorthand } from "lib/time";
 
 /*
 export class RoomState {
@@ -16,7 +17,7 @@ export class RoomState {
 
     insert(msg: Message): IMessageState {
         let msg_state = {
-            ts: dayjs(msg.created_at),
+            ts: parse_shorthand(msg.created_at),
             msg,
         };
 
@@ -126,7 +127,7 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
                 let old_msgs = room.msgs,
                     new_msgs = raw_msgs.map(msg => ({
                         msg,
-                        ts: dayjs(msg.created_at)
+                        ts: parse_shorthand(msg.created_at)
                     })),
                     final_msgs: Array<IMessageState> = [];
 
@@ -182,7 +183,7 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
                         case GatewayEventCode.MessageCreate: {
                             let raw_msg = event.p, msg = {
                                 msg: raw_msg,
-                                ts: dayjs(raw_msg.created_at)
+                                ts: parse_shorthand(raw_msg.created_at)
                             };
 
                             return produce(state, draft => {
