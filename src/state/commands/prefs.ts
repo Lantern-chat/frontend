@@ -1,4 +1,3 @@
-
 import { fetch, XHRMethod } from "lib/fetch";
 import { DispatchableAction, Type } from "state/actions";
 import { UserPreferences } from "state/models";
