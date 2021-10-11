@@ -13,10 +13,10 @@ function compute_at(e: HTMLElement, top_threshold: number, bottom_threshold: num
     let scroll_height = e.scrollHeight - e.offsetHeight,
         scroll_top = e.scrollTop;
 
-    if(scroll_top < top_threshold) {
-        return Anchor.Top;
-    } else if((scroll_height - scroll_top) < bottom_threshold) {
+    if((scroll_height - scroll_top) < bottom_threshold) {
         return Anchor.Bottom;
+    } else if(scroll_top < top_threshold) {
+        return Anchor.Top;
     } else {
         return Anchor.Scrolling;
     }
@@ -29,7 +29,10 @@ interface IScrollState {
     frame: number,
     frame_time: number,
     velocity: number,
+    /// Signifies if we are currently polling for scroll position
     active: boolean,
+    /// If false, skip exactly one `scroll` event, then re-enable
+    enabled: boolean,
 
     resize(height?: number): void;
     scroll(): void;
@@ -47,6 +50,7 @@ const DEFAULT_SCROLL_STATE: IScrollState = {
     frame_time: 0.01666, // 1 / 60
     velocity: 0,
     active: false,
+    enabled: true,
     resize: noop,
     scroll: noop,
     load_prev: noop,
@@ -97,7 +101,7 @@ export const InfiniteScroll = React.memo((props: IInfiniteScrollProps) => {
             let predicted_pos = state.velocity * 2 + new_pos;
             //console.log(state.frame_time, state.velocity, new_pos, predicted_pos);
 
-            if(reached_top || predicted_pos < 0) {
+            if((reached_top || predicted_pos < 0) && anchor != Anchor.Bottom) {
                 state.anchor = Anchor.Top;
                 state.load_prev();
             } else if(reached_bottom || predicted_pos > container.scrollHeight) {
@@ -107,7 +111,7 @@ export const InfiniteScroll = React.memo((props: IInfiniteScrollProps) => {
 
             let max_frame = 1.0 / state.frame_time;
 
-            if(state.frame++ < max_frame && state.active) {
+            if(state.active && state.frame++ < max_frame) {
                 let prev = high_res_now();
                 requestAnimationFrame(() => {
                     state.frame_time = ema(state.frame_time, high_res_now() - prev);
@@ -141,6 +145,7 @@ export const InfiniteScroll = React.memo((props: IInfiniteScrollProps) => {
                 }
 
                 if(top != container.scrollTop) {
+                    state.enabled = false;
                     container.scrollTo({ top });
                 }
 
@@ -184,14 +189,16 @@ export const InfiniteScroll = React.memo((props: IInfiniteScrollProps) => {
         };
     }, [props.load_prev, props.load_next, props.children, state]);
 
-    let on_scroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
+    let on_scroll = useCallback(() => {
         state.frame = 0;
 
-        if(!state.active) {
+        if(!state.active && state.enabled) {
             state.active = true;
             state.velocity = 0; // be conservative and always start from rest
             state.scroll();
         }
+
+        state.enabled = true;
     }, [state]);
 
     let container_classes = "ln-inf-scroll__container ln-scroll-y ";
