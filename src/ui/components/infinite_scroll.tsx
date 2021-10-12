@@ -124,7 +124,7 @@ export const InfiniteScroll = React.memo((props: IInfiniteScrollProps) => {
         };
 
         state.resize = (height: number | undefined) => {
-            if(height !== undefined && height != state.height && height > 0) {
+            if(height !== undefined && height > 0) {
                 let top = state.pos;
 
                 if(state.anchor == props.start) {
@@ -168,13 +168,33 @@ export const InfiniteScroll = React.memo((props: IInfiniteScrollProps) => {
     // only use the resize observer to stick to the bottom on tiny changes
     const { ref: wrapper_ref } = useResizeDetector<HTMLDivElement>({
         onResize: useCallback((_width, height) => {
+            __DEV__ && console.log("INNER RESIZED!!!", state.anchor, props.start);
+
             if(state.anchor == props.start) {
-                //console.log("HEREERERERER");
                 state.active = false;
                 state.resize(height);
             }
         }, [state]),
         observerOptions: { box: 'border-box' },
+    });
+
+    // TODO: Improve the behavior of this when resizing very fast, as the `small_anchor` is... small.
+    useResizeDetector<HTMLDivElement>({
+        targetRef: container_ref,
+        onResize: useCallback((_width, clientHeight) => {
+            __DEV__ && console.log("OUTER RESIZED!!!", state.anchor, props.start);
+
+            let container = container_ref.current;
+            if(!container || !clientHeight) return;
+
+            // TODO: Adaptive based on how much the container resized?
+            let small_anchor = compute_at(container, 50, 50);
+
+            if(small_anchor == props.start) {
+                state.active = false;
+                state.resize(container.scrollHeight);
+            }
+        }, [state, container_ref.current]),
     });
 
     useEffect(() => {
