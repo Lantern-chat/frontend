@@ -167,6 +167,7 @@ export const InfiniteScroll = React.memo((props: IInfiniteScrollProps) => {
 
     // only use the resize observer to stick to the bottom on tiny changes
     const { ref: wrapper_ref } = useResizeDetector<HTMLDivElement>({
+        handleWidth: false,
         onResize: useCallback((_width, height) => {
             __DEV__ && console.log("INNER RESIZED!!!", state.anchor, props.start);
 
@@ -181,6 +182,7 @@ export const InfiniteScroll = React.memo((props: IInfiniteScrollProps) => {
     // TODO: Improve the behavior of this when resizing very fast, as the `small_anchor` is... small.
     useResizeDetector<HTMLDivElement>({
         targetRef: container_ref,
+        handleWidth: false,
         onResize: useCallback((_width, clientHeight) => {
             __DEV__ && console.log("OUTER RESIZED!!!", state.anchor, props.start);
 
