@@ -13,7 +13,7 @@ import { StorageKey } from "state/storage";
 import { GatewayCommand, GatewayCommandDiscriminator } from "worker/gateway/cmd";
 import { GatewayMessage, GatewayMessageDiscriminator } from "worker/gateway/msg";
 
-import { Font, Intent, UserPreferences } from "state/models";
+import { Font, hasUserPrefFlag, Intent, UserPreferenceFlags, UserPreferences } from "state/models";
 
 import { room_url } from "config/urls";
 import { activeParty, activeRoom } from "state/selectors/active";
@@ -173,7 +173,10 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
                     if(prefs) {
                         let full_prefs = { ...DEFAULT_PREFS, ...prefs } as UserPreferences;
 
-                        setTheme({ temperature: full_prefs.temp, is_light: full_prefs.light }, false);
+                        setTheme({
+                            temperature: full_prefs.temp,
+                            is_light: hasUserPrefFlag(state.prefs, UserPreferenceFlags.LightMode)
+                        }, false);
                         dispatch({ type: Type.UPDATE_PREFS, prefs: full_prefs }); // do side-effects
                     }
 

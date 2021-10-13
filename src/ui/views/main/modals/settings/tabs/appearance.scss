@@ -27,6 +27,12 @@
         flex-direction: column;
     }
 
+    &-view {
+        &__selector {
+            width: 20rem;
+        }
+    }
+
     &-font {
         &__wrapper {
             display: flex;

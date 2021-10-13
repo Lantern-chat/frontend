@@ -5,6 +5,7 @@ import { createSelector, createStructuredSelector } from "reselect";
 import { RootState, Type } from "state/root";
 import { activateParty } from "state/commands";
 import { activeParty } from "state/selectors/active";
+import { selectPrefsFlag } from "state/selectors/prefs";
 import { GatewayStatus } from "state/reducers/gateway";
 
 import { pickColorFromHash } from "lib/palette";
@@ -22,9 +23,11 @@ let sorted_party_selector = createSelector((state: RootState) => state.party.par
     return party_array;
 });
 
+import { UserPreferenceFlags } from "state/models";
+
 let party_list_selector = createStructuredSelector({
     parties: sorted_party_selector,
-    is_light_theme: (state: RootState) => state.prefs.light,
+    is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
     use_mobile_view: (state: RootState) => state.window.use_mobile_view,
     user_object: (state: RootState) => state.user.user,
     last_channel: (state: RootState) => state.party.last_channel,

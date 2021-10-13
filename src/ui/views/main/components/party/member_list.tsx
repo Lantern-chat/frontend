@@ -2,9 +2,10 @@ import { pickColorFromHash } from "lib/palette";
 import React from "react";
 import { useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
-import { parse_presence } from "state/models";
+import { hasUserPrefFlag, parse_presence, UserPreferenceFlags } from "state/models";
 import { RootState } from "state/root";
 import { activeParty } from "state/selectors/active";
+import { selectPrefsFlag } from "state/selectors/prefs";
 
 import { UserAvatar } from "../user_avatar";
 
@@ -21,7 +22,7 @@ let user_list_selector = createSelector(
 )
 
 let other_selector = createStructuredSelector({
-    is_light_theme: (state: RootState) => state.prefs.light,
+    is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
 });
 
 import "./member_list.scss";

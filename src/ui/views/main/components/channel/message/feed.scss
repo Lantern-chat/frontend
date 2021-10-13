@@ -30,6 +30,10 @@
         display: flex;
         flex-direction: column;
         margin-top: 0.3em;
+
+        //.compact & {
+        //    margin-top: 0;
+        //}
     }
 
     &__timeline {
@@ -40,7 +44,7 @@
         bottom: 0;
     }
 
-    &:last-child {
+    li:last-child {
         margin-bottom: 1em;
 
         //@media (max-width: $ln-min-channel-width) {
@@ -52,12 +56,29 @@
 }
 
 .ln-msg {
+    .compact .ln-msg__outer:first-child & {
+        //padding-left: 4.425em;
+        padding-left: 4.6em;
+
+        @media (min-width: $ln-min-channel-width) {
+            padding-left: 5.05em;
+        }
+    }
+
+    .compact .ln-msg__outer:first-child &__title {
+        padding-left: 1em;
+    }
+
     &__wrapper {
         display: flex;
         flex-direction: row;
         flex-wrap: nowrap;
         padding: 0.25rem 0;
         position: relative;
+
+        .compact & {
+            padding: 0;
+        }
     }
 
     &__outer {
@@ -97,6 +118,10 @@
 
     &__title {
         padding-bottom: 0.35rem;
+
+        .compact & {
+            padding-bottom: 0;
+        }
     }
 
     &__username {
@@ -131,6 +156,7 @@
         padding-left: 0.75em;
         position: relative;
         //padding-right: 0.6em;
+        //text-align: center;
 
         @media (min-width: $ln-min-channel-width) {
             min-width: 4.425em;

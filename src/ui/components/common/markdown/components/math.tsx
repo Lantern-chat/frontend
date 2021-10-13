@@ -17,6 +17,7 @@ export interface IMathProps {
     inline?: boolean,
 }
 
+import "./math.scss";
 const Math = React.memo((props: IMathProps) => {
     let result: string = katex.renderToString(props.src, {
         displayMode: !props.inline,

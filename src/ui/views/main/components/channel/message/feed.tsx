@@ -6,11 +6,12 @@ import { useResizeDetector } from "react-resize-detector/build/withPolyfill";
 
 import dayjs from "lib/time";
 
-import { Attachment, Snowflake, Message as MessageModel, Room, User } from "state/models";
+import { Attachment, Snowflake, Message as MessageModel, Room, User, hasUserPrefFlag, UserPreferenceFlags } from "state/models";
 import { RootState, Type } from "state/root";
 import { loadMessages, SearchMode } from "state/commands";
 import { IMessageState } from "state/reducers/chat";
 import { Panel } from "state/reducers/window";
+import { selectPrefsFlag } from "state/selectors/prefs";
 
 import { message_attachment_url, user_avatar_url } from "config/urls";
 
@@ -30,18 +31,6 @@ import { useMainClick } from "ui/hooks/useMainClick";
 
 export interface IMessageListProps {
     channel: Snowflake
-}
-
-interface GroupMessageProps {
-    msg: IMessageState,
-    is_light_theme: boolean,
-    nickname: string,
-    first: boolean,
-}
-
-interface MessageGroupProps {
-    group: IMessageState[],
-    is_light_theme: boolean
 }
 
 const Attachment = React.memo(({ msg, attachment }: { msg: MessageModel, attachment: Attachment }) => {
@@ -142,7 +131,15 @@ const UserAvatar = React.memo(({ name, user, is_light_theme }: IUserNameProps) =
     )
 });
 
-const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: GroupMessageProps) => {
+interface GroupMessageProps {
+    msg: IMessageState,
+    is_light_theme: boolean,
+    nickname: string,
+    first: boolean,
+    compact: boolean,
+}
+
+const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first, compact }: GroupMessageProps) => {
     let message = <Message editing={false} msg={msg.msg} />;
 
     let side, ts = msg.ts.format("dddd, MMMM DD, h:mm A");
@@ -166,7 +163,7 @@ const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: Group
             </div>
         );
 
-        side = (
+        side = !compact && (
             <UserAvatar user={msg.msg.author} name={nickname} is_light_theme={is_light_theme} />
         );
     } else {
@@ -214,12 +211,16 @@ const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: Group
         }
     }
 
+    side = side && (
+        <div className="ln-msg__side">
+            {side}
+        </div>
+    );
+
     return (
         <div key={msg.msg.id} className={outer_class} {...main_click_props}>
             <div className="ln-msg__wrapper">
-                <div className="ln-msg__side">
-                    {side}
-                </div>
+                {side}
                 {message}
                 {cm}
             </div>
@@ -228,14 +229,20 @@ const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: Group
     );
 });
 
+interface MessageGroupProps {
+    group: IMessageState[],
+    is_light_theme: boolean,
+    compact: boolean,
+}
+
 // NOTE: Because `group` is recomputed below as part of `groups`, this will always render.
-const MessageGroup = ({ group, is_light_theme }: MessageGroupProps) => {
+const MessageGroup = ({ group, is_light_theme, compact }: MessageGroupProps) => {
     let { msg } = group[0];
     let nickname = msg.member?.nick || msg.author.username;
 
     return (
         <li className="ln-msg-list__group">
-            {group.map((msg, i) => <GroupMessage key={msg.msg.id} msg={msg} nickname={nickname} is_light_theme={is_light_theme} first={i == 0} />)}
+            {group.map((msg, i) => <GroupMessage key={msg.msg.id} msg={msg} nickname={nickname} is_light_theme={is_light_theme} first={i == 0} compact={compact} />)}
         </li>
     );
 };
@@ -306,10 +313,10 @@ export const MessageFeed = React.memo((props: IMessageListProps) => {
     );
 });
 
-const MsgList = React.memo(({ groups, is_light_theme }: { groups: IMessageState[][], is_light_theme: boolean }) => {
+const MsgList = React.memo(({ groups, is_light_theme, compact }: { groups: IMessageState[][], is_light_theme: boolean, compact: boolean }) => {
     return (
         <ul className="ln-msg-list" id="ln-msg-list" >
-            {groups.map(group => <MessageGroup key={group[0].msg.id} group={group} is_light_theme={is_light_theme} />)}
+            {groups.map(group => <MessageGroup key={group[0].msg.id} group={group} is_light_theme={is_light_theme} compact={compact} />)}
         </ul>
     );
 });
@@ -324,13 +331,14 @@ interface IMessageFeedInnerProps {
 const inner_feed_selector = createStructuredSelector({
     active_room: (state: RootState) => state.chat.active_room,
     use_mobile_view: (state: RootState) => state.window.use_mobile_view,
-    is_light_theme: (state: RootState) => state.prefs.light,
+    is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
+    compact: selectPrefsFlag(UserPreferenceFlags.CompactView),
 });
 
 import { Anchor, InfiniteScroll } from "ui/components/infinite_scroll";
 
 const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) => {
-    let { active_room, use_mobile_view, is_light_theme } = useSelector(inner_feed_selector);
+    let { active_room, use_mobile_view, is_light_theme, compact } = useSelector(inner_feed_selector);
     let dispatch = useDispatch();
 
     let load_next = useCallback(() => { }, []);
@@ -353,6 +361,10 @@ const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) =
         wrapperClasses = 'has-timeline';
     }
 
+    if(compact) {
+        wrapperClasses = (wrapperClasses ? (wrapperClasses + ' ') : '') + 'compact';
+    }
+
     return (
         <>
             <MaybeTimeline direction={0} position={0} />
@@ -361,7 +373,7 @@ const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) =
                 reset_on_changed={active_room}
                 containerClassName={wrapperClasses}
             >
-                <MsgList groups={groups} is_light_theme={is_light_theme} />
+                <MsgList groups={groups} is_light_theme={is_light_theme} compact={compact} />
             </InfiniteScroll>
         </>
     )

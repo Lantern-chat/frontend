@@ -7,6 +7,10 @@
     margin-right: 0.5em;
     -webkit-overflow-scrolling: touch;
     //display: table;
+
+    .compact & {
+        padding: 0;
+    }
 }
 
 .ln-markdown-full {

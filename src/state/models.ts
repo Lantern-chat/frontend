@@ -124,21 +124,33 @@ export const FONT_NAMES: { [key in keyof typeof Font]: string } = {
     "OpenDyslexic": "Open Dyslexic",
 }
 
+export enum UserPreferenceFlags {
+    ReduceAnimations = 1 << 0,
+    UnfocusPause = 1 << 1,
+    LightMode = 1 << 2,
+    AllowDms = 1 << 3,
+    GroupLines = 1 << 4,
+
+    CompactView = 1 << 9,
+
+    DeveloperMode = 1 << 15,
+}
+
 export interface UserPreferences {
     locale: number,
     friend_add: number,
-    reduce_anim: boolean,
-    unfocus_pause: boolean,
-    light: boolean,
+    flags: number,
     temp: number,
-    compact: boolean,
     chat_font: Font,
     ui_font: Font,
     chat_font_size: number,
     ui_font_size: number,
     tab_size: number,
     time_format: string,
-    dev_mode: boolean,
+}
+
+export function hasUserPrefFlag(prefs: UserPreferences, flag: UserPreferenceFlags): boolean {
+    return (prefs.flags & flag) === flag;
 }
 
 export interface UserPresence {

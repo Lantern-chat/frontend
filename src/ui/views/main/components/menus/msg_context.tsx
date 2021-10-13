@@ -3,6 +3,9 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { IMessageState } from "state/reducers/chat";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "state/root";
+import { deleteMessage } from "state/commands/message/delete";
+import { UserPreferenceFlags } from "state/models";
+import { selectPrefsFlag } from "state/selectors/prefs";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
 
@@ -28,9 +31,8 @@ function copyText(txt: string): Promise<void> {
 
 /// Menu shown when right-clicking on a message in chat
 import "./msg_context.scss";
-import { deleteMessage } from "state/commands/message/delete";
 export const MsgContextMenu = React.memo(({ msg, pos, onConfirmChange }: IMsgContextMenuProps) => {
-    let dev_mode = useSelector((state: RootState) => state.prefs.dev_mode);
+    let dev_mode = useSelector(selectPrefsFlag(UserPreferenceFlags.DeveloperMode));
 
     let [shownConfirmation, setShownConfirmation] = useState(false);
 

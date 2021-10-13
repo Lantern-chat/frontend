@@ -4,7 +4,8 @@ import { createSelector, createStructuredSelector } from "reselect";
 
 import { RootState } from "state/root";
 import { activeParty } from "state/selectors/active";
-import { parse_presence } from "state/models";
+import { selectPrefsFlag } from "state/selectors/prefs";
+import { parse_presence, UserPreferenceFlags } from "state/models";
 
 import { UserAvatar } from "../user_avatar";
 import { Glyphicon } from "ui/components/common/glyphicon";
@@ -34,7 +35,7 @@ let status_selector = createSelector(
 
 let footer_selector = createStructuredSelector({
     user: (state: RootState) => state.user.user,
-    is_light_theme: (state: RootState) => state.prefs.light,
+    is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
     status: status_selector,
 });
 

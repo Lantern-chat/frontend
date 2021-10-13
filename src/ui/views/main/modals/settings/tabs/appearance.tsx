@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, batch } from "react-redux";
 
 import throttle from "lodash/throttle";
 
 import { setTheme } from "state/commands/theme";
-import { savePrefs } from "state/commands/prefs";
-import { Font, FONT_NAMES, UserPreferences } from "state/models";
+import { savePrefs, savePrefsFlag } from "state/commands/prefs";
+import { Font, FONT_NAMES, UserPreferenceFlags } from "state/models";
 import { themeSelector } from "state/selectors/theme";
+import { selectPrefsFlag } from "state/selectors/prefs";
 import { RootState } from "state/root";
 
 import { FormGroup, FormInput, FormLabel, FormSelect } from "ui/components/form";
@@ -15,11 +16,11 @@ import { MIN_TEMP, MAX_TEMP } from "lib/theme";
 
 import "./appearance.scss";
 export const AppearanceSettingsTab = () => {
-    let dispatch = useDispatch();
-
     return (
         <form className="ln-settings-form">
-            <ThemeSetting onChange={(temp, light) => dispatch(savePrefs({ temp, light }))} />
+            <ThemeSetting />
+
+            <ViewSelector />
 
             <FontSelector which="chat" />
 
@@ -28,19 +29,19 @@ export const AppearanceSettingsTab = () => {
     );
 };
 
-interface IThemeSettingsProps {
-    onChange: (temp: number, light: boolean) => void,
-}
-
-const ThemeSetting = React.memo(({ onChange }: IThemeSettingsProps) => {
+const ThemeSetting = React.memo(() => {
     let input = useRef<HTMLInputElement>(null),
         theme = useSelector(themeSelector),
         dispatch = useDispatch(),
         [interactive, setInteractive] = useState(theme),
         doSetTheme = (temperature: number, is_light: boolean) => {
             setInteractive({ temperature, is_light });
-            dispatch(setTheme(temperature, is_light));
-            onChange(temperature, is_light);
+
+            batch(() => {
+                dispatch(setTheme(temperature, is_light));
+                dispatch(savePrefs({ temp: temperature }));
+                dispatch(savePrefsFlag(UserPreferenceFlags.LightMode, is_light));
+            });
         };
 
     let onTempTouchMove = throttle((e: React.TouchEvent<HTMLInputElement>) => {
@@ -72,6 +73,32 @@ const ThemeSetting = React.memo(({ onChange }: IThemeSettingsProps) => {
                 </div>
             </div>
         </>
+    )
+});
+
+const ViewSelector = React.memo(() => {
+    let current_compact = useSelector(selectPrefsFlag(UserPreferenceFlags.CompactView));
+    let dispatch = useDispatch();
+
+    let [compact, setCompact] = useState(current_compact);
+
+    let onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        let compact = e.currentTarget.value == 'compact';
+
+        setCompact(compact);
+        dispatch(savePrefsFlag(UserPreferenceFlags.CompactView, compact));
+    };
+
+    return (
+        <div className="ln-settings-view">
+            <label htmlFor="view">View</label>
+            <div className="ln-settings-view__selector">
+                <FormSelect name="view" value={compact ? 'compact' : 'cozy'} onChange={onChange}>
+                    <option value='cozy'>Cozy</option>
+                    <option value='compact'>Compact</option>
+                </FormSelect>
+            </div>
+        </div>
     )
 });
 
@@ -117,26 +144,24 @@ const FontSelector = React.memo(({ which }: IFontSelectorProps) => {
     };
 
     return (
-        <>
-            <div className="ln-settings-font">
-                <label htmlFor={label}>{name}</label>
-                <div className="ln-settings-font__wrapper">
-                    <div className="ln-settings-font__selector">
-                        <FormSelect name={label} value={font} onChange={onChange}>
-                            {Object.keys(FONT_NAMES).map((font) => (
-                                <option value={font} key={font}
-                                    className={"ln-font-" + font.toLowerCase()}>
-                                    {FONT_NAMES[font]}
-                                </option>
-                            ))}
-                        </FormSelect>
-                    </div>
-                    <div className={"ln-settings-font__example " + font_class}>
-                        The wizard quickly jinxed the gnomes before they vaporized.
-                    </div>
+        <div className="ln-settings-font">
+            <label htmlFor={label}>{name}</label>
+            <div className="ln-settings-font__wrapper">
+                <div className="ln-settings-font__selector">
+                    <FormSelect name={label} value={font} onChange={onChange}>
+                        {Object.keys(FONT_NAMES).map((font) => (
+                            <option value={font} key={font}
+                                className={"ln-font-" + font.toLowerCase()}>
+                                {FONT_NAMES[font]}
+                            </option>
+                        ))}
+                    </FormSelect>
+                </div>
+                <div className={"ln-settings-font__example " + font_class}>
+                    The wizard quickly jinxed the gnomes before they vaporized.
                 </div>
             </div>
-        </>
+        </div>
     )
 });
 

@@ -1,6 +1,9 @@
 .katex-display {
     text-align: left;
-    margin: 0;
+
+    .compact & {
+        margin: 0;
+    }
 
     > .katex {
         text-align: left;
