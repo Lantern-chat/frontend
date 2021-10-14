@@ -142,7 +142,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     let do_nothing = useCallback(() => { }, []);
 
     let do_send = () => {
-        dispatch(sendMessage(channel!, state.value));
+        dispatch(sendMessage(channel!, state.value.trim()));
         //dispatch({ type: state.isEditing ? Type.MESSAGE_SEND_EDIT : Type.MESSAGE_SEND, payload: state.value });
         setState({ ...state, value: "" });
     };
