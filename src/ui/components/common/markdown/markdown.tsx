@@ -1221,6 +1221,8 @@ export const defaultRules: DefaultRules = {
         match: blockRegex(/^((?:[^\n]|\n(?! *\n))+)(?:\n *)+\n/),
         parse: parseCaptureInline,
         react: function(node, output, state) {
+            return <>{output(node.content, state)}<br /></>;
+
             return reactElement(
                 'div',
                 state.key,

@@ -73,6 +73,7 @@ interface IUserNameProps {
     name: string,
     user: User,
     is_light_theme?: boolean,
+    children?: React.ReactNode,
 }
 
 const UserName = React.memo((props: IUserNameProps) => {
@@ -88,12 +89,13 @@ const UserName = React.memo((props: IUserNameProps) => {
     }, []);
 
     return (
-        <span className="ln-msg__username ui-text" {...main_click_props}>
+        <h2 className="ln-msg__username ui-text" {...main_click_props}>
+            {props.children}
             <AnchoredModal show={show}>
                 <UserCard user={props.user} />
             </AnchoredModal>
             {props.name}
-        </span>
+        </h2>
     )
 });
 
@@ -139,7 +141,35 @@ interface GroupMessageProps {
     compact: boolean,
 }
 
-const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first, compact }: GroupMessageProps) => {
+const CompactMessageGroup = React.memo(({ msg, is_light_theme, nickname, first, compact }: GroupMessageProps) => {
+
+    let message = <Message editing={false} msg={msg.msg} />;
+
+    let side, ts = msg.ts.format("dddd, MMMM DD, h:mm A");
+
+    side = (
+        <div className="ln-msg__sidets" title={ts}>
+            <span className="ui-text">{msg.ts.format('h:mm A')}</span>
+        </div>
+    );
+
+    return (
+        <>
+
+            <div className="ln-msg--compact">
+                <div className="ln-msg__title">
+                    <div className="ln-msg__side">
+                        {side}
+                    </div>
+                    <UserName name={nickname} user={msg.msg.author} />
+                </div>
+                {message}
+            </div>
+        </>
+    );
+});
+
+const CozyMessageGroup = React.memo(({ msg, is_light_theme, nickname, first, compact }: GroupMessageProps) => {
     let message = <Message editing={false} msg={msg.msg} />;
 
     let side, ts = msg.ts.format("dddd, MMMM DD, h:mm A");
@@ -163,9 +193,7 @@ const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first, compact
             </div>
         );
 
-        side = !compact && (
-            <UserAvatar user={msg.msg.author} name={nickname} is_light_theme={is_light_theme} />
-        );
+        side = (<UserAvatar user={msg.msg.author} name={nickname} is_light_theme={is_light_theme} />);
     } else {
         side = (
             <div className="ln-msg__sidets" title={ts}>
@@ -174,7 +202,18 @@ const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first, compact
         );
     }
 
-    let attachments, a = msg.msg.attachments;
+    return (
+        <>
+            <div className="ln-msg__side">
+                {side}
+            </div>
+            {message}
+        </>
+    );
+});
+
+const GroupMessage = React.memo((props: GroupMessageProps) => {
+    let attachments, msg = props.msg, a = msg.msg.attachments;
     if(a && a.length) {
         attachments = a.map(attachment => <Attachment key={attachment.id} msg={msg.msg} attachment={attachment} />)
     }
@@ -211,17 +250,12 @@ const GroupMessage = React.memo(({ msg, is_light_theme, nickname, first, compact
         }
     }
 
-    side = side && (
-        <div className="ln-msg__side">
-            {side}
-        </div>
-    );
+    let Inner = props.compact ? CompactMessageGroup : CozyMessageGroup;
 
     return (
         <div key={msg.msg.id} className={outer_class} {...main_click_props}>
             <div className="ln-msg__wrapper">
-                {side}
-                {message}
+                <Inner {...props} />
                 {cm}
             </div>
             {attachments}
@@ -333,12 +367,13 @@ const inner_feed_selector = createStructuredSelector({
     use_mobile_view: (state: RootState) => state.window.use_mobile_view,
     is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
     compact: selectPrefsFlag(UserPreferenceFlags.CompactView),
+    gl: selectPrefsFlag(UserPreferenceFlags.GroupLines),
 });
 
 import { Anchor, InfiniteScroll } from "ui/components/infinite_scroll";
 
 const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) => {
-    let { active_room, use_mobile_view, is_light_theme, compact } = useSelector(inner_feed_selector);
+    let { active_room, use_mobile_view, is_light_theme, compact, gl } = useSelector(inner_feed_selector);
     let dispatch = useDispatch();
 
     let load_next = useCallback(() => { }, []);

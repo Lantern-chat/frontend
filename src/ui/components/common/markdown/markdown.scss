@@ -29,6 +29,10 @@
         word-wrap: break-word;
     }
 
+    br:last-child {
+        display: none;
+    }
+
     em {
         font-style: italic;
     }
@@ -60,6 +64,10 @@
     // element spacing
     > *:not(:first-child) {
         margin-top: 1em;
+
+        .compact & {
+            margin-top: 0.5em;
+        }
     }
 
     ul {
@@ -128,6 +136,7 @@
         padding-left: 1em;
         min-height: 1.5em;
         line-height: normal;
+        text-indent: 0;
 
         &::before {
             content: "";

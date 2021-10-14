@@ -5,18 +5,31 @@ import { ReactMarkdownExtra } from "./extra";
 
 export interface IMarkdownProps {
     body: string,
+    className?: string,
 }
 
 import "./markdown.scss";
-export const Markdown = React.memo(({ body }: IMarkdownProps) => {
+export const Markdown = React.memo((props: IMarkdownProps) => {
+    let className = "ln-markdown ln-markdown-full ";
+
+    if(props.className) {
+        className += props.className;
+    }
+
     return (
-        <ReactMarkdownExtra source={body} className="ln-markdown ln-markdown-full" />
+        <ReactMarkdownExtra source={props.body} className={className} />
     );
 });
 
-export const SimpleMarkdown = React.memo(({ body }: IMarkdownProps) => {
+export const SimpleMarkdown = React.memo((props: IMarkdownProps) => {
+    let className = "ln-markdown ln-markdown-full ";
+
+    if(props.className) {
+        className += props.className;
+    }
+
     return (
-        <ReactMarkdown source={body} className="ln-markdown ln-markdown-full" />
+        <ReactMarkdown source={props.body} className={className} />
     );
 });
 

@@ -70,17 +70,24 @@
 }
 
 .ln-msg {
-    .compact .ln-msg__outer:first-child & {
-        //padding-left: 4.425em;
-        padding-left: 4.6em;
+    white-space: break-spaces;
 
-        @media (min-width: $ln-min-channel-width) {
-            padding-left: 5.05em;
-        }
+    .compact & {
+        display: inline;
+        text-indent: 0.5em;
+        word-wrap: anywhere;
     }
 
-    .compact .ln-msg__outer:first-child &__title {
-        padding-left: 1em;
+    * {
+        text-indent: 0;
+    }
+
+    &--compact {
+        //text-indent: -1rem;
+        //margin-left: 1rem;
+
+        text-indent: -0.5em;
+        margin-left: 0.5em;
     }
 
     &__wrapper {
@@ -112,6 +119,16 @@
         &.highlighted.warning {
             background-color: rgb(255, 85, 85, 0.3);
         }
+
+        .compact & {
+            &:first-child .ln-msg__sidets {
+                opacity: 1;
+            }
+            .ln-msg__side {
+                display: inline-block;
+                text-align: center;
+            }
+        }
     }
 
     &__cm {
@@ -135,12 +152,21 @@
 
         .compact & {
             padding-bottom: 0;
+            display: inline;
         }
     }
 
     &__username {
-        margin-right: 0.5rem;
+        display: inline;
+        margin-right: 0.5em;
         cursor: pointer;
+
+        color: white;
+
+        .ln-light-theme & {
+            color: baclk;
+        }
+
         &:hover {
             text-decoration: underline;
         }
@@ -152,6 +178,10 @@
             bottom: 0;
             top: 0;
         }
+
+        //.compact & {
+        //    margin-right: 0.75em;
+        //}
     }
 
     &__ts,
