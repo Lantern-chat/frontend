@@ -4,26 +4,38 @@
     span.spoiler {
         position: relative;
         text-decoration: inherit;
-        color: inherit;
-        cursor: pointer;
-        display: inline-block;
 
-        &::after {
-            content: "";
-            position: absolute;
+        //display: inline-block;
+
+        &.hidden {
+            cursor: pointer;
+            color: black;
             background-color: black;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
+            user-select: none;
+
+            &::selection,
+            &::-moz-selection,
+            & *::selection,
+            & *::-moz-selection {
+                background-color: black;
+            }
         }
 
-        &.visible {
-            background-color: rgba(128, 128, 128, 0.3);
-            cursor: inherit;
+        //&::after {
+        //    content: "";
+        //    position: absolute;
+        //    background-color: black;
+        //    top: 0;
+        //    left: 0;
+        //    bottom: 0;
+        //    right: 0;
+        //}
 
-            &::after {
-                content: none;
+        &.visible {
+            background-color: rgba(128, 128, 128, 0.2);
+
+            .ln-light-theme & {
+                background-color: rgba(128, 128, 128, 0.1);
             }
         }
     }

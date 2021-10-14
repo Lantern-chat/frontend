@@ -5,7 +5,7 @@ export const Spoiler = React.memo(({ children }: { children: React.ReactNode }) 
     let [visible, setVisible] = useState(false);
 
     return (
-        <span onClick={() => setVisible(true)} className={"spoiler" + (visible ? ' visible' : '')}>
+        <span onClick={() => setVisible(true)} className={"spoiler " + (visible ? 'visible' : 'hidden')}>
             {children}
         </span>
     )
