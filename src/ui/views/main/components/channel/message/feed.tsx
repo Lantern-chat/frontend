@@ -352,7 +352,7 @@ const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) =
         return <div className="ln-center-standalone">Channel does not exist</div>;
     }
 
-    let wrapperClasses,
+    let wrapperClasses = '',
         MaybeTimeline: React.FunctionComponent<ITimelineProps> = Timeline;
 
     if(use_mobile_view) {
@@ -362,7 +362,11 @@ const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) =
     }
 
     if(compact) {
-        wrapperClasses = (wrapperClasses ? (wrapperClasses + ' ') : '') + 'compact';
+        wrapperClasses += ' compact';
+    }
+
+    if(gl) {
+        wrapperClasses += ' group-lines';
     }
 
     return (

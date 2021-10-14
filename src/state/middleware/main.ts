@@ -198,8 +198,11 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
             let de = document.documentElement,
                 state = getState(),
                 prefs = state.prefs,
-                { chat_font, ui_font } = prefs,
+                { chat_font, ui_font, pad } = prefs,
                 font_changed = false;
+
+            // 16px == 1em, /2 for both sides
+            de.style.setProperty('--ln-chat-group-padding', (pad / 32).toFixed(2) + 'em');
 
             if(chat_font !== undefined) {
                 let chat_ff_var = font_to_css(chat_font), chat_ff_key = '--ln-chat-font-family';

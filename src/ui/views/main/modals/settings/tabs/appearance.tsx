@@ -22,9 +22,12 @@ export const AppearanceSettingsTab = () => {
 
             <ViewSelector />
 
-            <FontSelector which="chat" />
+            <GroupLinesToggle />
 
+            <FontSelector which="chat" />
             <FontSelector which="ui" />
+
+            <GroupPaddingSlider />
         </form>
     );
 };
@@ -76,18 +79,39 @@ const ThemeSetting = React.memo(() => {
     )
 });
 
+const GroupLinesToggle = React.memo(() => {
+    let current_gl = useSelector(selectPrefsFlag(UserPreferenceFlags.GroupLines)),
+        dispatch = useDispatch(),
+        [gl, setGl] = useState(current_gl),
+        onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            let checked = e.currentTarget.checked;
+
+            setGl(checked);
+            dispatch(savePrefsFlag(UserPreferenceFlags.GroupLines, checked));
+        };
+
+    return (
+        <div className="ln-settings-group-lines">
+            <label htmlFor="group_lines">Show Lines Between Groups</label>
+            <input type="checkbox" name="group_lines" checked={gl} onChange={onChange} />
+        </div>
+    )
+});
+
 const ViewSelector = React.memo(() => {
-    let current_compact = useSelector(selectPrefsFlag(UserPreferenceFlags.CompactView));
-    let dispatch = useDispatch();
+    let current_compact = useSelector(selectPrefsFlag(UserPreferenceFlags.CompactView)),
+        dispatch = useDispatch(),
+        [compact, setCompact] = useState(current_compact),
+        onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+            let compact = e.currentTarget.value == 'compact';
 
-    let [compact, setCompact] = useState(current_compact);
+            setCompact(compact);
 
-    let onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        let compact = e.currentTarget.value == 'compact';
-
-        setCompact(compact);
-        dispatch(savePrefsFlag(UserPreferenceFlags.CompactView, compact));
-    };
+            batch(() => {
+                dispatch(savePrefs({ pad: compact ? 0 : 16 }));
+                dispatch(savePrefsFlag(UserPreferenceFlags.CompactView, compact));
+            })
+        };
 
     return (
         <div className="ln-settings-view">
@@ -168,7 +192,30 @@ const FontSelector = React.memo(({ which }: IFontSelectorProps) => {
 const FontScale = React.memo(() => {
     return (
         <div>
-            <input type="slider"></input>
+            <input type="range"></input>
         </div>
     )
-})
+});
+
+const GroupPaddingSlider = React.memo(() => {
+    let current_padding = useSelector((state: RootState) => state.prefs.pad),
+        dispatch = useDispatch(),
+        [pad, setPad] = useState(current_padding),
+        onInput = (e: React.FormEvent<HTMLInputElement>) => {
+            let value = Math.round(parseFloat(e.currentTarget.value));
+
+            setPad(value);
+            dispatch(savePrefs({ pad: value }));
+        };
+
+    useEffect(() => setPad(current_padding), [current_padding]);
+
+    return (
+        <div className="ln-settings-pad">
+            <label htmlFor="group_padding">Group Padding</label>
+            <div>
+                <input type="range" name="group_padding" min="0" max="32" step="1" value={pad} onInput={onInput}></input>
+            </div>
+        </div>
+    )
+});

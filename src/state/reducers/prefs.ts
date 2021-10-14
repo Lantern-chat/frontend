@@ -14,6 +14,7 @@ export const DEFAULT_STATE: IPrefsState = {
     tab_size: 4,
     time_format: "",
     flags: UserPreferenceFlags.AllowDms | UserPreferenceFlags.GroupLines,
+    pad: 16,
 };
 
 export function prefsReducer(state: IPrefsState = DEFAULT_STATE, action: Action) {

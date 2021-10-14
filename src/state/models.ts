@@ -147,6 +147,7 @@ export interface UserPreferences {
     ui_font_size: number,
     tab_size: number,
     time_format: string,
+    pad: number,
 }
 
 export function hasUserPrefFlag(prefs: UserPreferences, flag: UserPreferenceFlags): boolean {
