@@ -130,6 +130,7 @@ export enum UserPreferenceFlags {
     LightMode = 1 << 2,
     AllowDms = 1 << 3,
     GroupLines = 1 << 4,
+    HideAvatars = 1 << 5,
 
     CompactView = 1 << 9,
 
