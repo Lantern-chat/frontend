@@ -905,7 +905,7 @@ export const defaultRules: DefaultRules = {
         order: currOrder++,
         //match: blockRegex(/^(?:    [^\n]+\n*)+(?:\n *)+\n/),
         //match: blockRegex(/^ *(`{3,}|~{3,}) *(?:(\S+) *)?\n([^]+?)\n?\1 *(?:\n *)+\n/),
-        match: anyScopeRegex(/^ *(`{3,}|~{3,}) *(?:(\S+) *)?\n([^]+?)\n?\1/),
+        match: anyScopeRegex(/^ *(`{3,}) *(?:(\S+) *)?\n([^]+?)\n?\1(?:\n+|$)/),
         parse: function(capture, parse, state) {
             //var content = capture[0]
             //    .replace(/^    /gm, '')

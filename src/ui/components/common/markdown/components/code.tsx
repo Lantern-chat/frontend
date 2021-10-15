@@ -10,17 +10,21 @@ export interface ICodeProps {
     language?: string,
 }
 
+function ignoreTouch(e: React.TouchEvent) {
+    e.stopPropagation();
+}
+
 const Code = React.memo(({ language, src }: ICodeProps) => {
     if(!language) {
         return (
-            <pre className="hljs">
+            <pre className="hljs" onTouchStart={ignoreTouch}>
                 <code>{src.trim()}</code>
             </pre>
         );
     }
 
     return (
-        <SyntaxHighlighter useInlineStyles={false} language={language} children={src.trim()} />
+        <SyntaxHighlighter useInlineStyles={false} language={language} children={src.trim()} onTouchStart={ignoreTouch} />
     );
 });
 

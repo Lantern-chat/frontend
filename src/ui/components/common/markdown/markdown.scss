@@ -61,15 +61,6 @@
         font-weight: bold;
     }
 
-    // element spacing
-    > *:not(:first-child) {
-        margin-top: 1em;
-
-        .compact & {
-            margin-top: 0.5em;
-        }
-    }
-
     ul {
         list-style: inside disc;
     }
@@ -151,6 +142,8 @@
 
     pre {
         white-space: pre;
+        display: flex;
+        //width: fit-content;
     }
 
     pre,
@@ -166,6 +159,10 @@
         padding: 0.05em 0.2em;
         border: none;
         font-variant-ligatures: normal;
+        //* {
+        //    word-break: keep-all;
+        //    word-wrap: break-word;
+        //}
     }
 
     pre code {

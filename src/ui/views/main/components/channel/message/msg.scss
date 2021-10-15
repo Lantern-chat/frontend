@@ -3,7 +3,10 @@
 .ln-msg {
     //width: 100%;
 
-    overflow: hidden;
+    //overflow: hidden;
+
+    min-width: 0;
+    flex: 0 1 auto;
 
     &--editing {
         background-color: rgba(128, 128, 128, 0.3);
@@ -15,6 +18,15 @@
     &__message {
         overflow: hidden;
     }
+
+    // element spacing
+    //&:not(:first-child) {
+    //    margin-top: 1em;
+    //
+    //    .compact & {
+    //        margin-top: 0.5em;
+    //    }
+    //}
 
     //font-size: 10.5pt;
     font-size: 0.875em;
