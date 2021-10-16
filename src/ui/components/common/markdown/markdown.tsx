@@ -468,7 +468,7 @@ export function anyScopeRegex(regex: RegExp): MatchFunction {
     return match;
 };
 
-var TYPE_SYMBOL =
+const TYPE_SYMBOL =
     (typeof Symbol === 'function' && Symbol.for &&
         Symbol.for('react.element')) ||
     0xeac7;
@@ -562,11 +562,11 @@ function parseCaptureInline(capture: Capture, parse: Parser, state: State): UnTy
 function ignoreCapture(): UnTypedASTNode { return {}; }
 
 // recognize a `*` `-`, `+`, `1.`, `2.`... list bullet
-var LIST_BULLET = "(?:[*+-]|\\d+\\.)";
+// var LIST_BULLET = "(?:[*+-]|\\d+\\.)";
 // recognize the start of a list item:
 // leading space plus a bullet plus a space (`   * `)
-var LIST_ITEM_PREFIX = "( *)(" + LIST_BULLET + ") +";
-var LIST_ITEM_PREFIX_R = new RegExp("^" + LIST_ITEM_PREFIX);
+// var LIST_ITEM_PREFIX = "( *)(" + LIST_BULLET + ") +";
+// var LIST_ITEM_PREFIX_R = new RegExp("^" + LIST_ITEM_PREFIX);
 // recognize an individual list item:
 //  * hi
 //    this is part of the same item
@@ -574,29 +574,29 @@ var LIST_ITEM_PREFIX_R = new RegExp("^" + LIST_ITEM_PREFIX);
 //    as is this, which is a new paragraph in the same item
 //
 //  * but this is not part of the same item
-var LIST_ITEM_R = new RegExp(
-    LIST_ITEM_PREFIX +
-    "[^\\n]*(?:\\n" +
-    "(?!\\1" + LIST_BULLET + " )[^\\n]*)*(\n|$)",
-    "gm"
-);
-var BLOCK_END_R = /\n{2,}$/;
+// var LIST_ITEM_R = new RegExp(
+//     LIST_ITEM_PREFIX +
+//     "[^\\n]*(?:\\n" +
+//     "(?!\\1" + LIST_BULLET + " )[^\\n]*)*(\n|$)",
+//     "gm"
+// );
+// var BLOCK_END_R = /\n{2,}$/;
 var INLINE_CODE_ESCAPE_BACKTICKS_R = /^ (?= *`)|(` *) $/g;
 // recognize the end of a paragraph block inside a list item:
 // two or more newlines at end end of the item
-var LIST_BLOCK_END_R = BLOCK_END_R;
-var LIST_ITEM_END_R = / *\n+$/;
+// var LIST_BLOCK_END_R = BLOCK_END_R;
+// var LIST_ITEM_END_R = / *\n+$/;
 // check whether a list item has paragraphs: if it does,
 // we leave the newlines at the end
-var LIST_R = new RegExp(
-    "^( *)(" + LIST_BULLET + ") " +
-    "[^]+?(?:\n{2,}(?! )" +
-    "(?!\\1" + LIST_BULLET + " )\\n*" +
-    // the \\s*$ here is so that we can parse the inside of nested
-    // lists, where our content might end before we receive two `\n`s
-    "|\\s*\n*$)"
-);
-var LIST_LOOKBEHIND_R = /(?:^|\n)( *)$/;
+// var LIST_R = new RegExp(
+//     "^( *)(" + LIST_BULLET + ") " +
+//     "[^]+?(?:\n{2,}(?! )" +
+//     "(?!\\1" + LIST_BULLET + " )\\n*" +
+//     // the \\s*$ here is so that we can parse the inside of nested
+//     // lists, where our content might end before we receive two `\n`s
+//     "|\\s*\n*$)"
+// );
+// var LIST_LOOKBEHIND_R = /(?:^|\n)( *)$/;
 
 var TABLES = (function() {
     // predefine regexes so we don't have to create them inside functions
@@ -843,6 +843,7 @@ export const defaultRules: DefaultRules = {
                     for(; i + 1 < arr.length && arr[i + 1].type === 'text'; i++) {
                         node.content += arr[i + 1].content;
                     }
+                    node.content = node.content.trimEnd();
                 }
 
                 result.push(output(node, state));
@@ -1221,7 +1222,7 @@ export const defaultRules: DefaultRules = {
         match: blockRegex(/^((?:[^\n]|\n(?! *\n))+)(?:\n *)+\n/),
         parse: parseCaptureInline,
         react: function(node, output, state) {
-            return <>{output(node.content, state)}<br /></>;
+            return [output(node.content, state), <br />] as any;
 
             return reactElement(
                 'div',
