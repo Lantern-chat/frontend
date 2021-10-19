@@ -74,7 +74,7 @@
 
     .compact & {
         display: inline;
-        text-indent: 0.5em;
+        //text-indent: 0.5em;
         word-wrap: anywhere;
     }
 
@@ -86,8 +86,8 @@
         //text-indent: -1rem;
         //margin-left: 1rem;
 
-        text-indent: -0.5em;
-        margin-left: 0.5em;
+        text-indent: -5em;
+        margin-left: 4.5em;
     }
 
     &__wrapper {
@@ -153,6 +153,7 @@
         .compact & {
             padding-bottom: 0;
             display: inline;
+            text-indent: 0;
         }
     }
 

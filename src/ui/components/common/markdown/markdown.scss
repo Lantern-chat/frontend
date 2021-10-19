@@ -27,6 +27,17 @@
     p,
     div.p {
         word-wrap: break-word;
+
+        .compact & {
+            display: inline;
+
+            &::after {
+                content: "";
+                display: block;
+                height: 0;
+                width: 0;
+            }
+        }
     }
 
     br:last-child {
