@@ -10,7 +10,7 @@ export enum XHRMethod {
     PATCH = "PATCH",
 }
 
-interface XHRParameters {
+export interface XHRParameters {
     url: string,
     type?: XMLHttpRequestResponseType,
     body?: Document | XMLHttpRequestBodyInit,
