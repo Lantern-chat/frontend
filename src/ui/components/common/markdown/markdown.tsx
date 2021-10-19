@@ -843,7 +843,6 @@ export const defaultRules: DefaultRules = {
                     for(; i + 1 < arr.length && arr[i + 1].type === 'text'; i++) {
                         node.content += arr[i + 1].content;
                     }
-                    node.content = node.content.trimEnd();
                 }
 
                 result.push(output(node, state));
