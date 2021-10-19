@@ -242,11 +242,12 @@
 
 .ln-msg-attachment {
     padding-left: 4.425rem;
-    display: flex;
+    //display: flex;
 
     @media (max-width: $ln-min-channel-width) {
         padding-left: 1rem;
         padding-right: 1rem;
+        text-align: center;
     }
 
     audio,
@@ -258,7 +259,8 @@
             max-width: 100%;
         }
 
-        max-height: 40em;
+        //max-height: 40em;
+        max-height: 20em;
     }
 
     video {

@@ -33,38 +33,64 @@ export interface IMessageListProps {
     channel: Snowflake
 }
 
+function eat(e: React.SyntheticEvent) {
+    e.stopPropagation();
+}
+
+import { reactElement } from "ui/components/common/markdown/markdown";
+
 const Attachment = React.memo(({ msg, attachment }: { msg: MessageModel, attachment: Attachment }) => {
     let [error, setError] = useState(false);
 
     let embed, mime = attachment.mime,
-        url = message_attachment_url(msg.room_id, attachment.id, attachment.filename);
+        id = attachment.id,
+        url = message_attachment_url(msg.room_id, id, attachment.filename),
+        title = attachment.filename;
 
     if(mime && !error) {
+        let common = {
+            title,
+            onContextMenu: eat,
+            src: url,
+            onError: () => setError(true)
+        };
+
         if(mime.startsWith('video')) {
             if(IS_MOBILE) {
-                url += '#t=0.0001';
+                // the #t=0.0001 forces iOS Safari to preload the first frame and display that as a preview
+                common.src += '#t=0.0001';
             }
 
             // TODO: Record playback position for moving into a modal and continuing playback?
+            embed = reactElement('video', id, {
+                ...common,
+                preload: "metadata",
+                controls: true,
+            });
 
-            // the #t=0.0001 forces iOS Safari to preload the first frame and display that as a preview
-            embed = <video preload="metadata" src={url} controls onError={() => setError(true)} />;
+            //embed = <video title={title} onContextMenu={eat} preload="metadata" src={url} controls onError={() => setError(true)} />;
         } else if(mime.startsWith('audio')) {
-            embed = <audio src={url} controls onError={() => setError(true)} />
+            //embed = <audio title={title} onContextMenu={eat} src={url} controls onError={() => setError(true)} />
+
+            embed = reactElement('audio', id, {
+                ...common,
+                controls: true,
+            });
+
         } else if(mime.startsWith('image')) {
-            embed = <img src={url} onError={() => setError(true)} />;
+            //embed = <img title={title} onContextMenu={eat} src={url} onError={() => setError(true)} />;
+
+            embed = reactElement('img', id, common);
         }
     }
 
     if(!embed) {
-        embed = <a target="__blank" href={url}>{attachment.filename}</a>;
+        embed = <a target="__blank" title={title} href={url}>{attachment.filename}</a>;
     }
 
     return (
         <div className="ln-msg-attachment">
-            <div title={attachment.filename} onContextMenu={(e) => e.stopPropagation()}>
-                {embed}
-            </div>
+            {embed}
         </div>
     )
 });
