@@ -15,6 +15,7 @@
     //"jsxImportSource": "preact",
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
+    //"experimentalDecorators": true,
     "alwaysStrict": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
