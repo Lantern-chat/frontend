@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetch } from "lib/fetch";
 import dayjs, { parse_shorthand } from "lib/time";
-import { LinearYAxis, LineChart, LineSeries } from "reaviz";
+import { ChartZoomPan, DiscreteLegend, DiscreteLegendEntry, LinearXAxis, LinearXAxisTickLabel, LinearXAxisTickSeries, LinearYAxis, LineChart, LineSeries } from "reaviz";
 
 interface IMetric {
     mem: number,
@@ -28,8 +28,10 @@ const StatusPage = React.memo(() => {
     let [state, setState] = useState<IMetrics[] | null>(null);
 
     useEffect(() => {
+        let now = dayjs().subtract(2, 'day');
+
         fetch({
-            url: "/api/v1/metrics",
+            url: `/api/v1/metrics?resolution=30&start=${now.toISOString()}`,
         }).then(req => {
             if(req.status !== 200) return;
 
@@ -51,6 +53,8 @@ const StatusPage = React.memo(() => {
                 });
             }
 
+            if(metrics.length == 0) return;
+
             metrics.sort((a, b) => a.ts.diff(b.ts));
 
             setState(metrics);
@@ -64,7 +68,7 @@ const StatusPage = React.memo(() => {
     }
 
     return (
-        <div className="ln-status-page ln-scroll-y">
+        <div className="ln-status-page">
             {METRICS.map(metric => (
                 <Metric key={metric} metrics={state!} which={metric} />
             ))}
@@ -77,26 +81,93 @@ interface IMetricProps {
     which: keyof IMetric,
 }
 
-const DOMAINS = {
+function process(metric: number, which: keyof IMetric): number {
+    switch(which) {
+        case 'mem':
+        case 'upload': {
+            return metric / 1_000_000; // bytes to megabytes
+        }
+        case 'conns':
+        case 'events':
+            return Math.ceil(metric);
 
+        default: return metric;
+    }
+}
+
+const TITLES = {
+    mem: "Allocated Memory (in Megabytes)",
+    upload: "User Uploaded Data (in Megabytes)",
+    reqs: "HTTP Requests",
+    errs: "Errors (Any)",
+    conns: "Gateway Connections",
+    events: "Gateway Events",
+    p50: "50th Percentile Latency (in Milliseconds)",
+    p95: "95th Percentile Latency (in Milliseconds)",
+    p99: "99th Percentile Latency (in Milliseconds)",
 };
 
 const Metric = React.memo((props: IMetricProps) => {
     let data = props.metrics.map(metrics => ({
         key: metrics.ts.toDate(),
-        data: metrics.metrics[props.which]
+        data: process(metrics.metrics[props.which], props.which),
     }));
 
-    let yAxis = <LinearYAxis />
+    let domain, color = '#4444ff';
+    switch(props.which) {
+        case 'p50': {
+            let max = 0;
+            for(let metric of props.metrics) {
+                max = Math.max(max, metric.metrics.p50);
+            }
+            domain = [0, max * 3];
+            break;
+        }
+        case 'p95':
+        case 'p99': domain = [0, 1000]; break;
+        //case 'errs':
+        //case 'reqs': domain = [0, undefined]; break;
+    }
+
+    switch(props.which) {
+        case 'mem':
+        case 'upload': color = 'yellow'; break;
+        case 'p50':
+        case 'p95':
+        case 'p99': color = 'green'; break;
+        case 'errs': color = '#f44'; break;
+    }
+
+    //if(['mem', 'upload'].includes(props.which)) {
+    //    legend = (
+    //        <DiscreteLegend
+    //            orientation="horizontal"
+    //            style={{ justifyContent: 'center' }}
+    //            entries={[
+    //                <DiscreteLegendEntry label="Megabytes" color={color} />,
+    //            ]}
+    //        />
+    //    )
+    //}
+
+    let yAxis = <LinearYAxis domain={domain} />
+    let xAxis = <LinearXAxis type="time" tickSeries={
+        <LinearXAxisTickSeries
+            label={<LinearXAxisTickLabel padding={10} />}
+        />
+    } />;
 
     return (
         <div className="ln-metric">
-            Graph for {props.which}:
+            {TITLES[props.which]}:
 
             <div className="ln-metric__chart">
-                <LineChart data={data} margins={5} yAxis={yAxis} series={
-                    <LineSeries interpolation="smooth" />
-                } />
+                <LineChart data={data} margins={5}
+                    yAxis={yAxis} xAxis={xAxis}
+                    series={
+                        <LineSeries animated={false} interpolation="smooth" colorScheme={color} />
+                    }
+                />
             </div>
         </div>
     )

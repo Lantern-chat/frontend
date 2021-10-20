@@ -1,14 +1,72 @@
+@import "lib/variables";
+
+html {
+    overflow: auto;
+}
+
+body {
+    overflow: auto;
+    height: auto;
+}
+
+#ln-root {
+    position: initial;
+    //overflow: visible;
+    max-height: none;
+    height: auto;
+}
+
 .ln-status-page {
-    height: 100%;
+    //height: 100%;
     display: flex;
     flex-wrap: wrap;
+    padding: 2em;
+    justify-content: center;
+
+    @media (max-width: $ln-min-channel-width) {
+        padding: 1em;
+    }
+}
+
+body {
+    --color-background: rgb(51, 51, 51);
+    --color-on-background: #fff;
+    --color-tooltip: rgba(0, 5, 11, 0.9);
+    --color-on-tooltip: #fff;
+    --color-handle: #67c2e4;
+    --color-handle-drag: #2c343a;
 }
 
 .ln-metric {
-    margin: 4em;
+    padding: 1em 1em 2em 1em;
+    width: 50%;
+    flex: 0 1 auto;
+    min-width: min(90vw, 45em);
+
+    @media (max-width: $ln-min-channel-width) {
+        padding: 1em 0 2em 0;
+    }
 
     &__chart {
-        width: 35vw;
-        height: 30vh;
+        //width: 45vw;
+        //height: 30vh;
+
+        width: 100%;
+        height: 20em;
+
+        @media (max-width: $ln-min-channel-width) {
+            height: 10em;
+        }
+
+        margin-top: 1em;
+        background-color: rgba(128, 128, 128, 0.2);
+
+        > div:first-child {
+            padding: 1em 1em 0 1em;
+
+            @media (max-width: $ln-min-channel-width) {
+                padding-bottom: 1em;
+            }
+        }
     }
 }
