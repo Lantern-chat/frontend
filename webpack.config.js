@@ -55,7 +55,7 @@ module.exports = (env, argv) => {
             minimizer: [new TerserPlugin({
                 parallel: true,
                 terserOptions: {
-                    sourceMap: !IS_PRODUCTION,
+                    sourceMap: false, //!IS_PRODUCTION,
                     compress: {
                         ecma: 2015,
                         passes: 3,
@@ -72,7 +72,7 @@ module.exports = (env, argv) => {
         },
 
         // Enable sourcemaps for debugging webpack's output.
-        devtool: "source-map",
+        // devtool: "source-map",
 
         performance: {
             hints: false
@@ -101,7 +101,7 @@ module.exports = (env, argv) => {
                 { test: /\.tsx?$/, loader: "ts-loader" },
 
                 // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
-                { enforce: "pre", test: /\.js$/, loader: "source-map-loader" },
+                // { enforce: "pre", test: /\.js$/, loader: "source-map-loader" },
 
                 {
                     test: /\.(sa|sc|c)ss$/,
@@ -185,8 +185,9 @@ module.exports = (env, argv) => {
             //    filename: 'testbed.html'
             //}),
             new HtmlWebpackPlugin({
-                excludeChunks: ['testbed'],
+                //excludeChunks: ['testbed', 'status'],
                 template: path.resolve(__dirname, "src", "index.html"),
+                filename: 'index.html'
             }),
             //new WasmPackPlugin({
             //    crateDirectory: path.resolve(__dirname, "worker/gateway"),

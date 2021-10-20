@@ -1,0 +1,14 @@
+.ln-status-page {
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.ln-metric {
+    margin: 4em;
+
+    &__chart {
+        width: 35vw;
+        height: 30vh;
+    }
+}

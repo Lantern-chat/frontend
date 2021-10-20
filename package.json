@@ -10,6 +10,7 @@
     "build": "webpack --mode production",
     "build:dev": "webpack --mode development -c ./webpack.vendor.config.js && webpack --mode development",
     "build:vendor": "webpack --mode development -c ./webpack.vendor.config.js",
+    "build:status:dev": "webpack --mode development -c ./webpack.vendor.config.js && webpack --mode development -c ./webpack.status.config.js",
     "doc": "typedoc --entryPoints src --hideGenerator --theme minimal"
   },
   "dependencies": {
@@ -37,6 +38,7 @@
     "react-textarea-autosize": "^8.3.0",
     "react-virtualized-auto-sizer": "^1.0.4",
     "react-window": "^1.8.6",
+    "reaviz": "^11.1.1",
     "redux": "^4.1.1",
     "redux-devtools-extension": "^2.13.9",
     "redux-logger": "^3.0.6",
