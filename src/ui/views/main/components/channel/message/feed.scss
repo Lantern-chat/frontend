@@ -88,6 +88,7 @@
 
         text-indent: -5em;
         margin-left: 4.5em;
+        max-width: calc(100% - 4.5em);
     }
 
     &__wrapper {
