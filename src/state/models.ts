@@ -253,7 +253,7 @@ export interface Party extends PartialParty {
 
 export interface PartyMember {
     user?: User,
-    nick?: string,
+    nick: string | null,
     roles?: Snowflake[],
     presence?: UserPresence,
 }

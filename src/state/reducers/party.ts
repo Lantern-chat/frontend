@@ -90,6 +90,31 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
                 case GatewayMessageDiscriminator.Event: {
                     let p = action.payload.p;
                     switch(p.o) {
+                        case GatewayEventCode.PartyCreate:
+                        case GatewayEventCode.PartyUpdate: {
+                            let party = p.p;
+
+                            return produce(state, draft => {
+                                let iparty = draft.parties.get(party.id);
+                                if(iparty) {
+                                    iparty.party = party;
+                                } else {
+                                    draft.parties.set(party.id, {
+                                        party,
+                                        rooms: [],
+                                        members: new Map(),
+                                        needs_refresh: true,
+                                    });
+                                }
+                            });
+                        }
+                        case GatewayEventCode.PartyDelete: {
+                            let id = p.p.id;
+
+                            return produce(state, draft => {
+                                draft.parties.delete(id);
+                            });
+                        }
                         case GatewayEventCode.PresenceUpdate: {
                             let { user, party: party_id, presence } = p.p;
                             if(!party_id) break;
