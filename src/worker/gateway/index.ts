@@ -159,16 +159,10 @@ class Gateway {
                     t: GatewayMessageDiscriminator.InvalidSession,
                 });
             }
-            case GatewayEventCode.PresenceUpdate:
-            case GatewayEventCode.TypingStart:
-            case GatewayEventCode.MessageDelete:
-            case GatewayEventCode.MessageCreate: return postMsg({
+            default: return postMsg({
                 t: GatewayMessageDiscriminator.Event,
                 p: msg,
             });
-            default: {
-                __DEV__ && console.log("GATEWAY UNKNOWN", msg);
-            }
         }
     }
 

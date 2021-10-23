@@ -104,6 +104,31 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
                                 member.presence = presence;
                             });
                         }
+                        case GatewayEventCode.MemberUpdate:
+                        case GatewayEventCode.MemberAdd: {
+                            let member = p.p;
+                            let { party_id, user } = member, id = user!.id;
+
+                            return produce(state, draft => {
+                                let party = draft.parties.get(party_id);
+                                if(!party) return;
+
+                                let existing = party.members.get(id) || {};
+
+                                party.members.set(id, { ...existing, ...member });
+                            });
+                        }
+                        case GatewayEventCode.MemberRemove: {
+                            let member = p.p;
+                            let { party_id, user } = member, id = user!.id;
+
+                            return produce(state, draft => {
+                                let party = draft.parties.get(party_id);
+                                if(!party) return;
+
+                                party.members.delete(id);
+                            });
+                        }
                         default: break;
                     }
 

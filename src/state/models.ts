@@ -346,6 +346,10 @@ export interface MessageDeleteEvent {
     party_id?: Snowflake,
 }
 
+export interface MemberEvent extends PartyMember {
+    party_id: Snowflake,
+}
+
 export function parse_presence(p?: UserPresence): { status: "online" | "away" | "busy" | "offline", is_mobile: boolean } {
     let status: "online" | "away" | "busy" | "offline" = "offline", is_mobile = false;
 
