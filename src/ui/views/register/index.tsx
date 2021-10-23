@@ -118,8 +118,8 @@ interface RegisterAction {
 }
 
 function calculateDays(dob: IDob): number {
-    let num_days = dayjs(0).year(dob.y || 1970).month(dob.m || 11).daysInMonth();
-    dob.d = (dob.d == null || num_days <= dob.d) ? null : dob.d;
+    let num_days = dayjs(0).year(dob.y || 1970).month((dob.m || 12) - 1).daysInMonth();
+    dob.d = (dob.d == null || num_days < dob.d) ? null : dob.d;
     return num_days;
 }
 
@@ -323,14 +323,14 @@ export default function RegisterView() {
 
                     <FormSelect name="month" required value={state.dob.m != null ? state.dob.m : ""} onChange={on_month_change}>
                         <I18N t={Translation.MONTH} render={(value: string) => <option disabled hidden value="">{value}</option>} />
-                        {useMemo(() => dayjs.months().map((month: string, i: number) => <option value={i} key={i}>{month}</option>), [dayjs.locale()])}
+                        {useMemo(() => dayjs.months().map((month: string, i: number) => <option value={i + 1} key={i}>{month}</option>), [dayjs.locale()])}
                     </FormSelect>
 
                     <FormSelect name="day" required onChange={on_day_change}
                         value={state.dob.d == null ? "" : state.dob.d}>
                         <I18N t={Translation.DAY} render={(value: string) => <option disabled hidden value="">{value}</option>} />
                         {useMemo(() => (new Array(state.days)).fill(undefined).map((_, i) => (
-                            <option value={i} key={i}>{(i + 1).toString()}</option>
+                            <option value={i + 1} key={i}>{(i + 1).toString()}</option>
                         )), [state.days])}
                     </FormSelect>
                 </FormSelectGroup>
