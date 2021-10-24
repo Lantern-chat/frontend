@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useMemo } from "react";
+import React, { createContext, useEffect, useMemo, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import throttle from 'lodash/throttle';
@@ -84,8 +84,6 @@ export const MainView: React.FunctionComponent = React.memo(() => {
         return () => { events.forEach(e => w.removeEventListener(e, listener)); clearTimeout(timer); }
     }, []);
 
-    let is_right_view = useSelector((state: RootState) => state.window.use_mobile_view && state.window.show_panel == Panel.RightUserList);
-
     let handlers = useMemo(() => {
         var click_listeners: OnClickHandler[] = [];
         var key_listeners: { [key: number]: OnKeyHandler[] } = {};
@@ -160,8 +158,20 @@ export const MainView: React.FunctionComponent = React.memo(() => {
         }
     }, []);
 
+
+    // this chunk handles clearing context menus when the window/tab loses focus
+    let main = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        if(!main.current) return;
+        let listener = () => main.current!.click();
+        window.addEventListener('blur', listener);
+        return () => window.removeEventListener('blur', listener);
+    }, [main.current]);
+
+    let is_right_view = useSelector((state: RootState) => state.window.use_mobile_view && state.window.show_panel == Panel.RightUserList);
+
     return (
-        <div className="ln-main" onClick={handlers.on_click} onContextMenu={handlers.on_cm} onKeyUp={handlers.on_ku} onKeyDown={handlers.on_kd}>
+        <div className="ln-main" ref={main} onClick={handlers.on_click} onContextMenu={handlers.on_cm} onKeyUp={handlers.on_ku} onKeyDown={handlers.on_kd}>
             <MainContext.Provider value={handlers.value}>
                 {is_right_view ? null : <PartyList />}
 
