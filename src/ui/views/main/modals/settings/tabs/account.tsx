@@ -28,11 +28,12 @@ export const AccountSettingsTab = () => {
     let quota;
     if(iuser.quota_total !== undefined && iuser.quota_used !== undefined) {
         let used = format_bytes(iuser.quota_used),
-            total = format_bytes(iuser.quota_total);
+            total = format_bytes(iuser.quota_total),
+            percent = (100 * iuser.quota_used / iuser.quota_total).toFixed(1);
 
         quota = (
             <span>
-                {used}/{total} Upload Quota Used
+                {used}/{total} ({percent}%) Upload Quota Used
             </span>
         )
     } else {
