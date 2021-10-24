@@ -35,6 +35,8 @@ export enum Type {
     MESSAGE_EDIT_PREV = "MESSAGE_EDIT_PREV",
     MESSAGE_EDIT_NEXT = "MESSAGE_EDIT_NEXT",
     MESSAGE_DISCARD_EDIT = "MESSAGE_DISCARD_EDIT",
+
+    UPDATE_QUOTA = "UPDATE_QUOTA",
 }
 
 export interface Dispatch extends ReduxDispatch<Action> {
@@ -65,7 +67,9 @@ export type Action =
     MessageDiscordEdit |
     MessageEditPrev |
     MessageEditNext |
-    MessageSendEdit;
+    MessageSendEdit |
+    UpdateQuota;
+
 
 // HISTORY ACTIONS
 
@@ -182,4 +186,10 @@ export interface MessageSendEdit {
 
 export interface CleanupTyping {
     type: Type.CLEANUP_TYPING
+}
+
+export interface UpdateQuota {
+    type: Type.UPDATE_QUOTA,
+    quota_used: number,
+    quota_total: number,
 }

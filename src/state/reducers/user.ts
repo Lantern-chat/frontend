@@ -10,6 +10,8 @@ export interface IUserState {
     session?: ISession | null,
     friends?: User[],
     presence?: UserPresence,
+    quota_used?: number,
+    quota_total?: number,
 }
 
 export const DEFAULT_STATE: IUserState = {};
@@ -17,6 +19,13 @@ export const DEFAULT_STATE: IUserState = {};
 export function userReducer(state: IUserState = DEFAULT_STATE, action: Action) {
     switch(action.type) {
         case Type.SESSION_EXPIRED: return DEFAULT_STATE;
+        case Type.UPDATE_QUOTA: {
+            return {
+                ...state,
+                quota_used: action.quota_used,
+                quota_total: action.quota_total,
+            };
+        }
         case Type.GATEWAY_EVENT: {
             switch(action.payload.t) {
                 case GatewayMessageDiscriminator.Ready: {

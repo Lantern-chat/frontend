@@ -2,6 +2,7 @@ import { encodeBase64, encodeUTF8toBase64 } from "lib/base64";
 import { crc32_buf as crc32 } from "lib/crc32";
 import { fetch, XHRMethod } from "lib/fetch";
 import { Snowflake } from "state/models";
+import { DispatchableAction, Type } from "state/root";
 
 interface IFileUploadOpts {
     file: File,
@@ -73,4 +74,28 @@ function hash_base64(buf: ArrayBuffer): string {
     let bytes = new Uint8Array(4);
     new DataView(bytes.buffer).setInt32(0, crc32(new Uint8Array(buf)));
     return encodeBase64(bytes);
+}
+
+export function fetch_quota(): DispatchableAction {
+    return async (dispatch, getState) => {
+        let session = getState().user.session;
+        if(!session) return;
+
+        let res = await fetch({
+            url: '/api/v1/file',
+            method: XHRMethod.OPTIONS,
+            bearer: session.auth,
+        });
+
+        if(res.status == 204) {
+            let quota_used = parseInt(res.getResponseHeader('Upload-Quota-Used') || '0'),
+                quota_total = parseInt(res.getResponseHeader('Upload-Quota-Total') || '0');
+
+            dispatch({
+                type: Type.UPDATE_QUOTA,
+                quota_used,
+                quota_total,
+            });
+        }
+    };
 }

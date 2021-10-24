@@ -1,13 +1,42 @@
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { createStructuredSelector } from "reselect";
+import { fetch_quota } from "state/commands/sendfile";
 import { RootState } from "state/root";
+import { format_bytes } from "lib/formatting";
+
+let account_selector = createStructuredSelector({
+    iuser: (state: RootState) => state.user,
+});
 
 export const AccountSettingsTab = () => {
-    let user = useSelector((state: RootState) => state.user.user);
+    let dispatch = useDispatch();
+    let { iuser } = useSelector(account_selector), user = iuser.user;
+
+    useEffect(() => {
+        if(user) {
+            dispatch(fetch_quota());
+        }
+    }, [user]);
 
     if(!user) {
         return (
             <div>Loading...</div>
         )
+    }
+
+    let quota;
+    if(iuser.quota_total !== undefined && iuser.quota_used !== undefined) {
+        let used = format_bytes(iuser.quota_used),
+            total = format_bytes(iuser.quota_total);
+
+        quota = (
+            <span>
+                {used}/{total} Upload Quota Used
+            </span>
+        )
+    } else {
+        quota = <span>Loading Upload Quota...</span>;
     }
 
     return (
@@ -16,6 +45,7 @@ export const AccountSettingsTab = () => {
             <div>Email: {user.email}</div>
             <div>Change Password</div>
             <div>2-Factor Authentication</div>
+            <div>{quota}</div>
         </>
     );
 };
