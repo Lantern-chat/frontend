@@ -49,4 +49,20 @@
             white-space: nowrap;
         }
     }
+
+    &__spacer {
+        flex: 1 1 auto;
+        max-width: 0.5em;
+    }
+
+    &__crown {
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: center;
+        //margin-left: 0.5em;
+
+        .ln-glyphicon {
+            display: inline-flex;
+        }
+    }
 }
