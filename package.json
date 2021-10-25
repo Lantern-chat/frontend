@@ -8,9 +8,10 @@
   "private": true,
   "scripts": {
     "build": "webpack --mode production",
-    "build:dev": "webpack --mode development -c ./webpack.vendor.config.js && webpack --mode development",
     "build:vendor": "webpack --mode development -c ./webpack.vendor.config.js",
-    "build:status:dev": "webpack --mode development -c ./webpack.vendor.config.js && webpack --mode development -c ./webpack.status.config.js",
+    "build:dev": "webpack --mode development",
+    "build:status": "webpack --mode production -c ./webpack.status.config.js",
+    "build:status:dev": "webpack --mode development -c ./webpack.status.config.js",
     "doc": "typedoc --entryPoints src --hideGenerator --theme minimal"
   },
   "dependencies": {
