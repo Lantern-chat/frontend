@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:export-ydpi="81.487335"
+   inkscape:export-xdpi="81.487335"
+   inkscape:export-filename="F:\code\projects\active\lantern\frontend\src\ui\assets\icons\128.png"
+   id="publicdomainvectors.org"
+   viewBox="0 0 150.79643 150.79644"
+   version="1.1"
+   sodipodi:docname="lantern_flame.svg"
+   width="150.79643"
+   height="150.79643"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)">
+  <metadata
+     id="metadata69">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     inkscape:document-rotation="0"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="640"
+     inkscape:window-height="480"
+     id="namedview67"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="1.0980653"
+     inkscape:cx="55.247277"
+     inkscape:cy="124.3648"
+     inkscape:current-layer="g1680" />
+  <defs
+     id="defs4">
+    <inkscape:path-effect
+       effect="simplify"
+       id="path-effect931"
+       is_visible="true"
+       lpeversion="1"
+       steps="0"
+       threshold="0.0095"
+       smooth_angles="0"
+       helper_size="5"
+       simplify_individual_paths="false"
+       simplify_just_coalesce="false" />
+    <style
+       id="style2">.cls-1{fill:#342e2a;}.cls-1,.cls-11,.cls-12,.cls-14,.cls-15,.cls-16,.cls-17,.cls-18,.cls-2,.cls-3,.cls-5,.cls-6,.cls-8,.cls-9{fill-rule:evenodd;}.cls-2{fill:#4e4542;}.cls-3{fill:#917e4d;}.cls-4{fill:#ab996d;}.cls-5{fill:#b5a272;}.cls-6,.cls-7{fill:#fef081;}.cls-10,.cls-8{fill:#7d706a;}.cls-9{fill:#645854;}.cls-11{fill:#f9b870;}.cls-12{fill:#f2aa5d;}.cls-13{fill:#fad08d;}.cls-14{fill:#ffcd05;}.cls-15{fill:#eb7923;}.cls-16{fill:#f7911e;}.cls-17{fill:#fedd30;}.cls-18{fill:#5f5450;}</style>
+  </defs>
+  <g
+     id="g929"
+     inkscape:path-effect="#path-effect931"
+     transform="translate(-237.03239,-246.94755)">
+    <g
+       transform="translate(35.76491)"
+       id="g1680">
+      <g
+         transform="matrix(1.9550945,0,0,1.9550945,17.61153,-403.34425)"
+         id="g937">
+        <path
+           id="path50"
+           transform="translate(-197.916,-28.556)"
+           d="m 329.814,438.3 c -44.944,-19.5 -3.845,-51.419 -5.77,-77.13 20.784,16.108 48.212,60.645 5.77,77.13 z"
+           class="cls-14"
+           inkscape:original-d="m 329.814,438.3 c -44.944,-19.5 -3.845,-51.419 -5.77,-77.13 20.784,16.108 48.212,60.645 5.77,77.13 z" />
+        <path
+           id="path52"
+           transform="translate(-197.916,-28.556)"
+           d="m 329.982,435.475 c -32.439,-14.073 -2.776,-37.112 -4.164,-55.667 14.999,11.626 34.796,43.769 4.164,55.667 z"
+           class="cls-15"
+           inkscape:original-d="m 329.982,435.475 c -32.439,-14.073 -2.776,-37.112 -4.164,-55.667 14.999,11.626 34.796,43.769 4.164,55.667 z" />
+        <path
+           id="path54"
+           transform="translate(-197.916,-28.556)"
+           d="m 330.115,433.028 c -22.566,-9.79 -1.932,-25.817 -2.9,-38.725 10.438,8.088 24.209,30.448 2.9,38.725 z"
+           class="cls-16"
+           inkscape:original-d="m 330.115,433.028 c -22.566,-9.79 -1.932,-25.817 -2.9,-38.725 10.438,8.088 24.209,30.448 2.9,38.725 z" />
+        <path
+           id="path56"
+           transform="translate(-197.916,-28.556)"
+           d="m 330.3,430.648 c -8.964,-3.887 -0.767,-10.255 -1.151,-15.38 4.142,3.211 9.614,12.093 1.151,15.38 z"
+           class="cls-17"
+           inkscape:original-d="m 330.3,430.648 c -8.964,-3.887 -0.767,-10.255 -1.151,-15.38 4.142,3.211 9.614,12.093 1.151,15.38 z" />
+      </g>
+    </g>
+  </g>
+</svg>
