@@ -1,4 +1,6 @@
-$ln-font-family-sansserif: Whitney, "Helvetica Neue", Helvetica, Arial, sans-serif;
+// NOTE: Lato needs to be included manually elsewhere to overcome Webpack limitations
+$ln-font-family-sansserif: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+
 $ln-font-family-serif: Georgia, serif;
 $ln-font-family-cursive: "Brush Script MT", cursive;
 $ln-font-family-monospace: Consolas, Liberation Mono, Menlo, Courier, monospace;
