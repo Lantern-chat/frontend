@@ -82,11 +82,11 @@
         }
 
         &:hover::before {
-            transform: scaleY(40%);
+            transform: scaleY(0.4);
         }
 
         &.selected::before {
-            transform: scaleY(80%);
+            transform: scaleY(0.8);
         }
 
         &#connecting::before {
