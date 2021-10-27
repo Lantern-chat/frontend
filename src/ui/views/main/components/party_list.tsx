@@ -42,6 +42,7 @@ function asTouchEvent(e: React.UIEvent<HTMLElement>): React.TouchEvent<HTMLEleme
 }
 
 import "./party_list.scss";
+import { ContextMenu } from "./menus/list";
 export const PartyList = React.memo(() => {
     // TODO: Setting isScrolling will re-render, rewrite this to not do that
     let [isScrolling, setIsScrolling] = useState(0);
@@ -121,3 +122,25 @@ export const PartyList = React.memo(() => {
 if(__DEV__) {
     PartyList.displayName = "PartyList";
 }
+
+const ListedPartyMenu = React.memo(() => {
+    return (
+        <ContextMenu dark>
+            <div>
+                <span className="ui-text">Mark as Read</span>
+            </div>
+
+            <hr />
+
+            <div>
+                <span className="ui-text">Invite People</span>
+            </div>
+
+            <hr />
+
+            <div>
+                <span className="ui-text">Copy ID</span>
+            </div>
+        </ContextMenu>
+    )
+})

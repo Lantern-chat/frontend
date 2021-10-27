@@ -5,6 +5,11 @@
     border: 1px solid $lnx-secondary-surface-color;
     box-shadow: 0.25rem 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
 
+    &.dark {
+        background-color: $lnx-secondary-surface-color;
+        border-color: $lnx-primary-surface-color;
+    }
+
     border-radius: 0.5rem;
     overflow: hidden;
     user-select: none;
@@ -49,7 +54,7 @@ ul.ln-contextmenu {
         white-space: nowrap;
 
         &:hover {
-            background-color: rgba(128, 128, 128, 0.1);
+            background-color: rgba(128, 128, 128, 0.2);
         }
 
         > div {

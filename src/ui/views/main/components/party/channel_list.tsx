@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
 
 import { RootState, Type } from "state/root";
 import { activeParty, activeRoom } from "state/selectors/active";
-import { Room } from "state/models";
+import { Room, Snowflake } from "state/models";
 import { Panel } from "state/reducers/window";
 import { room_avatar_url } from "config/urls";
 
@@ -12,6 +12,10 @@ import { Bounce } from "ui/components/common/spinners/bounce";
 import { Glyphicon } from "ui/components/common/glyphicon";
 import { Avatar } from "ui/components/common/avatar";
 import { Link } from "ui/components/history";
+import { useMainClick } from "ui/hooks/useMainClick";
+
+import { PositionedModal } from "ui/components/positioned_modal";
+import { ContextMenu } from "../menus/list";
 
 import Hash from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-740-hash.svg";
 
@@ -23,6 +27,7 @@ let channel_list_selector = createSelector(
         let party = party_id ? parties.get(party_id) : null;
 
         return {
+            party_id,
             selected: room_id,
             rooms: party?.rooms,
         };
@@ -31,8 +36,9 @@ let channel_list_selector = createSelector(
 
 import "./channel_list.scss";
 export const ChannelList = React.memo(() => {
-    let { selected, rooms = [] } = useSelector(channel_list_selector);
+    let { party_id, selected, rooms = [] } = useSelector(channel_list_selector);
     let show_panel = useSelector((state: RootState) => state.window.show_panel);
+
     let dispatch = useDispatch();
 
     // if on the room list, toggle out of that on selection of a room.
@@ -41,29 +47,125 @@ export const ChannelList = React.memo(() => {
         on_navigate = () => { dispatch({ type: Type.WINDOW_TOGGLE_ROOM_LIST_SIDEBAR }); };
     }
 
-    let inner = rooms.length == 0 ?
-        <div style={{ height: "100%", paddingTop: '1em' }}>
-            <Bounce size="auto" />
-        </div> :
-        rooms.map(room =>
-            <li key={room.id} className={room.id == selected ? 'selected' : undefined}>
-                <Link className="ln-channel-list__channel" href={`/channels/${room.party_id || '@me'}/${room.id}`}
-                    onNavigate={on_navigate} noAction={room.id == selected}>
-                    <div className="ln-channel-list__icon">
-                        {room.avatar ?
-                            <Avatar url={room_avatar_url(room.id, room.avatar)} username={room.name} /> :
-                            <Glyphicon src={Hash} />}
-                    </div>
-                    <div className="ln-channel-list__name">
-                        <span className="ui-text">{room.name}</span>
-                    </div>
-                </Link>
-            </li>
+    let inner;
+    if(rooms.length == 0) {
+        inner = (
+            <div style={{ height: "100%", paddingTop: '1em' }}>
+                <Bounce size="auto" />
+            </div>
         );
+    } else {
+        inner = rooms.map(room => <ListedChannel room={room} selected={selected == room.id} onNavigate={on_navigate} />);
+    }
+
+    let [pos, setPos] = useState<{ left: number, top: number } | null>(null);
+
+    let main_click_props = useMainClick({
+        active: !!pos,
+        onMainClick: () => { setPos(null); },
+        onContextMenu: (e: React.MouseEvent) => {
+            setPos({ top: e.clientY, left: e.clientX })
+        },
+    }, []);
+
+    let menu;
+    if(pos && party_id) {
+        menu = (
+            <PositionedModal {...pos}>
+                <RoomListContextMenu party_id={party_id} />
+            </PositionedModal>
+        );
+    }
 
     return (
-        <ul className="ln-channel-list ln-scroll-y ln-scroll-fixed">
+        <ul className="ln-channel-list ln-scroll-y ln-scroll-fixed" {...main_click_props} >
             {inner}
+            {menu}
         </ul>
+    );
+});
+
+interface IListedChannelProps {
+    room: Room,
+    selected: boolean,
+    onNavigate?: () => void,
+}
+
+const ListedChannel = React.memo(({ room, selected, onNavigate }: IListedChannelProps) => {
+    let [pos, setPos] = useState<{ left: number, top: number } | null>(null);
+
+    let main_click_props = useMainClick({
+        active: !!pos,
+        onMainClick: () => { setPos(null); },
+        onContextMenu: (e: React.MouseEvent) => {
+            setPos({ top: e.clientY, left: e.clientX });
+            e.stopPropagation();
+            e.preventDefault();
+        },
+    }, []);
+
+    let menu;
+    if(pos) {
+        menu = (
+            <PositionedModal {...pos}>
+                <RoomContextMenu room={room} />
+            </PositionedModal>
+        );
+    }
+
+    return (
+        <li key={room.id} className={selected ? 'selected' : undefined} {...main_click_props}>
+            <Link className="ln-channel-list__channel" href={`/channels/${room.party_id || '@me'}/${room.id}`}
+                onNavigate={onNavigate} noAction={selected}>
+                <div className="ln-channel-list__icon">
+                    {room.avatar ?
+                        <Avatar url={room_avatar_url(room.id, room.avatar)} username={room.name} /> :
+                        <Glyphicon src={Hash} />}
+                </div>
+                <div className="ln-channel-list__name">
+                    <span className="ui-text">{room.name}</span>
+                </div>
+            </Link>
+
+            {menu}
+        </li>
+    );
+});
+
+export interface IRoomContextMenuProps {
+    room: Room,
+}
+
+const RoomContextMenu = React.memo((props: IRoomContextMenuProps) => {
+    return (
+        <ContextMenu dark>
+            <div>
+                <span className="ui-text">Mark as Read</span>
+            </div>
+
+            <hr />
+
+            <div>
+                <span className="ui-text">Edit Channel</span>
+            </div>
+
+            <div>
+                <span className="ui-text">Copy ID</span>
+            </div>
+        </ContextMenu>
+    );
+});
+
+export interface IRoomListContextMenuProps {
+    party_id: Snowflake,
+}
+
+const RoomListContextMenu = React.memo((props: IRoomListContextMenuProps) => {
+    return (
+        <ContextMenu dark>
+            <div>
+                <span className="ui-text">Create Channel</span>
+            </div>
+        </ContextMenu>
     );
 });
