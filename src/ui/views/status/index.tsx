@@ -42,7 +42,6 @@ const StatusPage = React.memo(() => {
             for(let ts_key in raw) {
                 let ts = parse_shorthand(ts_key);
                 if(!ts.isValid()) {
-                    console.log("HERE");
                     return;
                 }
 

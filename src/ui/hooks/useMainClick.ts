@@ -77,7 +77,9 @@ for(let hotkey of HOTKEYS) {
     key_modifiers[hotkey.mod || 0] = hotkey.hot;
 }
 
-console.log(LOOKUP);
+if(__DEV__) {
+    console.log(LOOKUP);
+}
 
 export function parseHotkey(e: React.KeyboardEvent): Hotkey | undefined {
     // TODO: Handle Apple keyboards?

@@ -36,7 +36,7 @@ export function cacheReducer(state: ICacheState | null | undefined, action: Acti
                 let user = member.user;
                 if(!user) continue;
 
-                console.log("SETTING ", user.id, party_id);
+                __DEV__ && console.log("SETTING CACHE", user.id, party_id);
 
                 draft.users.set(genCachedUserKey(user.id, party_id), {
                     user,
