@@ -16,7 +16,7 @@ import { PositionedModal } from "ui/components/positioned_modal";
 import { MsgContextMenu } from "../../menus/msg_context";
 import { UserCard } from "../../menus/user_card";
 
-import { useMainClick, useSimpleToggleOnClick } from "ui/hooks/useMainClick";
+import { useMainClick, useSimplePositionedContextMenu, useSimpleToggleOnClick } from "ui/hooks/useMainClick";
 
 interface IUserNameProps {
     name: string,
@@ -25,21 +25,23 @@ interface IUserNameProps {
     children?: React.ReactNode,
 }
 
-const UserName = React.memo((props: IUserNameProps) => {
+const MessageUserName = React.memo((props: IUserNameProps) => {
     let [show, main_click_props] = useSimpleToggleOnClick();
 
     return (
         <h2 className="ln-msg__username ui-text" {...main_click_props}>
             {props.children}
+
             <AnchoredModal show={show}>
                 <UserCard user={props.user} />
             </AnchoredModal>
+
             {props.name}
         </h2>
     );
 });
 
-const UserAvatar = React.memo(({ name, user, is_light_theme }: IUserNameProps) => {
+const MessageUserAvatar = React.memo(({ name, user, is_light_theme }: IUserNameProps) => {
     let [show, main_click_props] = useSimpleToggleOnClick();
 
     let avatar_url;
@@ -63,7 +65,7 @@ const UserAvatar = React.memo(({ name, user, is_light_theme }: IUserNameProps) =
     )
 });
 
-interface GroupMessageProps {
+interface IGroupMessageProps {
     msg: IMessageState,
     is_light_theme: boolean,
     nickname: string,
@@ -71,7 +73,8 @@ interface GroupMessageProps {
     compact: boolean,
 }
 
-const CompactMessageGroup = React.memo(({ msg, is_light_theme, nickname, first }: GroupMessageProps) => {
+/// Group Message for the Compact view mode
+const CompactGroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: IGroupMessageProps) => {
     let ts = msg.ts.format("dddd, MMMM DD, h:mm A");
 
     return (
@@ -83,7 +86,7 @@ const CompactMessageGroup = React.memo(({ msg, is_light_theme, nickname, first }
                     </div>
                 </div>
 
-                <UserName name={nickname} user={msg.msg.author} />
+                <MessageUserName name={nickname} user={msg.msg.author} />
             </div>
 
             <Message editing={false} msg={msg.msg} />
@@ -91,7 +94,8 @@ const CompactMessageGroup = React.memo(({ msg, is_light_theme, nickname, first }
     );
 });
 
-const CozyMessageGroup = React.memo(({ msg, is_light_theme, nickname, first }: GroupMessageProps) => {
+/// Group Message for the Cozy view mode
+const CozyGroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: IGroupMessageProps) => {
     let message = <Message editing={false} msg={msg.msg} />;
 
     let side, ts = msg.ts.format("dddd, MMMM DD, h:mm A");
@@ -100,7 +104,7 @@ const CozyMessageGroup = React.memo(({ msg, is_light_theme, nickname, first }: G
     if(first) {
         let title = (
             <div className="ln-msg__title">
-                <UserName name={nickname} user={msg.msg.author} />
+                <MessageUserName name={nickname} user={msg.msg.author} />
 
                 <span className="ln-separator"> - </span>
 
@@ -117,7 +121,7 @@ const CozyMessageGroup = React.memo(({ msg, is_light_theme, nickname, first }: G
             </div>
         );
 
-        side = (<UserAvatar user={msg.msg.author} name={nickname} is_light_theme={is_light_theme} />);
+        side = (<MessageUserAvatar user={msg.msg.author} name={nickname} is_light_theme={is_light_theme} />);
     } else {
         side = (
             <div className="ln-msg__sidets" title={ts}>
@@ -136,16 +140,17 @@ const CozyMessageGroup = React.memo(({ msg, is_light_theme, nickname, first }: G
     );
 });
 
-const GroupMessage = React.memo((props: GroupMessageProps) => {
+const GroupMessage = React.memo((props: IGroupMessageProps) => {
     let attachments, msg = props.msg, a = msg.msg.attachments;
     if(a && a.length) {
         attachments = a.map(attachment => <MsgAttachment key={attachment.id} msg={msg.msg} attachment={attachment} />)
     }
 
-    let [pos, setPos] = useState<{ top: number, left: number } | null>(null),
-        [warn, setWarn] = useState(false);
+    let cm, [warn, setWarn] = useState(false),
+        [pos, main_click_props] = useSimplePositionedContextMenu({
+            onMainClick: () => setWarn(false),
+        });
 
-    let cm;
     if(pos) {
         cm = (
             <PositionedModal top={pos.top} left={pos.left}>
@@ -154,23 +159,14 @@ const GroupMessage = React.memo((props: GroupMessageProps) => {
         );
     }
 
-    // TODO: Use one of the simpler hooks?
-    let main_click_props = useMainClick({
-        active: !!pos,
-        onMainClick: () => { setPos(null); setWarn(false); },
-        onContextMenu: (e: React.MouseEvent) => {
-            setPos({ top: e.clientY, left: e.clientX });
-            e.stopPropagation();
-            e.preventDefault();
-        },
-    }, []);
+    // select inner message component based on style.
+    // The identifier must be Proper-case to be used as a Component below.
+    let Inner = props.compact ? CompactGroupMessage : CozyGroupMessage;
 
     let outer_class = classNames("ln-msg__outer", {
         "highlighted": cm,
         "warning": cm && warn,
     });
-
-    let Inner = props.compact ? CompactMessageGroup : CozyMessageGroup;
 
     return (
         <div key={msg.msg.id} className={outer_class} {...main_click_props}>
@@ -183,16 +179,17 @@ const GroupMessage = React.memo((props: GroupMessageProps) => {
     );
 });
 
-interface MessageGroupProps {
+interface IMessageGroupProps {
     group: IMessageState[],
     is_light_theme: boolean,
     compact: boolean,
 }
 
-// NOTE: Because `group` is recomputed below as part of `groups`, this will always render.
-export const MessageGroup = ({ group, is_light_theme, compact }: MessageGroupProps) => {
-    let { msg } = group[0];
-    let nickname = msg.member?.nick || msg.author.username;
+export const MessageGroup: React.FunctionComponent<IMessageGroupProps> = ({ group, is_light_theme, compact }: IMessageGroupProps) => {
+    // NOTE: Because `group` is recomputed below as part of `groups`, this will always render.
+
+    // get the first message in the group and use that for the nickname
+    let { msg } = group[0], nickname = msg.member?.nick || msg.author.username;
 
     return (
         <li className="ln-msg-list__group">
@@ -200,3 +197,12 @@ export const MessageGroup = ({ group, is_light_theme, compact }: MessageGroupPro
         </li>
     );
 };
+
+if(__DEV__) {
+    MessageGroup.displayName = "MessageGroup";
+    GroupMessage.displayName = "GroupMessage";
+    CompactGroupMessage.displayName = "CompactGroupMessage";
+    CozyGroupMessage.displayName = "CozyGroupMessage";
+    MessageUserName.displayName = "MessageUserName";
+    MessageUserAvatar.displayName = "MessageUserAvatar";
+}

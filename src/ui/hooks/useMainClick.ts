@@ -182,12 +182,16 @@ export interface Position {
     top: number,
 }
 
-export function useSimplePositionedContextMenu(): [Position | null, ClickEventHandlers] {
+export interface ISimpleMainClickOptions {
+    onMainClick: OnClickHandler,
+}
+
+export function useSimplePositionedContextMenu(opts?: ISimpleMainClickOptions): [Position | null, ClickEventHandlers] {
     let [pos, setPos] = useState<Position | null>(null);
 
     let props = useMainClick({
         active: !!pos,
-        onMainClick: () => { setPos(null); },
+        onMainClick: (e: React.MouseEvent) => { setPos(null); opts?.onMainClick(e); },
         onContextMenu: (e: React.MouseEvent) => {
             setPos({ top: e.clientY, left: e.clientX });
             e.stopPropagation();
@@ -198,12 +202,12 @@ export function useSimplePositionedContextMenu(): [Position | null, ClickEventHa
     return [pos, props];
 }
 
-export function useSimpleToggleOnClick(): [boolean, ClickEventHandlers] {
+export function useSimpleToggleOnClick(opts?: ISimpleMainClickOptions): [boolean, ClickEventHandlers] {
     let [show, setShow] = useState(false);
 
     let props = useMainClick({
         active: show,
-        onMainClick: () => setShow(false),
+        onMainClick: (e: React.MouseEvent) => { setShow(false); opts?.onMainClick(e); },
         onClick: (e: React.MouseEvent) => {
             setShow(true);
             e.stopPropagation();
