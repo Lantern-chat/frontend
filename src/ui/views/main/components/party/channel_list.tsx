@@ -12,7 +12,7 @@ import { Bounce } from "ui/components/common/spinners/bounce";
 import { Glyphicon } from "ui/components/common/glyphicon";
 import { Avatar } from "ui/components/common/avatar";
 import { Link } from "ui/components/history";
-import { useMainClick } from "ui/hooks/useMainClick";
+import { useSimplePositionedContextMenu } from "ui/hooks/useMainClick";
 
 import { PositionedModal } from "ui/components/positioned_modal";
 import { ContextMenu } from "../menus/list";
@@ -55,20 +55,11 @@ export const ChannelList = React.memo(() => {
             </div>
         );
     } else {
-        inner = rooms.map(room => <ListedChannel room={room} selected={selected == room.id} onNavigate={on_navigate} />);
+        inner = rooms.map(room => <ListedChannel key={room.id} room={room} selected={selected == room.id} onNavigate={on_navigate} />);
     }
 
-    let [pos, setPos] = useState<{ left: number, top: number } | null>(null);
+    let menu, [pos, main_click_props] = useSimplePositionedContextMenu();
 
-    let main_click_props = useMainClick({
-        active: !!pos,
-        onMainClick: () => { setPos(null); },
-        onContextMenu: (e: React.MouseEvent) => {
-            setPos({ top: e.clientY, left: e.clientX })
-        },
-    }, []);
-
-    let menu;
     if(pos && party_id) {
         menu = (
             <PositionedModal {...pos}>
@@ -92,19 +83,8 @@ interface IListedChannelProps {
 }
 
 const ListedChannel = React.memo(({ room, selected, onNavigate }: IListedChannelProps) => {
-    let [pos, setPos] = useState<{ left: number, top: number } | null>(null);
+    let menu, [pos, main_click_props] = useSimplePositionedContextMenu();
 
-    let main_click_props = useMainClick({
-        active: !!pos,
-        onMainClick: () => { setPos(null); },
-        onContextMenu: (e: React.MouseEvent) => {
-            setPos({ top: e.clientY, left: e.clientX });
-            e.stopPropagation();
-            e.preventDefault();
-        },
-    }, []);
-
-    let menu;
     if(pos) {
         menu = (
             <PositionedModal {...pos}>
@@ -114,7 +94,7 @@ const ListedChannel = React.memo(({ room, selected, onNavigate }: IListedChannel
     }
 
     return (
-        <li key={room.id} className={selected ? 'selected' : undefined} {...main_click_props}>
+        <li className={selected ? 'selected' : undefined} {...main_click_props}>
             <Link className="ln-channel-list__channel" href={`/channels/${room.party_id || '@me'}/${room.id}`}
                 onNavigate={onNavigate} noAction={selected}>
                 <div className="ln-channel-list__icon">

@@ -27,7 +27,7 @@ import { PositionedModal } from "ui/components/positioned_modal";
 import { MsgContextMenu } from "../../menus/msg_context";
 import { UserCard } from "../../menus/user_card";
 
-import { useMainClick } from "ui/hooks/useMainClick";
+import { useMainClick, useSimpleToggleOnClick } from "ui/hooks/useMainClick";
 
 export interface IMessageListProps {
     channel: Snowflake
@@ -103,16 +103,7 @@ interface IUserNameProps {
 }
 
 const UserName = React.memo((props: IUserNameProps) => {
-    let [show, setShow] = useState(false);
-
-    let main_click_props = useMainClick({
-        active: show,
-        onMainClick: () => setShow(false),
-        onClick: (e: React.MouseEvent) => {
-            setShow(true);
-            e.stopPropagation();
-        }
-    }, []);
+    let [show, main_click_props] = useSimpleToggleOnClick();
 
     return (
         <h2 className="ln-msg__username ui-text" {...main_click_props}>
@@ -126,27 +117,12 @@ const UserName = React.memo((props: IUserNameProps) => {
 });
 
 const UserAvatar = React.memo(({ name, user, is_light_theme }: IUserNameProps) => {
-    let [show, setShow] = useState(false);
-
-    let main_click_props = useMainClick({
-        active: show,
-        onMainClick: () => setShow(false),
-        onClick: (e: React.MouseEvent) => {
-            setShow(true);
-            e.stopPropagation();
-        }
-    }, []);
+    let [show, main_click_props] = useSimpleToggleOnClick();
 
     let avatar_url;
     if(user.avatar) {
         avatar_url = user_avatar_url(user.id, user.avatar);
     }
-
-    let anchor = (
-        <AnchoredModal show={show}>
-            <UserCard user={user} />
-        </AnchoredModal>
-    );
 
     return (
         <Avatar
@@ -155,7 +131,12 @@ const UserAvatar = React.memo(({ name, user, is_light_theme }: IUserNameProps) =
             url={avatar_url}
             backgroundColor={pickColorFromHash(user.id, !!is_light_theme)}
             props={main_click_props}
-            anchor={anchor} />
+            anchor={
+                <AnchoredModal show={show}>
+                    <UserCard user={user} />
+                </AnchoredModal>
+            }
+        />
     )
 });
 
@@ -261,7 +242,9 @@ const GroupMessage = React.memo((props: GroupMessageProps) => {
         active: !!pos,
         onMainClick: () => { setPos(null); setWarn(false); },
         onContextMenu: (e: React.MouseEvent) => {
-            setPos({ top: e.clientY, left: e.clientX })
+            setPos({ top: e.clientY, left: e.clientX });
+            e.stopPropagation();
+            e.preventDefault();
         },
     }, []);
 

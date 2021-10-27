@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
 
@@ -13,6 +13,11 @@ import { pickColorFromHash } from "lib/palette";
 import { Link } from "ui/components/history";
 import { Avatar } from "ui/components/common/avatar";
 import { Spinner } from "ui/components/common/spinners/spinner";
+import { PositionedModal } from "ui/components/positioned_modal";
+
+import { useSimplePositionedContextMenu } from "ui/hooks/useMainClick";
+
+import { ContextMenu } from "./menus/list";
 
 import { party_avatar_url, room_url } from "config/urls";
 
@@ -23,7 +28,7 @@ let sorted_party_selector = createSelector((state: RootState) => state.party.par
     return party_array;
 });
 
-import { UserPreferenceFlags } from "state/models";
+import { Party, Snowflake, UserPreferenceFlags } from "state/models";
 
 let party_list_selector = createStructuredSelector({
     parties: sorted_party_selector,
@@ -42,7 +47,6 @@ function asTouchEvent(e: React.UIEvent<HTMLElement>): React.TouchEvent<HTMLEleme
 }
 
 import "./party_list.scss";
-import { ContextMenu } from "./menus/list";
 export const PartyList = React.memo(() => {
     // TODO: Setting isScrolling will re-render, rewrite this to not do that
     let [isScrolling, setIsScrolling] = useState(0);
@@ -73,21 +77,13 @@ export const PartyList = React.memo(() => {
 
     let party_list;
     if(user_object && !GATEWAY_PENDING.includes(gateway_status)) {
-        party_list = parties.map(party => {
-            let last = last_channel.get(party.id),
-                url = party.avatar && party_avatar_url(party.id, party.avatar),
-                do_navigate = can_navigate && party.id != active_party;
-
-            return (
-                <li key={party.id}
-                    className={party.id == active_party ? 'selected' : ''}>
-                    <Link noAction href={room_url(party.id, last)} onNavigate={(e) => do_navigate && dispatch(activateParty(party.id, last))}>
-                        <Avatar rounded url={url} text={party.name.charAt(0)}
-                            username={party.name} span={{ title: party.name }} backgroundColor={pickColorFromHash(party.id, is_light_theme)} />
-                    </Link>
-                </li>
-            );
-        });
+        party_list = parties.map(party => <PartyAvatar
+            key={party.id}
+            party={party} last_channel={last_channel}
+            can_navigate={can_navigate}
+            active_party={active_party}
+            is_light_theme={is_light_theme}
+        />);
     } else {
         party_list = (
             <li id="connecting">
@@ -122,6 +118,53 @@ export const PartyList = React.memo(() => {
 if(__DEV__) {
     PartyList.displayName = "PartyList";
 }
+
+interface IPartyAvatarProps {
+    party: Party,
+    last_channel: Map<Snowflake, Snowflake>,
+    can_navigate: boolean,
+    active_party?: Snowflake,
+    is_light_theme: boolean,
+}
+
+const PartyAvatar = React.memo((props: IPartyAvatarProps) => {
+    let { party,
+        last_channel,
+        can_navigate,
+        active_party,
+        is_light_theme, } = props;
+
+    let dispatch = useDispatch();
+
+    let last = last_channel.get(party.id),
+        url = party.avatar && party_avatar_url(party.id, party.avatar),
+        do_navigate = can_navigate && party.id != active_party;
+
+    let on_navigate = useCallback(() => { do_navigate && dispatch(activateParty(party.id, last)) }, [do_navigate, party.id, last]);
+
+    let menu, [pos, main_click_props] = useSimplePositionedContextMenu();
+
+    if(pos) {
+        menu = (
+            <PositionedModal {...pos}>
+                <ListedPartyMenu />
+            </PositionedModal>
+        );
+    }
+
+    return (
+        <li className={party.id == active_party ? 'selected' : ''} {...main_click_props}>
+
+            <Link noAction href={room_url(party.id, last)} onNavigate={on_navigate}>
+                <Avatar rounded url={url} text={party.name.charAt(0)}
+                    username={party.name} span={{ title: party.name }}
+                    backgroundColor={pickColorFromHash(party.id, is_light_theme)} />
+            </Link>
+
+            {menu}
+        </li>
+    );
+});
 
 const ListedPartyMenu = React.memo(() => {
     return (

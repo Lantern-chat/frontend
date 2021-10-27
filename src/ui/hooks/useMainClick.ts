@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useCallback, useMemo } from "react";
+import React, { createContext, useContext, useEffect, useCallback, useMemo, useState } from "react";
 
 export enum Hotkey {
     // Tab
@@ -173,4 +173,40 @@ export function useMainHotkey(hotkey: Hotkey, cb: OnKeyHandler) {
         main.addOnHotkey(hotkey, listener);
         return () => main.removeOnHotkey(hotkey, listener);
     }, [main, hotkey]);
+}
+
+export interface Position {
+    left: number,
+    top: number,
+}
+
+export function useSimplePositionedContextMenu(): [Position | null, ClickEventHandlers] {
+    let [pos, setPos] = useState<Position | null>(null);
+
+    let props = useMainClick({
+        active: !!pos,
+        onMainClick: () => { setPos(null); },
+        onContextMenu: (e: React.MouseEvent) => {
+            setPos({ top: e.clientY, left: e.clientX });
+            e.stopPropagation();
+            e.preventDefault();
+        },
+    }, []);
+
+    return [pos, props];
+}
+
+export function useSimpleToggleOnClick(): [boolean, ClickEventHandlers] {
+    let [show, setShow] = useState(false);
+
+    let props = useMainClick({
+        active: show,
+        onMainClick: () => setShow(false),
+        onClick: (e: React.MouseEvent) => {
+            setShow(true);
+            e.stopPropagation();
+        }
+    }, []);
+
+    return [show, props];
 }

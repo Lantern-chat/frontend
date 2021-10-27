@@ -113,6 +113,8 @@ export const MainView: React.FunctionComponent = React.memo(() => {
         };
 
         let clickAll = (e: React.MouseEvent) => {
+            //__DEV__ && console.log(click_listeners);
+
             for(let listener of click_listeners) {
                 listener(e);
             }

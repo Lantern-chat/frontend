@@ -53,12 +53,12 @@ ul.ln-contextmenu {
         font-size: 0.9rem;
         white-space: nowrap;
 
-        &:hover {
+        &:hover > div {
             background-color: rgba(128, 128, 128, 0.2);
         }
 
         > div {
-            padding: 0.9em 0.8em;
+            padding: 0.8em;
             display: flex;
             cursor: pointer;
             width: 100%;
@@ -79,8 +79,15 @@ ul.ln-contextmenu {
 
     hr {
         margin: 0;
-        width: 100%;
+        //width: 100%;
         border-color: $lnx-primary-surface-color;
+        width: 90%;
+        left: 5%;
+        position: relative;
         //color: $lnx-secondary-surface-color;
+    }
+
+    &.dark hr {
+        border-color: $lnx-tertiary-surface-color;
     }
 }
