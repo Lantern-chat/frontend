@@ -1,13 +1,13 @@
 @import "lib/variables";
 
-@keyframes close_sidebar {
-    0% {
-        width: 100% !important;
-    }
-    100% {
-        width: 0 !important;
-    }
-}
+//@keyframes close_sidebar {
+//    0% {
+//        max-width: 100%;
+//    }
+//    100% {
+//        max-width: 0;
+//    }
+//}
 
 .ln-party {
     background-color: $lnx-secondary-surface-color;
