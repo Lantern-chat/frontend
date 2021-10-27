@@ -251,11 +251,9 @@ const GroupMessage = React.memo((props: GroupMessageProps) => {
 
     if(pos) {
         cm = (
-            <div className="ln-msg__cm">
-                <PositionedModal top={pos.top} left={pos.left}>
-                    <MsgContextMenu msg={msg} pos={pos} onConfirmChange={(pending: boolean) => setWarn(pending)} />
-                </PositionedModal>
-            </div>
+            <PositionedModal top={pos.top} left={pos.left}>
+                <MsgContextMenu msg={msg} pos={pos} onConfirmChange={(pending: boolean) => setWarn(pending)} />
+            </PositionedModal>
         );
     }
 
