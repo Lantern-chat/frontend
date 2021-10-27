@@ -1,4 +1,5 @@
 import React from "react";
+import classNames from "classnames";
 
 export interface IContextMenuProps {
     children: React.ReactNodeArray | React.ReactNode,
@@ -11,20 +12,15 @@ function eat(e: React.MouseEvent) {
 }
 
 import "./list.scss";
-export const ContextMenu = React.memo((props: IContextMenuProps) => {
-    let children = props.children;
-
+export const ContextMenu = React.memo(({ children, dark }: IContextMenuProps) => {
     if(!Array.isArray(children)) {
         children = [children];
     }
 
-    let classNames = "ln-contextmenu ln-cm-pos";
-    if(props.dark) {
-        classNames += " dark";
-    }
+    let className = classNames("ln-contextmenu", "ln-cm-pos", { dark });
 
     return (
-        <ul className={classNames} onContextMenu={eat}>
+        <ul className={className} onContextMenu={eat}>
             {(children as React.ReactNodeArray).map((child, i) => (<li key={i}>{child}</li>))}
         </ul>
     )

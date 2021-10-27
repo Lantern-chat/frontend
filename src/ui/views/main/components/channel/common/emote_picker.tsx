@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Glyphicon } from "ui/components/common/glyphicon";
-
-import SmileyHalf from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-243-slightly-smiling.svg";
 import { AnchoredModal } from "ui/components/anchored_modal";
 import { useMainClick } from "ui/hooks/useMainClick";
 
+import SmileyHalf from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-243-slightly-smiling.svg";
+
 import "./emote_picker.scss";
+import classNames from "classnames";
 export const EmotePicker = React.memo(() => {
     let [show, setShow] = useState(false);
 
@@ -18,13 +19,10 @@ export const EmotePicker = React.memo(() => {
         }
     }, [show]);
 
-    let className = "ln-msg-box__emoji";
-    if(show) {
-        className += " active";
-    }
+    let className = classNames("ln-msg-box__emoji", { active: show });
 
     return (
-        <div className={className} {...main_click_props} title="Emoji">
+        <div title="Emoji" className={className} {...main_click_props}>
             <Glyphicon src={SmileyHalf} />
 
             <AnchoredModal show={show} eat={["onClick"]}>

@@ -242,38 +242,6 @@
     }
 }
 
-.ln-msg-attachment {
-    padding-left: 4.425rem;
-    //display: flex;
-
-    @media (max-width: $ln-min-channel-width) {
-        padding-left: 1rem;
-        padding-right: 1rem;
-        text-align: center;
-    }
-
-    audio,
-    video,
-    img {
-        max-width: 35em;
-
-        @media (max-width: $ln-min-channel-width) {
-            max-width: 100%;
-        }
-
-        //max-height: 40em;
-        max-height: 20em;
-    }
-
-    video {
-        background-color: black;
-    }
-
-    audio {
-        width: 100%;
-    }
-}
-
 .ln-separator {
     position: absolute;
     width: 0;

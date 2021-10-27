@@ -15,7 +15,7 @@ import { FileUploadModal } from "ui/views/main/modals/file_upload";
 import { Hotkey, MainContext, parseHotkey, useMainHotkey } from "ui/hooks/useMainClick";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
-import { EmotePicker } from "./emote_picker";
+import { EmotePicker } from "../common/emote_picker";
 
 //import Smiley from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-901-slightly-smiling.svg";
 import Send from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-461-send.svg";
