@@ -1,11 +1,21 @@
 @import "lib/variables";
 
 .ln-msg-attachment {
-    padding-left: 4.425rem;
-    //display: flex;
+    text-indent: 0;
+
+    //padding-left: 1em;
+    //border-left: 2px solid rgb(160, 160, 160);
+
+    //> * {
+    //    margin-bottom: 0.5em;
+    //}
+
+    .ln-msg ~ & > * {
+        margin-top: 0.5em;
+    }
 
     @media (max-width: $ln-min-channel-width) {
-        padding-left: 1rem;
+        //padding-left: 1rem;
         padding-right: 1rem;
         text-align: center;
     }
@@ -21,6 +31,10 @@
 
         //max-height: 40em;
         max-height: 20em;
+
+        display: block;
+        height: auto;
+        width: auto;
     }
 
     video {
@@ -29,5 +43,23 @@
 
     audio {
         width: 100%;
+        max-width: 80%;
+    }
+
+    .no-text & {
+        display: inline;
+    }
+}
+
+.ln-audio {
+    .no-text & {
+        display: inline;
+
+        audio {
+            display: inline;
+            vertical-align: middle;
+            margin: 0;
+            height: 100%;
+        }
     }
 }

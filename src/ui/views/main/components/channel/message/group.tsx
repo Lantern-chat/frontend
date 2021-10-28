@@ -71,14 +71,19 @@ interface IGroupMessageProps {
     nickname: string,
     first: boolean,
     compact: boolean,
+    attachments?: React.ReactNode,
 }
 
 /// Group Message for the Compact view mode
-const CompactGroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: IGroupMessageProps) => {
+const CompactGroupMessage = React.memo(({ msg, is_light_theme, nickname, first, attachments }: IGroupMessageProps) => {
     let ts = msg.ts.format("dddd, MMMM DD, h:mm A");
 
+    let className = classNames("ln-msg--compact", {
+        'no-text': msg.msg.content.length == 0,
+    });
+
     return (
-        <div className="ln-msg--compact">
+        <div className={className}>
             <div className="ln-msg__title">
                 <div className="ln-msg__side">
                     <div className="ln-msg__sidets" title={ts}>
@@ -90,19 +95,21 @@ const CompactGroupMessage = React.memo(({ msg, is_light_theme, nickname, first }
             </div>
 
             <Message editing={false} msg={msg.msg} />
+
+            {attachments}
         </div>
     );
 });
 
 /// Group Message for the Cozy view mode
-const CozyGroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: IGroupMessageProps) => {
+const CozyGroupMessage = React.memo(({ msg, is_light_theme, nickname, first, attachments }: IGroupMessageProps) => {
     let message = <Message editing={false} msg={msg.msg} />;
 
-    let side, ts = msg.ts.format("dddd, MMMM DD, h:mm A");
+    let side, title, ts = msg.ts.format("dddd, MMMM DD, h:mm A");
 
     // if first message in the group, give it the user avatar and title
     if(first) {
-        let title = (
+        title = (
             <div className="ln-msg__title">
                 <MessageUserName name={nickname} user={msg.msg.author} />
 
@@ -111,13 +118,6 @@ const CozyGroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: I
                 <span className="ln-msg__ts" title={ts}>
                     <span className="ui-text">{msg.ts.calendar()}</span>
                 </span>
-            </div>
-        );
-
-        message = (
-            <div className="ln-msg__message">
-                {title}
-                {message}
             </div>
         );
 
@@ -135,7 +135,12 @@ const CozyGroupMessage = React.memo(({ msg, is_light_theme, nickname, first }: I
             <div className="ln-msg__side">
                 {side}
             </div>
-            {message}
+
+            <div className="ln-msg__message">
+                {title}
+                {message}
+                {attachments}
+            </div>
         </>
     );
 });
@@ -171,10 +176,9 @@ const GroupMessage = React.memo((props: IGroupMessageProps) => {
     return (
         <div key={msg.msg.id} className={outer_class} {...main_click_props}>
             <div className="ln-msg__wrapper">
-                <Inner {...props} />
+                <Inner {...props} attachments={attachments} />
                 {cm}
             </div>
-            {attachments}
         </div>
     );
 });

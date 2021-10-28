@@ -49,6 +49,12 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
                 controls: true,
             });
 
+            embed = (
+                <div className="ln-audio">
+                    {embed}
+                </div>
+            )
+
         } else if(mime.startsWith('image')) {
             //embed = <img title={title} onContextMenu={eat} src={url} onError={() => setError(true)} />;
 
