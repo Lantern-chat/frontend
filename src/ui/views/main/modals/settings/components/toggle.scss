@@ -1,10 +1,11 @@
 @use "sass:math";
 
 @import "lib/variables";
+@import "lib/color";
 
 //$inactive: #d9dadc;
 $inactive: #aeb3b7;
-$active: #4ed164;
+$active: #47c05b;
 
 .ln-settings-toggle {
     //display: flex;
@@ -50,7 +51,7 @@ $active: #4ed164;
             background-repeat: no-repeat;
             background-position: 50% 50%;
 
-            background-image: url("data:image/svg+xml;utf8,<svg id='glyphicons-basic' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path id='times' fill='%23aeb3b7' d='M20.24249,16l5.65692,5.65674-4.24218,4.24267L16,20.24237l-5.65723,5.657L6.10059,21.65674,11.75751,16,6.10059,10.34326l4.24218-4.24267L16,11.75763l5.65723-5.657,4.24218,4.24267Z'/></svg>");
+            background-image: url("data:image/svg+xml;utf8,<svg id='glyphicons-basic' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path id='times' fill='#{encodecode($inactive)}' d='M20.24249,16l5.65692,5.65674-4.24218,4.24267L16,20.24237l-5.65723,5.657L6.10059,21.65674,11.75751,16,6.10059,10.34326l4.24218-4.24267L16,11.75763l5.65723-5.657,4.24218,4.24267Z'/></svg>");
         }
 
         &:checked {
@@ -63,7 +64,7 @@ $active: #4ed164;
 
                 box-shadow: -0.125em 0.25em 0.1875em rgba(0, 0, 0, 0.05);
 
-                background-image: url("data:image/svg+xml;utf8,<svg id='glyphicons-basic' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path id='check' fill='%234ed164' d='M27.37592,9.70459l-14.151,15.97693a.99985.99985,0,0,1-1.47558.02356L4.59711,18.1322a.99992.99992,0,0,1-.05384-1.31128L5.495,15.63123a.99994.99994,0,0,1,1.22808-.26966L12,18,24.79724,7.09863a.99991.99991,0,0,1,1.35553.0542l1.1817,1.18164A1,1,0,0,1,27.37592,9.70459Z'/></svg>");
+                background-image: url("data:image/svg+xml;utf8,<svg id='glyphicons-basic' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path id='check' fill='#{encodecolor($active)}' d='M27.37592,9.70459l-14.151,15.97693a.99985.99985,0,0,1-1.47558.02356L4.59711,18.1322a.99992.99992,0,0,1-.05384-1.31128L5.495,15.63123a.99994.99994,0,0,1,1.22808-.26966L12,18,24.79724,7.09863a.99991.99991,0,0,1,1.35553.0542l1.1817,1.18164A1,1,0,0,1,27.37592,9.70459Z'/></svg>");
             }
         }
     }
