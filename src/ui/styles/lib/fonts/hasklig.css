@@ -4,6 +4,7 @@
         url(Hasklig/Hasklig-Regular.otf) format("otf");
     font-style: normal;
     font-weight: normal;
+    font-display: swap;
 }
 
 @font-face {
@@ -12,6 +13,7 @@
         url(Hasklig/Hasklig-It.otf) format("otf");
     font-style: italic;
     font-weight: normal;
+    font-display: swap;
 }
 
 @font-face {
@@ -20,6 +22,7 @@
         url(Hasklig/Hasklig-Bold.otf) format("otf");
     font-style: normal;
     font-weight: bold;
+    font-display: swap;
 }
 
 @font-face {
@@ -28,4 +31,5 @@
         url(Hasklig/Hasklig-BoldIt.otf) format("otf");
     font-style: italic;
     font-weight: bold;
+    font-display: swap;
 }

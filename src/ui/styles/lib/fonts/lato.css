@@ -4,6 +4,7 @@
         url(Lato/Lato-Thin.otf) format("otf"), url(Lato/Lato-Thin.ttf) format("ttf");
     font-style: normal;
     font-weight: 100;
+    font-display: swap;
 }
 
 @font-face {
@@ -12,6 +13,7 @@
         url(Lato/Lato-ThinItalic.otf) format("otf"), url(Lato/Lato-ThinItalic.ttf) format("ttf");
     font-style: italic;
     font-weight: 100;
+    font-display: swap;
 }
 
 @font-face {
@@ -20,6 +22,7 @@
         url(Lato/Lato-Light.otf) format("otf"), url(Lato/Lato-Light.ttf) format("ttf");
     font-style: normal;
     font-weight: 300;
+    font-display: swap;
 }
 
 @font-face {
@@ -28,6 +31,7 @@
         url(Lato/Lato-LightItalic.otf) format("otf"), url(Lato/Lato-LightItalic.ttf) format("ttf");
     font-style: italic;
     font-weight: 300;
+    font-display: swap;
 }
 
 @font-face {
@@ -37,6 +41,7 @@
     font-style: normal;
     font-weight: normal;
     font-weight: 400;
+    font-display: swap;
 }
 
 @font-face {
@@ -46,6 +51,7 @@
     font-style: italic;
     font-weight: normal;
     font-weight: 400;
+    font-display: swap;
 }
 
 @font-face {
@@ -54,6 +60,7 @@
         url(Lato/Lato-Bold.otf) format("otf"), url(Lato/Lato-Bold.ttf) format("ttf");
     font-style: normal;
     font-weight: 700;
+    font-display: swap;
 }
 
 @font-face {
@@ -62,6 +69,7 @@
         url(Lato/Lato-BoldItalic.otf) format("otf"), url(Lato/Lato-BoldItalic.ttf) format("ttf");
     font-style: italic;
     font-weight: 700;
+    font-display: swap;
 }
 
 @font-face {
@@ -70,6 +78,7 @@
         url(Lato/Lato-Black.otf) format("otf"), url(Lato/Lato-Black.ttf) format("ttf");
     font-style: normal;
     font-weight: 900;
+    font-display: swap;
 }
 
 @font-face {
@@ -78,4 +87,5 @@
         url(Lato/Lato-BlackItalic.otf) format("otf"), url(Lato/Lato-BlackItalic.ttf) format("ttf");
     font-style: italic;
     font-weight: 900;
+    font-display: swap;
 }
