@@ -1,4 +1,5 @@
-import * as dayjs from "dayjs";
+import dayjs from "dayjs";
+export { Dayjs } from "dayjs";
 
 import utc from "dayjs/plugin/utc";
 dayjs.extend(utc);

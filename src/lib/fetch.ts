@@ -20,6 +20,7 @@ export interface XHRParameters {
     onprogress?: (this: XMLHttpRequest, ev: ProgressEvent) => any;
     headers?: { [header: string]: string },
     json?: any,
+    upload?: boolean,
 }
 
 export function fetch(params: string | XHRParameters): Promise<XMLHttpRequest> {
@@ -37,6 +38,12 @@ export function fetch(params: string | XHRParameters): Promise<XMLHttpRequest> {
             xhr.onprogress = params.onprogress || null;
             xhr.onerror = e => reject(e);
             xhr.onload = () => { if(xhr.status >= 200 && xhr.status < 400) { resolve(xhr) } else { reject(xhr) } };
+
+            if(params.upload) {
+                xhr.upload.onerror = xhr.onerror;
+                xhr.upload.onprogress = xhr.onprogress;
+                xhr.upload.onload = xhr.onload;
+            }
 
             xhr.open(params.method || "GET", params.url);
 

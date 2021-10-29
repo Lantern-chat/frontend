@@ -1,5 +1,5 @@
 import { Dayjs } from "dayjs";
-import dayjs, { LongTimeout, parse_shorthand } from "lib/time";
+import dayjs, { LongTimeout } from "lib/time";
 
 export interface ISession {
     auth: string,
@@ -13,7 +13,7 @@ export function parseSession(session: string | ISession | null): ISession | null
     }
 
     if(session !== null) {
-        session.expires = parse_shorthand(session.expires);
+        session.expires = dayjs(session.expires);
 
         if(dayjs().isAfter(session.expires)) {
             return null;

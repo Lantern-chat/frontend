@@ -5,7 +5,7 @@ interface IFileUploadOptions {
 }
 
 const DEFAULT_FILE_UPLOAD_OPTIONS: IFileUploadOptions = {
-    maxChunkSize: 1024 * 1000 * 8, // 8MB
+    maxChunkSize: 1024 * 1024 * 8, // 8MiB
     onProgress: (_) => { },
     onFinish: () => { },
 };
