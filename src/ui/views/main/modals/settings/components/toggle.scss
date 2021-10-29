@@ -2,7 +2,6 @@
 
 @import "lib/variables";
 
-$scale: 1;
 //$inactive: #d9dadc;
 $inactive: #aeb3b7;
 $active: #4ed164;
@@ -34,22 +33,24 @@ $active: #4ed164;
         box-shadow: inset -2em 0 0 0 $inactive;
 
         &::after {
-            //font-size: 1em * $scale;
-            //line-height: 1.2em;
+            transition: none !important;
+
             content: "";
-            //content: "✗";
             position: absolute;
 
-            left: math.div(0.1em, $scale);
-            top: math.div(0.1em, $scale);
-            bottom: math.div(0.1em, $scale);
-            right: math.div(2.1em, $scale);
+            left: 0;
+            top: 0;
+            bottom: 0;
+            right: 2em;
             background-color: transparent;
             border-radius: 50%;
-            box-shadow: math.div(0.125em, $scale) math.div(0.25em, $scale) math.div(0.375em, $scale) rgba(0, 0, 0, 0.2);
+            box-shadow: 0.125em 0.25em 0.375em rgba(0, 0, 0, 0.2);
 
-            //text-align: center;
-            //color: $inactive;
+            background-size: 60%;
+            background-repeat: no-repeat;
+            background-position: 50% 50%;
+
+            background-image: url("data:image/svg+xml;utf8,<svg id='glyphicons-basic' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path id='times' fill='%23aeb3b7' d='M20.24249,16l5.65692,5.65674-4.24218,4.24267L16,20.24237l-5.65723,5.657L6.10059,21.65674,11.75751,16,6.10059,10.34326l4.24218-4.24267L16,11.75763l5.65723-5.657,4.24218,4.24267Z'/></svg>");
         }
 
         &:checked {
@@ -58,16 +59,11 @@ $active: #4ed164;
 
             &::after {
                 right: 0;
-                left: math.div(2em, $scale);
-                top: 0;
-                bottom: 0;
+                left: 2em;
 
-                box-shadow: math.div(-0.125em, $scale) math.div(0.25em, $scale) math.div(0.1875em, $scale)
-                    rgba(0, 0, 0, 0.05);
+                box-shadow: -0.125em 0.25em 0.1875em rgba(0, 0, 0, 0.05);
 
-                //content: "✓";
-                //line-height: normal;
-                //color: $active;
+                background-image: url("data:image/svg+xml;utf8,<svg id='glyphicons-basic' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path id='check' fill='%234ed164' d='M27.37592,9.70459l-14.151,15.97693a.99985.99985,0,0,1-1.47558.02356L4.59711,18.1322a.99992.99992,0,0,1-.05384-1.31128L5.495,15.63123a.99994.99994,0,0,1,1.22808-.26966L12,18,24.79724,7.09863a.99991.99991,0,0,1,1.35553.0542l1.1817,1.18164A1,1,0,0,1,27.37592,9.70459Z'/></svg>");
             }
         }
     }
