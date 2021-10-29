@@ -12,6 +12,8 @@ import { RootState } from "state/root";
 
 import { FormGroup, FormInput, FormLabel, FormSelect } from "ui/components/form";
 
+import { TogglePrefsFlag } from "../components/toggle";
+
 import { MIN_TEMP, MAX_TEMP } from "lib/theme";
 
 import "./appearance.scss";
@@ -22,7 +24,7 @@ export const AppearanceSettingsTab = () => {
 
             <ViewSelector />
 
-            <GroupLinesToggle />
+            <TogglePrefsFlag htmlFor="group_lines" label="Show Lines Between Groups" flag={UserPreferenceFlags.GroupLines} />
 
             <FontSelector which="chat" />
             <FontSelector which="ui" />
@@ -59,7 +61,7 @@ const ThemeSetting = React.memo(() => {
 
     return (
         <>
-            <div className="ln-settings-theme">
+            <div className="ln-settings-toggle">
                 <label htmlFor="light_theme">Light Theme</label>
                 <input type="checkbox" name="light_theme" checked={interactive.is_light}
                     onChange={(e => doSetTheme(interactive.temperature, e.currentTarget.checked))} />
@@ -76,25 +78,6 @@ const ThemeSetting = React.memo(() => {
                 </div>
             </div>
         </>
-    )
-});
-
-const GroupLinesToggle = React.memo(() => {
-    let current_gl = useSelector(selectPrefsFlag(UserPreferenceFlags.GroupLines)),
-        dispatch = useDispatch(),
-        [gl, setGl] = useState(current_gl),
-        onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            let checked = e.currentTarget.checked;
-
-            setGl(checked);
-            dispatch(savePrefsFlag(UserPreferenceFlags.GroupLines, checked));
-        };
-
-    return (
-        <div className="ln-settings-group-lines">
-            <label htmlFor="group_lines">Show Lines Between Groups</label>
-            <input type="checkbox" name="group_lines" checked={gl} onChange={onChange} />
-        </div>
     )
 });
 

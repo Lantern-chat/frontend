@@ -1,0 +1,74 @@
+@use "sass:math";
+
+@import "lib/variables";
+
+$scale: 1;
+//$inactive: #d9dadc;
+$inactive: #aeb3b7;
+$active: #4ed164;
+
+.ln-settings-toggle {
+    //display: flex;
+
+    //.spacer {
+    //    flex: 1;
+    //}
+
+    input[type="checkbox"] {
+        font-size: 0.5em;
+
+        transition: none !important;
+        font-family: sans-serif;
+
+        position: relative;
+        appearance: none;
+        outline: none;
+        width: 5em;
+        height: 3em;
+
+        background-color: white;
+
+        vertical-align: middle;
+        border: 1px solid $inactive;
+        border-radius: 5em;
+        box-shadow: inset -2em 0 0 0 $inactive;
+
+        &::after {
+            //font-size: 1em * $scale;
+            //line-height: 1.2em;
+            content: "";
+            //content: "✗";
+            position: absolute;
+
+            left: math.div(0.1em, $scale);
+            top: math.div(0.1em, $scale);
+            bottom: math.div(0.1em, $scale);
+            right: math.div(2.1em, $scale);
+            background-color: transparent;
+            border-radius: 50%;
+            box-shadow: math.div(0.125em, $scale) math.div(0.25em, $scale) math.div(0.375em, $scale) rgba(0, 0, 0, 0.2);
+
+            //text-align: center;
+            //color: $inactive;
+        }
+
+        &:checked {
+            border-color: $active;
+            box-shadow: inset 2em 0 0 0 $active;
+
+            &::after {
+                right: 0;
+                left: math.div(2em, $scale);
+                top: 0;
+                bottom: 0;
+
+                box-shadow: math.div(-0.125em, $scale) math.div(0.25em, $scale) math.div(0.1875em, $scale)
+                    rgba(0, 0, 0, 0.05);
+
+                //content: "✓";
+                //line-height: normal;
+                //color: $active;
+            }
+        }
+    }
+}
