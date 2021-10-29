@@ -5,14 +5,30 @@ const packageJson = require("./package.json");
 const { LoaderOptionsPlugin, DllPlugin, DllReferencePlugin } = require('webpack');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-const TerserPlugin = require('terser-webpack-plugin');
+//const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
-const svgToMiniDataURI = require('mini-svg-data-uri');
-const { SubresourceIntegrityPlugin } = require('webpack-subresource-integrity');
+//const svgToMiniDataURI = require('mini-svg-data-uri');
+//const { SubresourceIntegrityPlugin } = require('webpack-subresource-integrity');
 
 const distPath = path.join(__dirname, 'dist');
 
+function makeMinimizer() {
+    const TerserPlugin = require('terser-webpack-plugin');
+
+    return [new TerserPlugin({
+        parallel: true,
+        terserOptions: {
+            sourceMap: false, //!IS_PRODUCTION,
+            compress: {
+                ecma: 2015,
+                passes: 3,
+                unsafe_math: true,
+            }
+        }
+    })];
+}
+
+// NODE_OPTIONS=--max-old-space-size=600 yarn build:dev
 module.exports = (env, argv) => {
     const MODE = argv.mode || 'development';
     const IS_PRODUCTION = MODE === "production";
@@ -52,17 +68,7 @@ module.exports = (env, argv) => {
             mangleExports: IS_PRODUCTION ? 'size' : 'deterministic',
             //runtimeChunk: 'single',
             minimize: IS_PRODUCTION,
-            minimizer: [new TerserPlugin({
-                parallel: true,
-                terserOptions: {
-                    sourceMap: false, //!IS_PRODUCTION,
-                    compress: {
-                        ecma: 2015,
-                        passes: 3,
-                        unsafe_math: true,
-                    }
-                }
-            })],
+            minimizer: IS_PRODUCTION ? makeMinimizer() : undefined,
             splitChunks: {
                 chunks: 'async',
                 minChunks: 2,
