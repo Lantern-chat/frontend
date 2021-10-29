@@ -12,6 +12,7 @@ import { pickColorFromHash } from "lib/palette";
 
 import { Link } from "ui/components/history";
 import { Avatar } from "ui/components/common/avatar";
+import { Glyphicon } from "ui/components/common/glyphicon";
 import { Spinner } from "ui/components/common/spinners/spinner";
 import { PositionedModal } from "ui/components/positioned_modal";
 
@@ -20,6 +21,8 @@ import { useSimplePositionedContextMenu } from "ui/hooks/useMainClick";
 import { ContextMenu } from "./menus/list";
 
 import { party_avatar_url, room_url } from "config/urls";
+
+import HomeIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-21-home.svg";
 
 let sorted_party_selector = createSelector((state: RootState) => state.party.parties, parties => {
     // this really just copies references into an array, so it should be fast
@@ -99,8 +102,10 @@ export const PartyList = React.memo(() => {
             <ol className="ln-party-list ln-scroll-y ln-scroll-y--invisible ln-scroll-fixed"
                 onScroll={on_scroll} onTouchStart={on_touchstart} onTouchEnd={on_touchend}>
                 <li id="user-home" className={'@me' == active_party ? 'selected' : ''}>
-                    <Link href="/channels/@me" onNavigate={e => ('@me' != active_party && can_navigate) || e.preventDefault()} >
-                        <Avatar rounded text="@" username="Home" span={{ title: "Home" }} />
+                    <Link title="Home" href="/channels/@me" onNavigate={e => ('@me' != active_party && can_navigate) || e.preventDefault()} >
+                        <Avatar rounded username="Home">
+                            <Glyphicon src={HomeIcon} />
+                        </Avatar>
                     </Link>
                 </li>
 
@@ -108,7 +113,7 @@ export const PartyList = React.memo(() => {
 
                 <li id="create-party" className={create_party_open ? 'selected' : ''}>
                     <Avatar rounded text="+" username="Join/Create a Party"
-                        span={{ title: "Join/Create a Party", onClick: () => can_navigate && dispatch({ type: Type.MODAL_OPEN_CREATE_PARTY }) }}
+                        wrapper={{ title: "Join/Create a Party", onClick: () => can_navigate && dispatch({ type: Type.MODAL_OPEN_CREATE_PARTY }) }}
                     />
                 </li>
             </ol>
@@ -157,7 +162,7 @@ const PartyAvatar = React.memo((props: IPartyAvatarProps) => {
 
             <Link noAction href={room_url(party.id, last)} onNavigate={on_navigate}>
                 <Avatar rounded url={url} text={party.name.charAt(0)}
-                    username={party.name} span={{ title: party.name }}
+                    username={party.name} wrapper={{ title: party.name }}
                     backgroundColor={pickColorFromHash(party.id, is_light_theme)} />
             </Link>
 

@@ -8,7 +8,7 @@ export interface IAvatarProps {
     text?: string,
     backgroundColor?: string,
     username: string,
-    span?: React.HTMLAttributes<HTMLSpanElement>,
+    wrapper?: React.HTMLAttributes<HTMLSpanElement>,
     children?: React.ReactNode,
     props?: React.HTMLProps<HTMLDivElement>,
     anchor?: React.ReactNode,
@@ -22,11 +22,11 @@ export const Avatar = React.memo((props: IAvatarProps) => {
 
     return (
         <div className="ln-avatar" {...(props.props || {})}>
-            <span className="ln-avatar__wrapper" {...props.span} title={props.username}>
+            <div className="ln-avatar__wrapper" {...props.wrapper} title={props.username}>
                 {is_image ?
                     <img src={props.url} className={className} alt={props.username} /> :
                     <span className={className} style={{ backgroundColor: props.backgroundColor }}>{props.children || props.text || '?'}</span>}
-            </span>
+            </div>
             {props.anchor}
         </div>
     );

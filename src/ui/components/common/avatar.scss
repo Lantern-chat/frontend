@@ -30,7 +30,13 @@
     }
 
     &__text {
-        font-family: sans-serif;
+        font-family: Arial, sans-serif;
         text-align: center;
+        line-height: normal;
+
+        .ln-glyphicon {
+            width: 100%;
+            font-size: 1.2em;
+        }
     }
 }

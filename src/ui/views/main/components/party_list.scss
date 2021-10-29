@@ -6,6 +6,10 @@
     align-items: center;
     color: $lnx-primary-text-color;
 
+    svg {
+        fill: $lnx-primary-text-color;
+    }
+
     .ln-avatar {
         &__image,
         &__text {
