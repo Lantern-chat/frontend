@@ -12,9 +12,12 @@
             font-size: 2em;
 
             &--rounded {
-                transition-property: border-radius;
-                transition-duration: 0.1s;
-                transition-timing-function: ease-in;
+                .ln-enable-motion & {
+                    transition-property: border-radius;
+                    transition-duration: 0.1s;
+                    transition-timing-function: ease-in;
+                }
+
                 border-radius: 40%;
             }
         }
@@ -73,9 +76,12 @@
                 font-size: 2em;
 
                 &--rounded {
-                    transition-property: border-radius;
-                    transition-duration: 0.1s;
-                    transition-timing-function: ease-in;
+                    .ln-enable-motion & {
+                        transition-property: border-radius;
+                        transition-duration: 0.1s;
+                        transition-timing-function: ease-in;
+                    }
+
                     border-radius: 20%;
                 }
             }

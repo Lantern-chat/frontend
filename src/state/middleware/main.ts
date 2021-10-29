@@ -249,6 +249,13 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
                 if([chat_font, ui_font].includes(Font.ComicSans)) import("ui/fonts/dramasans");
             }
 
+            let reduce_motion = hasUserPrefFlag(prefs, UserPreferenceFlags.ReduceAnimations);
+            if(!reduce_motion) {
+                de.classList.add('ln-enable-motion');
+            } else {
+                de.classList.remove('ln-enable-motion');
+            }
+
             // NOTE: Because this runs after the reducers, and the prefs reducer fills in defaults, this is the full prefs
             localStorage.setItem(StorageKey.PREFS, JSON.stringify(prefs));
         }
