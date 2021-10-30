@@ -171,7 +171,7 @@ const FontSelector = React.memo(({ which }: IFontSelectorProps) => {
                     </FormSelect>
                 </div>
                 <div className={"ln-settings-font__example " + font_class}>
-                    The wizard quickly jinxed the gnomes before they vaporized.
+                    "The wizard quickly jinxed the gnomes before they vaporized."
                 </div>
             </div>
         </div>
