@@ -113,8 +113,8 @@
                 border: none;
 
                 background: white;
-                width: 1em;
-                height: 2em;
+                width: 12px;
+                height: 24px;
                 border-radius: 25%;
 
                 .ln-light-theme & {
@@ -134,8 +134,9 @@
         &__input {
             height: 1em;
             position: relative;
-            left: -0.5em;
-            width: calc(100% + 1em);
+            // there seems to be like 1 pixel between the sides that makes this offset by 0.5
+            left: -5.5px;
+            width: calc(100% + 12px);
 
             &::before {
                 content: "";
