@@ -9,11 +9,23 @@ $active: #47c05b;
 //$active: rgb(59, 165, 93); // Other color
 
 .ln-settings-toggle {
-    //display: flex;
+    display: flex;
 
-    //.spacer {
-    //    flex: 1;
-    //}
+    max-width: 35rem;
+
+    @media (max-width: $ln-min-channel-width) {
+        max-width: 100%;
+    }
+
+    .spacer {
+        flex: 1;
+    }
+
+    label {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
 
     input[type="checkbox"] {
         font-size: 0.5em;
@@ -29,7 +41,7 @@ $active: #47c05b;
 
         background-color: white;
 
-        vertical-align: middle;
+        //vertical-align: middle;
         border: 1px solid $inactive;
         border-radius: 5em;
         box-shadow: inset -2em 0 0 0 $inactive;
