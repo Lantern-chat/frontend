@@ -40,22 +40,25 @@
             width: 100%;
         }
 
+        // mime type
         .ln-glyphicon {
             font-size: 2.75em;
             display: inline-flex;
         }
 
+        // both links
         a {
-            display: block;
             white-space: break-spaces;
             word-wrap: break-word;
 
+            // download icon
             .ln-glyphicon {
                 font-size: 2em;
             }
         }
 
-        > a {
+        // every item in the generic attachment is vertically centered
+        > * {
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -109,10 +112,7 @@
 .ln-attachment-link {
     max-width: 100%;
     flex: 1 1 auto;
-
-    display: inline-flex;
-    flex-direction: column;
-    justify-content: center;
+    min-width: 0; // prevents it from overflowing if text gets too long
 }
 
 .ln-attachment-size {

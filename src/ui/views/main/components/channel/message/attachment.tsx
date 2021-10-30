@@ -74,12 +74,14 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
 
         embed = (
             <div className="ln-msg-attachment__generic">
-                <MimeIcon name={attachment.filename} hint={mime} />
-                <div className="ln-attachment-link">
+                <div>
+                    <MimeIcon name={attachment.filename} hint={mime} />
+                </div>
+                <div className="ln-attachment-link ui-text">
                     <a target="__blank" title={title} href={url}>{attachment.filename}</a>
                     <span className="ln-attachment-size">{size}</span>
                 </div>
-                <a title={title} href={url + '?download'}>
+                <a target="__blank" title={title} href={url + '?download'}>
                     <Glyphicon src={SaveIcon} />
                 </a>
             </div>
