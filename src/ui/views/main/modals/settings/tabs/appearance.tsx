@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector, batch } from "react-redux";
 
 import throttle from "lodash/throttle";
@@ -7,7 +7,7 @@ import { setTheme } from "state/commands/theme";
 import { savePrefs, savePrefsFlag } from "state/commands/prefs";
 import { Font, FONT_NAMES, UserPreferenceFlags } from "state/models";
 import { themeSelector } from "state/selectors/theme";
-import { selectPrefsFlag } from "state/selectors/prefs";
+import { selectPrefsFlag, selectGroupPad } from "state/selectors/prefs";
 import { RootState } from "state/root";
 
 import { FormGroup, FormInput, FormLabel, FormSelect } from "ui/components/form";
@@ -21,14 +21,15 @@ import "./appearance.scss";
 export const AppearanceSettingsTab = () => {
     return (
         <form className="ln-settings-form">
+
+            <FontSelector which="chat" />
+            <FontSelector which="ui" />
+
             <ThemeSetting />
 
             <ViewSelector />
 
             <TogglePrefsFlag htmlFor="group_lines" label="Show Lines Between Groups" flag={UserPreferenceFlags.GroupLines} />
-
-            <FontSelector which="chat" />
-            <FontSelector which="ui" />
 
             <GroupPaddingSlider />
         </form>
@@ -185,8 +186,10 @@ const FontScale = React.memo(() => {
     )
 });
 
+const STEPS: number[] = [0, 12, 16, 24, 32];
+
 const GroupPaddingSlider = React.memo(() => {
-    let current_padding = useSelector((state: RootState) => state.prefs.pad),
+    let current_padding = useSelector(selectGroupPad),
         dispatch = useDispatch(),
         [pad, setPad] = useState(current_padding),
         onInput = (e: React.FormEvent<HTMLInputElement>) => {
@@ -202,7 +205,12 @@ const GroupPaddingSlider = React.memo(() => {
         <div className="ln-settings-pad">
             <label htmlFor="group_padding">Group Padding</label>
             <div>
-                <input type="range" name="group_padding" min="0" max="32" step="1" value={pad} onInput={onInput}></input>
+                <div className="ln-settings-pad__input">
+                    <input type="range" name="group_padding" min="0" max="32" step="1" value={pad} onInput={onInput}></input>
+                </div>
+                <div className="ln-settings-pad__steps">
+                    {STEPS.map(step => (<span key={step}>{step}px</span>))}
+                </div>
             </div>
         </div>
     )

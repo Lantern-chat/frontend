@@ -17,8 +17,8 @@
 }
 
 .ln-settings {
-    &-theme {
-    }
+    //&-theme {
+    //}
 
     &-temperature {
         height: 3.5rem;
@@ -49,6 +49,106 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+        }
+    }
+
+    &-pad {
+        width: 100%;
+        max-width: 35em;
+
+        > div {
+            padding: 1em;
+        }
+
+        input[type="range"] {
+            position: absolute;
+            z-index: 1; // put on top of lines
+
+            height: 100%;
+            width: 100%;
+
+            appearance: none;
+            background: transparent;
+            margin: 0;
+
+            @mixin thumb() {
+                box-shadow: none;
+                -webkit-appearance: none;
+                appearance: none;
+
+                cursor: pointer;
+                outline: none;
+                border: none;
+
+                background: white;
+                width: 1em;
+                height: 2em;
+                border-radius: 25%;
+            }
+
+            &::-moz-range-thumb {
+                @include thumb();
+            }
+
+            &::-webkit-slider-thumb {
+                @include thumb();
+            }
+        }
+
+        &__input {
+            height: 1em;
+            position: relative;
+            left: -0.5em;
+            width: calc(100% + 1em);
+
+            &::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                background: rgba(128, 128, 128, 0.4);
+            }
+        }
+
+        &__steps {
+            position: relative;
+            width: 100%;
+            height: 1em;
+
+            > span {
+                position: absolute;
+                top: 0.5em;
+                bottom: 0;
+                width: 3em;
+                text-align: center;
+
+                $sizes: 0, 12, 16, 24, 32;
+
+                &:first-child {
+                    right: calc(100% - 1.5em);
+                }
+
+                @for $i from 2 through length($sizes) {
+                    $s: nth($sizes, $i);
+
+                    &:nth-child(#{$i}) {
+                        $p: math.div($s, 32) * 100%;
+                        left: calc(#{$p} - 1.5em);
+                    }
+                }
+
+                &::before {
+                    content: "";
+                    top: -2em;
+                    bottom: 0.5em;
+                    position: absolute;
+                    border-left: 1px solid $lnx-primary-text-color;
+                    //height: 2em;
+                    left: 50%;
+                }
+            }
         }
     }
 }
