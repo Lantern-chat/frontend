@@ -11,6 +11,8 @@ import { message_attachment_url } from "config/urls";
 import { reactElement } from "ui/components/common/markdown/markdown";
 
 import "./attachment.scss";
+import { format_bytes } from "lib/formatting";
+import { MimeIcon } from "ui/components/mime_icon";
 export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, attachment: Attachment }) => {
     let [error, setError] = useState(false);
 
@@ -55,7 +57,7 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
                 </div>
             )
 
-        } else if(mime.startsWith('image')) {
+        } else if(mime.startsWith('image') && attachment.size < (1024 * 1024 * 30)) {
             //embed = <img title={title} onContextMenu={eat} src={url} onError={() => setError(true)} />;
 
             embed = reactElement('img', id, common);
@@ -63,7 +65,18 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
     }
 
     if(!embed) {
-        embed = <a target="__blank" title={title} href={url}>{attachment.filename}</a>;
+        let size = format_bytes(attachment.size);
+        title = title + ' (' + size + ')';
+
+        embed = (
+            <div className="ln-msg-attachment__generic">
+                <MimeIcon name={attachment.filename} hint={mime} />
+                <div className="ln-attachment-link">
+                    <a target="__blank" title={title} href={url}>{attachment.filename}</a>
+                    <span className="ln-attachment-size">{size}</span>
+                </div>
+            </div>
+        );
     }
 
     return (

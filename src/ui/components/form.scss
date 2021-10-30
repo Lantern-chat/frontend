@@ -212,7 +212,7 @@ select.ln-form-select {
     background: $lnx-tertiary-surface-color;
     color: $lnx-primary-text-color;
     outline: none;
-    height: 100%;
+    height: 100%; // ensures the select element is the same height as container, and same size as custom arrows
 
     border-radius: $control-border-radius;
 

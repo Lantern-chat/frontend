@@ -20,6 +20,33 @@
         text-align: center;
     }
 
+    &__generic {
+        text-align: left;
+        padding: 0.5em;
+        background-color: $lnx-primary-surface-color;
+        display: inline-block;
+        min-width: 20em;
+        max-width: calc(100% - 1em);
+        border-radius: 0.25em;
+        box-shadow: inset 0 0 0.2em rgba(0, 0, 0, 0.1);
+
+        @media (max-width: $ln-min-channel-width) {
+            min-width: 0;
+            width: 100%;
+        }
+
+        .ln-glyphicon {
+            font-size: 2.75em;
+            display: inline-flex;
+        }
+
+        a {
+            display: block;
+            white-space: break-spaces;
+            word-wrap: break-word;
+        }
+    }
+
     audio,
     video,
     img {
@@ -62,4 +89,13 @@
             height: 100%;
         }
     }
+}
+
+.ln-attachment-link {
+    max-width: 100%;
+    display: inline-block;
+}
+
+.ln-attachment-size {
+    color: $lnx-secondary-text-color;
 }
