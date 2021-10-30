@@ -63,6 +63,12 @@ $inner: hsl(240, 100%, 70%);
             background-color: rgba(0, 0, 0, 0.4);
 
             &::before {
+                filter: contrast(1.25);
+
+                .ln-dark-theme & {
+                    filter: invert(100%) hue-rotate(180deg) contrast(2);
+                }
+
                 background-image: url("data:image/svg+xml;utf8,<svg id='glyphicons-basic' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'><path id='circle-selected-outer' fill='#{encodecolor($outer)}' d='m16 5c-9.8006 0-14.707 11.849-7.7778 18.778 6.9293 6.9293 18.778 2.0229 18.778-7.7778-0.006861-6.0723-4.9277-10.993-11-11zm0 19c-7.1277 0-10.696-8.6171-5.6566-13.657 5.0395-5.0395 13.657-1.4712 13.657 5.6566-0.0051 4.4162-3.5838 7.9949-8 8z'/><path id='circle-selected-inner' fill='#{encodecolor($inner)}' d='m21 16c0 4.4548-5.3857 6.685-8.5354 3.5354-3.1497-3.1497-0.91948-8.5354 3.5354-8.5354 2.7614 0 5 2.2386 5 5z'/></svg>");
             }
         }

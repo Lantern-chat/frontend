@@ -80,6 +80,7 @@
 
         &__example {
             padding-top: 1em;
+            text-align: center;
         }
     }
 
@@ -88,7 +89,11 @@
         max-width: 35em;
 
         > div {
-            padding: 1em;
+            padding: 1em 0;
+
+            @media (min-width: $ln-min-channel-width) {
+                padding: 1em;
+            }
         }
 
         input[type="range"] {
