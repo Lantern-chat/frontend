@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
 
+import { copyText } from "lib/clipboard";
+
 import { RootState, Type } from "state/root";
 import { activeParty, activeRoom } from "state/selectors/active";
-import { Room, Snowflake } from "state/models";
+import { selectPrefsFlag } from "state/selectors/prefs";
+import { Room, Snowflake, UserPreferenceFlags } from "state/models";
 import { Panel } from "state/reducers/window";
 import { room_avatar_url } from "config/urls";
 
@@ -117,6 +120,8 @@ export interface IRoomContextMenuProps {
 }
 
 const RoomContextMenu = React.memo((props: IRoomContextMenuProps) => {
+    let dev_mode = useSelector(selectPrefsFlag(UserPreferenceFlags.DeveloperMode));
+
     return (
         <ContextMenu dark>
             <div>
@@ -129,9 +134,18 @@ const RoomContextMenu = React.memo((props: IRoomContextMenuProps) => {
                 <span className="ui-text">Edit Channel</span>
             </div>
 
-            <div>
-                <span className="ui-text">Copy ID</span>
-            </div>
+            {
+                dev_mode && (
+                    <>
+                        <hr />
+                        <div onClick={() => copyText(props.room.id)}>
+                            <span className="ui-text">Copy ID</span>
+                        </div>
+                    </>
+                )
+            }
+
+
         </ContextMenu>
     );
 });

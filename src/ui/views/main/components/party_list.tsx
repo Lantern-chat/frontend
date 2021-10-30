@@ -2,6 +2,8 @@ import React, { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
 
+import { copyText } from "lib/clipboard";
+
 import { RootState, Type } from "state/root";
 import { activateParty } from "state/commands";
 import { activeParty } from "state/selectors/active";
@@ -152,7 +154,7 @@ const PartyAvatar = React.memo((props: IPartyAvatarProps) => {
     if(pos) {
         menu = (
             <PositionedModal {...pos}>
-                <ListedPartyMenu />
+                <ListedPartyMenu party={props.party} />
             </PositionedModal>
         );
     }
@@ -171,7 +173,13 @@ const PartyAvatar = React.memo((props: IPartyAvatarProps) => {
     );
 });
 
-const ListedPartyMenu = React.memo(() => {
+interface IListedPartyMenuProps {
+    party: Party,
+}
+
+const ListedPartyMenu = React.memo((props: IListedPartyMenuProps) => {
+    let dev_mode = useSelector(selectPrefsFlag(UserPreferenceFlags.DeveloperMode));
+
     return (
         <ContextMenu dark>
             <div>
@@ -183,12 +191,16 @@ const ListedPartyMenu = React.memo(() => {
             <div>
                 <span className="ui-text">Invite People</span>
             </div>
-
-            <hr />
-
-            <div>
-                <span className="ui-text">Copy ID</span>
-            </div>
+            {
+                dev_mode && (
+                    <>
+                        <hr />
+                        <div onClick={() => copyText(props.party.id)}>
+                            <span className="ui-text">Copy ID</span>
+                        </div>
+                    </>
+                )
+            }
         </ContextMenu>
     )
 })

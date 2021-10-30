@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-
-import { IMessageState } from "state/reducers/chat";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "state/root";
-import { deleteMessage } from "state/commands/message/delete";
+
+import { copyText } from "lib/clipboard";
+
 import { UserPreferenceFlags } from "state/models";
+import { deleteMessage } from "state/commands/message/delete";
+import { IMessageState } from "state/reducers/chat";
 import { selectPrefsFlag } from "state/selectors/prefs";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
@@ -25,10 +26,6 @@ export interface IMsgContextMenuProps {
     onConfirmChange: (pending: boolean) => void,
 }
 
-function copyText(txt: string): Promise<void> {
-    return navigator.clipboard.writeText(txt);
-}
-
 /// Menu shown when right-clicking on a message in chat
 import "./msg_context.scss";
 export const MsgContextMenu = React.memo(({ msg, pos, onConfirmChange }: IMsgContextMenuProps) => {
@@ -41,7 +38,6 @@ export const MsgContextMenu = React.memo(({ msg, pos, onConfirmChange }: IMsgCon
     useEffect(() => onConfirmChange(shownConfirmation), [shownConfirmation]);
 
     let copy_msg = useCallback(() => copyText(msg.msg.content), [msg.msg.content]);
-    let copy_id = useCallback(() => copyText(msg.msg.id), [msg.msg.id]);
 
     // it's fine to memoize this since any attempts to select more would trigger a click event and close the context menu
     let selected = useMemo(() => {
@@ -123,7 +119,7 @@ export const MsgContextMenu = React.memo(({ msg, pos, onConfirmChange }: IMsgCon
                     <>
                         <hr />
 
-                        <div onClick={copy_id}>
+                        <div onClick={() => copyText(msg.msg.id)}>
                             <Glyphicon src={ChatMessageIcon} />
                             <span className="ui-text">Copy ID</span>
                         </div>

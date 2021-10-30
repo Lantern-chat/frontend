@@ -4,6 +4,8 @@ import { createStructuredSelector } from "reselect";
 import { fetch_quota } from "state/commands/sendfile";
 import { RootState } from "state/root";
 import { format_bytes } from "lib/formatting";
+import { TogglePrefsFlag } from "../components/toggle";
+import { UserPreferenceFlags } from "state/models";
 
 let account_selector = createStructuredSelector({
     iuser: (state: RootState) => state.user,
@@ -47,6 +49,7 @@ export const AccountSettingsTab = () => {
             <div>Change Password</div>
             <div>2-Factor Authentication</div>
             <div>{quota}</div>
+            <TogglePrefsFlag flag={UserPreferenceFlags.DeveloperMode} htmlFor="dev_mode" label="Enable Developer Mode" />
         </>
     );
 };
