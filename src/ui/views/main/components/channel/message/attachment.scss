@@ -24,14 +24,19 @@
         text-align: left;
         padding: 0.5em;
         background-color: $lnx-primary-surface-color;
-        display: inline-block;
+
+        display: inline-flex;
+        flex-wrap: nowrap;
+
         min-width: 20em;
         max-width: calc(100% - 1em);
+
         border-radius: 0.25em;
         box-shadow: inset 0 0 0.2em rgba(0, 0, 0, 0.1);
 
         @media (max-width: $ln-min-channel-width) {
             min-width: 0;
+            max-width: 100%;
             width: 100%;
         }
 
@@ -44,6 +49,16 @@
             display: block;
             white-space: break-spaces;
             word-wrap: break-word;
+
+            .ln-glyphicon {
+                font-size: 2em;
+            }
+        }
+
+        > a {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
     }
 
@@ -93,9 +108,14 @@
 
 .ln-attachment-link {
     max-width: 100%;
-    display: inline-block;
+    flex: 1 1 auto;
+
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .ln-attachment-size {
     color: $lnx-secondary-text-color;
+    font-size: 0.8em;
 }

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { IS_MOBILE } from "lib/user_agent";
+import { format_bytes } from "lib/formatting";
 
 function eat(e: React.SyntheticEvent) {
     e.stopPropagation();
@@ -10,9 +11,12 @@ import { message_attachment_url } from "config/urls";
 
 import { reactElement } from "ui/components/common/markdown/markdown";
 
-import "./attachment.scss";
-import { format_bytes } from "lib/formatting";
+import { Glyphicon } from "ui/components/common/glyphicon";
 import { MimeIcon } from "ui/components/mime_icon";
+
+import SaveIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-199-save.svg";
+
+import "./attachment.scss";
 export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, attachment: Attachment }) => {
     let [error, setError] = useState(false);
 
@@ -75,6 +79,9 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
                     <a target="__blank" title={title} href={url}>{attachment.filename}</a>
                     <span className="ln-attachment-size">{size}</span>
                 </div>
+                <a title={title} href={url + '?download'}>
+                    <Glyphicon src={SaveIcon} />
+                </a>
             </div>
         );
     }
