@@ -13,6 +13,7 @@ import { RootState } from "state/root";
 import { FormGroup, FormInput, FormLabel, FormSelect } from "ui/components/form";
 
 import { TogglePrefsFlag } from "../components/toggle";
+import { RadioSelect } from "../components/radio";
 
 import { MIN_TEMP, MAX_TEMP } from "lib/theme";
 
@@ -61,10 +62,14 @@ const ThemeSetting = React.memo(() => {
 
     return (
         <>
-            <div className="ln-settings-toggle">
-                <label htmlFor="light_theme">Light Theme</label>
-                <input type="checkbox" name="light_theme" checked={interactive.is_light}
-                    onChange={(e => doSetTheme(interactive.temperature, e.currentTarget.checked))} />
+            <div>
+                <label>Theme</label>
+                <RadioSelect
+                    name="light_theme"
+                    options={[["light", "Light Theme"], ["dark", "Dark Theme"]]}
+                    selected={interactive.is_light ? 'light' : 'dark'}
+                    onChange={value => doSetTheme(interactive.temperature, value == 'light')}
+                />
             </div>
 
             <div className="ln-settings-temperature">
@@ -85,8 +90,8 @@ const ViewSelector = React.memo(() => {
     let current_compact = useSelector(selectPrefsFlag(UserPreferenceFlags.CompactView)),
         dispatch = useDispatch(),
         [compact, setCompact] = useState(current_compact),
-        onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-            let compact = e.currentTarget.value == 'compact';
+        onChange = (value: string) => {
+            let compact = value == 'compact';
 
             setCompact(compact);
 
@@ -97,16 +102,16 @@ const ViewSelector = React.memo(() => {
         };
 
     return (
-        <div className="ln-settings-view">
-            <label htmlFor="view">View</label>
-            <div className="ln-settings-view__selector">
-                <FormSelect name="view" value={compact ? 'compact' : 'cozy'} onChange={onChange}>
-                    <option value='cozy'>Cozy</option>
-                    <option value='compact'>Compact</option>
-                </FormSelect>
-            </div>
+        <div>
+            <label>View Mode</label>
+            <RadioSelect
+                name="view"
+                options={[["cozy", "Cozy"], ["compact", "Compact"]]}
+                selected={compact ? 'compact' : 'cozy'}
+                onChange={onChange}
+            />
         </div>
-    )
+    );
 });
 
 interface IFontSelectorProps {

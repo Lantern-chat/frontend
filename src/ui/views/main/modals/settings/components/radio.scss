@@ -1,0 +1,70 @@
+@import "lib/variables";
+@import "lib/color";
+
+$outer: #444;
+$inner: hsl(240, 100%, 70%);
+
+.ln-settings-radio {
+    max-width: 35em;
+
+    > div:not(:first-child) {
+        margin-top: 0.4em;
+    }
+
+    label {
+        .ln-light-theme & {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        background-color: rgba(0, 0, 0, 0.1);
+
+        width: 100%;
+        padding: 1em 2em 1em 3.5em;
+        margin: 0;
+        border-radius: 0.25em;
+
+        &:hover {
+            background-color: rgba(128, 128, 128, 0.3);
+        }
+
+        position: relative;
+
+        &::before {
+            content: "";
+
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 1em;
+
+            width: 2em;
+
+            background-repeat: no-repeat;
+            background-position: 50% 50%;
+
+            .ln-dark-theme & {
+                filter: invert(100%) hue-rotate(180deg);
+            }
+
+            background-image: url("data:image/svg+xml;utf8,<svg id='glyphicons-basic' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path id='circle-empty' fill='#{encodecolor($outer)}' d='M16,5A11,11,0,1,0,27,16,11.01245,11.01245,0,0,0,16,5Zm0,19a8,8,0,1,1,8-8A8.00917,8.00917,0,0,1,16,24Z'/></svg>");
+        }
+    }
+
+    input[type="radio"] {
+        appearance: none;
+        outline: none;
+        display: none;
+
+        &:checked ~ label {
+            .ln-light-theme & {
+                background-color: rgba(0, 0, 0, 0.2);
+            }
+
+            background-color: rgba(0, 0, 0, 0.4);
+
+            &::before {
+                background-image: url("data:image/svg+xml;utf8,<svg id='glyphicons-basic' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'><path id='circle-selected-outer' fill='#{encodecolor($outer)}' d='m16 5c-9.8006 0-14.707 11.849-7.7778 18.778 6.9293 6.9293 18.778 2.0229 18.778-7.7778-0.006861-6.0723-4.9277-10.993-11-11zm0 19c-7.1277 0-10.696-8.6171-5.6566-13.657 5.0395-5.0395 13.657-1.4712 13.657 5.6566-0.0051 4.4162-3.5838 7.9949-8 8z'/><path id='circle-selected-inner' fill='#{encodecolor($inner)}' d='m21 16c0 4.4548-5.3857 6.685-8.5354 3.5354-3.1497-3.1497-0.91948-8.5354 3.5354-8.5354 2.7614 0 5 2.2386 5 5z'/></svg>");
+            }
+        }
+    }
+}
