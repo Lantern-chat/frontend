@@ -1,7 +1,7 @@
-import { Font, UserPreferenceFlags, UserPreferences } from "state/models";
+import { Font, hasUserPrefFlag, UserPreferenceFlags, UserPreferences } from "state/models";
 import { Action, Type } from "../actions";
 
-export type IPrefsState = UserPreferences;
+export type IPrefsState = PartialBy<UserPreferences, 'pad'>;
 
 export const DEFAULT_STATE: IPrefsState = {
     locale: 0,
@@ -14,7 +14,6 @@ export const DEFAULT_STATE: IPrefsState = {
     tab_size: 4,
     time_format: "",
     flags: UserPreferenceFlags.AllowDms | UserPreferenceFlags.GroupLines,
-    pad: 16,
 };
 
 export function prefsReducer(state: IPrefsState = DEFAULT_STATE, action: Action) {
@@ -23,4 +22,9 @@ export function prefsReducer(state: IPrefsState = DEFAULT_STATE, action: Action)
     }
 
     return state;
+}
+
+export function getPad(prefs: IPrefsState): number {
+    let pad = prefs.pad;
+    return pad != null ? pad : (hasUserPrefFlag(prefs as any, UserPreferenceFlags.CompactView) ? 0 : 16);
 }

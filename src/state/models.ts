@@ -151,7 +151,7 @@ export interface UserPreferences {
     pad: number,
 }
 
-export function hasUserPrefFlag(prefs: UserPreferences, flag: UserPreferenceFlags): boolean {
+export function hasUserPrefFlag(prefs: Pick<UserPreferences, 'flags'>, flag: UserPreferenceFlags): boolean {
     return (prefs.flags & flag) === flag;
 }
 

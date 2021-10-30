@@ -5,7 +5,7 @@ import { Dispatch } from "state/actions";
 import { loadMessages, SearchMode, activateParty, setSession } from "state/commands";
 import { DEFAULT_LOGGED_IN_CHANNEL, GLOBAL, HISTORY } from "state/global";
 import { GatewayStatus } from "state/reducers/gateway";
-import { DEFAULT_STATE as DEFAULT_PREFS } from "state/reducers/prefs";
+import { DEFAULT_STATE as DEFAULT_PREFS, getPad } from "state/reducers/prefs";
 import { Action, RootState, Type } from "state/root";
 
 import { StorageKey } from "state/storage";
@@ -198,7 +198,8 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
             let de = document.documentElement,
                 state = getState(),
                 prefs = state.prefs,
-                { chat_font, ui_font, pad } = prefs,
+                { chat_font, ui_font } = prefs,
+                pad = getPad(prefs),
                 font_changed = false;
 
             // 16px == 1em, /2 for both sides
