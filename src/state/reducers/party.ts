@@ -36,7 +36,7 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
             let party = draft.parties.get(action.party_id);
 
             if(party) {
-                action.rooms.sort((a, b) => a.sort_order - b.sort_order);
+                action.rooms.sort((a, b) => a.position - b.position);
 
                 for(let room of action.rooms) {
                     if(__DEV__ && room.party_id !== action.party_id) {

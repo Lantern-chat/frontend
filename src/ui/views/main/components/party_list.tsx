@@ -29,7 +29,7 @@ import HomeIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-s
 let sorted_party_selector = createSelector((state: RootState) => state.party.parties, parties => {
     // this really just copies references into an array, so it should be fast
     let party_array = Array.from(parties.values(), party => party.party);
-    party_array.sort((a, b) => a.sort_order - b.sort_order);
+    party_array.sort((a, b) => a.position - b.position);
     return party_array;
 });
 

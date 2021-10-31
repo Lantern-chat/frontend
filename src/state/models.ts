@@ -175,7 +175,7 @@ export interface Room {
     avatar?: string,
     name: string,
     topic?: string,
-    sort_order: number,
+    position: number,
     flags: number,
     rate_limit_per_user?: number,
     parent_id?: Snowflake,
@@ -248,7 +248,7 @@ export interface Party extends PartialParty {
     roles?: Role[],
     emotes?: Emote[],
     avatar?: string,
-    sort_order: number,
+    position: number,
 }
 
 export interface PartyMember {
@@ -284,7 +284,7 @@ export interface Role {
     name: string | null,
     permissions: Permission,
     color: number | null,
-    sort: number,
+    position: number,
     flags: number,
 }
 
