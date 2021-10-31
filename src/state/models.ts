@@ -284,6 +284,7 @@ export interface Role {
     name: string | null,
     permissions: Permission,
     color: number | null,
+    sort: number,
     flags: number,
 }
 
