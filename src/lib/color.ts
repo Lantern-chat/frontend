@@ -327,3 +327,9 @@ export function formatRGB(c: RGBColor, alpha?: number, srgb?: boolean): string {
 
     return prefix + `(${rgb.join(',')})`;
 }
+
+export function formatRgbBinary(value: number): string {
+    let r = value & 0xff, g = (value >> 8) & 0xff, b = (value >> 16) & 0xff;
+
+    return 'rgb(' + [r, g, b].join(',') + ')';
+}

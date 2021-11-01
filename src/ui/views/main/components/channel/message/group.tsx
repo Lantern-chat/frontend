@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import classNames from "classnames";
 
 import { User } from "state/models";
@@ -17,31 +17,45 @@ import { MsgContextMenu } from "../../menus/msg_context";
 import { UserCard } from "../../menus/user_card";
 
 import { useMainClick, useSimplePositionedContextMenu, useSimpleToggleOnClick } from "ui/hooks/useMainClick";
+import { useSelector } from "react-redux";
+import { RootState } from "state/root";
+import { computeRoleColor } from "state/selectors/party";
+import { activeParty } from "state/selectors/active";
 
 interface IUserNameProps {
     name: string,
+    msg: IMessageState,
     user: User,
     is_light_theme?: boolean,
-    children?: React.ReactNode,
 }
 
 const MessageUserName = React.memo((props: IUserNameProps) => {
     let [show, main_click_props] = useSimpleToggleOnClick();
 
-    return (
-        <h2 className="ln-msg__username ui-text" {...main_click_props}>
-            {props.children}
+    let author = props.msg.msg.author;
 
+    let color = useSelector((state: RootState) => {
+        let party_id = activeParty(state);
+        if(!party_id) return;
+
+        let party = state.party.parties.get(party_id);
+        if(!party) return;
+
+        return party.member_colors.get(author.id);
+    });
+
+    return (
+        <h2 className="ln-msg__username" {...main_click_props}>
             <AnchoredModal show={show}>
                 <UserCard user={props.user} />
             </AnchoredModal>
 
-            {props.name}
+            <span className="ui-text" style={{ color }}>{props.name}</span>
         </h2>
     );
 });
 
-const MessageUserAvatar = React.memo(({ name, user, is_light_theme }: IUserNameProps) => {
+const MessageUserAvatar = React.memo(({ name, user, is_light_theme }: Omit<IUserNameProps, 'msg'>) => {
     let [show, main_click_props] = useSimpleToggleOnClick();
 
     let avatar_url;
@@ -91,7 +105,7 @@ const CompactGroupMessage = React.memo(({ msg, is_light_theme, nickname, first, 
                     </div>
                 </div>
 
-                <MessageUserName name={nickname} user={msg.msg.author} />
+                <MessageUserName name={nickname} user={msg.msg.author} msg={msg} />
             </div>
 
             <Message editing={false} msg={msg.msg} />
@@ -111,7 +125,7 @@ const CozyGroupMessage = React.memo(({ msg, is_light_theme, nickname, first, att
     if(first) {
         title = (
             <div className="ln-msg__title">
-                <MessageUserName name={nickname} user={msg.msg.author} />
+                <MessageUserName name={nickname} user={msg.msg.author} msg={msg} />
 
                 <span className="ln-separator"> - </span>
 

@@ -1,8 +1,8 @@
 import { pickColorFromHash } from "lib/palette";
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useMemo } from "react";
+import { shallowEqual, useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
-import { hasUserPrefFlag, parse_presence, UserPreferenceFlags } from "state/models";
+import { hasUserPrefFlag, parse_presence, PartyMember, Snowflake, UserPreferenceFlags } from "state/models";
 import { RootState } from "state/root";
 import { activeParty } from "state/selectors/active";
 import { selectPrefsFlag } from "state/selectors/prefs";
@@ -15,61 +15,83 @@ import CrownIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-
 let user_list_selector = createSelector(
     activeParty, // party_id
     (state: RootState) => state.party.parties,
-    (party_id, parties) => {
+    selectPrefsFlag(UserPreferenceFlags.LightMode),
+    (party_id, parties, is_light_theme) => {
         let party = party_id ? parties.get(party_id) : null;
 
-        if(!party) return {};
+        if(!party) return { is_light_theme };
 
         return {
             members: party.members,
             owner: party.party.owner,
+            is_light_theme,
         }
     }
 )
 
-let other_selector = createStructuredSelector({
-    is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
-});
-
 import "./member_list.scss";
+import { computeRoleColor, selectRoleColor } from "state/selectors/party";
 export const MemberList = React.memo(() => {
-    let { members, owner } = useSelector(user_list_selector);
-    let { is_light_theme } = useSelector(other_selector);
+    let { members, owner, is_light_theme } = useSelector(user_list_selector),
+        list;
 
-    let list = !members ? null : Array.from(members.values(), (member) => {
-        let user = member.user!,
-            nick = member.nick || user.username,
-            { status, is_mobile } = parse_presence(member.presence);
 
-        let crown;
-        if(user.id == owner) {
-            crown = (
-                <>
-                    <div className="ln-member__spacer" />
-                    <div className="ln-member__crown">
-                        <Glyphicon src={CrownIcon} />
-                    </div>
-                </>
-            );
-        }
-
-        return (
-            <li key={user.id} className="ln-member-list__item">
-                <UserAvatar nickname={nick} user={user} status={status}
-                    is_light_theme={is_light_theme} is_mobile={is_mobile} />
-
-                <div className="ln-member__name">
-                    <span className="ui-text">{nick}</span>
-                </div>
-
-                {crown}
-            </li>
-        );
-    });
+    if(members) {
+        list = Array.from(members.values(), (member, i) => (
+            <ListedMember key={member.user?.id || i} member={member} owner={owner!} is_light_theme={is_light_theme} />
+        ))
+    }
 
     return (
         <ul className="ln-member-list ln-scroll-y ln-scroll-fixed">
             {list}
         </ul>
     )
-})
+});
+
+interface IListedMemberProps {
+    owner: Snowflake,
+    member: PartyMember,
+    is_light_theme: boolean,
+}
+
+const ListedMember = ({ member, owner, is_light_theme }: IListedMemberProps) => {
+    let user = member.user!,
+        nick = member.nick || user.username,
+        { status, is_mobile } = parse_presence(member.presence),
+        crown;
+
+    let color = useSelector((state: RootState) => {
+        let party_id = activeParty(state);
+        if(!party_id) return;
+
+        let party = state.party.parties.get(party_id);
+        if(!party) return;
+
+        return party.member_colors.get(member.user!.id);
+    });
+
+    if(user.id == owner) {
+        crown = (
+            <>
+                <div className="ln-member__spacer" />
+                <div className="ln-member__crown">
+                    <Glyphicon src={CrownIcon} />
+                </div>
+            </>
+        );
+    }
+
+    return (
+        <li className="ln-member-list__item">
+            <UserAvatar nickname={nick} user={user} status={status}
+                is_light_theme={is_light_theme} is_mobile={is_mobile} />
+
+            <div className="ln-member__name">
+                <span className="ui-text" style={{ color }}>{nick}</span>
+            </div>
+
+            {crown}
+        </li>
+    );
+};
