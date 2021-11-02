@@ -184,6 +184,11 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
 
         if(top != container.scrollTop) {
             container.scrollTo({ top });
+
+            //this.scroll_throttle = true;
+            //requestAnimationFrame(() => {
+            //    this.scroll_throttle = false;
+            //});
         }
     }
 
@@ -261,45 +266,36 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
 
     /// SECTION: Event Callbacks
 
-    onResize(entries: ResizeObserverEntry[], observer: ResizeObserver) {
+    onResize(_entries: ResizeObserverEntry[], _observer: ResizeObserver) {
+        __DEV__ && console.log("RESIZED");
         this.fixPosition();
     }
 
     scroll_throttle: boolean = false;
-
-    scrollThrottle(): boolean {
-        if(this.scroll_throttle) return true;
-        this.scroll_throttle = true;
-        requestAnimationFrame(() => { this.scroll_throttle = false; });
-        return false;
-    }
 
     onScroll(e: React.UIEvent<HTMLDivElement>) {
         let pos = this.containerRef.current!.scrollTop;
 
         // If there is a load pending, there is no point in checking for anchor position,
         // so just update the position by itself.
-        if(this.load_pending) {
-            e.preventDefault();
-            this.pos = pos;
+        // calls to `scrollTo` may trigger a scroll event, which will be at this.pos so ignore that.
+        if(this.scroll_throttle || this.load_pending || Math.abs(pos - this.pos) < 1) {
             return;
         }
 
-        // calls to `scrollTo` may trigger a scroll event, so ignore that.
-        if(Math.abs(pos - this.pos) < 1) {
-            return;
-        }
+        this.scroll_throttle = true;
 
-        // try to avoid multiple scroll events per frame
-        if(this.scrollThrottle()) return;
-
-        // go on to process real scroll handling
-        this.start_time = high_res_now();
-        if(!this.polling) {
-            this.polling = true;
-            this.velocity = 0;
-            this.doScroll(this.start_time);
-        }
+        // // psuedo-trailing-edge throttle to avoid multiple scroll events per frame
+        requestAnimationFrame(() => {
+            // go on to process real scroll handling
+            this.start_time = high_res_now();
+            if(!this.polling) {
+                this.polling = true;
+                this.velocity = 0;
+                this.doScroll(this.start_time);
+            }
+            this.scroll_throttle = false;
+        });
     }
 
     // discourage fast fingers while loading
