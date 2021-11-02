@@ -55,15 +55,19 @@ let Root = () => {
     );
 
     // don't need strict checking in prod
-    if(__DEV__) {
-        root = (<React.StrictMode>{root}</React.StrictMode>);
-    }
+    //if(__DEV__) {
+    //    root = (<React.StrictMode>{root}</React.StrictMode>);
+    //}
 
     return root;
 };
 
-//ReactDOM.render(<Root />, document.getElementById('ln-root')!);
-//ReactDOM.hydrate(<Root />, document.getElementById("ln-root")!);
-(ReactDOM as any).unstable_createRoot(document.getElementById("ln-root")!, { hydrate: true }).render(<Root />);
+
+
+ReactDOM.createRoot(document.getElementById("ln-root")!).render(<Root />);
+
+    //ReactDOM.render(<Root />, document.getElementById('ln-root')!);
+    //ReactDOM.hydrate(<Root />, document.getElementById("ln-root")!);
+    //(ReactDOM as any);
 
 // https://github.com/nuxodin/ie11CustomProperties/blob/master/ie11CustomProperties.js
