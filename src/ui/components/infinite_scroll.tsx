@@ -60,7 +60,7 @@ const DEFAULT_SCROLL_STATE: IScrollState = {
 const high_res_now = performance.now ? () => performance.now() : () => Date.now();
 
 function ema(current: number, next: number): number {
-    return current * 0.7 + next * 0.3; // 30%
+    return current * 0.9 + next * 0.1; // 10%
 
     //return (current + next) * 0.5;
 }
@@ -82,12 +82,16 @@ export const InfiniteScroll = React.memo((props: IInfiniteScrollProps) => {
     let container_ref = useRef<HTMLDivElement>(null);
 
     let state = useMemo(() => {
+        __DEV__ && console.log("Initializing scroll state...");
+
         var state = { ...DEFAULT_SCROLL_STATE };
 
         let container = container_ref.current!;
         if(!container) return state;
 
         state.scroll = () => {
+            if(!state.enabled) return;
+
             let anchor = compute_at(container, container.clientHeight, container.clientHeight * 0.3),
                 reached_top = anchor == Anchor.Top && state.anchor != Anchor.Top,
                 reached_bottom = anchor == Anchor.Bottom && state.anchor != Anchor.Bottom;
@@ -98,18 +102,21 @@ export const InfiniteScroll = React.memo((props: IInfiniteScrollProps) => {
             state.pos = new_pos;
             state.anchor = anchor;
 
-            let predicted_pos = state.velocity * 2 + new_pos;
-            //console.log(state.frame_time, state.velocity, new_pos, predicted_pos);
+            let predicted_pos = state.velocity + new_pos;
 
             if((reached_top || predicted_pos < 0) && anchor != Anchor.Bottom) {
+                __DEV__ && console.log("PREDICTED TO TOP", state.frame_time, state.velocity, new_pos, predicted_pos);
                 state.anchor = Anchor.Top;
                 state.load_prev();
-            } else if(reached_bottom || predicted_pos > container.scrollHeight) {
+                state.velocity = 0;
+            } else if(reached_bottom || (predicted_pos > container.scrollHeight && state.velocity > 0)) {
+                __DEV__ && console.log("PREDICTED TO BOTTOM", state.frame_time, state.velocity, new_pos, predicted_pos);
                 state.anchor = Anchor.Bottom;
                 state.load_next();
+                state.velocity = 0;
             }
 
-            let max_frame = 1.0 / state.frame_time;
+            let max_frame = 1000.0 / state.frame_time;
 
             if(state.active && state.frame++ < max_frame) {
                 let prev = high_res_now();
@@ -118,6 +125,7 @@ export const InfiniteScroll = React.memo((props: IInfiniteScrollProps) => {
                     state.scroll();
                 });
             } else {
+                __DEV__ && console.log("FPS:", max_frame);
                 state.active = false;
                 //console.info("Stopped polling");
             }
@@ -171,10 +179,11 @@ export const InfiniteScroll = React.memo((props: IInfiniteScrollProps) => {
         onResize: useCallback((_width, height) => {
             __DEV__ && console.log("INNER RESIZED!!!", state.anchor, props.start);
 
-            if(state.anchor == props.start) {
-                state.active = false;
-                state.resize(height);
-            }
+            //if(state.anchor == props.start) {
+            state.active = false;
+            state.velocity = 0;
+            state.resize(height);
+            //}
         }, [state]),
         observerOptions: { box: 'border-box' },
     });
@@ -211,7 +220,7 @@ export const InfiniteScroll = React.memo((props: IInfiniteScrollProps) => {
         };
     }, [props.load_prev, props.load_next, props.children, state]);
 
-    let on_scroll = useCallback(() => {
+    let on_scroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
         state.frame = 0;
 
         if(!state.active && state.enabled) {
@@ -223,14 +232,20 @@ export const InfiniteScroll = React.memo((props: IInfiniteScrollProps) => {
         state.enabled = true;
     }, [state]);
 
+    let on_wheel = useCallback((e: React.WheelEvent) => {
+        if(state.enabled) {
+            state.pos += e.deltaY;
+        }
+    }, [state]);
+
     let container_classes = "ln-inf-scroll__container ln-scroll-y ";
     if(props.containerClassName) {
         container_classes += props.containerClassName;
     }
 
     return (
-        <div className={container_classes} ref={container_ref} onScroll={on_scroll}>
-            <div className={"ln-inf-scroll__wrapper"} ref={wrapper_ref}>
+        <div className={container_classes} ref={container_ref} onScroll={on_scroll} onWheel={on_wheel}>
+            <div className="ln-inf-scroll__wrapper" ref={wrapper_ref}>
                 {props.children}
             </div>
         </div>

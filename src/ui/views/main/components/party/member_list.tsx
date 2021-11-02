@@ -30,7 +30,6 @@ let user_list_selector = createSelector(
 )
 
 import "./member_list.scss";
-import { computeRoleColor, selectRoleColor } from "state/selectors/party";
 export const MemberList = React.memo(() => {
     let { members, owner, is_light_theme } = useSelector(user_list_selector),
         list;

@@ -96,7 +96,7 @@ const inner_feed_selector = createStructuredSelector({
     gl: selectPrefsFlag(UserPreferenceFlags.GroupLines),
 });
 
-import { Anchor, InfiniteScroll } from "ui/components/infinite_scroll";
+import { Anchor, InfiniteScroll } from "ui/components/infinite_scroll2";
 
 const NoTimeline = React.memo(() => <></>);
 
