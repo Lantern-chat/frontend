@@ -38,6 +38,12 @@
                 width: 0;
             }
         }
+
+        // space after paragraphs
+        &:not(:last-child) {
+            // TODO: Use margin-block-end: 1em; ?
+            margin-bottom: 1em;
+        }
     }
 
     br:last-child {

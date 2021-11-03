@@ -1,6 +1,9 @@
 .katex-display {
     text-align: left;
 
+    // TODO: Revisit this, make it look nicer, handle touch events
+    overflow: auto hidden;
+
     .compact & {
         margin: 0;
     }
