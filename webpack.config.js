@@ -130,6 +130,7 @@ module.exports = (env, argv) => {
                                 sassOptions: {
                                     includePaths: ["src/ui/styles"],
                                 },
+                                additionalData: `$__DEV__: ${!IS_PRODUCTION};`,
                             },
                         },
                     ],
