@@ -48,7 +48,7 @@ const typing_selector = createSelector(
     (users_typing, active_party, parties, user) => {
         if(!users_typing || !active_party) return;
 
-        if(users_typing.length > 10) return "Many users are typing";
+        if(users_typing.length > 10) return "Many users are typing...";
 
         let party = parties.get(active_party);
 
@@ -63,8 +63,11 @@ const typing_selector = createSelector(
             let member = party.members.get(entry.user);
             if(member) {
                 let nick = member.nick || member.user?.username;
-                nick && typing_nicks.push(nick);
-                if(typing_nicks.length > 3) break;
+
+                if(nick) {
+                    typing_nicks.push(nick);
+                    if(typing_nicks.length > 3) break;
+                }
             }
         }
 
@@ -76,7 +79,9 @@ const typing_selector = createSelector(
         } else if(remaining <= 0) {
             res = typing_nicks.slice(0, len - 1).join(', ') + ` and ${typing_nicks[len - 1]} are typing...`;
         } else {
-            res = typing_nicks.join(', ') + ` and ${remaining} users are typing...`;
+            let user_plural = remaining > 1 ? "users" : "user";
+
+            res = typing_nicks.join(', ') + ` and ${remaining} ${user_plural} are typing...`;
         }
 
         return res;
@@ -334,7 +339,9 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
                 }
 
                 <div className="ln-msg-box__send" onClick={on_right_click} onTouchEnd={on_right_click}>
-                    {is_empty ? <input multiple type="file" name="file_upload" onChange={on_file_change} /> : null}
+                    <input multiple type={is_empty ? "file" : "text"} name="file_upload" onChange={on_file_change}
+                        style={is_empty ? undefined : { zIndex: -999, left: -999, pointerEvents: 'none', display: 'none' }}
+                    />
                     <Glyphicon src={is_empty ? Plus : Send} />
                 </div>
             </div>
