@@ -16,7 +16,7 @@ import { Link } from "ui/components/history";
 import { Avatar } from "ui/components/common/avatar";
 import { Glyphicon } from "ui/components/common/glyphicon";
 import { Spinner } from "ui/components/common/spinners/spinner";
-import { PositionedModal } from "ui/components/positioned_modal";
+import { PositionedModal } from "ui/components/modal/positioned_modal";
 
 import { useSimplePositionedContextMenu } from "ui/hooks/useMainClick";
 

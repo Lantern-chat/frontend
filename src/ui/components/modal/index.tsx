@@ -24,3 +24,12 @@ export class Modal extends React.Component<ModalProps> {
         return createPortal(this.props.children, this.e);
     }
 }
+
+export interface IFullscreenModalProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> { }
+
+export const FullscreenModal = React.memo((props: IFullscreenModalProps) => {
+    let className = props.className;
+    className = (className ? className + " " : "") + "ln-fullscreen-modal";
+
+    return (<Modal><div {...props} className={className} /></Modal>)
+});

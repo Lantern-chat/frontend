@@ -17,7 +17,7 @@ import { Avatar } from "ui/components/common/avatar";
 import { Link } from "ui/components/history";
 import { useSimplePositionedContextMenu } from "ui/hooks/useMainClick";
 
-import { PositionedModal } from "ui/components/positioned_modal";
+import { PositionedModal } from "ui/components/modal/positioned_modal";
 import { ContextMenu } from "../menus/list";
 
 import Hash from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-740-hash.svg";

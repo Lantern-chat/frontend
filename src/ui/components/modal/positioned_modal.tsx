@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { useForceRender } from "ui/hooks/useForceRender";
-import { Modal } from "./modal";
+import React, { useCallback, useEffect, useState } from "react";
+
+import { Modal } from "./";
 
 export interface IPositionedModalProps {
     children?: React.ReactChild,

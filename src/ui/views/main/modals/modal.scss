@@ -1,16 +1,10 @@
 @import "lib/variables";
 
-.ln-modal {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    display: flex;
-    z-index: 500;
+.ln-generic-modal {
     background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
 
-    > .ln-modal__inner {
+    &__inner {
         position: relative;
         margin: auto auto;
         padding: 2rem;

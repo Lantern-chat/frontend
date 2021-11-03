@@ -13,7 +13,7 @@ import { useTitle } from "ui/hooks/useTitle";
 import { Spinner } from "ui/components/common/spinners/spinner";
 //import { Glyphicon } from "ui/components/common/glyphicon";
 import { FormGroup, FormLabel, FormInput } from "ui/components/form";
-import { Modal } from "ui/components/modal";
+import { Modal, FullscreenModal } from "ui/components/modal";
 
 import { Link } from "ui/components/history";
 
@@ -152,24 +152,22 @@ export default function LoginView() {
 
     if(errorMsg != null) {
         error_modal = (
-            <Modal>
-                <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, zIndex: 'inherit', backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
-                    <div className="ln-center-standalone" style={{ color: 'white' }}>
-                        {errorMsg}
-                        <button onClick={() => setErrorMsg(null)}>Close</button>
-                    </div>
+            <FullscreenModal style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
+                <div className="ln-center-standalone" style={{ color: 'white' }}>
+                    {errorMsg}
+                    <button onClick={() => setErrorMsg(null)}>Close</button>
                 </div>
-            </Modal>
+            </FullscreenModal>
         );
     }
 
     if(state.totp_required) {
         totp_modal = (
-            <Modal>
-                <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, zIndex: 'inherit', backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
+            <FullscreenModal style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
+                <div className="ln-center-standalone" style={{ color: 'white' }}>
                     TOTP Required
                 </div>
-            </Modal>
+            </FullscreenModal>
         );
     }
 
@@ -199,7 +197,7 @@ export default function LoginView() {
 
             <FormGroup>
                 <FormLabel htmlFor="email"><I18N t={Translation.EMAIL_ADDRESS} /></FormLabel>
-                <FormInput value={state.email} type="text" name="email" placeholder="example@example.com" required isValid={state.valid_email}
+                <FormInput value={state.email} type="email" name="email" placeholder="example@example.com" required isValid={state.valid_email}
                     onChange={on_email_change} />
             </FormGroup>
 

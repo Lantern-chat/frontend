@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Glyphicon } from "ui/components/common/glyphicon";
-import { AnchoredModal } from "ui/components/anchored_modal";
+import { AnchoredModal } from "ui/components/modal/anchored_modal";
 import { useMainClick } from "ui/hooks/useMainClick";
 
 import SmileyHalf from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-243-slightly-smiling.svg";

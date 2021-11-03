@@ -13,7 +13,6 @@ import { useTitle } from "ui/hooks/useTitle";
 import { Spinner } from "ui/components/common/spinners/spinner";
 //import { Glyphicon } from "ui/components/common/glyphicon";
 import { FormGroup, FormLabel, FormInput } from "ui/components/form";
-import { Modal } from "ui/components/modal";
 
 import { Link } from "ui/components/history";
 

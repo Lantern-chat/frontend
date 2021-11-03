@@ -1,6 +1,5 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { useForceRender } from "ui/hooks/useForceRender";
-import { Modal } from "./modal";
+import React, { useRef } from "react";
+
 import { PositionedModal } from "./positioned_modal";
 
 export interface IAnchoredModalProps {

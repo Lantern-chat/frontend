@@ -14,7 +14,7 @@ import { fetch, XHRMethod } from "lib/fetch";
 import { Link } from "ui/components/history";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
-import { Modal } from "ui/components/modal";
+import { FullscreenModal } from "ui/components/modal";
 import { Tooltip } from "ui/components/common/tooltip";
 import { Spinner } from "ui/components/common/spinners/spinner";
 import { FormGroup, FormLabel, FormInput, FormText, FormSelect, FormSelectOption, FormSelectGroup } from "ui/components/form";
@@ -256,14 +256,12 @@ export default function RegisterView() {
 
     if(errorMsg != null) {
         errorModal = (
-            <Modal>
-                <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, zIndex: 'inherit', backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
-                    <div className="ln-center-standalone" style={{ color: 'white' }}>
-                        {errorMsg}
-                        <button onClick={() => setErrorMsg(null)}>Close</button>
-                    </div>
+            <FullscreenModal style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
+                <div className="ln-center-standalone" style={{ color: 'white' }}>
+                    {errorMsg}
+                    <button onClick={() => setErrorMsg(null)}>Close</button>
                 </div>
-            </Modal>
+            </FullscreenModal>
         );
     }
 

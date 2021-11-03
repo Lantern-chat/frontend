@@ -11,8 +11,8 @@ import { pickColorFromHash } from "lib/palette";
 import { Avatar } from "ui/components/common/avatar";
 import { Message } from "../message/msg";
 import { MsgAttachment } from "../message/attachment";
-import { AnchoredModal } from "ui/components/anchored_modal";
-import { PositionedModal } from "ui/components/positioned_modal";
+import { AnchoredModal } from "ui/components/modal/anchored_modal";
+import { PositionedModal } from "ui/components/modal/positioned_modal";
 import { MsgContextMenu } from "../../menus/msg_context";
 import { UserCard } from "../../menus/user_card";
 
