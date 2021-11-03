@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 
 import throttle from 'lodash/throttle';
 
+import { IS_MOBILE } from "lib/user_agent";
+
 import { RootState } from "state/root";
 import { mainReducer, Type } from "state/main";
 import { GLOBAL, STORE, DYNAMIC_MIDDLEWARE, HISTORY, IGatewayWorker } from "state/global";
@@ -42,6 +44,14 @@ if(!GLOBAL.gateway) {
             data.p = JSON.parse(data.p);
         }
         STORE.dispatch({ type: Type.GATEWAY_EVENT, payload: data });
+    });
+}
+
+// Duct-tape mobile browsers where dragging left can navigate back
+if(IS_MOBILE) {
+    HISTORY.push(location.href, null);
+    window.addEventListener('popstate', () => {
+        HISTORY.push(location.href, null);
     });
 }
 
