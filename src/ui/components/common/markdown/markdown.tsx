@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 
 import { Spoiler } from "./components/spoiler";
-//import { Code, Math } from "./lazy";
+import { Code, Math } from "./lazy";
 
-import Code from "./components/code";
-import Math from "./components/math";
+//import Code from "./components/code";
+//import Math from "./components/math";
 
 export interface Capture extends Array<string> {
     index?: number,
