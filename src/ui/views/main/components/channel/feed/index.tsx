@@ -3,13 +3,14 @@ import { useSelector, useDispatch } from "react-redux";
 import { createStructuredSelector } from 'reselect';
 import classNames from "classnames";
 
-import { Snowflake, User, UserPreferenceFlags } from "state/models";
+import { Room, Snowflake, User, UserPreferenceFlags } from "state/models";
 import { RootState, Type } from "state/root";
 import { loadMessages, SearchMode } from "state/commands";
-import { IMessageState } from "state/reducers/chat";
+import { IMessageState, IRoomState } from "state/reducers/chat";
 import { Panel } from "state/reducers/window";
 import { selectPrefsFlag } from "state/selectors/prefs";
 
+import { Glyphicon } from "ui/components/common/glyphicon";
 import { Timeline, ITimelineProps } from "./timeline";
 import { MessageGroup } from "../message/group";
 
@@ -78,18 +79,17 @@ export const MessageFeed = React.memo((props: IMessageListProps) => {
     return (
         <div className="ln-msg-list__flex-container">
             {cover}
-            <MessageFeedInner room={!!room} groups={groups} />
+            <MessageFeedInner room={room} groups={groups} />
         </div>
     );
 });
 
 interface IMessageFeedInnerProps {
-    room: boolean,
+    room: IRoomState | undefined,
     groups: Array<IMessageState[]>,
 }
 
 const inner_feed_selector = createStructuredSelector({
-    active_room: (state: RootState) => state.chat.active_room,
     use_mobile_view: (state: RootState) => state.window.use_mobile_view,
     is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
     compact: selectPrefsFlag(UserPreferenceFlags.CompactView),
@@ -101,15 +101,21 @@ import { Anchor, InfiniteScroll } from "ui/components/infinite_scroll2";
 const NoTimeline = React.memo(() => <></>);
 
 const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) => {
-    let { active_room, use_mobile_view, is_light_theme, compact, gl } = useSelector(inner_feed_selector);
+    let { use_mobile_view, is_light_theme, compact, gl } = useSelector(inner_feed_selector);
     let dispatch = useDispatch();
 
-    let load_next = useCallback(() => { }, []);
-    let load_prev = useCallback(() => {
-        if(active_room && groups[0]) {
-            dispatch(loadMessages(active_room, groups[0][0].msg.id, SearchMode.Before));
-        }
-    }, [groups, active_room]);
+    let [load_next, load_prev]: Array<undefined | (() => void)> = useMemo(() => {
+        if(!room || room.fully_loaded) return [];
+
+        return [
+            () => { }, // TODO: Virtualization
+            () => {
+                if(room && groups[0]) {
+                    dispatch(loadMessages(room.room.id, groups[0][0].msg.id, SearchMode.Before));
+                }
+            }
+        ]
+    }, [room, groups]);
 
     if(!room) {
         return <div className="ln-center-standalone">Channel does not exist</div>;
@@ -127,21 +133,41 @@ const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) =
             <MaybeTimeline direction={0} position={0} />
             <InfiniteScroll start={Anchor.Bottom}
                 load_next={load_next} load_prev={load_prev}
-                reset_on_changed={active_room}
+                reset_on_changed={room.room.id}
                 containerClassName={wrapperClasses}
             >
 
-                <MsgList groups={groups} is_light_theme={is_light_theme} compact={compact} />
+                <MsgList room={room} groups={groups} is_light_theme={is_light_theme} compact={compact} />
 
             </InfiniteScroll>
         </>
     )
 });
 
-const MsgList = React.memo(({ groups, is_light_theme, compact }: { groups: IMessageState[][], is_light_theme: boolean, compact: boolean }) => {
+const MsgList = React.memo(({ room, groups, is_light_theme, compact }: { room: IRoomState, groups: IMessageState[][], is_light_theme: boolean, compact: boolean }) => {
+    let header;
+    if(room.fully_loaded) {
+        header = (<MsgTop room={room.room} />)
+    }
+
     return (
         <ul className="ln-msg-list" id="ln-msg-list" >
+            {header}
             {groups.map(group => <MessageGroup key={group[0].msg.id} group={group} is_light_theme={is_light_theme} compact={compact} />)}
         </ul>
     );
+});
+
+import Balloon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-882-balloon.svg";
+
+const MsgTop = React.memo(({ room }: { room: Room }) => {
+    return (
+        <li className="ln-msg__top">
+            <div className="ui-text">
+                <Glyphicon src={Balloon} /> You have reached the top of #{room.name}! <Glyphicon src={Balloon} />
+                <br />
+                Congrats on making it this far.
+            </div>
+        </li>
+    )
 });

@@ -243,6 +243,28 @@
         justify-content: center;
         user-select: none;
     }
+
+    &__top {
+        text-align: center;
+        margin: 1em 0;
+        font-size: 1.3em;
+        font-size: min(1.5vw, 1.3em);
+        border-bottom: 1px solid $lnx-primary-text-color;
+        padding-bottom: 1em;
+
+        > div {
+            line-height: 2;
+        }
+
+        .ln-glyphicon {
+            font-size: 2em;
+            display: inline-flex;
+        }
+
+        @media (max-width: $ln-min-channel-width) {
+            font-size: min(4.5vw, 1.3em);
+        }
+    }
 }
 
 .ln-separator {
