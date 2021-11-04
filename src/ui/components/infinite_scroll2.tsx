@@ -11,13 +11,14 @@ export enum Anchor {
     Bottom,
 }
 
-function compute_at(e: HTMLElement, top_threshold: number, bottom_threshold: number): Anchor {
-    let scroll_height = e.scrollHeight - e.offsetHeight,
-        scroll_top = e.scrollTop;
+function compute_at(e: HTMLElement, top: number): Anchor {
+    let inner_height = e.scrollHeight - e.offsetHeight,
+        top_threshold = e.clientHeight * 0.7,
+        bottom_threshold = e.clientHeight * 0.3;
 
-    if((scroll_height - scroll_top) < bottom_threshold) {
+    if((inner_height - top) < bottom_threshold) {
         return Anchor.Bottom;
-    } else if(scroll_top < top_threshold) {
+    } else if(top < top_threshold) {
         return Anchor.Top;
     } else {
         return Anchor.Scrolling;
@@ -37,9 +38,9 @@ function ema(current: number, next: number, size: number = 0.5): number {
 interface IInfiniteScrollProps {
     children: React.ReactNode,
     // load content on top
-    load_prev: () => void,
+    load_prev?: () => void,
     // load content on bottom
-    load_next: () => void,
+    load_next?: () => void,
     start: Anchor,
     reset_on_changed?: any,
     containerClassName?: string,
@@ -50,6 +51,13 @@ const OBSERVER_OPTIONS: ResizeObserverOptions = { box: "border-box" };
 
 import "./infinite_scroll.scss";
 export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
+
+    public goToStart() {
+        this.anchor = this.props.start;
+
+        this.fixPosition();
+    }
+
     observer: ResizeObserver;
 
     containerRef: React.RefObject<HTMLDivElement> = createRef();
@@ -89,7 +97,9 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
         // If the DOM changed significantly, reattach observer
         this.attachObserver();
 
-        if(prevProps.children != this.props.children) {
+        if(prevProps.children != this.props.children ||
+            prevProps.load_next != this.props.load_next ||
+            prevProps.load_prev != this.props.load_prev) {
             this.fixPosition();
 
             this.load_pending = false;
@@ -136,7 +146,7 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
                 console.log("Attaching scroll listener with passive mode");
             }
 
-            container.addEventListener('scroll', (e: Event) => this.onScroll(e), SUPPORTS_PASSIVE ? { passive: true } : false);
+            container.addEventListener('scroll', () => this.onScroll(), SUPPORTS_PASSIVE ? { passive: true } : false);
         }
     }
 
@@ -144,15 +154,24 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
 
     fixing: boolean = false;
 
+    fix_frame?: number;
+
     fixPosition() {
+        // try again next frame?
+        if(this.fixing) {
+            requestAnimationFrame(() => this.fixPosition());
+            return;
+        }
+
         this.fixing = true;
 
-        // stop polling on any resize, so adjustments can be made without interference
-        this.polling = false;
-        this.velocity = 0;
-        this.doResize(this.containerRef.current!.scrollHeight);
+        this.doResize();
 
-        requestAnimationFrame(() => {
+        if(this.fix_frame != null) {
+            cancelAnimationFrame(this.fix_frame);
+        }
+
+        this.fix_frame = requestAnimationFrame(() => {
             this.fixing = false;
         });
     }
@@ -161,8 +180,12 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
 
     loadMore(prev: boolean) {
         if(!this.load_pending) {
-            prev ? this.props.load_prev() : this.props.load_next();
-            this.load_pending = true;
+            let cb = prev ? this.props.load_prev : this.props.load_next;
+
+            if(cb) {
+                cb();
+                this.load_pending = true;
+            }
         }
     }
 
@@ -170,9 +193,15 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
     anchor: Anchor = this.props.start;
     height: number = 0;
 
-    doResize(height: number) {
+    doResize() {
+        // stop polling on any resize, so adjustments can be made without interference
+        this.polling = false;
+        this.velocity = 0;
+
+        let container = this.containerRef.current!,
+            height = container.scrollHeight;
+
         if(height == this.height) return;
-        let container = this.containerRef.current!;
 
         let top = this.pos;
 
@@ -193,7 +222,12 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
         this.height = height;
 
         if(top != container.scrollTop) {
-            container.scrollTo({ top });
+            (container as any).scrollTo({ top, behavior: 'instant' });
+            container.scrollTop = top;
+
+            __DEV__ && console.log("CORRECTED TO: ", top);
+
+            this.anchor = compute_at(container, top);
         }
     }
 
@@ -209,11 +243,13 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
 
         let container = this.containerRef.current!;
 
-        let anchor = compute_at(container, container.clientHeight, container.clientHeight * 0.3),
-            reached_top = anchor == Anchor.Top && this.anchor == Anchor.Scrolling,
-            reached_bottom = anchor == Anchor.Bottom && this.anchor == Anchor.Scrolling;
+        //__DEV__ && console.log("Computing anchor with height: ", container.clientHeight, container.scrollTop);
 
         let new_pos = container.scrollTop;
+
+        let anchor = compute_at(container, new_pos),
+            reached_top = anchor == Anchor.Top && this.anchor != Anchor.Top,
+            reached_bottom = anchor == Anchor.Bottom && this.anchor != Anchor.Bottom;
 
         if(this.polling) {
             let predicted_velocity = (new_pos - this.pos) / this.frame_time;
@@ -238,8 +274,8 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
         // velocity is in pixels/ms, so get that to pixels/second
         let predicted_pos = 1000 * this.velocity + new_pos;
 
-        let predict_top = predicted_pos < 0 && anchor == Anchor.Scrolling;
-        let predict_bottom = predicted_pos > container.scrollHeight && anchor == Anchor.Scrolling;
+        let predict_top = predicted_pos < 0 && anchor != Anchor.Top;
+        let predict_bottom = predicted_pos > container.scrollHeight && anchor != Anchor.Bottom;
 
         if(reached_top || predict_top) {
             this.anchor = Anchor.Top;
@@ -278,25 +314,27 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
 
     scroll_throttle: boolean = false;
 
-    onScroll(e: Event) {
+    onScroll() {
         // If there is a load pending, there is no point in checking for anchor position,
-        if(this.load_pending || this.fixing) return;
+        if(this.load_pending || this.fixing || this.scroll_throttle) return;
 
         let pos = this.containerRef.current!.scrollTop;
-        let pos_diff = Math.abs(pos - this.pos);
-
         // calls to `scrollTo` may trigger a scroll event, which will be at this.pos so ignore that.
-        // also ignore large jumps, also probably caused by scrollTo
-        if(pos_diff < 1 || pos_diff > 1000) {
+        if(this.pos == pos) {
             return;
         }
 
-        this.start_time = high_res_now();
-        if(!this.polling) {
-            this.polling = true;
-            this.velocity = 0;
-            this.doScroll(this.start_time);
-        }
+        // trailing-edge debounce
+        this.scroll_throttle = true;
+        requestAnimationFrame(() => {
+            this.start_time = high_res_now();
+            if(!this.polling) {
+                this.polling = true;
+                this.velocity = 0;
+                this.doScroll(this.start_time);
+            }
+            this.scroll_throttle = false;
+        });
     }
 
     render() {
