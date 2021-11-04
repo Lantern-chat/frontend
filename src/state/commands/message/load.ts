@@ -20,8 +20,12 @@ export function loadMessages(room_id: Snowflake, search?: Snowflake, mode: Searc
 
         // TODO: Run this in a loop to fetch ALL messages since search, IF AND ONLY IF there is a search id
         try {
+            let url = `/api/v1/room/${room_id}/messages${query}`;
+
+            __DEV__ && console.log("FETCHING:", url);
+
             let res = await fetch({
-                url: `/api/v1/room/${room_id}/messages${query}`,
+                url,
                 method: XHRMethod.GET,
                 bearer: state.user.session!.auth,
             });

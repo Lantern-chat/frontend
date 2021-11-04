@@ -144,7 +144,7 @@ export interface PartyLoaded {
 export interface MessagesLoaded {
     type: Type.MESSAGES_LOADED,
     room_id: Snowflake,
-    msgs: Message[]
+    msgs: Message[],
 }
 
 export interface MembersLoaded {

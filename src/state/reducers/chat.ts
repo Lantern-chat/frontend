@@ -67,6 +67,7 @@ export interface IRoomState {
     pending: IMessageState[],
     current_edit: null | Snowflake,
     typing: ITypingState[],
+    fully_loaded: boolean,
 }
 
 export interface IChatState {
@@ -107,20 +108,24 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
                     msgs: [],
                     pending: [],
                     current_edit: null,
-                    typing: []
+                    typing: [],
+                    fully_loaded: false,
                 });
             }
         });
 
         case Type.MESSAGES_LOADED: {
             let raw_msgs = action.msgs;
-            if(raw_msgs.length == 0) break;
 
             return produce(state, draft => {
-                let room_id = raw_msgs[0].room_id,
-                    room = draft.rooms.get(room_id);
+                let room = draft.rooms.get(action.room_id);
 
                 if(!room) return;
+
+                if(raw_msgs.length == 0) {
+                    room.fully_loaded = true;
+                    return;
+                }
 
                 // TODO: Test if this matters, because of immer
                 let old_msgs = room.msgs,
