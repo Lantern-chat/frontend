@@ -4,20 +4,31 @@
     span.spoiler {
         position: relative;
         text-decoration: inherit;
+        display: inline-flex;
 
-        //display: inline-block;
+        @supports (overflow: clip) {
+            display: inline;
+        }
 
         &.hidden {
             cursor: pointer;
-            color: black;
-            background-color: black;
-            user-select: none;
 
             &::selection,
             &::-moz-selection,
             & *::selection,
             & *::-moz-selection {
                 background-color: black;
+            }
+
+            &,
+            & * {
+                background-color: black;
+                user-select: none;
+                color: transparent;
+                fill: transparent;
+                clip: auto;
+                overflow: hidden;
+                overflow: clip;
             }
         }
 
