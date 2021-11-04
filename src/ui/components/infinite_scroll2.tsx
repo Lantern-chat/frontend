@@ -3,6 +3,8 @@ import React, { createRef } from "react";
 
 import ResizeObserverPolyfill from "resize-observer-polyfill";
 
+import { SUPPORTS_PASSIVE } from "lib/features";
+
 export enum Anchor {
     Top,
     Scrolling,
@@ -129,22 +131,30 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
 
             this.observer.observe(container, OBSERVER_OPTIONS);
             this.observedContainerElement = container;
+
+            if(__DEV__ && SUPPORTS_PASSIVE) {
+                console.log("Attaching scroll listener with passive mode");
+            }
+
+            container.addEventListener('scroll', (e: Event) => this.onScroll(e), SUPPORTS_PASSIVE ? { passive: true } : false);
         }
     }
 
     frame_throttle: boolean = false;
 
+    fixing: boolean = false;
+
     fixPosition() {
-        //if(!this.frame_throttle) {
-        //    this.frame_throttle = true;
+        this.fixing = true;
 
         // stop polling on any resize, so adjustments can be made without interference
         this.polling = false;
         this.velocity = 0;
         this.doResize(this.containerRef.current!.scrollHeight);
 
-        //    requestAnimationFrame(() => { this.frame_throttle = false; });
-        //}
+        requestAnimationFrame(() => {
+            this.fixing = false;
+        });
     }
 
     load_pending: boolean = false;
@@ -184,11 +194,6 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
 
         if(top != container.scrollTop) {
             container.scrollTo({ top });
-
-            //this.scroll_throttle = true;
-            //requestAnimationFrame(() => {
-            //    this.scroll_throttle = false;
-            //});
         }
     }
 
@@ -273,35 +278,24 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
 
     scroll_throttle: boolean = false;
 
-    onScroll(e: React.UIEvent<HTMLDivElement>) {
-        let pos = this.containerRef.current!.scrollTop;
-
+    onScroll(e: Event) {
         // If there is a load pending, there is no point in checking for anchor position,
-        // so just update the position by itself.
+        if(this.load_pending || this.fixing) return;
+
+        let pos = this.containerRef.current!.scrollTop;
+        let pos_diff = Math.abs(pos - this.pos);
+
         // calls to `scrollTo` may trigger a scroll event, which will be at this.pos so ignore that.
-        if(this.scroll_throttle || this.load_pending || Math.abs(pos - this.pos) < 1) {
+        // also ignore large jumps, also probably caused by scrollTo
+        if(pos_diff < 1 || pos_diff > 1000) {
             return;
         }
 
-        this.scroll_throttle = true;
-
-        // // psuedo-trailing-edge throttle to avoid multiple scroll events per frame
-        requestAnimationFrame(() => {
-            // go on to process real scroll handling
-            this.start_time = high_res_now();
-            if(!this.polling) {
-                this.polling = true;
-                this.velocity = 0;
-                this.doScroll(this.start_time);
-            }
-            this.scroll_throttle = false;
-        });
-    }
-
-    // discourage fast fingers while loading
-    onTouchMove(e: React.TouchEvent) {
-        if(this.load_pending) {
-            e.preventDefault();
+        this.start_time = high_res_now();
+        if(!this.polling) {
+            this.polling = true;
+            this.velocity = 0;
+            this.doScroll(this.start_time);
         }
     }
 
@@ -316,11 +310,7 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
         }
 
         return (
-            <div ref={this.containerRef}
-                className={container_classes}
-                onScroll={e => this.onScroll(e)}
-                onTouchMove={e => this.onTouchMove(e)}
-            >
+            <div ref={this.containerRef} className={container_classes}>
                 <div className={wrapper_classes} ref={this.wrapperRef}>
                     {this.props.children}
                 </div>
