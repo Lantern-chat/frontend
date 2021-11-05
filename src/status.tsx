@@ -33,6 +33,8 @@ let Root = () => {
     return root;
 };
 
+ReactDOM.createRoot(document.getElementById("ln-root")!).render(<Root />);
+
 //ReactDOM.render(<Root />, document.getElementById('ln-root')!);
 //ReactDOM.hydrate(<Root />, document.getElementById("ln-root")!);
-(ReactDOM as any).unstable_createRoot(document.getElementById("ln-root")!, { hydrate: false }).render(<Root />);
+//(ReactDOM as any).unstable_createRoot(document.getElementById("ln-root")!, { hydrate: false }).render(<Root />);
