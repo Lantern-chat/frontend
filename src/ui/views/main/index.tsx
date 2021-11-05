@@ -1,11 +1,11 @@
 import React, { createContext, useEffect, useMemo, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { batch, useDispatch, useSelector } from "react-redux";
 
 import throttle from 'lodash/throttle';
 
 import { IS_MOBILE } from "lib/user_agent";
 
-import { RootState } from "state/root";
+import { DispatchableAction, RootState } from "state/root";
 import { mainReducer, Type } from "state/main";
 import { GLOBAL, STORE, DYNAMIC_MIDDLEWARE, HISTORY, IGatewayWorker } from "state/global";
 import { mainMiddleware } from "state/middleware/main";
@@ -67,7 +67,7 @@ import { PartyList } from "./components/party_list";
 import { Party } from "./components/party/party";
 import MainModals from "./modals";
 
-import { Hotkey, MainContext, OnClickHandler, OnKeyHandler, parseHotkey } from "ui/hooks/useMainClick";
+import { Hotkey, MainContext, OnClickHandler, OnKeyHandler, parseHotkey, useMainHotkey } from "ui/hooks/useMainClick";
 
 import "ui/styles/lib/fonts/lato.css";
 import "./main.scss";
@@ -131,7 +131,7 @@ export const MainView: React.FunctionComponent = React.memo(() => {
             }
         };
 
-        let triggerHotkey = (hotkey: Hotkey, e: React.KeyboardEvent) => {
+        let triggerHotkey = (hotkey: Hotkey, e: KeyboardEvent) => {
             e.preventDefault();
             e.stopPropagation();
 
@@ -143,7 +143,7 @@ export const MainView: React.FunctionComponent = React.memo(() => {
             }
         };
 
-        let triggerAnyHotkey = (e: React.KeyboardEvent) => {
+        let triggerAnyHotkey = (e: KeyboardEvent) => {
             let hotkey = parseHotkey(e);
             if(hotkey) {
                 if(__DEV__) {
@@ -157,9 +157,9 @@ export const MainView: React.FunctionComponent = React.memo(() => {
             on_click: (e: React.MouseEvent) => clickAll(e),
             // by default, block real context menu. Placing it here caches it with memo
             on_cm: (e: React.MouseEvent) => e.preventDefault(),
-            on_ku: (e: React.KeyboardEvent) => triggerAnyHotkey(e),
+            on_ku: (e: KeyboardEvent) => { if(parseHotkey(e)) { e.preventDefault(); e.stopPropagation(); } },
             // certain hotkeys cause side-effects, like Tab, so kill those
-            on_kd: (e: React.KeyboardEvent) => { if(parseHotkey(e)) { e.preventDefault(); e.stopPropagation(); } },
+            on_kd: (e: KeyboardEvent) => triggerAnyHotkey(e),
             value: {
                 addOnClick,
                 addOnHotkey,
@@ -172,21 +172,32 @@ export const MainView: React.FunctionComponent = React.memo(() => {
         }
     }, []);
 
-
-    // this chunk handles clearing context menus when the window/tab loses focus
     let main = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
         if(!main.current) return;
-        let listener = () => main.current!.click();
-        window.addEventListener('blur', listener);
-        return () => window.removeEventListener('blur', listener);
-    }, [main.current]);
+
+        // window/tab loses focus
+        let blur_listener = () => main.current!.click();
+
+        window.addEventListener('blur', blur_listener);
+        window.addEventListener('keydown', handlers.on_kd);
+        window.addEventListener('keyup', handlers.on_ku);
+
+        return () => {
+            window.removeEventListener('blur', blur_listener);
+            window.removeEventListener('keydown', handlers.on_kd);
+            window.removeEventListener('keyup', handlers.on_ku);
+        };
+    }, [main.current, handlers]);
 
     let is_right_view = useSelector((state: RootState) => state.window.use_mobile_view && state.window.show_panel == Panel.RightUserList);
 
     return (
-        <div className="ln-main" ref={main} onClick={handlers.on_click} onContextMenu={handlers.on_cm} onKeyUp={handlers.on_ku} onKeyDown={handlers.on_kd}>
+        <div className="ln-main" ref={main} onClick={handlers.on_click} onContextMenu={handlers.on_cm}>
             <MainContext.Provider value={handlers.value}>
+                <MainHotkeyHandler />
+
                 {is_right_view ? null : <PartyList />}
 
                 <Party />
@@ -201,3 +212,31 @@ export default MainView;
 if(__DEV__) {
     MainView.displayName = "MainView";
 }
+
+import { themeSelector } from "state/selectors/theme";
+import { setTheme } from "state/commands/theme";
+import { savePrefs, savePrefsFlag } from "state/commands/prefs";
+import { UserPreferenceFlags } from "state/models";
+
+const MainHotkeyHandler = React.memo(() => {
+    let dispatch = useDispatch();
+
+    useMainHotkey(Hotkey.ToggleLightTheme, () => {
+        // avoid actually using a selector this high up
+        let thunk: DispatchableAction = (dispatch, getState) => {
+            let { temperature, is_light } = themeSelector(getState());
+
+            is_light = !is_light;
+
+            batch(() => {
+                dispatch(setTheme(temperature, is_light));
+                dispatch(savePrefs({ temp: temperature }));
+                dispatch(savePrefsFlag(UserPreferenceFlags.LightMode, is_light));
+            });
+        };
+
+        dispatch(thunk);
+    });
+
+    return null;
+});

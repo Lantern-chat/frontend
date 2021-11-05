@@ -177,7 +177,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     };
 
     let on_keyup = useCallback((e: React.KeyboardEvent) => {
-        let hotkey = parseHotkey(e);
+        let hotkey = parseHotkey(e.nativeEvent);
         if(!hotkey || hotkey == Hotkey.FocusTextArea) {
             // not-hotkeys shouldn't escape, to save on processing time of keypress
             // or if the textarea is already focused, don't refocus
