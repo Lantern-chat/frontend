@@ -215,7 +215,7 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
             }
 
             if(typeof prefs.chat_font_size == 'number' || chat_font) {
-                let fs = (prefs.chat_font_size || 1);
+                let fs = prefs.chat_font_size / 16;
 
                 de.style.setProperty('--ln-chat-font-size', `${fs}rem`);
                 de.style.setProperty('--ln-chat-font-size-adjust', `${font_size(chat_font)}`);
@@ -231,7 +231,7 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
             }
 
             if(typeof prefs.ui_font_size == 'number' || ui_font) {
-                let fs = (prefs.ui_font_size || 1);
+                let fs = prefs.ui_font_size / 16;
 
                 de.style.setProperty('--ln-ui-font-size', `${fs}rem`);
                 de.style.setProperty('--ln-ui-font-size-adjust', `${font_size(ui_font)}em`);
