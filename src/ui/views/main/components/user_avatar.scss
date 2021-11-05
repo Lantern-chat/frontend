@@ -81,6 +81,9 @@
         }
 
         &.away {
+            // cheating to allow the dark side of the moon to overflow slightly
+            clip-path: circle(0.45em at center);
+
             background-color: gold;
 
             .ln-light-theme & {
@@ -90,11 +93,17 @@
             // cover up part of the circle to make a moon shape
             &::after {
                 content: "";
-                top: 0;
-                left: 0;
-                bottom: 30%;
-                right: 30%;
-                border-radius: 50% 35% 50% 35%;
+                //top: 0;
+                //left: 0;
+                //bottom: 32.5%;
+                //right: 32.5%;
+                //border-radius: 50% 35% 50% 32.5%;
+
+                top: -0.075em;
+                left: -0.075em;
+                border-radius: 50% 50% 50% 50%;
+                width: 0.5em;
+                height: 0.5em;
             }
         }
 
