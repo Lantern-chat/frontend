@@ -44,9 +44,10 @@
         border: 2px solid $lnx-primary-surface-color;
 
         border-radius: 50%;
-        width: 0.85em;
-        height: 0.85em;
+        width: 0.9em;
+        height: 0.9em;
         display: inline-block;
+        position: relative;
 
         &.online {
             background-color: lightgreen;
@@ -56,11 +57,26 @@
             }
         }
 
+        &::after {
+            position: absolute;
+            background-color: var(--ln-primary-surface-color, #303136);
+        }
+
         &.busy {
-            background-color: lightcoral;
+            background-color: rgb(245, 66, 66);
 
             .ln-light-theme & {
                 background-color: red;
+            }
+
+            // little rectangle for busy
+            &::after {
+                content: "";
+                top: 37.5%;
+                bottom: 37.5%;
+
+                left: 17.5%;
+                right: 17.5%;
             }
         }
 
@@ -69,6 +85,16 @@
 
             .ln-light-theme & {
                 background-color: yellow;
+            }
+
+            // cover up part of the circle to make a moon shape
+            &::after {
+                content: "";
+                top: 0;
+                left: 0;
+                bottom: 30%;
+                right: 30%;
+                border-radius: 50% 35% 50% 35%;
             }
         }
 
