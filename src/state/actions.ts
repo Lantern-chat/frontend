@@ -141,10 +141,12 @@ export interface PartyLoaded {
     rooms: Room[],
 }
 
+import { SearchMode } from "./commands";
 export interface MessagesLoaded {
     type: Type.MESSAGES_LOADED,
     room_id: Snowflake,
     msgs: Message[],
+    mode: SearchMode,
 }
 
 export interface MembersLoaded {

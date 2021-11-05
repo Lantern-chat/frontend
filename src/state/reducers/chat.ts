@@ -8,6 +8,7 @@ import { Action, Type } from "../actions";
 import { Message, Snowflake, Room } from "../models";
 import { GatewayMessageDiscriminator } from "worker/gateway/msg";
 import { GatewayEventCode } from "worker/gateway/event";
+import { SearchMode } from "state/commands";
 
 /*
 export class RoomState {
@@ -123,7 +124,10 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
                 if(!room) return;
 
                 if(raw_msgs.length == 0) {
-                    room.fully_loaded = true;
+                    // only mark as fully loaded if search came up empty for messages before an ID
+                    if(action.mode == SearchMode.Before) {
+                        room.fully_loaded = true;
+                    }
                     return;
                 }
 

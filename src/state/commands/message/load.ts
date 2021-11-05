@@ -31,7 +31,7 @@ export function loadMessages(room_id: Snowflake, search?: Snowflake, mode: Searc
             });
 
             if(res.status == 200) {
-                dispatch({ type: Type.MESSAGES_LOADED, room_id, msgs: res.response });
+                dispatch({ type: Type.MESSAGES_LOADED, room_id, msgs: res.response, mode });
             }
         } catch(e) {
             if(__DEV__) {
