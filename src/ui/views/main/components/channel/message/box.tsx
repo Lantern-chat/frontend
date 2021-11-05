@@ -4,6 +4,8 @@ import { createSelector, createStructuredSelector } from "reselect";
 
 import TextareaAutosize from 'react-textarea-autosize';
 
+import { IS_MOBILE } from "lib/user_agent";
+
 //import { IMessageState } from "ui/views/main/reducers/messages";
 import { RootState } from "state/root";
 import { Type } from "state/actions";
@@ -30,22 +32,16 @@ export interface IMessageBoxProps {
     channel?: Snowflake,
 }
 
-const typing_array_selector = createSelector(
-    activeRoom,
-    (state: RootState) => state.chat.rooms,
-    (active_room, rooms) => {
-        let typing = active_room && rooms.get(active_room)?.typing;
-        if(typing && typing.length > 0) return typing;
-        return;
-    }
-);
-
 const typing_selector = createSelector(
-    typing_array_selector,
+    activeRoom,
     activeParty,
+    (state: RootState) => state.chat.rooms,
     (state: RootState) => state.party.parties,
     (state: RootState) => state.user.user!,
-    (users_typing, active_party, parties, user) => {
+    (active_room, active_party, rooms, parties, user) => {
+        let typing = active_room && rooms.get(active_room)?.typing,
+            users_typing = (typing && typing.length > 0) ? typing : undefined;
+
         if(!users_typing || !active_party) return;
 
         if(users_typing.length > 10) return "Many users are typing...";
@@ -89,6 +85,7 @@ const typing_selector = createSelector(
 )
 
 const msg_box_selector = createStructuredSelector({
+    active_room: activeRoom,
     msg: (state: RootState) => ({ messages: [] as any[], current_edit: null }),
     use_mobile_view: (state: RootState) => state.window.use_mobile_view,
     users_typing: typing_selector,
@@ -102,13 +99,20 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     let {
         msg: { messages, current_edit },
         use_mobile_view,
-        users_typing
+        users_typing,
+        active_room,
     } = useSelector(msg_box_selector);
 
     let dispatch = useDispatch();
 
     let ref = useRef<HTMLTextAreaElement>(null);
     //let file_ref = useRef<HTMLInputElement>(null);
+
+    // focus text-area on room navigation
+    useEffect(() => {
+        let ta = ref.current;
+        if(ta && !IS_MOBILE) { ta.focus(); }
+    }, [ref.current, active_room]);
 
     let keyRef = __DEV__ ? useRef<HTMLSpanElement>(null) : undefined;
 
