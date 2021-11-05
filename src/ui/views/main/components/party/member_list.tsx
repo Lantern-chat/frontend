@@ -74,7 +74,7 @@ const ListedMember = ({ member, owner, is_light_theme }: IListedMemberProps) => 
         crown = (
             <>
                 <div className="ln-member__spacer" />
-                <div className="ln-member__crown">
+                <div className="ln-member__crown" title="Owner">
                     <Glyphicon src={CrownIcon} />
                 </div>
             </>

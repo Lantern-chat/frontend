@@ -1,6 +1,7 @@
 import { shallowEqualObjects } from "lib/compare";
 import React, { createRef } from "react";
 
+// will automatically use native ResizeObserver if available
 import ResizeObserverPolyfill from "resize-observer-polyfill";
 
 import { SUPPORTS_PASSIVE } from "lib/features";
@@ -124,6 +125,7 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
         this.observer.disconnect();
     }
 
+    /// attaches (or reattaches) the resize observer to both container and wrapper elements
     attachObserver() {
         let wrapper = this.wrapperRef.current,
             container = this.containerRef.current;
@@ -226,6 +228,7 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
         this.height = height;
 
         if(top != container.scrollTop) {
+            // having both of these somehow helps a little
             (container as any).scrollTo({ top, behavior: 'instant' });
             container.scrollTop = top;
 
