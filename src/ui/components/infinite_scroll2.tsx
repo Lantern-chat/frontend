@@ -102,7 +102,10 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
             prevProps.load_prev != this.props.load_prev) {
             this.fixPosition();
 
-            this.load_pending = false;
+            // delay this, let it get scroll events out of its system
+            requestAnimationFrame(() => {
+                this.load_pending = false;
+            });
         }
 
         if(prevProps.reset_on_changed != this.props.reset_on_changed) {
