@@ -30,8 +30,12 @@
     //}
 
     //font-size: 10.5pt;
-    font-size: 0.875em;
-    font-size: calc(0.875em * var(--ln-chat-font-size-adjust, 1));
+    //font-size: 0.875em;
+    //font-size: calc(0.875em * var(--ln-chat-font-size-adjust, 1));
+
+    font-size: 1em;
+    font-size: calc(1em * var(--ln-chat-font-size-adjust, 1));
+
     line-height: calc(1.2 / var(--ln-chat-font-size-adjust, 1));
     font-family: $lnx-chat-font-family;
     tab-size: $lnx-chat-tabsize;
