@@ -18,14 +18,14 @@ import { RadioSelect } from "../components/radio";
 import { MIN_TEMP, MAX_TEMP } from "lib/theme";
 
 import "./appearance.scss";
+import { SizeSlider } from "../components/size-slider";
 export const AppearanceSettingsTab = () => {
     return (
         <form className="ln-settings-form">
+            <ThemeSetting />
 
             <FontSelector which="chat" />
             <FontSelector which="ui" />
-
-            <ThemeSetting />
 
             <ViewSelector />
 
@@ -120,14 +120,19 @@ interface IFontSelectorProps {
 }
 
 const FontSelector = React.memo(({ which }: IFontSelectorProps) => {
-    let name, label, prefs_key = which == 'chat' ? 'chat_font' : 'ui_font';
+    let select_name, select_label,
+        prefs_key = which == 'chat' ? 'chat_font' : 'ui_font',
+        size_prefs_key = which == 'ui' ? 'ui_font_size' : 'chat_font_size';
 
-    let current_font = useSelector((state: RootState) => state.prefs[prefs_key]);
-    let dispatch = useDispatch();
+    let current_font = useSelector((state: RootState) => state.prefs[prefs_key]),
+        current_size = useSelector((state: RootState) => state.prefs[size_prefs_key]),
+        dispatch = useDispatch();
 
-    // if we get new state from the server while this component is running, force an update to the selection
-    let [font, setFont] = useState(Font[current_font]);
+    let [font, setFont] = useState(Font[current_font]),
+        [size, setSize] = useState(current_size);
+
     useEffect(() => setFont(Font[current_font]), [current_font]);
+    useEffect(() => setSize(current_size), [current_size]);
 
     useEffect(() => {
         switch(Font[font]) {
@@ -137,14 +142,15 @@ const FontSelector = React.memo(({ which }: IFontSelectorProps) => {
     }, [font]);
 
     if(which == 'chat') {
-        name = "Chat Font";
-        label = 'chat_font';
+        select_name = "Chat Font";
+        select_label = 'chat_font';
     } else {
-        name = "UI Font";
-        label = 'ui_font';
+        select_name = "UI Font";
+        select_label = 'ui_font';
     }
 
-    let font_class = "ln-font-" + font.toLowerCase();
+    let font_class = "ln-font-" + font.toLowerCase(),
+        size_label = select_name + " Size";
 
     let onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         let font_name: keyof typeof Font = e.currentTarget.value as any;
@@ -156,44 +162,45 @@ const FontSelector = React.memo(({ which }: IFontSelectorProps) => {
         }));
     };
 
+    let onSizeInput = (value: number) => {
+        value = Math.round(value);
+
+        setSize(value);
+        dispatch(savePrefs({ [size_prefs_key]: value }));
+    };
+
     return (
-        <div className="ln-settings-font">
-            <label htmlFor={label}>{name}</label>
-            <div className="ln-settings-font__wrapper">
-                <div className="ln-settings-font__selector">
-                    <FormSelect name={label} value={font} onChange={onChange}>
-                        {Object.keys(FONT_NAMES).map((font) => (
-                            <option value={font} key={font}
-                                className={"ln-font-" + font.toLowerCase()}>
-                                {FONT_NAMES[font]}
-                            </option>
-                        ))}
-                    </FormSelect>
-                </div>
-                <div className={"ln-settings-font__example " + font_class}>
-                    "The wizard quickly jinxed the gnomes before they vaporized."
+        <>
+            <div className="ln-settings-font">
+                <label htmlFor={select_label}>{select_name}</label>
+                <div className="ln-settings-font__wrapper">
+                    <div className="ln-settings-font__selector">
+                        <FormSelect name={select_label} value={font} onChange={onChange}>
+                            {Object.keys(FONT_NAMES).map((font) => (
+                                <option value={font} key={font}
+                                    className={"ln-font-" + font.toLowerCase()}>
+                                    {FONT_NAMES[font]}
+                                </option>
+                            ))}
+                        </FormSelect>
+                    </div>
+                    <div className={"ln-settings-font__example " + font_class} style={{ fontSize: `${size / 16}em` }}>
+                        "The wizard quickly jinxed the gnomes before they vaporized."
+                    </div>
                 </div>
             </div>
-        </div>
+
+            <SizeSlider htmlFor={size_prefs_key} label={size_label} min={8} max={32} step={1} value={size} onInput={onSizeInput} steps={[8, 12, 16, 20, 24, 32]} />
+        </>
     )
 });
-
-const FontScale = React.memo(() => {
-    return (
-        <div>
-            <input type="range"></input>
-        </div>
-    )
-});
-
-const STEPS: number[] = [0, 12, 16, 24, 32];
 
 const GroupPaddingSlider = React.memo(() => {
     let current_padding = useSelector(selectGroupPad),
         dispatch = useDispatch(),
         [pad, setPad] = useState(current_padding),
-        onInput = (e: React.FormEvent<HTMLInputElement>) => {
-            let value = Math.round(parseFloat(e.currentTarget.value));
+        onInput = (value: number) => {
+            value = Math.round(value);
 
             setPad(value);
             dispatch(savePrefs({ pad: value }));
@@ -202,16 +209,25 @@ const GroupPaddingSlider = React.memo(() => {
     useEffect(() => setPad(current_padding), [current_padding]);
 
     return (
-        <div className="ln-settings-pad">
-            <label htmlFor="group_padding">Group Padding</label>
-            <div>
-                <div className="ln-settings-pad__input">
-                    <input type="range" name="group_padding" min="0" max="32" step="1" value={pad} onInput={onInput}></input>
-                </div>
-                <div className="ln-settings-pad__steps">
-                    {STEPS.map(step => (<span key={step}>{step}px</span>))}
-                </div>
-            </div>
-        </div>
+        <SizeSlider htmlFor="group_padding" label="Group Padding" min={0} max={32} step={1} value={pad} onInput={onInput} steps={[0, 12, 16, 24, 32]} />
     )
 });
+
+const FontSizeSlider = React.memo(({ which }: IFontSelectorProps) => {
+    let prefs_key = which == 'ui' ? 'ui_font_size' : 'chat_font_size',
+        current_size = useSelector((state: RootState) => state.prefs[prefs_key]),
+        dispatch = useDispatch(),
+        [size, setSize] = useState(current_size),
+        onInput = (value: number) => {
+            value = Math.round(value);
+
+            setSize(value);
+            dispatch(savePrefs({ [prefs_key]: value }));
+        },
+        label = (which == 'ui' ? 'UI' : 'Chat') + " Font Size";
+
+
+    return (
+        <SizeSlider htmlFor={prefs_key} label={label} min={8} max={32} step={1} value={size} onInput={onInput} steps={[8, 12, 16, 20, 24, 32]} />
+    )
+})
