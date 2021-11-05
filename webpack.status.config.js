@@ -28,17 +28,11 @@ module.exports = (env, argv) => {
     };
 
     config.plugins = [
-        ...config.plugins.slice(0, 2),
+        ...config.plugins.slice(0, 3),
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, "src", "index.html"),
             filename: 'status.html',
-        }),
-        new MiniCssExtractPlugin({
-            // Options similar to the same options in webpackOptions.output
-            // both options are optional
-            filename: "[name].css",
-            chunkFilename: `${CHUNK_NAME}.css`,
-        }),
+        })
     ];
 
     return config;

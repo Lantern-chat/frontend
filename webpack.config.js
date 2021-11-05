@@ -179,6 +179,12 @@ module.exports = (env, argv) => {
                 //TextDecoder: ['text-encoding', 'TextDecoder'],
                 //TextEncoder: ['text-encoding', 'TextEncoder']
             }),
+            new MiniCssExtractPlugin({
+                // Options similar to the same options in webpackOptions.output
+                // both options are optional
+                filename: "[name].css",
+                chunkFilename: `${CHUNK_NAME}.css`,
+            }),
 
             //new SubresourceIntegrityPlugin(),
             //new SriPlugin({
@@ -196,6 +202,7 @@ module.exports = (env, argv) => {
                 template: path.resolve(__dirname, "src", "index.html"),
                 filename: 'index.html'
             }),
+            //new HTMLInlineCSSWebpackPlugin(),
             //new WasmPackPlugin({
             //    crateDirectory: path.resolve(__dirname, "worker/gateway"),
             //    extraArgs: "--target web",
@@ -205,12 +212,7 @@ module.exports = (env, argv) => {
             //    analyzerMode: 'server',
             //    openAnalyzer: true,
             //}),
-            new MiniCssExtractPlugin({
-                // Options similar to the same options in webpackOptions.output
-                // both options are optional
-                filename: "[name].css",
-                chunkFilename: `${CHUNK_NAME}.css`,
-            }),
+
         ],
     };
 
