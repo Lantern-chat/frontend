@@ -150,10 +150,9 @@
     //}
 
     &__title {
-        padding-bottom: 0.35rem;
+        // This needs no padding thanks to justify-content: space-between on the message wrapper
 
         .compact & {
-            padding-bottom: 0;
             display: inline;
             text-indent: 0;
         }
@@ -204,6 +203,7 @@
         flex-shrink: 0;
         padding-left: 0.75em;
         position: relative;
+        display: flex;
         //padding-right: 0.6em;
         //text-align: center;
 
@@ -215,6 +215,7 @@
 
         .ln-avatar {
             font-size: 1.75em;
+            //display: inline;
         }
 
         .ln-context-anchor {
