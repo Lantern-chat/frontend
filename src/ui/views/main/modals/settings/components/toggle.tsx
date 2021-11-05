@@ -27,7 +27,7 @@ export const Toggle = React.memo((props: IToggleProps) => {
         <div className="ln-settings-toggle">
             <label htmlFor={props.htmlFor}>{props.label}</label>
             <span className="spacer" />
-            <input type="checkbox" name={props.htmlFor} checked={checked} onChange={onChange} />
+            <input type="checkbox" name={props.htmlFor} id={props.htmlFor} checked={checked} onChange={onChange} />
         </div>
     )
 });
