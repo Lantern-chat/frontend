@@ -24,7 +24,8 @@
             & * {
                 background-color: black;
                 user-select: none;
-                color: transparent;
+                color: black;
+                box-shadow: inset 1000rem 1000rem black;
                 fill: transparent;
                 clip: auto;
                 overflow: hidden;
