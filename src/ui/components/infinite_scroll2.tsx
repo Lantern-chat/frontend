@@ -36,16 +36,11 @@ function ema(current: number, next: number, size: number = 0.5): number {
     //return (current + next) * 0.5;
 }
 
-function doTimeout(cb: () => void): undefined {
-    setTimeout(cb, 100);
-    return;
-}
-
-function doNow(cb: () => void) {
-    cb();
-}
+const doTimeout = (cb: () => void) => setTimeout(cb, 100);
+const doNow = (cb: () => void) => cb();
 
 // Fucking Safari...
+const clearLater = IS_IOS_SAFARI ? clearTimeout : cancelAnimationFrame;
 const do_later = IS_IOS_SAFARI ? doTimeout : requestAnimationFrame;
 const do_nowish = IS_IOS_SAFARI ? doNow : requestAnimationFrame;
 const do_laterish = IS_IOS_SAFARI ? doTimeout : doNow;
@@ -132,6 +127,10 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
             this.pos = 0;
             this.height = 0;
 
+            if(this.fix_frame != null) {
+                clearLater(this.fix_frame);
+            }
+
             this.fixPosition();
         }
     }
@@ -182,7 +181,7 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
         }
 
         if(this.fix_frame != null) {
-            cancelAnimationFrame(this.fix_frame);
+            clearLater(this.fix_frame); // NOTE: Was created by do_later
         }
 
         if(__DEV__ && was_fixing) {
@@ -269,13 +268,12 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
         if(this.load_pending) return;
 
         let container = this.containerRef.current!,
-            new_pos = container.scrollTop;
-
-        //__DEV__ && console.log("Computing anchor with height: ", container.clientHeight, container.scrollTop);
-
-        let anchor = compute_at(container, new_pos),
+            new_pos = container.scrollTop,
+            anchor = compute_at(container, new_pos),
             reached_top = anchor == Anchor.Top && this.anchor != Anchor.Top,
             reached_bottom = anchor == Anchor.Bottom && this.anchor != Anchor.Bottom;
+
+        //__DEV__ && console.log("Computing anchor with height: ", container.clientHeight, container.scrollTop);
 
         {
             let predicted_velocity = (new_pos - this.pos) / this.frame_time,
@@ -310,10 +308,8 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
             this.anchor = Anchor.Bottom;
         }
 
-        let elapsed = now - this.start_time;
-
         // 1 second polling
-        if(elapsed < 1000) {
+        if((now - this.start_time) < 1000) {
             requestAnimationFrame(() => {
                 if(this.polling) {
                     let new_frame = high_res_now();
@@ -333,29 +329,21 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
         this.fixPosition();
     }
 
-    scroll_throttle: boolean = false;
-
     onScroll() {
         // If there is a load pending, there is no point in checking for anchor position,
-        if(this.load_pending || this.fixing || this.scroll_throttle) return;
+        if(this.load_pending || this.fixing) return;
 
         let pos = this.containerRef.current!.scrollTop;
-        // calls to `scrollTo` may trigger a scroll event, which will be at this.pos so ignore that.
-        if(this.pos == pos) {
-            return;
-        }
 
-        // trailing-edge debounce
-        this.scroll_throttle = true;
-        do_nowish(() => {
+        // calls to `scrollTo` may trigger a scroll event, which will be at this.pos so ignore that.
+        if(this.pos != pos) {
             this.start_time = high_res_now();
             if(!this.polling) {
                 this.polling = true;
                 this.velocity = 0;
                 this.doScroll(this.start_time);
             }
-            this.scroll_throttle = false;
-        });
+        }
     }
 
     render() {
@@ -368,14 +356,8 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
             wrapper_classes += this.props.wrapperClassName;
         }
 
-        let wheel = (e: React.UIEvent) => {
-            if(this.fixing || this.load_pending) {
-                e.preventDefault();
-            }
-        }
-
         return (
-            <div ref={this.containerRef} className={container_classes} onWheel={wheel}>
+            <div ref={this.containerRef} className={container_classes}>
                 <div className={wrapper_classes} ref={this.wrapperRef}>
                     {this.props.children}
                 </div>
