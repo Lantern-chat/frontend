@@ -63,9 +63,31 @@ import "./infinite_scroll.scss";
 export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
 
     public goToStart() {
-        this.anchor = this.props.start;
+        this.resetPosition();
+    }
 
-        this.fixPosition();
+    public scrollPageUp() {
+        this.scrollBy(-0.8); // 4/5
+    }
+
+    public scrollPageDown() {
+        this.scrollBy(0.8); // 4/5
+    }
+
+    public scrollArrowUp() {
+        this.scrollBy(-0.1); // 1/10
+    }
+
+    public scrollArrowDown() {
+        this.scrollBy(0.1); // 1/10
+    }
+
+    scrollBy(top: number) {
+        let container = this.containerRef.current;
+        if(container) {
+            let height = container.clientHeight;
+            (container as any).scrollBy({ top: height * top, behavior: 'smooth' });
+        }
     }
 
     observer: ResizeObserver;
@@ -122,17 +144,21 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
         if(prevProps.reset_on_changed != this.props.reset_on_changed) {
             __DEV__ && console.log("Resetting infinite scroll");
 
-            // reset a bunch of stuff
-            this.anchor = this.props.start;
-            this.pos = 0;
-            this.height = 0;
-
-            if(this.fix_frame != null) {
-                clearLater(this.fix_frame);
-            }
-
-            this.fixPosition();
+            this.resetPosition();
         }
+    }
+
+    resetPosition() {
+        // reset a bunch of stuff
+        this.anchor = this.props.start;
+        this.pos = 0;
+        this.height = 0;
+
+        if(this.fix_frame != null) {
+            clearLater(this.fix_frame);
+        }
+
+        this.fixPosition();
     }
 
     componentWillUnmount() {

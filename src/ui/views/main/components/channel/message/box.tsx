@@ -91,7 +91,6 @@ const msg_box_selector = createStructuredSelector({
     users_typing: typing_selector,
 });
 
-
 import "./box.scss";
 export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     let disabled = !channel;
@@ -182,7 +181,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
 
     let on_keyup = useCallback((e: React.KeyboardEvent) => {
         let hotkey = parseHotkey(e.nativeEvent);
-        if(!hotkey || hotkey == Hotkey.FocusTextArea) {
+        if(hotkey == null || hotkey == Hotkey.FocusTextArea) {
             // not-hotkeys shouldn't escape, to save on processing time of keypress
             // or if the textarea is already focused, don't refocus
             e.stopPropagation();
@@ -193,8 +192,6 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
         if(__DEV__) {
             keyRef!.current!.innerText = (e.ctrlKey ? 'Ctrl+' : '') + (e.altKey ? 'Alt+' : '') + (e.shiftKey ? 'Shift+' : '') + (e.key === ' ' ? 'Spacebar' : e.key);
         }
-
-        e.stopPropagation();
 
         let isInsideCodeblock = () => {
             let cursor = ref.current!.selectionStart;
@@ -210,6 +207,8 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
 
             return inside;
         };
+
+        let stop_prop = true;
 
         switch(e.key) {
             case 'Enter': {
@@ -252,6 +251,23 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
                 if(state.isEditing) { dispatch({ type: Type.MESSAGE_DISCARD_EDIT }); }
                 break;
             }
+
+            // HOTKEY allowances
+
+            case 'PageUp':
+            case 'PageDown': {
+                stop_prop = false;
+                break;
+            }
+            default: {
+                if(e.ctrlKey || e.metaKey) {
+                    stop_prop = false;
+                }
+            }
+        }
+
+        if(stop_prop) {
+            e.stopPropagation();
         }
     };
 

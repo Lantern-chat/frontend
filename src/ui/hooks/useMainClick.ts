@@ -14,9 +14,13 @@ export enum Hotkey {
     ReturnChannel, // return to previous channel, history-wise
 
     ToggleEmotePicker,
-
     ToggleLightTheme,
 
+    FeedPageUp,
+    FeedPageDown,
+    FeedArrowUp,
+    FeedArrowDown,
+    FeedEnd,
 
     __MAX_HOTKEY
 }
@@ -55,6 +59,26 @@ const HOTKEYS: IHotkeySpec[] = [
         hot: Hotkey.NextTextChannel,
         key: "ArrowDown",
         mod: ALT_MODIFIER,
+    },
+    {
+        hot: Hotkey.FeedArrowUp,
+        key: "ArrowUp",
+    },
+    {
+        hot: Hotkey.FeedArrowDown,
+        key: "ArrowDown",
+    },
+    {
+        hot: Hotkey.FeedPageUp,
+        key: "PageUp",
+    },
+    {
+        hot: Hotkey.FeedPageDown,
+        key: "PageDown",
+    },
+    {
+        hot: Hotkey.FeedEnd,
+        key: "End",
     },
     {
         hot: Hotkey.ToggleEmotePicker,
@@ -160,7 +184,7 @@ export function useMainClick(opt: IMainClickOptions, deps: any[]): ClickEventHan
         }
 
         return { opt, props };
-    }, [main, ...deps]);
+    }, [...deps, main]);
 
     useEffect(() => {
         if(!active) return;
@@ -181,7 +205,25 @@ export function useMainHotkey(hotkey: Hotkey, cb: OnKeyHandler, deps?: any[]) {
         let listener = (e: KeyboardEvent) => cb(e);
         main.addOnHotkey(hotkey, listener);
         return () => main.removeOnHotkey(hotkey, listener);
-    }, deps ? [main, hotkey, ...deps] : [main, hotkey]);
+    }, deps ? [...deps, main, hotkey] : [main, hotkey]);
+}
+
+export function useMainHotkeys(hotkeys: Hotkey[], cb: (hotkey: Hotkey, e: KeyboardEvent) => void, deps?: any[]) {
+    let main = useContext(MainContext);
+
+    useEffect(() => {
+        let listeners = hotkeys.map((hotkey): [Hotkey, OnKeyHandler] => [hotkey, (e: KeyboardEvent) => cb(hotkey, e)]);
+
+        for(let [hotkey, listener] of listeners) {
+            main.addOnHotkey(hotkey, listener);
+        }
+
+        return () => {
+            for(let [hotkey, listener] of listeners) {
+                main.removeOnHotkey(hotkey, listener);
+            }
+        };
+    }, deps ? [...hotkeys, ...deps, main] : [...hotkeys, main]);
 }
 
 export interface Position {

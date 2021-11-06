@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { createStructuredSelector } from 'reselect';
 import classNames from "classnames";
@@ -100,22 +100,38 @@ import { Anchor, InfiniteScroll } from "ui/components/infinite_scroll2";
 
 const NoTimeline = React.memo(() => <></>);
 
+import { Hotkey, useMainHotkeys } from "ui/hooks/useMainClick";
+const HOTKEYS = [Hotkey.FeedArrowDown, Hotkey.FeedArrowUp, Hotkey.FeedPageDown, Hotkey.FeedPageUp, Hotkey.FeedEnd];
+
 const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) => {
-    let { use_mobile_view, is_light_theme, compact, gl } = useSelector(inner_feed_selector);
-    let dispatch = useDispatch();
+    let { use_mobile_view, is_light_theme, compact, gl } = useSelector(inner_feed_selector),
+        dispatch = useDispatch(),
+        infinite_scroll = useRef<InfiniteScroll>(null),
+        [load_next, load_prev]: Array<undefined | (() => void)> = useMemo(() => {
+            if(!room || room.fully_loaded) return [];
 
-    let [load_next, load_prev]: Array<undefined | (() => void)> = useMemo(() => {
-        if(!room || room.fully_loaded) return [];
-
-        return [
-            () => { }, // TODO: Virtualization
-            () => {
-                if(room && groups[0]) {
-                    dispatch(loadMessages(room.room.id, groups[0][0].msg.id, SearchMode.Before));
+            return [
+                () => { }, // TODO: Virtualization
+                () => {
+                    if(room && groups[0]) {
+                        dispatch(loadMessages(room.room.id, groups[0][0].msg.id, SearchMode.Before));
+                    }
                 }
-            }
-        ]
-    }, [room, groups]);
+            ]
+        }, [room, groups]);
+
+    useMainHotkeys(HOTKEYS, (hotkey: Hotkey, e: KeyboardEvent) => {
+        let ifs = infinite_scroll.current;
+        if(!ifs) return;
+
+        switch(hotkey) {
+            case Hotkey.FeedArrowDown: ifs.scrollArrowDown(); break;
+            case Hotkey.FeedArrowUp: ifs.scrollArrowUp(); break;
+            case Hotkey.FeedPageDown: ifs.scrollPageDown(); break;
+            case Hotkey.FeedPageUp: ifs.scrollPageUp(); break;
+            case Hotkey.FeedEnd: ifs.goToStart(); break;
+        }
+    }, [infinite_scroll.current]);
 
     if(!room) {
         return <div className="ln-center-standalone">Channel does not exist</div>;
@@ -131,7 +147,7 @@ const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) =
     return (
         <>
             <MaybeTimeline direction={0} position={0} />
-            <InfiniteScroll start={Anchor.Bottom}
+            <InfiniteScroll ref={infinite_scroll} start={Anchor.Bottom}
                 load_next={load_next} load_prev={load_prev}
                 reset_on_changed={room.room.id}
                 containerClassName={wrapperClasses}
