@@ -5,3 +5,36 @@ const PREFIX_REGEX = /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(e
 
 export const USER_AGENT: string = navigator.userAgent || navigator.vendor || navigator['opera'];
 export const IS_MOBILE = MOBILE_REGEX.test(USER_AGENT) || PREFIX_REGEX.test(USER_AGENT.substr(0, 4));
+
+function iOS() {
+    return [
+        'iPad Simulator',
+        'iPhone Simulator',
+        'iPod Simulator',
+        'iPad',
+        'iPhone',
+        'iPod'
+    ].includes(navigator.platform)
+        // iPad on iOS 13 detection
+        || (USER_AGENT.includes("Mac") && "ontouchend" in document)
+}
+
+export const IS_IOS_SAFARI = iOS();
+
+function iOSversion(): number {
+    if(IS_IOS_SAFARI) {
+        let w = window as any;
+        if(w.indexedDB) { return 8; }
+        if(w.SpeechSynthesisUtterance) { return 7; }
+        if(w.webkitAudioContext) { return 6; }
+        if(w.matchMedia) { return 5; }
+        if(w.history && 'pushState' in w.history) { return 4; }
+        return 3;
+    }
+    return 0;
+}
+
+if(__DEV__) {
+    IS_MOBILE && console.log("USING MOBILE BROWSER: ", USER_AGENT);
+    IS_IOS_SAFARI && console.log("USING Safari");
+}
