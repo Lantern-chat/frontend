@@ -58,7 +58,14 @@
     // TODO: Fix textarea background color bleeding over border-radius in mobile-view and showing the sidebar
     @media (min-width: $ln-min-channel-width) {
         border-radius: 0.5rem;
-        margin: 0 1rem 0em 1rem;
+        margin: 0 1rem;
+
+        margin: 0 calc(1rem - 2.5px);
+        border: 2.5px solid transparent;
+
+        &.focused {
+            border-color: hsl(240, 80%, 70%);
+        }
     }
 
     &--disabled * {

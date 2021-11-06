@@ -1,6 +1,7 @@
 import React, { ChangeEventHandler, forwardRef, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
+import classNames from "classnames";
 
 import TextareaAutosize from 'react-textarea-autosize';
 
@@ -50,11 +51,14 @@ const typing_selector = createSelector(
 
         if(!party) return;
 
-        let typing_nicks = [];
+        let typing_nicks = [], remaining = users_typing.length;
 
         for(let entry of users_typing) {
             // skip self
-            if(!__DEV__ && entry.user == user.id) continue;
+            if(!__DEV__ && entry.user == user.id) {
+                remaining -= 1;
+                continue;
+            };
 
             let member = party.members.get(entry.user);
             if(member) {
@@ -67,7 +71,9 @@ const typing_selector = createSelector(
             }
         }
 
-        let res, len = typing_nicks.length, remaining = users_typing.length - typing_nicks.length;
+        remaining -= typing_nicks.length;
+
+        let res, len = typing_nicks.length;
 
         if(len == 0) return;
         else if(len == 1) {
@@ -123,7 +129,9 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     }
 
     let [files, setFiles] = useState<FileList | null>(null);
+
     let [focused, setFocus] = useState(false);
+    let [showFocus, setShowFocus] = useState(false);
     let [state, setState] = useState<MsgBoxState>({
         value: "",
         backup: null,
@@ -189,6 +197,8 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     }, []);
 
     let on_keydown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        setShowFocus(false);
+
         if(__DEV__) {
             keyRef!.current!.innerText = (e.ctrlKey ? 'Ctrl+' : '') + (e.altKey ? 'Alt+' : '') + (e.shiftKey ? 'Shift+' : '') + (e.key === ' ' ? 'Spacebar' : e.key);
         }
@@ -287,6 +297,10 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
         setState({ ...state, value: new_value, ts });
     };
 
+    let on_blur = () => {
+        setTimeout(() => { setFocus(false); setShowFocus(false); }, 0);
+    }
+
     let main = useContext(MainContext);
 
     let on_click_focus = useCallback((e: React.MouseEvent) => {
@@ -299,14 +313,9 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     //let [tabIndex, setTabIndex] = useState(0);
 
     useMainHotkey(Hotkey.FocusTextArea, () => {
-        if(disabled) return;
-
-        // TODO: Iterate over items in box
-        //let c = ref.current!, is_focused = document.activeElement == c;
-        //if(!is_focused) {}
-
-        ref.current!.focus();
-    });
+        let ta = ref.current;
+        if(!disabled && ta) { ta.focus(); setShowFocus(true); }
+    }, [disabled, ref.current]);
 
     let on_file_change = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         __DEV__ && console.log("File list changed");
@@ -332,7 +341,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
         <>
             {files?.length ? <FileUploadModal onClose={on_file_close} files={files} /> : null}
 
-            <div className={"ln-msg-box" + (disabled ? ' ln-msg-box--disabled' : '')} onClick={on_click_focus}>
+            <div className={classNames("ln-msg-box", { 'ln-msg-box--disabled': disabled, 'focused': showFocus })} onClick={on_click_focus}>
                 {disabled ? <span className="ln-msg-box__disable"></span> : null}
 
                 <div className="ln-typing ln-typing__top">
@@ -343,7 +352,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
 
                 <div className="ln-msg-box__box">
                     <TextareaAutosize disabled={disabled}
-                        onBlur={() => setTimeout(() => setFocus(false), 0)} // don't run on same frame?
+                        onBlur={on_blur} // don't run on same frame?
                         onFocus={() => setFocus(true)}
                         cacheMeasurements={false}
                         ref={ref}
