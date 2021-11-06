@@ -485,7 +485,7 @@ export function reactElement(
         $$typeof: TYPE_SYMBOL,
         type: type,
         key: key == null ? undefined : key,
-        ref: null,
+        ref: props.ref || null,
         props: props,
         _owner: null
     } as ReactElement;
