@@ -170,10 +170,7 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
         }
     }
 
-    frame_throttle: boolean = false;
-
     fixing: boolean = false;
-
     fix_frame?: number;
 
     fixPosition() {
@@ -233,27 +230,25 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
 
         if(height == this.height) return;
 
-        let top = this.pos;
+        let top = this.pos, diff = 0;
 
         if(this.anchor == this.props.start) {
-            if(this.props.start == Anchor.Bottom) {
-                top = container.scrollHeight;
-            } else {
-                top = 0;
-            }
-
+            // if start is at the bottom, shift top to full height, which will be automatically clamped
+            top = (this.props.start == Anchor.Bottom) ? height : 0;
             __DEV__ && console.log("SCROLLING TO START: ", top);
         } else {
-            // top += diff
-            top += height - this.height;
+            diff = height - this.height;
+            top += diff;
         }
 
         this.pos = top;
 
         if(top != container.scrollTop || height != this.height) {
-            // having both of these somehow helps a little
-            (container as any).scrollTo({ top, behavior: 'instant' });
-            container.scrollTop = top;
+            if(diff > 0) {
+                (container as any).scrollBy({ top: diff, behavior: 'instant' });
+            } else {
+                (container as any).scrollTo({ top, behavior: 'instant' });
+            }
 
             __DEV__ && console.log("CORRECTED TO: ", top);
 
@@ -271,33 +266,29 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
     doScroll(now: number) {
         // no point in doing scroll checking if its purpose is being served, so avoid the overhead
         // and complications
-        if(this.load_pending || !this.polling) return;
+        if(this.load_pending) return;
 
-        let container = this.containerRef.current!;
+        let container = this.containerRef.current!,
+            new_pos = container.scrollTop;
 
         //__DEV__ && console.log("Computing anchor with height: ", container.clientHeight, container.scrollTop);
-
-        let new_pos = container.scrollTop;
 
         let anchor = compute_at(container, new_pos),
             reached_top = anchor == Anchor.Top && this.anchor != Anchor.Top,
             reached_bottom = anchor == Anchor.Bottom && this.anchor != Anchor.Bottom;
 
-        if(this.polling) {
-            let predicted_velocity = (new_pos - this.pos) / this.frame_time;
-
-            let sign = Math.sign(predicted_velocity);
+        {
+            let predicted_velocity = (new_pos - this.pos) / this.frame_time,
+                sign = Math.sign(predicted_velocity);
 
             // limit the absolute velocity to max(0.25, 1.5*existing)
             // where max() helps if initial velocity is zero.
-            predicted_velocity = Math.min(
+            predicted_velocity = sign * Math.min(
                 Math.max(0.25, Math.abs(this.velocity) * 1.5),
                 Math.abs(predicted_velocity)
             );
 
-            this.velocity = ema(this.velocity, sign * predicted_velocity, 0.25);
-        } else {
-            this.velocity = 0;
+            this.velocity = ema(this.velocity, predicted_velocity, 0.25);
         }
 
         this.pos = new_pos;
