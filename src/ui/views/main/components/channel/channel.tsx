@@ -25,7 +25,7 @@ import "./channel.scss";
 export const Channel = React.memo((props: IChannelProps) => {
     let { use_mobile_view, show_user_list } = useSelector(channel_selector);
 
-    let feed_box, member_list, inner;
+    let feed, feed_box, member_list, inner;
     if(props.channel) {
         feed_box = <MessageFeed channel={props.channel} />;
     } else {
@@ -33,14 +33,19 @@ export const Channel = React.memo((props: IChannelProps) => {
         feed_box = <div className="ln-center-standalone">Loading...</div>;
     }
 
+    feed = (
+        <div className="ln-channel__feed">
+            <div className="ln-channel__banners">
+                {__DEV__ && <DevBanner />}
+            </div>
+            {feed_box}
+            <MessageBox channel={props.channel} />
+        </div>
+    );
+
     if(use_mobile_view) {
         // mobile doesn't need to wrap anything or show the user-list
-        inner = (
-            <>
-                {feed_box}
-                <MessageBox channel={props.channel} />
-            </>
-        );
+        inner = feed;
     } else {
         if(show_user_list) {
             member_list = (
@@ -52,10 +57,7 @@ export const Channel = React.memo((props: IChannelProps) => {
 
         inner = (
             <div className="ln-channel__wrapper">
-                <div className="ln-channel__feed">
-                    {feed_box}
-                    <MessageBox channel={props.channel} />
-                </div>
+                {feed}
                 {member_list}
             </div>
         );
@@ -70,3 +72,11 @@ export const Channel = React.memo((props: IChannelProps) => {
         </div>
     );
 });
+
+const DevBanner = React.memo(() => {
+    return (
+        <div className="ln-banner error ui-text">
+            This is a development build.
+        </div>
+    )
+})

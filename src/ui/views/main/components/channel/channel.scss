@@ -13,11 +13,13 @@
     }
 
     &__feed {
+        position: relative;
         height: 100%;
         display: flex;
         flex-direction: column;
         flex: 1 1 auto;
         font-size: var(--ln-chat-font-size, 1rem);
+        overflow: hidden;
     }
 
     &__members {
@@ -27,6 +29,38 @@
 
         @media (max-width: $ln-min-channel-width) {
             display: none;
+        }
+    }
+
+    &__banners {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 3;
+
+        &:not(:empty) {
+            box-shadow: 0 0.15em 0.15em $lnx-secondary-surface-color;
+        }
+    }
+}
+
+.ln-banner {
+    padding: 0.5em 1em;
+    text-align: center;
+    line-height: normal;
+
+    background-color: rgba(32, 32, 32, 0.7);
+
+    .ln-light-theme & {
+        background-color: rgba(128, 128, 128, 0.7);
+    }
+
+    &.error {
+        background-color: rgba(64, 0, 0, 0.7);
+
+        .ln-light-theme & {
+            background-color: rgba(196, 128, 128, 0.7);
         }
     }
 }
