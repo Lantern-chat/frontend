@@ -62,7 +62,7 @@ const typing_selector = createSelector(
 
             let member = party.members.get(entry.user);
             if(member) {
-                let nick = member.nick || member.user?.username;
+                let nick = member.nick || member.user.username;
 
                 if(nick) {
                     typing_nicks.push(nick);

@@ -5,29 +5,27 @@ import { genCachedUserKey } from "state/selectors/selectCachedUser";
 import { GatewayEventCode } from "worker/gateway/event";
 import { GatewayMessageDiscriminator } from "worker/gateway/msg";
 
-export interface CachedUserPresence {
+export interface CachedUser {
     user: User,
-    party?: Snowflake,
+    nickname?: string,
+    party_id?: Snowflake,
     presence?: UserPresence,
 }
 
-export interface CachedMember {
-    nickname?: string,
-}
-
 export interface ICacheState {
-    users: Map<Snowflake, CachedUserPresence>,
-    members: Map<Snowflake, CachedMember>,
+    members: Map<Snowflake, CachedUser>,
 }
 
 const DEFAULT_STATE: ICacheState = {
-    users: new Map(),
     members: new Map(),
 };
 
 export function cacheReducer(state: ICacheState | null | undefined, action: Action): ICacheState {
     state = state || DEFAULT_STATE;
 
+    return state;
+
+    /*
     switch(action.type) {
         case Type.MEMBERS_LOADED: return produce(state, draft => {
             let { members, party_id } = action;
@@ -38,10 +36,10 @@ export function cacheReducer(state: ICacheState | null | undefined, action: Acti
 
                 __DEV__ && console.log("SETTING CACHE", user.id, party_id);
 
-                draft.users.set(genCachedUserKey(user.id, party_id), {
+                draft.members.set(genCachedUserKey(user.id, party_id), {
+                    ...member,
                     user,
-                    party: party_id,
-                    presence: member.presence
+                    party_id
                 });
             }
         });
@@ -57,12 +55,23 @@ export function cacheReducer(state: ICacheState | null | undefined, action: Acti
                             let payload = event.p, user = payload.user;
 
                             return produce(state, draft => {
-                                draft.users.set(genCachedUserKey(user.id, payload.party), payload);
+                                draft.members.set(genCachedUserKey(user.id, payload.party), payload);
                             });
                         }
-                        //case GatewayEventCode.MemberUpdate: {
-                        //    //TODO:
-                        //}
+                        case GatewayEventCode.MemberUpdate: {
+                            let payload = event.p, user = payload.user!;
+                            return produce(state, draft => {
+                                let key = genCachedUserKey(user.id, payload.party_id);
+
+                                let existing = draft.members.get(key) || {};
+
+                                draft.members.set(key, {
+                                    ...existing,
+                                    ...payload,
+                                    user,
+                                });
+                            });
+                        }
 
                         default: break;
                     }
@@ -76,4 +85,5 @@ export function cacheReducer(state: ICacheState | null | undefined, action: Acti
     }
 
     return state;
+    */
 }

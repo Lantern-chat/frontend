@@ -16,11 +16,11 @@ import { PositionedModal } from "ui/components/modal/positioned_modal";
 import { MsgContextMenu } from "../../menus/msg_context";
 import { UserCard } from "../../menus/user_card";
 
-import { useMainClick, useSimplePositionedContextMenu, useSimpleToggleOnClick } from "ui/hooks/useMainClick";
+import { useSimplePositionedContextMenu, useSimpleToggleOnClick } from "ui/hooks/useMainClick";
 import { useSelector } from "react-redux";
 import { RootState } from "state/root";
-import { computeRoleColor } from "state/selectors/party";
 import { activeParty } from "state/selectors/active";
+import { selectCachedUser } from "state/selectors/selectCachedUser";
 
 interface IUserNameProps {
     name: string,
@@ -82,18 +82,22 @@ const MessageUserAvatar = React.memo(({ name, user, is_light_theme }: Omit<IUser
 interface IGroupMessageProps {
     msg: IMessageState,
     is_light_theme: boolean,
-    nickname: string,
     first: boolean,
     compact: boolean,
     attachments?: React.ReactNode,
 }
 
 /// Group Message for the Compact view mode
-const CompactGroupMessage = React.memo(({ msg, is_light_theme, nickname, first, attachments }: IGroupMessageProps) => {
-    let ts = msg.ts.format("dddd, MMMM DD, h:mm A");
+const CompactGroupMessage = React.memo(({ msg, is_light_theme, first, attachments }: IGroupMessageProps) => {
+    let ts = msg.ts.format("dddd, MMMM DD, h:mm A"),
+        raw = msg.msg,
+        cached_member = useSelector((state: RootState) => {
+            return selectCachedUser(state, raw.author.id, raw.party_id) || { user: raw.author, nick: raw.member?.nick };
+        }),
+        nickname = cached_member.nick || cached_member.user.username;
 
     let className = classNames("ln-msg--compact", {
-        'no-text': msg.msg.content.length == 0,
+        'no-text': raw.content.length == 0,
     });
 
     return (
@@ -105,10 +109,10 @@ const CompactGroupMessage = React.memo(({ msg, is_light_theme, nickname, first, 
                     </div>
                 </div>
 
-                <MessageUserName name={nickname} user={msg.msg.author} msg={msg} />
+                <MessageUserName name={nickname} user={raw.author} msg={msg} />
             </div>
 
-            <Message editing={false} msg={msg.msg} />
+            <Message editing={false} msg={raw} />
 
             {attachments}
         </div>
@@ -116,16 +120,21 @@ const CompactGroupMessage = React.memo(({ msg, is_light_theme, nickname, first, 
 });
 
 /// Group Message for the Cozy view mode
-const CozyGroupMessage = React.memo(({ msg, is_light_theme, nickname, first, attachments }: IGroupMessageProps) => {
-    let message = <Message editing={false} msg={msg.msg} />;
-
-    let side, title, ts = msg.ts.format("dddd, MMMM DD, h:mm A");
+const CozyGroupMessage = React.memo(({ msg, is_light_theme, first, attachments }: IGroupMessageProps) => {
+    let side, title,
+        ts = msg.ts.format("dddd, MMMM DD, h:mm A"),
+        raw = msg.msg,
+        cached_member = useSelector((state: RootState) => {
+            return selectCachedUser(state, raw.author.id, raw.party_id) || { user: raw.author, nick: raw.member?.nick };
+        }),
+        nickname = cached_member.nick || cached_member.user.username,
+        message = <Message editing={false} msg={raw} />;
 
     // if first message in the group, give it the user avatar and title
     if(first) {
         title = (
             <div className="ln-msg__title">
-                <MessageUserName name={nickname} user={msg.msg.author} msg={msg} />
+                <MessageUserName name={nickname} user={raw.author} msg={msg} />
 
                 <span className="ln-separator"> - </span>
 
@@ -135,7 +144,7 @@ const CozyGroupMessage = React.memo(({ msg, is_light_theme, nickname, first, att
             </div>
         );
 
-        side = (<MessageUserAvatar user={msg.msg.author} name={nickname} is_light_theme={is_light_theme} />);
+        side = (<MessageUserAvatar user={cached_member.user} name={nickname} is_light_theme={is_light_theme} />);
     } else {
         side = (
             <div className="ln-msg__sidets" title={ts}>
@@ -160,9 +169,10 @@ const CozyGroupMessage = React.memo(({ msg, is_light_theme, nickname, first, att
 });
 
 const GroupMessage = React.memo((props: IGroupMessageProps) => {
-    let attachments, msg = props.msg, a = msg.msg.attachments;
+    let attachments, msg = props.msg, raw = msg.msg, a = raw.attachments;
+
     if(a && a.length) {
-        attachments = a.map(attachment => <MsgAttachment key={attachment.id} msg={msg.msg} attachment={attachment} />)
+        attachments = a.map(attachment => <MsgAttachment key={attachment.id} msg={raw} attachment={attachment} />)
     }
 
     let cm, [warn, setWarn] = useState(false),
@@ -188,7 +198,7 @@ const GroupMessage = React.memo((props: IGroupMessageProps) => {
     });
 
     return (
-        <div key={msg.msg.id} className={outer_class} {...main_click_props}>
+        <div key={raw.id} className={outer_class} {...main_click_props}>
             <div className="ln-msg__wrapper">
                 <Inner {...props} attachments={attachments} />
                 {cm}
@@ -206,12 +216,9 @@ interface IMessageGroupProps {
 export const MessageGroup: React.FunctionComponent<IMessageGroupProps> = ({ group, is_light_theme, compact }: IMessageGroupProps) => {
     // NOTE: Because `group` is recomputed below as part of `groups`, this will always render.
 
-    // get the first message in the group and use that for the nickname
-    let { msg } = group[0], nickname = msg.member?.nick || msg.author.username;
-
     return (
         <li className="ln-msg-list__group">
-            {group.map((msg, i) => <GroupMessage key={msg.msg.id} msg={msg} nickname={nickname} is_light_theme={is_light_theme} first={i == 0} compact={compact} />)}
+            {group.map((msg, i) => <GroupMessage key={msg.msg.id} msg={msg} is_light_theme={is_light_theme} first={i == 0} compact={compact} />)}
         </li>
     );
 };

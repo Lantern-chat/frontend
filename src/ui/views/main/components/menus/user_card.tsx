@@ -25,7 +25,7 @@ export const UserCard = React.memo((props: IUserCardProps) => {
         return <span className="ui-text">User Not Found</span>
     }
 
-    let { user, party, presence } = cached_user;
+    let { user, presence } = cached_user;
 
     return (
         <div className="ln-user-card ln-contextmenu">

@@ -37,10 +37,10 @@ export const Mention = React.memo((props: IMentionProps) => {
         }
         case '@': {
             if(party) {
-                let user = party.members.get(props.id);
+                let member = party.members.get(props.id);
 
-                if(user) {
-                    return <span>@{user.nick || user.user!.username}</span>;
+                if(member) {
+                    return <span>@{member.nick || member.user.username}</span>;
                 }
             }
 

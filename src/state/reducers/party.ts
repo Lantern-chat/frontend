@@ -209,7 +209,7 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
                         case GatewayEventCode.MemberUpdate:
                         case GatewayEventCode.MemberAdd: {
                             let member = p.p;
-                            let { party_id, user } = member, id = user!.id;
+                            let { party_id, user } = member, id = user.id;
 
                             return produce(state, draft => {
                                 let party = draft.parties.get(party_id), roles = draft.roles;
@@ -278,14 +278,13 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
                             });
                         }
                         case GatewayEventCode.MemberRemove: {
-                            let member = p.p;
-                            let { party_id, user } = member, id = user!.id;
+                            let member = p.p, { party_id, user } = member;
 
                             return produce(state, draft => {
                                 let party = draft.parties.get(party_id);
                                 if(!party) return;
 
-                                party.members.delete(id);
+                                party.members.delete(user.id);
                             });
                         }
                         default: break;

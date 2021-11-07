@@ -187,7 +187,7 @@ export interface Message {
     room_id: Snowflake,
     party_id?: Snowflake,
     author: User,
-    member?: PartyMember
+    member?: PartialPartyMember,
     thread_id?: Snowflake,
     created_at: string,
     edited_at?: string,
@@ -252,11 +252,13 @@ export interface Party extends PartialParty {
 }
 
 export interface PartyMember {
-    user?: User,
+    user: User,
     nick: string | null,
     roles?: Snowflake[],
     presence?: UserPresence,
 }
+
+export type PartialPartyMember = PartialBy<PartyMember, 'user'>;
 
 export interface Invite {
     code: string,
@@ -311,7 +313,8 @@ export type GatewayEvent =
     ReadyEvent |
     TypingStartEvent |
     UserPresenceUpdateEvent |
-    UserUpdateEvent | MessageDeleteEvent;
+    UserUpdateEvent |
+    MessageDeleteEvent;
 
 export interface HelloEvent {
     heartbeat_interval: number,

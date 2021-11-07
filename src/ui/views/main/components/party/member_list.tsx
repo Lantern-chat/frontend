@@ -37,7 +37,7 @@ export const MemberList = React.memo(() => {
 
     if(members) {
         list = Array.from(members.values(), (member, i) => (
-            <ListedMember key={member.user?.id || i} member={member} owner={owner!} is_light_theme={is_light_theme} />
+            <ListedMember key={member.user.id || i} member={member} owner={owner!} is_light_theme={is_light_theme} />
         ))
     }
 
@@ -55,7 +55,7 @@ interface IListedMemberProps {
 }
 
 const ListedMember = ({ member, owner, is_light_theme }: IListedMemberProps) => {
-    let user = member.user!,
+    let user = member.user,
         nick = member.nick || user.username,
         { status, is_mobile } = parse_presence(member.presence),
         crown;
@@ -67,7 +67,7 @@ const ListedMember = ({ member, owner, is_light_theme }: IListedMemberProps) => 
         let party = state.party.parties.get(party_id);
         if(!party) return;
 
-        return party.member_colors.get(member.user!.id);
+        return party.member_colors.get(member.user.id);
     });
 
     if(user.id == owner) {
