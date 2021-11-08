@@ -35,6 +35,84 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
     // run reducers first
     let res = next(action);
 
+    switch(action.type) {
+        case Type.WINDOW_TOGGLE_USER_LIST_SIDEBAR: {
+            let w = getState().window;
+            if(!w.use_mobile_view) {
+                localStorage.setItem(StorageKey.SHOW_USER_LIST, JSON.stringify(w.show_user_list));
+            }
+            break;
+        }
+        case Type.UPDATE_PREFS: {
+            let de = document.documentElement,
+                state = getState(),
+                prefs = state.prefs,
+                { chat_font, ui_font } = prefs,
+                pad = getPad(prefs),
+                font_changed = false;
+
+            // 16px == 1em, /2 for both sides
+            de.style.setProperty('--ln-chat-group-padding', (pad / 32).toFixed(2) + 'em');
+
+            if(chat_font !== undefined) {
+                let chat_ff_var = font_to_css(chat_font), chat_ff_key = '--ln-chat-font-family';
+
+                if(de.style.getPropertyValue(chat_ff_key) != chat_ff_var) {
+                    de.style.setProperty(chat_ff_key, chat_ff_var);
+                    font_changed = true;
+                }
+            }
+
+            if(typeof prefs.chat_font_size == 'number' || chat_font) {
+                let fs = prefs.chat_font_size / 16;
+
+                de.style.setProperty('--ln-chat-font-size', `${fs}rem`);
+                de.style.setProperty('--ln-chat-font-size-adjust', `${font_size(chat_font)}`);
+            }
+
+            if(ui_font !== undefined) {
+                let ui_ff_var = font_to_css(ui_font), ui_ff_key = '--ln-ui-font-family';
+
+                if(de.style.getPropertyValue(ui_ff_key) != ui_ff_var) {
+                    de.style.setProperty(ui_ff_key, ui_ff_var);
+                    font_changed = true;
+                }
+            }
+
+            if(typeof prefs.ui_font_size == 'number' || ui_font) {
+                let fs = prefs.ui_font_size / 16;
+
+                de.style.setProperty('--ln-ui-font-size', `${fs}rem`);
+                de.style.setProperty('--ln-ui-font-size-adjust', `${font_size(ui_font)}em`);
+            }
+
+            if(typeof prefs.tab_size == 'number') {
+                let ts_var = prefs.tab_size.toString(), ts_key = '--ln-chat-tabsize';
+
+                if(de.style.getPropertyPriority(ts_key) != ts_var) {
+                    de.style.setProperty(ts_key, ts_var);
+                }
+            }
+
+            if(font_changed) {
+                if([chat_font, ui_font].includes(Font.OpenDyslexic)) import("ui/fonts/opendyslexic");
+                if([chat_font, ui_font].includes(Font.ComicSans)) import("ui/fonts/dramasans");
+            }
+
+            let reduce_motion = hasUserPrefFlag(prefs, UserPreferenceFlags.ReduceAnimations);
+            if(!reduce_motion) {
+                de.classList.add('ln-enable-motion');
+            } else {
+                de.classList.remove('ln-enable-motion');
+            }
+
+            // NOTE: Because this runs after the reducers, and the prefs reducer fills in defaults, this is the full prefs
+            localStorage.setItem(StorageKey.PREFS, JSON.stringify(prefs));
+
+            break;
+        }
+    }
+
     if(!GLOBAL.gateway) {
         return res;
     }
@@ -185,80 +263,6 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
 
             }
             break;
-        }
-        case Type.WINDOW_TOGGLE_USER_LIST_SIDEBAR: {
-            let w = getState().window;
-            if(!w.use_mobile_view) {
-                localStorage.setItem(StorageKey.SHOW_USER_LIST, JSON.stringify(w.show_user_list));
-            }
-            break;
-        }
-        // all DOM side-effects for preferences
-        case Type.UPDATE_PREFS: {
-            let de = document.documentElement,
-                state = getState(),
-                prefs = state.prefs,
-                { chat_font, ui_font } = prefs,
-                pad = getPad(prefs),
-                font_changed = false;
-
-            // 16px == 1em, /2 for both sides
-            de.style.setProperty('--ln-chat-group-padding', (pad / 32).toFixed(2) + 'em');
-
-            if(chat_font !== undefined) {
-                let chat_ff_var = font_to_css(chat_font), chat_ff_key = '--ln-chat-font-family';
-
-                if(de.style.getPropertyValue(chat_ff_key) != chat_ff_var) {
-                    de.style.setProperty(chat_ff_key, chat_ff_var);
-                    font_changed = true;
-                }
-            }
-
-            if(typeof prefs.chat_font_size == 'number' || chat_font) {
-                let fs = prefs.chat_font_size / 16;
-
-                de.style.setProperty('--ln-chat-font-size', `${fs}rem`);
-                de.style.setProperty('--ln-chat-font-size-adjust', `${font_size(chat_font)}`);
-            }
-
-            if(ui_font !== undefined) {
-                let ui_ff_var = font_to_css(ui_font), ui_ff_key = '--ln-ui-font-family';
-
-                if(de.style.getPropertyValue(ui_ff_key) != ui_ff_var) {
-                    de.style.setProperty(ui_ff_key, ui_ff_var);
-                    font_changed = true;
-                }
-            }
-
-            if(typeof prefs.ui_font_size == 'number' || ui_font) {
-                let fs = prefs.ui_font_size / 16;
-
-                de.style.setProperty('--ln-ui-font-size', `${fs}rem`);
-                de.style.setProperty('--ln-ui-font-size-adjust', `${font_size(ui_font)}em`);
-            }
-
-            if(typeof prefs.tab_size == 'number') {
-                let ts_var = prefs.tab_size.toString(), ts_key = '--ln-chat-tabsize';
-
-                if(de.style.getPropertyPriority(ts_key) != ts_var) {
-                    de.style.setProperty(ts_key, ts_var);
-                }
-            }
-
-            if(font_changed) {
-                if([chat_font, ui_font].includes(Font.OpenDyslexic)) import("ui/fonts/opendyslexic");
-                if([chat_font, ui_font].includes(Font.ComicSans)) import("ui/fonts/dramasans");
-            }
-
-            let reduce_motion = hasUserPrefFlag(prefs, UserPreferenceFlags.ReduceAnimations);
-            if(!reduce_motion) {
-                de.classList.add('ln-enable-motion');
-            } else {
-                de.classList.remove('ln-enable-motion');
-            }
-
-            // NOTE: Because this runs after the reducers, and the prefs reducer fills in defaults, this is the full prefs
-            localStorage.setItem(StorageKey.PREFS, JSON.stringify(prefs));
         }
     }
 
