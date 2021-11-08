@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
 import classNames from "classnames";
 
-import TextareaAutosize from 'react-textarea-autosize';
+import TextareaAutosize, { TextareaHeightChangeMeta } from 'react-textarea-autosize';
 
 import { countLines } from "lib/util";
 import { IS_MOBILE } from "lib/user_agent";
@@ -11,9 +11,10 @@ import { IS_MOBILE } from "lib/user_agent";
 //import { IMessageState } from "ui/views/main/reducers/messages";
 import { RootState } from "state/root";
 import { Type } from "state/actions";
-import { Snowflake } from "state/models";
+import { PartyMember, Snowflake, User } from "state/models";
 import { sendMessage, startTyping } from "state/commands";
 import { activeParty, activeRoom } from "state/selectors/active";
+import { ITypingState } from "state/reducers/chat";
 
 import { FileUploadModal } from "ui/views/main/modals/file_upload";
 import { Hotkey, MainContext, parseHotkey, useMainHotkey } from "ui/hooks/useMainClick";
@@ -29,68 +30,10 @@ export interface IMessageBoxProps {
     channel?: Snowflake,
 }
 
-const typing_selector = createSelector(
-    activeRoom,
-    activeParty,
-    (state: RootState) => state.chat.rooms,
-    (state: RootState) => state.party.parties,
-    (state: RootState) => state.user.user!,
-    (active_room, active_party, rooms, parties, user) => {
-        let typing = active_room && rooms.get(active_room)?.typing,
-            users_typing = (typing && typing.length > 0) ? typing : undefined;
-
-        if(!users_typing || !active_party) return;
-
-        if(users_typing.length > 10) return "Many users are typing...";
-
-        let party = parties.get(active_party);
-
-        if(!party) return;
-
-        let typing_nicks = [], remaining = users_typing.length;
-
-        for(let entry of users_typing) {
-            // skip self
-            if(!__DEV__ && entry.user == user.id) {
-                remaining -= 1;
-                continue;
-            };
-
-            let member = party.members.get(entry.user);
-            if(member) {
-                let nick = member.nick || member.user.username;
-
-                if(nick) {
-                    typing_nicks.push(nick);
-                    if(typing_nicks.length > 3) break;
-                }
-            }
-        }
-
-        remaining -= typing_nicks.length;
-
-        let res, len = typing_nicks.length;
-
-        if(len == 0) return;
-        else if(len == 1) {
-            res = typing_nicks[0] + ' is typing...';
-        } else if(remaining <= 0) {
-            res = typing_nicks.slice(0, len - 1).join(', ') + ` and ${typing_nicks[len - 1]} are typing...`;
-        } else {
-            let user_plural = remaining > 1 ? "users" : "user";
-
-            res = typing_nicks.join(', ') + ` and ${remaining} ${user_plural} are typing...`;
-        }
-
-        return res;
-    }
-)
-
 const msg_box_selector = createStructuredSelector({
     active_room: activeRoom,
-    msg: (state: RootState) => ({ messages: [] as any[], current_edit: null }),
+    msg: (state: RootState) => ({ messages: [] as any[], current_edit: null }), // TODO
     use_mobile_view: (state: RootState) => state.window.use_mobile_view,
-    users_typing: typing_selector,
 });
 
 import "./box.scss";
@@ -100,7 +43,6 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     let {
         msg: { messages, current_edit },
         use_mobile_view,
-        users_typing,
         active_room,
     } = useSelector(msg_box_selector);
 
@@ -296,9 +238,9 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
         setState({ ...state, value: new_value, ts });
     };
 
-    let on_blur = () => {
+    let on_blur = useCallback(() => {
         setTimeout(() => { setFocus(false); setShowFocus(false); }, 0);
-    }
+    }, []);
 
     let main = useContext(MainContext);
 
@@ -322,9 +264,9 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
         setFiles(e.currentTarget.files);
     }, []);
 
-    let on_file_close = () => {
+    let on_file_close = useCallback(() => {
         setFiles(null);
-    }
+    }, []);
 
     let is_empty = state.value.length == 0;
 
@@ -335,6 +277,18 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
         e.stopPropagation();
     }, []);
 
+    let [rows, setRows] = useState(1);
+    let onHeightChange = useCallback((height: number, { rowHeight }: TextareaHeightChangeMeta) => {
+        setRows(Math.floor(height / rowHeight));
+    }, []);
+
+    let max_rows = use_mobile_view ? 5 : 20;
+
+    let style;
+    if(rows < max_rows) {
+        style = { overflowY: 'hidden' };
+    }
+
     // https://github.com/buildo/react-autosize-textarea/issues/52
     return (
         <>
@@ -344,7 +298,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
                 {disabled ? <span className="ln-msg-box__disable"></span> : null}
 
                 <div className="ln-typing ln-typing__top">
-                    {(use_mobile_view && users_typing) ? <span>{users_typing}</span> : null}
+                    {use_mobile_view ? <UsersTyping /> : null}
                 </div>
 
                 <EmotePicker />
@@ -356,9 +310,11 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
                         cacheMeasurements={false}
                         ref={ref}
                         placeholder="Message..."
-                        rows={1} maxRows={use_mobile_view ? 5 : 20}
-                        value={state.value} onKeyDown={on_keydown} onChange={on_change} onKeyUp={on_keyup}
+                        rows={1} maxRows={max_rows} style={style as any}
+                        value={state.value}
+                        onKeyDown={on_keydown} onChange={on_change} onKeyUp={on_keyup}
                         onContextMenu={on_cm}
+                        onHeightChange={onHeightChange}
                     />
                 </div>
 
@@ -375,8 +331,82 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
             </div>
 
             <div className="ln-typing ln-typing__bottom">
-                <span>{use_mobile_view ? null : users_typing}</span>
+                {use_mobile_view ? null : <UsersTyping />}
             </div>
         </>
     );
 });
+
+const typing_selector = createSelector(
+    activeRoom,
+    activeParty,
+    (state: RootState) => state.chat.rooms,
+    (state: RootState) => state.party.parties,
+    (state: RootState) => state.user.user!,
+    (active_room, active_party, rooms, parties, user) => {
+        let typing = active_room && rooms.get(active_room)?.typing,
+            users_typing = (typing && typing.length > 0) ? typing : undefined;
+
+        if(!users_typing || !active_party) return;
+
+        let party = parties.get(active_party);
+        if(!party) return;
+
+        return {
+            members: party.members,
+            users_typing,
+            user,
+        }
+    }
+);
+
+function format_users_typing(user: User, members: Map<Snowflake, PartyMember>, users_typing: ITypingState[]): string | undefined {
+    let typing_nicks = [], remaining = users_typing.length;
+
+    for(let entry of users_typing) {
+        // skip self
+        if(!__DEV__ && entry.user == user.id) {
+            remaining -= 1;
+            continue;
+        };
+
+        let member = members.get(entry.user);
+        if(member) {
+            let nick = member.nick || member.user.username;
+
+            if(nick) {
+                typing_nicks.push(nick);
+                if(typing_nicks.length > 3) break;
+            }
+        }
+    }
+
+    remaining -= typing_nicks.length;
+
+    let res, len = typing_nicks.length;
+
+    if(len == 0) return;
+    else if(len == 1) {
+        res = typing_nicks[0] + ' is typing...';
+    } else if(remaining <= 0) {
+        res = typing_nicks.slice(0, len - 1).join(', ') + ` and ${typing_nicks[len - 1]} are typing...`;
+    } else {
+        let user_plural = remaining > 1 ? "users" : "user";
+
+        res = typing_nicks.join(', ') + ` and ${remaining} ${user_plural} are typing...`;
+    }
+
+    return res;
+}
+
+const UsersTyping = React.memo(() => {
+    let res = useSelector(typing_selector);
+    if(!res) return null;
+
+    let users_typing = format_users_typing(res.user, res.members, res.users_typing);
+    if(!users_typing) return null;
+
+    return (
+        <span className="ui-text">{users_typing}</span>
+    )
+})
