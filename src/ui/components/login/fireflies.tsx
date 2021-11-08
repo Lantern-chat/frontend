@@ -283,7 +283,11 @@ export const Fireflies: React.FunctionComponent<IFireflyProps> = React.memo((pro
         for(let e of MOUSE_EVENTS) {
             window.addEventListener(e, mouse_listener);
         }
-        let hidden_listener = () => { state.paused = isPageHidden(); state.just_unpaused = !state.paused; };
+        let hidden_listener = () => {
+            state.paused = isPageHidden(); state.just_unpaused = !state.paused;
+
+            __DEV__ && console.log("FIREFLIES PAUSED? ", state.paused);
+        };
         if(visibilityChange) { document.addEventListener(visibilityChange, hidden_listener); }
         state.frame = requestAnimationFrame((time: number) => render_fireflies(state, canvas_ref, time));
         return () => {

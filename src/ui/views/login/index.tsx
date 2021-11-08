@@ -236,3 +236,7 @@ export default function LoginView() {
         </form>
     );
 }
+
+if(__DEV__) {
+    LoginView.displayName = "LoginView";
+}

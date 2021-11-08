@@ -1,5 +1,21 @@
 @import "lib/variables";
 
+.ln-dev-banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    background-color: rgba(64, 0, 0, 0.8);
+    padding: 1em;
+    z-index: 2;
+    line-height: normal;
+
+    .ln-light-theme & {
+        background-color: rgba(196, 128, 128, 0.7);
+    }
+}
+
 .ln-login-form {
     width: 30em;
 

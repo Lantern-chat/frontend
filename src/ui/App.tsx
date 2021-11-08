@@ -38,6 +38,8 @@ const LoginRoutes = React.memo(({ which }: { which: typeof ValidLoginLikePaths[n
 
             <ThemeWidget />
 
+            {__DEV__ && <DevBanner />}
+
             <div className="ln-box ln-scroll-y">
                 <div className="ln-login-container ln-centered" style={{ zIndex: 1 }}>
                     <Suspense fallback={Fallback}>
@@ -48,6 +50,12 @@ const LoginRoutes = React.memo(({ which }: { which: typeof ValidLoginLikePaths[n
             </div>
         </>
     );
+});
+
+const DevBanner = React.memo(() => {
+    return (
+        <div className="ln-dev-banner">This is a development build.</div>
+    )
 });
 
 const AppRouter = () => {
@@ -90,3 +98,11 @@ export const App = () => {
 };
 
 export default App;
+
+if(__DEV__) {
+    App.displayName = "App";
+    AppInner.displayName = "AppInner";
+    AppRouter.displayName = "AppRouter";
+    LoginRoutes.displayName = "LoginRoutes";
+    DevBanner.displayName = "DevBanner";
+}

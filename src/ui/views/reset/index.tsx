@@ -41,3 +41,7 @@ export default function ResetView() {
         </form>
     )
 }
+
+if(__DEV__) {
+    ResetView.displayName = "ResetView";
+}

@@ -64,3 +64,7 @@ export default function VerifyView() {
         </form>
     )
 }
+
+if(__DEV__) {
+    VerifyView.displayName = "VerifyView";
+}
