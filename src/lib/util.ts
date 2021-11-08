@@ -63,3 +63,8 @@ export function binarySearch<T, L extends (value: T) => number>(values: T[], com
 
     return { idx: left, found: false };
 }
+
+export function countLines(str: string): number {
+    return (str.match(/\n/g) || '').length + 1;
+}
+

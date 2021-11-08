@@ -5,6 +5,7 @@ import classNames from "classnames";
 
 import TextareaAutosize from 'react-textarea-autosize';
 
+import { countLines } from "lib/util";
 import { IS_MOBILE } from "lib/user_agent";
 
 //import { IMessageState } from "ui/views/main/reducers/messages";
@@ -23,11 +24,6 @@ import { EmotePicker } from "../common/emote_picker";
 //import Smiley from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-901-slightly-smiling.svg";
 import Send from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-461-send.svg";
 import Plus from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-371-plus.svg";
-
-// TODO: Move elsewhere
-function countLines(str: string): number {
-    return (str.match(/\n/g) || '').length;
-}
 
 export interface IMessageBoxProps {
     channel?: Snowflake,
@@ -242,12 +238,15 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
             }
             case 'ArrowUp':
             case 'ArrowDown': {
-                let total_lines = countLines(state.value);
-                let current_line = countLines(state.value.slice(0, ref.current!.selectionStart));
+                let total_lines = countLines(state.value),
+                    current_line = countLines(state.value.slice(0, ref.current!.selectionStart));
 
-                if(e.key === 'ArrowUp' && current_line === 0) {
+                // if on the first line
+                if(e.key === 'ArrowUp' && current_line === 1) {
                     dispatch({ type: Type.MESSAGE_EDIT_PREV });
-                } else if(e.key === 'ArrowDown' && current_line === total_lines) {
+                }
+                // else if on the last line
+                else if(e.key === 'ArrowDown' && current_line === (total_lines - 1)) {
                     dispatch({ type: Type.MESSAGE_EDIT_NEXT });
                 } else {
                     return;

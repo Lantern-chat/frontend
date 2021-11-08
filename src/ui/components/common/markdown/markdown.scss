@@ -1,7 +1,16 @@
 @import "lib/variables";
 
+details.ln-code-details {
+    display: inline-flex;
+    max-width: 100%;
+}
+
 .hljs {
     display: block;
+}
+
+.hljs,
+summary {
     overflow-x: auto;
     padding: 0.5em;
     margin-right: 0.5em;
@@ -166,6 +175,11 @@
     pre,
     code {
         font-family: Hasklig, $ln-font-family-monospace;
+    }
+
+    pre,
+    code,
+    details.ln-code-details summary {
         // TODO: Figure out light theme background
         background-color: $lnx-primary-surface-color;
         border: 0.125em solid rgba(32, 34, 37, 0.3);
