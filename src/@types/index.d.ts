@@ -1,5 +1,6 @@
 declare var __DEV__: boolean;
 declare var __PRERELEASE__: boolean;
+declare var __TEST__: boolean;
 
 interface String {
     trimStart(): string;

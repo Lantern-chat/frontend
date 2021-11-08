@@ -68,3 +68,8 @@ export function countLines(str: string): number {
     return (str.match(/\n/g) || '').length + 1;
 }
 
+if(__TEST__) {
+    describe("test", () => {
+
+    })
+}

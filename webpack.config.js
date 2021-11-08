@@ -168,6 +168,7 @@ module.exports = (env, argv) => {
                 "typeof MessageChannel": '"function"',
                 "__DEV__": JSON.stringify(!IS_PRODUCTION),
                 "__PRERELEASE__": JSON.stringify(JSON.parse(process.env.BUILD_PRERELEASE || 'false')),
+                "__TEST__": "false",
                 "process.env": {
                     'NODE_DEBUG': 'undefined',
                     'NODE_ENV': JSON.stringify(IS_PRODUCTION ? 'production' : 'development'),
