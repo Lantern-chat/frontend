@@ -234,8 +234,9 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
             if(cb) {
                 cb();
                 this.load_pending = true;
-                this.polling = false;
             }
+
+            this.polling = false;
         }
     }
 
