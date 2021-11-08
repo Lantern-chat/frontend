@@ -17,6 +17,7 @@ let state = STORE.getState(),
     session = state.user.session;
 
 STORE.dispatch({ type: Type.REFRESH_ACTIVE, ctx: state.history });
+STORE.dispatch({ type: Type.UPDATE_PREFS, prefs: {} });
 
 // if there is an existing session, fire off the login again to refresh parts of the state
 if(session) {
