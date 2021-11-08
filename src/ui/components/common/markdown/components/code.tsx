@@ -1,4 +1,3 @@
-import { countLines } from "lib/util";
 import React from "react";
 
 import SyntaxHighlighter from 'react-syntax-highlighter'
@@ -24,19 +23,7 @@ const Code = React.memo(({ language, src }: ICodeProps) => {
         );
     }
 
-    let loc = countLines(src),
-        block = <SyntaxHighlighter useInlineStyles={false} language={language} children={src.trim()} onTouchStart={ignoreTouch} />;
-
-    if(loc < 20) {
-        return block;
-    }
-
-    return (
-        <details className="ln-code-details">
-            <summary>Click to expand {loc} lines of code</summary>
-            {block}
-        </details>
-    );
+    return <SyntaxHighlighter useInlineStyles={false} language={language} children={src.trim()} onTouchStart={ignoreTouch} />;
 });
 
 if(__DEV__) {

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import { Spoiler } from "./components/spoiler";
 import { Code, Math } from "./lazy";
+import { CodeWrapper } from "./components/code_wrapper";
 
 //import Code from "./components/code";
 //import Math from "./components/math";
@@ -925,7 +926,9 @@ export const defaultRules: DefaultRules = {
             };
         },
         react: function(node, output, state) {
-            return <Code key={state.key} src={node.content} language={node.lang} />
+            return (
+                <CodeWrapper key={state.key} code={Code} src={node.content} language={node.lang} />
+            );
         }
     },
     blockMath: {

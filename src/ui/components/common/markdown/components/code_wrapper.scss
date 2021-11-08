@@ -1,0 +1,29 @@
+details.ln-code-details {
+    summary {
+        line-height: normal;
+
+        &:active,
+        &:focus {
+            outline: none !important;
+        }
+    }
+
+    .ln-code-details__open {
+        display: none;
+    }
+
+    &:active,
+    &:focus {
+        outline: none !important;
+    }
+}
+
+details[open].ln-code-details {
+    .ln-code-details__closed {
+        display: none;
+    }
+
+    .ln-code-details__open {
+        display: initial;
+    }
+}

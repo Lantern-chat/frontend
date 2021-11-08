@@ -9,6 +9,10 @@ details.ln-code-details {
     display: block;
 }
 
+summary {
+    cursor: pointer;
+}
+
 .hljs,
 summary {
     overflow-x: auto;
@@ -179,11 +183,22 @@ summary {
 
     pre,
     code,
-    details.ln-code-details summary {
+    .ln-code-details summary {
         // TODO: Figure out light theme background
         background-color: $lnx-primary-surface-color;
         border: 0.125em solid rgba(32, 34, 37, 0.3);
         border-radius: 0.3125em;
+    }
+
+    details[open].ln-code-details summary {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        border-bottom: none;
+
+        ~ pre.hljs {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
     }
 
     code {

@@ -43,7 +43,7 @@
     font-family: $lnx-chat-font-family;
     tab-size: $lnx-chat-tabsize;
 
-    .hljs,
+    .hljs code,
     .ln-math {
         font-size: calc(0.875em / var(--ln-chat-font-size-adjust, 1));
     }
