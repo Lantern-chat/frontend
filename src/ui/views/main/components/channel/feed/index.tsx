@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { createStructuredSelector } from 'reselect';
 import classNames from "classnames";
@@ -103,6 +103,16 @@ const NoTimeline = React.memo(() => <></>);
 import { Hotkey, useMainHotkeys } from "ui/hooks/useMainClick";
 const HOTKEYS = [Hotkey.FeedArrowDown, Hotkey.FeedArrowUp, Hotkey.FeedPageDown, Hotkey.FeedPageUp, Hotkey.FeedEnd];
 
+function compute_goto(ifs: InfiniteScroll): boolean {
+    let container = ifs.containerRef.current;
+    if(!container) return false;
+
+    let clientHeight = container.clientHeight,
+        scrollHeight = container.scrollHeight - container.offsetHeight;
+
+    return ifs.pos < (scrollHeight - clientHeight * 5);
+}
+
 const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) => {
     let { use_mobile_view, is_light_theme, compact, gl } = useSelector(inner_feed_selector),
         dispatch = useDispatch(),
@@ -133,6 +143,24 @@ const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) =
         }
     }, [infinite_scroll.current]);
 
+    let initial_goto = useMemo(() => {
+        let ifs = infinite_scroll.current;
+        return !!ifs && compute_goto(ifs);
+    }, [infinite_scroll.current, groups])
+
+    let [goto, setGoto] = useState(initial_goto);
+    let onScroll = useCallback(() => {
+        let ifs = infinite_scroll.current;
+        if(ifs) setGoto(compute_goto(ifs));
+    }, [infinite_scroll.current]);
+
+    let onGoto = useCallback(() => {
+        let ifs = infinite_scroll.current;
+        if(!ifs) return;
+
+        ifs.goToStart();
+    }, [infinite_scroll.current]);
+
     if(!room) {
         return <div className="ln-center-standalone">Channel does not exist</div>;
     }
@@ -142,6 +170,9 @@ const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) =
             'has-timeline': !use_mobile_view,
             'compact': compact,
             'group-lines': gl,
+        }),
+        footerClasses = classNames("ln-feed-footers", {
+            'has-timeline': !use_mobile_view,
         });
 
     return (
@@ -151,11 +182,14 @@ const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) =
                 load_next={load_next} load_prev={load_prev}
                 reset_on_changed={room.room.id}
                 containerClassName={wrapperClasses}
+                onScroll={onScroll}
             >
 
                 <MsgList room={room} groups={groups} is_light_theme={is_light_theme} compact={compact} />
-
             </InfiniteScroll>
+            <div className={footerClasses}>
+                {goto && <GotoBottomFooter onClick={onGoto} use_mobile_view={use_mobile_view} />}
+            </div>
         </>
     )
 });
@@ -186,4 +220,31 @@ const MsgTop = React.memo(({ room }: { room: Room }) => {
             </div>
         </li>
     )
+});
+
+interface IGotoBottomFooterProps {
+    onClick(): void,
+    use_mobile_view: boolean,
+}
+
+import ChevronDown from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-128-chevron-down.svg";
+
+const GotoBottomFooter = React.memo(({ onClick, use_mobile_view }: IGotoBottomFooterProps) => {
+
+    if(use_mobile_view) {
+        return (
+            <span id="goto-now" onClick={() => onClick()}>
+                <Glyphicon src={ChevronDown} />
+            </span>
+        )
+    }
+
+    return (
+        <div className="ln-feed-footer ui-text" onClick={() => onClick()}>
+            <span>You're viewing older messages</span>
+            <span id="goto-now">
+                Go to now <Glyphicon src={ChevronDown} />
+            </span>
+        </div>
+    );
 });

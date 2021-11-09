@@ -55,6 +55,7 @@ interface IInfiniteScrollProps {
     reset_on_changed?: any,
     containerClassName?: string,
     wrapperClassName?: string,
+    onScroll?: (pos: number) => void,
 }
 
 const OBSERVER_OPTIONS: ResizeObserverOptions = { box: "border-box" };
@@ -64,6 +65,10 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
 
     public goToStart() {
         this.resetPosition();
+    }
+
+    public goToStartSmooth() {
+        // TODO: Scroll to one page from start, then smooth scroll the rest of the way
     }
 
     public scrollPageUp() {
@@ -279,6 +284,10 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
             __DEV__ && console.log("CORRECTED TO: ", top);
 
             this.anchor = compute_at(container, top);
+
+            if(this.props.onScroll) {
+                this.props.onScroll(this.pos);
+            }
         }
 
         this.height = height;
@@ -369,6 +378,10 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
                 this.polling = true;
                 this.velocity = 0;
                 this.doScroll(this.start_time);
+            }
+
+            if(this.props.onScroll) {
+                this.props.onScroll(pos);
             }
         }
     }

@@ -1,6 +1,7 @@
 @import "lib/variables";
 
-.ln-inf-scroll__container.has-timeline {
+.ln-inf-scroll__container.has-timeline,
+.ln-feed-footers.has-timeline {
     margin-right: 2rem;
 }
 
@@ -67,6 +68,52 @@
     }
 
     //padding-top: 1em;
+}
+
+.ln-feed-footers {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    z-index: 2;
+    margin-left: 1rem;
+}
+
+.ln-feed-footer {
+    display: flex;
+    background-color: rgba(128, 128, 128, 0.7);
+    padding: 0.5em;
+    cursor: pointer;
+
+    #goto-now {
+        text-align: right;
+        flex: 1;
+
+        .ln-glyphicon {
+            vertical-align: middle;
+        }
+    }
+}
+@media (max-width: $ln-min-channel-width) {
+    #goto-now {
+        display: flex;
+        position: absolute;
+        right: 1em;
+        bottom: 1em;
+        width: 2.5em;
+        height: 2.5em;
+        border-radius: 50%;
+        background-color: $lnx-secondary-surface-color;
+
+        .ln-glyphicon {
+            margin: auto;
+            font-size: 1.5em;
+            vertical-align: middle;
+            position: relative;
+            top: 0.035em; // TODO: Improve this somehow
+        }
+    }
 }
 
 .ln-msg {
