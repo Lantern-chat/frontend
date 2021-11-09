@@ -20,7 +20,6 @@ import { useSimplePositionedContextMenu } from "ui/hooks/useMainClick";
 import { PositionedModal } from "ui/components/modal/positioned_modal";
 import { ContextMenu } from "../menus/list";
 
-import Hash from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-740-hash.svg";
 
 let channel_list_selector = createSelector(
     activeParty, // party_id
@@ -100,11 +99,8 @@ const ListedChannel = React.memo(({ room, selected, onNavigate }: IListedChannel
         <li className={selected ? 'selected' : undefined} {...main_click_props}>
             <Link className="ln-channel-list__channel" href={`/channels/${room.party_id || '@me'}/${room.id}`}
                 onNavigate={onNavigate} noAction={selected}>
-                <div className="ln-channel-list__icon">
-                    {room.avatar ?
-                        <Avatar url={room_avatar_url(room.id, room.avatar)} username={room.name} /> :
-                        <Glyphicon src={Hash} />}
-                </div>
+                <RoomIcon room={room} />
+
                 <div className="ln-channel-list__name">
                     <span className="ui-text">{room.name}</span>
                 </div>
@@ -162,4 +158,50 @@ const RoomListContextMenu = React.memo((props: IRoomListContextMenuProps) => {
             </div>
         </ContextMenu>
     );
+});
+
+import Hash from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-740-hash.svg";
+import TriangleAlert from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-42-triangle-alert.svg";
+import LockIcon from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-125-lock.svg";
+
+interface IRoomIconProps {
+    room: Room,
+}
+
+const RoomIcon = React.memo(({ room }: IRoomIconProps) => {
+    let subicon, icon;
+
+    // TODO: Rooms with overwrites
+    if((room.flags & 16) == 16) {
+        subicon = <Glyphicon src={TriangleAlert} />;
+    } else if((room.flags & 64) == 64) {
+        subicon = <Glyphicon src={LockIcon} />
+    }
+
+    if(subicon) {
+        subicon = (
+            <div className="ln-channel-list__subicon">
+                {subicon}
+            </div>
+        )
+    }
+
+    if(room.avatar) {
+        icon = <Avatar url={room_avatar_url(room.id, room.avatar)} username={room.name} />;
+    } else {
+        icon = (
+            <>
+                <Glyphicon src={Hash} />
+                {subicon}
+            </>
+        )
+    }
+
+    return (
+        <div className="ln-channel-list__icon">
+            <div className="ln-channel-list__icon-wrapper">
+                {icon}
+            </div>
+        </div>
+    )
 });

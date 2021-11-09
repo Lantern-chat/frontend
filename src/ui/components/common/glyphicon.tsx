@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, CSSProperties } from "react";
 
 import "./glyphicon.scss";
 
@@ -17,7 +17,7 @@ interface IAsyncGlyphiconProps {
 type IGlyphiconProps = (IStaticGlyphiconProps | IAsyncGlyphiconProps) & IGeneralGlyphiconProps;
 
 export const Glyphicon: React.FunctionComponent<IGlyphiconProps> = React.memo((props: IGlyphiconProps) => {
-    let [data, setData] = useState<string>("");
+    let style: CSSProperties | undefined, [data, setData] = useState<string>("");
 
     useEffect(() => {
         let static_props = props as IStaticGlyphiconProps;
@@ -28,9 +28,13 @@ export const Glyphicon: React.FunctionComponent<IGlyphiconProps> = React.memo((p
         async_props.import().then(data => setData(data.default));
     }, [props]);
 
+    if(props.absolute) {
+        style = { position: 'absolute' };
+    }
+
     return (
         <div className="ln-glyphicon">
-            <span className="ln-glyphicon__wrapper" dangerouslySetInnerHTML={{ __html: data }} style={{ position: props.absolute != null ? 'absolute' : undefined }} />
+            <span className="ln-glyphicon__wrapper" dangerouslySetInnerHTML={{ __html: data }} style={style} />
         </div>
     );
 });
