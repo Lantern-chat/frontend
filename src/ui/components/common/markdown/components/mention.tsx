@@ -20,6 +20,7 @@ const mention_selector = createSelector(
     }
 );
 
+import "./mention.scss";
 export const Mention = React.memo((props: IMentionProps) => {
     let party = useSelector(mention_selector);
 
@@ -29,7 +30,7 @@ export const Mention = React.memo((props: IMentionProps) => {
                 let room = party.rooms.find(room => room.id == props.id);
 
                 if(room) {
-                    return <Link href={`/channels/${party.party.id}/${room.id}`}>#{room.name}</Link>
+                    return <Link className="ln-channel-mention" href={`/channels/${party.party.id}/${room.id}`}>#{room.name}</Link>
                 }
             }
 
@@ -40,7 +41,7 @@ export const Mention = React.memo((props: IMentionProps) => {
                 let member = party.members.get(props.id);
 
                 if(member) {
-                    return <span>@{member.nick || member.user.username}</span>;
+                    return <span className="ln-user-mention">@{member.nick || member.user.username}</span>;
                 }
             }
 

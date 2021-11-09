@@ -24,15 +24,13 @@ import { selectCachedUser } from "state/selectors/selectCachedUser";
 
 interface IUserNameProps {
     name: string,
-    msg: IMessageState,
     user: User,
     is_light_theme?: boolean,
 }
 
 const MessageUserName = React.memo((props: IUserNameProps) => {
-    let [show, main_click_props] = useSimpleToggleOnClick();
-
-    let author = props.msg.msg.author;
+    let user = props.user,
+        [show, main_click_props] = useSimpleToggleOnClick();
 
     let color = useSelector((state: RootState) => {
         let party_id = activeParty(state);
@@ -41,16 +39,16 @@ const MessageUserName = React.memo((props: IUserNameProps) => {
         let party = state.party.parties.get(party_id);
         if(!party) return;
 
-        return party.member_colors.get(author.id);
+        return party.member_colors.get(user.id);
     });
 
     return (
-        <h2 className="ln-msg__username" {...main_click_props}>
+        <h2 className="ln-msg__username" {...main_click_props} style={{ color }}>
             <AnchoredModal show={show}>
-                <UserCard user={props.user} />
+                <UserCard user={user} />
             </AnchoredModal>
 
-            <span className="ui-text" style={{ color }}>{props.name}</span>
+            <span className="ui-text">{props.name}</span>
         </h2>
     );
 });
@@ -87,38 +85,6 @@ interface IGroupMessageProps {
     attachments?: React.ReactNode,
 }
 
-/// Group Message for the Compact view mode
-const CompactGroupMessage = React.memo(({ msg, is_light_theme, first, attachments }: IGroupMessageProps) => {
-    let ts = msg.ts.format("dddd, MMMM DD, h:mm A"),
-        raw = msg.msg,
-        cached_member = useSelector((state: RootState) => {
-            return selectCachedUser(state, raw.author.id, raw.party_id) || { user: raw.author, nick: raw.member?.nick };
-        }),
-        nickname = cached_member.nick || cached_member.user.username;
-
-    let className = classNames("ln-msg--compact", {
-        'no-text': raw.content.length == 0,
-    });
-
-    return (
-        <div className={className}>
-            <div className="ln-msg__title">
-                <div className="ln-msg__side">
-                    <div className="ln-msg__sidets" title={ts}>
-                        <span className="ui-text">{msg.ts.format('h:mm A')}</span>
-                    </div>
-                </div>
-
-                <MessageUserName name={nickname} user={raw.author} msg={msg} />
-            </div>
-
-            <Message editing={false} msg={raw} />
-
-            {attachments}
-        </div>
-    );
-});
-
 /// Group Message for the Cozy view mode
 const CozyGroupMessage = React.memo(({ msg, is_light_theme, first, attachments }: IGroupMessageProps) => {
     let side, title,
@@ -134,7 +100,7 @@ const CozyGroupMessage = React.memo(({ msg, is_light_theme, first, attachments }
     if(first) {
         title = (
             <div className="ln-msg__title">
-                <MessageUserName name={nickname} user={raw.author} msg={msg} />
+                <MessageUserName name={nickname} user={raw.author} />
 
                 <span className="ln-separator"> - </span>
 
@@ -168,6 +134,55 @@ const CozyGroupMessage = React.memo(({ msg, is_light_theme, first, attachments }
     );
 });
 
+/// Group Message for the Compact view mode
+const CompactGroupMessage = React.memo(({ msg, is_light_theme, first, attachments }: IGroupMessageProps) => {
+    let ts = msg.ts.format("dddd, MMMM DD, h:mm A"),
+        raw = msg.msg,
+        cached_member = useSelector((state: RootState) => {
+            return selectCachedUser(state, raw.author.id, raw.party_id) || { user: raw.author, nick: raw.member?.nick };
+        }),
+        nickname = cached_member.nick || cached_member.user.username;
+
+    let className = classNames("ln-msg--compact", {
+        'no-text': raw.content.length == 0,
+    });
+
+    return (
+        <div className={className}>
+            <div className="ln-msg__title">
+                <div className="ln-msg__side">
+                    <div className="ln-msg__sidets" title={ts}>
+                        <span className="ui-text">{msg.ts.format('h:mm A')}</span>
+                    </div>
+                </div>
+
+                <MessageUserName name={nickname} user={raw.author} />
+            </div>
+
+            <Message editing={false} msg={raw} />
+
+            {attachments}
+        </div>
+    );
+});
+
+import ArrowThinRight from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-216-arrow-thin-right.svg";
+import { Glyphicon } from "ui/components/common/glyphicon";
+
+const SystemMessage = React.memo((props: IGroupMessageProps) => {
+    let msg = props.msg, raw = msg.msg;
+    return (
+        <>
+            <div className="ln-msg__side ln-system-message">
+                <Glyphicon src={ArrowThinRight} />
+            </div>
+            <div className="ln-msg__message ln-system-message">
+                <Message editing={false} msg={raw} extra={` <sub>${msg.ts.calendar()}</sub>`} />
+            </div>
+        </>
+    );
+});
+
 const GroupMessage = React.memo((props: IGroupMessageProps) => {
     let attachments, msg = props.msg, raw = msg.msg, a = raw.attachments;
 
@@ -190,7 +205,12 @@ const GroupMessage = React.memo((props: IGroupMessageProps) => {
 
     // select inner message component based on style.
     // The identifier must be Proper-case to be used as a Component below.
-    let Inner = props.compact ? CompactGroupMessage : CozyGroupMessage;
+    let Inner;
+    if((raw.author.flags & 256) == 256) {
+        Inner = SystemMessage
+    } else {
+        Inner = props.compact ? CompactGroupMessage : CozyGroupMessage
+    }
 
     let outer_class = classNames("ln-msg__outer", {
         "highlighted": cm,

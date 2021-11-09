@@ -216,10 +216,14 @@
 
         .ln-light-theme & {
             color: black;
+
+            // TODO: Improve this style
+            filter: brightness(0.75) saturate(1.7) contrast(1.2);
         }
 
         &:hover {
             text-decoration: underline;
+            text-decoration-color: currentColor;
         }
 
         position: relative;
@@ -312,6 +316,24 @@
         @media (max-width: $ln-min-channel-width) {
             font-size: min(4.5vw, 1.3em);
         }
+    }
+
+    &__side.ln-system-message {
+        display: block;
+        text-align: center;
+
+        .ln-glyphicon {
+            font-size: 1.75em;
+
+            //&__wrapper {
+            //    vertical-align: middle;
+            //}
+        }
+    }
+
+    &__message.ln-system-message {
+        color: $lnx-secondary-text-color;
+        justify-content: center;
     }
 }
 
