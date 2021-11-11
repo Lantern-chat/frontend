@@ -9,6 +9,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 //const svgToMiniDataURI = require('mini-svg-data-uri');
 //const { SubresourceIntegrityPlugin } = require('webpack-subresource-integrity');
+const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin');
 
 const distPath = path.join(__dirname, 'dist');
 
@@ -202,6 +203,12 @@ module.exports = (env, argv) => {
                 //excludeChunks: ['testbed', 'status'],
                 template: path.resolve(__dirname, "src", "index.html"),
                 filename: 'index.html'
+            }),
+            new PreloadWebpackPlugin({
+                rel: 'prefetch',
+                include: 'allAssets',
+                as: 'font',
+                fileWhitelist: [/Lato-(Regular|Bold|Black|Italic)\.woff2$/i],
             }),
             //new HTMLInlineCSSWebpackPlugin(),
             //new WasmPackPlugin({

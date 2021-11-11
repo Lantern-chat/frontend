@@ -69,6 +69,7 @@
     "@types/redux-thunk": "^2.1.0",
     "@types/reselect": "^2.2.0",
     "@types/zxcvbn": "^4.4.0",
+    "@vue/preload-webpack-plugin": "^2.0.0",
     "autoprefixer": "^10.3.3",
     "css-loader": "^6.2.0",
     "file-loader": "^6.2.0",
