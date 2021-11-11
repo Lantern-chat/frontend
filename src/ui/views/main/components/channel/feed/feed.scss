@@ -322,6 +322,14 @@
         display: block;
         text-align: center;
 
+        svg {
+            fill: lightgreen;
+
+            .ln-light-theme & {
+                fill: green;
+            }
+        }
+
         .ln-glyphicon {
             font-size: 1.75em;
 
