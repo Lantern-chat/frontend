@@ -71,6 +71,7 @@
     "@types/zxcvbn": "^4.4.0",
     "@vue/preload-webpack-plugin": "^2.0.0",
     "autoprefixer": "^10.3.3",
+    "copy-webpack-plugin": "^9.1.0",
     "css-loader": "^6.2.0",
     "file-loader": "^6.2.0",
     "html-inline-css-webpack-plugin": "^1.11.1",

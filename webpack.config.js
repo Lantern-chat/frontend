@@ -10,6 +10,7 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 //const svgToMiniDataURI = require('mini-svg-data-uri');
 //const { SubresourceIntegrityPlugin } = require('webpack-subresource-integrity');
 const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 
 const distPath = path.join(__dirname, 'dist');
 
@@ -220,7 +221,11 @@ module.exports = (env, argv) => {
             //    analyzerMode: 'server',
             //    openAnalyzer: true,
             //}),
-
+            new CopyPlugin({
+                patterns: [
+                    { from: "./assets", to: "assets" }
+                ]
+            })
         ],
     };
 
