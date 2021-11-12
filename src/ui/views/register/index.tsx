@@ -27,17 +27,17 @@ import { ZXCVBNResult } from "zxcvbn";
 
 type zxcvbn_fn = (input: string) => ZXCVBNResult;
 
-var zxcvbn: zxcvbn_fn | Promise<{ default: zxcvbn_fn }> = import('zxcvbn');
+var zxcvbn: { zxcvbn: zxcvbn_fn } | (() => Promise<{ default: zxcvbn_fn }>) = () => import('zxcvbn');
 
 import { useTitle } from "ui/hooks/useTitle";
 
-var PRELOADED: boolean = false;
-function preloadLogin() {
-    if(!PRELOADED) {
-        import(/* webpackChunkName: 'LoginView' */ "../login");
-        PRELOADED = true;
-    }
-}
+// var PRELOADED: boolean = false;
+// function preloadLogin() {
+//     if(!PRELOADED) {
+//         import(/* webpackChunkName: 'LoginView' */ "../login");
+//         PRELOADED = true;
+//     }
+// }
 
 
 /*
@@ -124,7 +124,7 @@ function calculateDays(dob: IDob): number {
 }
 
 function calc_pass_strength(pwd: string): number {
-    return typeof zxcvbn === 'function' ? Math.max(zxcvbn(pwd).score, 1) : 0;
+    return typeof zxcvbn === 'object' ? Math.max(zxcvbn.zxcvbn(pwd).score, 1) : 0;
 }
 
 function register_state_reducer(state: RegisterState, { value, type }: RegisterAction): RegisterState {
@@ -185,9 +185,9 @@ export default function RegisterView() {
     let [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     useEffect(() => {
-        if(!SETUP_THEN && typeof zxcvbn !== 'function') {
-            zxcvbn.then(mod => {
-                zxcvbn = mod.default;
+        if(!SETUP_THEN && typeof zxcvbn == 'function') {
+            zxcvbn().then(mod => {
+                zxcvbn = { zxcvbn: mod.default };
                 form_dispatch({ type: RegisterActionType.UpdatePassStrength, value: "" });
             });
             SETUP_THEN = true;
@@ -341,7 +341,7 @@ export default function RegisterView() {
                     <button className={state.is_registering ? 'ln-btn ln-btn--loading-icon' : 'ln-btn'} style={{ marginRight: 'auto' }}>
                         {state.is_registering ? <Spinner size="2em" /> : "Register"}
                     </button>
-                    <Link href="/login" className="ln-btn" onMouseOver={() => preloadLogin()} >Go to Login</Link>
+                    <Link href="/login" className="ln-btn">Go to Login</Link>
                 </div>
             </FormGroup>
 

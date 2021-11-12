@@ -19,13 +19,13 @@ import { Link } from "ui/components/history";
 
 import { validateEmail } from "lib/validation";
 
-var PRELOADED: boolean = false;
-function preloadRegister() {
-    if(!PRELOADED) {
-        import(/* webpackChunkName: 'RegisterView' */ "../register");
-        PRELOADED = true;
-    }
-}
+//var PRELOADED: boolean = false;
+//function preloadRegister() {
+//    if(!PRELOADED) {
+//        import(/* webpackChunkName: 'RegisterView' */ "../register");
+//        PRELOADED = true;
+//    }
+//}
 
 interface LoginState {
     email: string,
@@ -230,7 +230,7 @@ export default function LoginView() {
                     <button className={state.is_logging_in ? 'ln-btn ln-btn--loading-icon' : 'ln-btn'} style={{ marginRight: 'auto' }}>
                         {state.is_logging_in ? <Spinner size="2em" /> : "Login"}
                     </button>
-                    <Link className="ln-btn" href="/register" onMouseOver={() => preloadRegister()}>Register</Link>
+                    <Link className="ln-btn" href="/register">Register</Link>
                 </div>
             </FormGroup>
         </form>

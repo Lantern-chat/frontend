@@ -11,13 +11,15 @@ import { Logo } from "ui/components/login/logo";
 import { HistoryContext, recomputeHistoryContext } from "./components/history";
 
 const MainView: React.FunctionComponent = React.lazy(() => import(      /* webpackChunkName: 'MainView'     */ "./views/main"));
-const LoginView: React.FunctionComponent = React.lazy(() => import(     /* webpackChunkName: 'LoginView'    */ "./views/login"));
-const RegisterView: React.FunctionComponent = React.lazy(() => import(  /* webpackChunkName: 'RegisterView' */ "./views/register"));
+//const LoginView: React.FunctionComponent = React.lazy(() => import(     /* webpackChunkName: 'LoginView'    */ "./views/login"));
+//const RegisterView: React.FunctionComponent = React.lazy(() => import(  /* webpackChunkName: 'RegisterView' */ "./views/register"));
 const VerifyView: React.FunctionComponent = React.lazy(() => import(    /* webpackChunkName: 'VerifyView'   */ "./views/verify"));
 const ResetView: React.FunctionComponent = React.lazy(() => import(     /* webpackChunkName: 'ResetView'    */ "./views/reset"));
 
 //const TestbedView: React.FunctionComponent = React.lazy(() => import(    /* webpackChunkName: 'TestbedView'  */ "./views/testbed"));
 
+import LoginView from "./views/login";
+import RegisterView from "./views/register";
 
 const Fallback = <div className="ln-center-standalone"><Ripple size={120} /></div>;
 
