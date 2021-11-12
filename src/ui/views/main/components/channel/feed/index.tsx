@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { createStructuredSelector } from 'reselect';
 import classNames from "classnames";
@@ -154,6 +154,11 @@ const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) =
         if(ifs) setGoto(compute_goto(ifs));
     }, [infinite_scroll.current]);
 
+    // Use effect to only dispatch on meaningful changes
+    useEffect(() => {
+        dispatch({ type: Type.TOGGLE_FOOTERS, show: goto });
+    }, [goto]);
+
     let onGoto = useCallback(() => {
         let ifs = infinite_scroll.current;
         if(!ifs) return;
@@ -178,6 +183,7 @@ const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) =
     return (
         <>
             <MaybeTimeline direction={0} position={0} />
+
             <InfiniteScroll ref={infinite_scroll} start={Anchor.Bottom}
                 load_next={load_next} load_prev={load_prev}
                 reset_on_changed={room.room.id}
@@ -187,6 +193,7 @@ const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) =
 
                 <MsgList room={room} groups={groups} is_light_theme={is_light_theme} compact={compact} />
             </InfiniteScroll>
+
             <div className={footerClasses}>
                 {goto && <GotoBottomFooter onClick={onGoto} use_mobile_view={use_mobile_view} />}
             </div>

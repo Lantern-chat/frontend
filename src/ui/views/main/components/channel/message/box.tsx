@@ -34,6 +34,7 @@ const msg_box_selector = createStructuredSelector({
     active_room: activeRoom,
     msg: (state: RootState) => ({ messages: [] as any[], current_edit: null }), // TODO
     use_mobile_view: (state: RootState) => state.window.use_mobile_view,
+    showing_footers: (state: RootState) => state.window.showing_footers,
 });
 
 import "./box.scss";
@@ -44,6 +45,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
         msg: { messages, current_edit },
         use_mobile_view,
         active_room,
+        showing_footers,
     } = useSelector(msg_box_selector);
 
     let dispatch = useDispatch();
@@ -289,12 +291,18 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
         style = { overflowY: 'hidden' };
     }
 
+    let box_classes = classNames("ln-msg-box", {
+        'ln-msg-box--disabled': disabled,
+        'focused': showFocus,
+        'with-footers': showing_footers,
+    });
+
     // https://github.com/buildo/react-autosize-textarea/issues/52
     return (
         <>
             {files?.length ? <FileUploadModal onClose={on_file_close} files={files} /> : null}
 
-            <div className={classNames("ln-msg-box", { 'ln-msg-box--disabled': disabled, 'focused': showFocus })} onClick={on_click_focus}>
+            <div className={box_classes} onClick={on_click_focus}>
                 {disabled ? <span className="ln-msg-box__disable"></span> : null}
 
                 <div className="ln-typing ln-typing__top">

@@ -11,6 +11,7 @@ export interface IWindowState {
     show_panel: Panel,
     last_panel: Panel,
     show_user_list: boolean,
+    showing_footers: boolean,
 }
 
 export const MOBILE_MAX_SIZE: number = 640;
@@ -21,6 +22,7 @@ export const DEFAULT_STATE: IWindowState = {
     show_panel: Panel.Main,
     last_panel: Panel.Main,
     show_user_list: true,
+    showing_footers: false,
 };
 
 import { Action, Type } from "../actions";
@@ -44,6 +46,9 @@ export function windowReducer(state: IWindowState = DEFAULT_STATE, action: Actio
 
             let show_panel = state.show_panel === Panel.Main ? Panel.LeftRoomList : Panel.Main;
             return { ...state, show_panel, last_panel: state.show_panel };
+        }
+        case Type.TOGGLE_FOOTERS: {
+            return { ...state, showing_footers: action.show };
         }
     }
     return state;

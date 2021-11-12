@@ -18,6 +18,8 @@ export enum Type {
     WINDOW_TOGGLE_USER_LIST_SIDEBAR = "WINDOW_TOGGLE_USER_LIST_SIDEBAR",
     WINDOW_TOGGLE_ROOM_LIST_SIDEBAR = "WINDOW_TOGGLE_ROOM_LIST_SIDEBAR",
 
+    TOGGLE_FOOTERS = "TOGGLE_FOOTERS",
+
     MODAL_OPEN_CREATE_PARTY = "MODAL_OPEN_CREATE_PARTY",
     MODAL_CLOSE_CREATE_PARTY = "MODAL_CLOSE_CREATE_PARTY",
 
@@ -54,6 +56,7 @@ export type Action =
     WindowResize |
     WindowToggleUserListSidebar |
     WindowToggleRoomListSidebar |
+    ToggleFooters |
     ModalOpenCreateParty |
     ModalCloseCreateParty |
     GatewayEvent |
@@ -109,6 +112,11 @@ export interface WindowToggleUserListSidebar {
 
 export interface WindowToggleRoomListSidebar {
     type: Type.WINDOW_TOGGLE_ROOM_LIST_SIDEBAR,
+}
+
+export interface ToggleFooters {
+    type: Type.TOGGLE_FOOTERS,
+    show: boolean,
 }
 
 // MODAL ACTIONS
