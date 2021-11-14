@@ -201,7 +201,15 @@ export interface Message {
     embeds?: Embed[],
 }
 
-export interface Reaction {
+export type Reaction = ReactionShorthand | ReactionFull;
+
+export interface ReactionShorthand {
+    emote: Snowflake,
+    own: boolean,
+    count: number,
+}
+
+export interface ReactionFull {
     emote: Emote,
     users: Snowflake[],
 }
