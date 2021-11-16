@@ -99,23 +99,33 @@
         }
     }
 }
-@media (max-width: $ln-min-channel-width) {
+
+// mobile-view goto button
+@media (max-width: $ln-max-channel-width) {
     #goto-now {
         display: flex;
+        justify-content: center;
+
         position: absolute;
+        font-size: 6vw; // scale with screen
         right: 1em;
         bottom: 1em;
         width: 2.5em;
         height: 2.5em;
+
         border-radius: 50%;
         background-color: $lnx-secondary-surface-color;
 
+        cursor: pointer;
+
         .ln-glyphicon {
-            margin: auto;
+            margin: auto 0;
             font-size: 1.5em;
-            vertical-align: middle;
-            position: relative;
-            top: 0.035em; // TODO: Improve this somehow
+            display: inline-flex; // fix alignment issues
+            padding-top: 0.035em;
+
+            //position: relative;
+            //top: 0.035em; // TODO: Improve this somehow
         }
     }
 }
