@@ -26,3 +26,12 @@ export const DYNAMIC_MIDDLEWARE = createDynamicMiddlewares();
 export const enhancers = __DEV__ ?
     composeWithDevTools(applyMiddleware(thunk, DYNAMIC_MIDDLEWARE.enhancers, promiseMiddleware, createLogger())) :
     applyMiddleware(thunk, DYNAMIC_MIDDLEWARE.enhancers, promiseMiddleware);
+
+
+import { DefaultMemoizeOptions } from "reselect";
+
+export function createMemoizeOptions(maxSize: number = 1): DefaultMemoizeOptions {
+    return {
+        maxSize,
+    }
+}
