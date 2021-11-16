@@ -4,7 +4,7 @@
     color: $lnx-primary-text-color;
     max-width: 80%;
 
-    @media (max-width: $ln-min-channel-width) {
+    @media (max-width: $ln-max-channel-width) {
         max-width: 100%;
     }
 

@@ -77,7 +77,7 @@
     margin: auto 0.1em auto 0;
     flex: 0 0 auto;
 
-    @media (max-width: $ln-min-channel-width) {
+    @media (max-width: $ln-max-channel-width) {
         margin-right: 0;
     }
 }

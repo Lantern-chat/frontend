@@ -57,7 +57,7 @@
             animation-name: settings-zoom-in, settings-fade-in;
         }
 
-        @media (max-width: $ln-min-channel-width) {
+        @media (max-width: $ln-max-channel-width) {
             animation-name: settings-fade-in;
         }
     }
@@ -67,7 +67,7 @@
             animation-name: settings-zoom-out, settings-fade-out;
         }
 
-        @media (max-width: $ln-min-channel-width) {
+        @media (max-width: $ln-max-channel-width) {
             animation-name: settings-fade-out;
         }
     }
@@ -91,7 +91,7 @@
         }
     }
 
-    @media (max-width: $ln-min-channel-width) {
+    @media (max-width: $ln-max-channel-width) {
         &__categories,
         &__page {
             width: 100%;

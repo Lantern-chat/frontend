@@ -19,7 +19,7 @@
     &__user-list {
         overflow: hidden;
 
-        @media (max-width: $ln-min-channel-width) {
+        @media (max-width: $ln-max-channel-width) {
             max-width: calc(70vw);
             position: absolute;
             right: 0;
@@ -30,7 +30,7 @@
     &__sidebar {
         overflow: hidden;
 
-        @media (max-width: $ln-min-channel-width) {
+        @media (max-width: $ln-max-channel-width) {
             max-width: calc(86vw - 4.2em);
             border-radius: 0 1em 1em 0;
         }
@@ -67,7 +67,7 @@
         height: 100%;
         background-color: $lnx-tertiary-surface-color;
 
-        @media (max-width: $ln-min-channel-width) {
+        @media (max-width: $ln-max-channel-width) {
             position: fixed;
             top: 0;
             left: 0;

@@ -14,7 +14,7 @@
         margin-top: 0.5em;
     }
 
-    @media (max-width: $ln-min-channel-width) {
+    @media (max-width: $ln-max-channel-width) {
         //padding-left: 1rem;
         padding-right: 1rem;
         text-align: center;
@@ -34,7 +34,7 @@
         border-radius: 0.25em;
         box-shadow: inset 0 0 0.2em rgba(0, 0, 0, 0.1);
 
-        @media (max-width: $ln-min-channel-width) {
+        @media (max-width: $ln-max-channel-width) {
             min-width: 0;
             max-width: 100%;
             width: 100%;
@@ -70,7 +70,7 @@
     img {
         max-width: 35em;
 
-        @media (max-width: $ln-min-channel-width) {
+        @media (max-width: $ln-max-channel-width) {
             max-width: 100%;
         }
 
