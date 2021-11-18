@@ -20,6 +20,20 @@
         flex: 1 1 auto;
         font-size: var(--ln-chat-font-size, 1rem);
         overflow: hidden;
+
+        //&::before {
+        //    content: "";
+        //    background-repeat: no-repeat;
+        //    background-size: cover;
+        //    background-position: 50% 100%;
+        //    background-image: url(https://derpicdn.net/img/view/2019/11/10/2191850.png);
+        //    position: absolute;
+        //    opacity: 0.3;
+        //    left: 0;
+        //    top: 0;
+        //    bottom: 0;
+        //    right: 0;
+        //}
     }
 
     &__members {
