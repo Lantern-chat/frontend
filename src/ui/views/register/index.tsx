@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { useState, useMemo, useReducer, useEffect, useContext, useCallback } from "react";
+import React, { useState, useMemo, useReducer, useEffect, useContext, useCallback, useRef } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { Dispatch } from "state/actions";
@@ -89,7 +89,6 @@ interface RegisterState {
     valid_email: boolean | null,
     valid_user: boolean | null,
     valid_pass: boolean | null,
-    verification_token: string | null,
     is_registering: boolean,
 }
 
@@ -103,7 +102,6 @@ const DEFAULT_REGISTER_STATE: RegisterState = {
     valid_email: null,
     valid_user: null,
     valid_pass: null,
-    verification_token: null,
     is_registering: false,
 }
 
@@ -175,9 +173,6 @@ function register_state_reducer(state: RegisterState, { value, type }: RegisterA
         case RegisterActionType.NoRegister: {
             return { ...state, is_registering: false };
         }
-        case RegisterActionType.Verify: {
-            return { ...state, verification_token: value };
-        }
         default: return state;
     }
 }
@@ -185,6 +180,18 @@ function register_state_reducer(state: RegisterState, { value, type }: RegisterA
 import CircleEmptyInfo from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-196-circle-empty-info.svg";
 
 var SETUP_THEN = false;
+
+const HCAPTCHA_ERRORS = {
+    "rate-limited": "Too Many hCaptcha Requests",
+    "network-error": "hCaptcha Network Error",
+    "invalid-data": "Invalid hCaptcha Data",
+    "challenge-error": "hCaptcha Challenge Error",
+    "challenge-closed": "hCaptcha Challenge Closed",
+    "challenge-expired": "hCaptcha Challenge Expired",
+    "missing-captcha": "Missing Captcha",
+    "invalid-captcha-id": "Invalid hCaptcha ID",
+    "internal-error": "Internal hCaptcha Error",
+};
 
 import "../login/login.scss";
 import "./register.scss";
@@ -218,10 +225,12 @@ export default function RegisterView() {
         return passwordClass;
     }, [state.pass_strength]);
 
-    let on_submit = (e: React.FormEvent<HTMLFormElement>) => {
+    let hcaptcha = useRef<HCaptcha>(null);
+
+    let on_submit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if(state.is_registering) return;
+        if(state.is_registering || !hcaptcha.current) return;
 
         form_dispatch({ type: RegisterActionType.Register, value: '' });
 
@@ -230,19 +239,29 @@ export default function RegisterView() {
             form_dispatch({ type: RegisterActionType.NoRegister, value: '' });
         };
 
-        fetch.submitFormUrlEncoded({
-            url: "/api/v1/user",
-            method: XHRMethod.POST,
-            json: {
-                email: state.email,
-                username: state.user,
-                password: state.pass,
-                year: state.dob.y,
-                month: state.dob.m,
-                day: state.dob.d,
-                token: state.verification_token,
-            },
-        }).then((req) => {
+        let res;
+        try {
+            res = await hcaptcha.current.execute({ async: true });
+        } catch(e) {
+            on_error(HCAPTCHA_ERRORS[e] || "Unknown Error");
+            return;
+        }
+
+        try {
+            let req = await fetch({
+                url: "/api/v1/user",
+                method: XHRMethod.POST,
+                json: {
+                    email: state.email,
+                    username: state.user,
+                    password: state.pass,
+                    year: state.dob.y,
+                    month: state.dob.m,
+                    day: state.dob.d,
+                    token: res.response,
+                },
+            });
+
             if(req.status == 201 && req.response.auth != null) {
                 dispatch(setSession(req.response))
             } else {
@@ -252,7 +271,7 @@ export default function RegisterView() {
                     console.error("Missing auth field in response: ", req);
                 }
             }
-        }).catch((req: XMLHttpRequest) => {
+        } catch(req) {
             try {
                 let response = req.response;
                 if(typeof response === 'string') {
@@ -266,15 +285,8 @@ export default function RegisterView() {
                     console.error("Missing JSON in error response?", e, req);
                 }
             }
-        })
+        }
     };
-
-    // Little bit of logic to trigger the captcha, and keep it enabled.
-    let [enableCaptcha, setEnableCaptcha] = useState(false);
-    let all_filled = state.valid_user && state.valid_email && state.valid_pass && state.dob.y && state.dob.m && state.dob.d;
-    if(!enableCaptcha && all_filled) {
-        setEnableCaptcha(true);
-    }
 
     let on_email_change = useCallback(e => form_dispatch({ type: RegisterActionType.UpdateEmail, value: e.currentTarget.value }), []),
         on_username_change = useCallback(e => form_dispatch({ type: RegisterActionType.UpdateUser, value: e.currentTarget.value }), []),
@@ -343,22 +355,10 @@ export default function RegisterView() {
                 </FormSelectGroup>
             </FormGroup>
 
-            {enableCaptcha && (
-                <FormGroup id="hcaptcha">
-                    <HCaptcha
-                        theme={is_light_theme ? "light" : "dark"}
-                        sitekey="7a2a9dd4-1fa3-44cf-aa98-147052e8ea25"
-                        onVerify={(token: string) => form_dispatch({ type: RegisterActionType.Verify, value: token })}
-                        onExpire={() => form_dispatch({ type: RegisterActionType.Verify, value: null })}
-                        reCaptchaCompat={false}
-                    />
-                </FormGroup>
-            )}
-
             {errorMsg && (
                 <FormGroup>
                     <div className="ln-login-error">
-                        Registration Error: {errorMsg}
+                        Registration Error: {errorMsg}!
                     </div>
                 </FormGroup>
             )}
@@ -373,6 +373,14 @@ export default function RegisterView() {
                         onClick={() => setErrorMsg(null)}
                     >
                         {state.is_registering ? <Spinner size="2em" /> : "Register"}
+
+                        <HCaptcha
+                            ref={hcaptcha}
+                            size="invisible"
+                            theme={is_light_theme ? "light" : "dark"}
+                            sitekey="7a2a9dd4-1fa3-44cf-aa98-147052e8ea25"
+                            reCaptchaCompat={false}
+                        />
                     </button>
 
 
@@ -382,7 +390,11 @@ export default function RegisterView() {
 
             <FormGroup>
                 <FormText>
-                    By registering, you agree to our
+                    By registering, you agree to our... this will be filled in later.
+                </FormText>
+
+                <FormText>
+                    This site is protected by hCaptcha and its <a target="_blank" href="https://hcaptcha.com/privacy">Privacy Policy</a> and <a target="_blank" href="https://hcaptcha.com/terms">Terms of Service</a> apply.
                 </FormText>
             </FormGroup>
         </form>
