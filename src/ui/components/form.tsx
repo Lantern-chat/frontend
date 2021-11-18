@@ -5,7 +5,8 @@ import classnames from "classnames";
 import "./form.scss";
 
 interface IFormGroupProps {
-    children: React.ReactNode
+    children: React.ReactNode,
+    id?: string,
 }
 
 interface IFormLabelProps {

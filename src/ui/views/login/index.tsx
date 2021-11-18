@@ -107,9 +107,6 @@ export default function LoginView() {
 
         form_dispatch({ type: LoginActionType.Login, value: '' });
 
-        // start preloading and ensure reducers are replaced
-        let main = import("../main");
-
         let on_error = (err: string) => {
             setErrorMsg(err);
             form_dispatch({ type: LoginActionType.NoLogin, value: '' });
@@ -121,7 +118,7 @@ export default function LoginView() {
             body: new FormData(e.currentTarget),
         }).then((req) => {
             if(req.status == 201 && req.response.auth != null) {
-                main.then(() => dispatch(setSession(req.response)));
+                dispatch(setSession(req.response))
             } else {
                 on_error("Unknown Error: " + req.status);
 

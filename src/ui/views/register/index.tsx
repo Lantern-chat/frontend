@@ -1,9 +1,11 @@
 import classNames from "classnames";
 import React, { useState, useMemo, useReducer, useEffect, useContext, useCallback } from "react";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Dispatch } from "state/actions";
 import { setSession } from "state/commands";
+import { selectPrefsFlag } from "state/selectors/prefs";
+import { UserPreferenceFlags } from "state/models";
 
 import dayjs from "lib/time";
 
@@ -19,6 +21,8 @@ import { Glyphicon } from "ui/components/common/glyphicon";
 import { Tooltip } from "ui/components/common/tooltip";
 import { Spinner } from "ui/components/common/spinners/spinner";
 import { FormGroup, FormLabel, FormInput, FormText, FormSelect, FormSelectOption, FormSelectGroup } from "ui/components/form";
+
+import HCaptcha from '@hcaptcha/react-hcaptcha';
 
 import { validateUsername, validatePass, validateEmail } from "lib/validation";
 
@@ -85,6 +89,7 @@ interface RegisterState {
     valid_email: boolean | null,
     valid_user: boolean | null,
     valid_pass: boolean | null,
+    verification_token: string | null,
     is_registering: boolean,
 }
 
@@ -98,6 +103,7 @@ const DEFAULT_REGISTER_STATE: RegisterState = {
     valid_email: null,
     valid_user: null,
     valid_pass: null,
+    verification_token: null,
     is_registering: false,
 }
 
@@ -109,12 +115,13 @@ enum RegisterActionType {
     UpdateYear,
     UpdateMonth,
     UpdateDay,
+    Verify,
     Register,
     NoRegister,
 }
 
 interface RegisterAction {
-    value: string,
+    value: string | null,
     type: RegisterActionType,
 }
 
@@ -131,35 +138,35 @@ function calc_pass_strength(pwd: string): number {
 function register_state_reducer(state: RegisterState, { value, type }: RegisterAction): RegisterState {
     switch(type) {
         case RegisterActionType.UpdateEmail: {
-            return { ...state, email: value, valid_email: validateEmail(value) };
+            return { ...state, email: value!, valid_email: validateEmail(value!) };
         }
         case RegisterActionType.UpdateUser: {
-            value = value.trimStart();
+            value = value!.trimStart();
             return { ...state, user: value, valid_user: validateUsername(value) };
         }
         case RegisterActionType.UpdatePass: {
-            let valid_pass = validatePass(value);
+            let valid_pass = validatePass(value!);
 
             return {
                 ...state,
-                pass: value,
+                pass: value!,
                 valid_pass,
-                pass_strength: valid_pass ? calc_pass_strength(value) : 0,
+                pass_strength: valid_pass ? calc_pass_strength(value!) : 0,
             };
         }
         case RegisterActionType.UpdatePassStrength: {
             return { ...state, pass_strength: state.pass && state.valid_pass ? calc_pass_strength(state.pass) : 0 };
         }
         case RegisterActionType.UpdateYear: {
-            let dob = { ...state.dob, y: parseInt(value) };
+            let dob = { ...state.dob, y: parseInt(value!) };
             return { ...state, dob, days: calculateDays(dob) };
         }
         case RegisterActionType.UpdateMonth: {
-            let dob = { ...state.dob, m: parseInt(value) };
+            let dob = { ...state.dob, m: parseInt(value!) };
             return { ...state, dob, days: calculateDays(dob) };
         }
         case RegisterActionType.UpdateDay: {
-            let dob = { ...state.dob, d: parseInt(value) };
+            let dob = { ...state.dob, d: parseInt(value!) };
             return { ...state, dob };
         }
         case RegisterActionType.Register: {
@@ -167,6 +174,9 @@ function register_state_reducer(state: RegisterState, { value, type }: RegisterA
         }
         case RegisterActionType.NoRegister: {
             return { ...state, is_registering: false };
+        }
+        case RegisterActionType.Verify: {
+            return { ...state, verification_token: value };
         }
         default: return state;
     }
@@ -184,6 +194,7 @@ export default function RegisterView() {
     let dispatch = useDispatch<Dispatch>();
     let [state, form_dispatch] = useReducer(register_state_reducer, DEFAULT_REGISTER_STATE);
     let [errorMsg, setErrorMsg] = useState<string | null>(null);
+    let is_light_theme = useSelector(selectPrefsFlag(UserPreferenceFlags.LightMode));
 
     useEffect(() => {
         if(!SETUP_THEN && typeof zxcvbn == 'function') {
@@ -214,9 +225,6 @@ export default function RegisterView() {
 
         form_dispatch({ type: RegisterActionType.Register, value: '' });
 
-        // start preloading
-        let main = import("../main");
-
         let on_error = (err: string) => {
             setErrorMsg(err);
             form_dispatch({ type: RegisterActionType.NoRegister, value: '' });
@@ -225,10 +233,18 @@ export default function RegisterView() {
         fetch.submitFormUrlEncoded({
             url: "/api/v1/user",
             method: XHRMethod.POST,
-            body: new FormData(e.currentTarget),
+            json: {
+                email: state.email,
+                username: state.user,
+                password: state.pass,
+                year: state.dob.y,
+                month: state.dob.m,
+                day: state.dob.d,
+                token: state.verification_token,
+            },
         }).then((req) => {
             if(req.status == 201 && req.response.auth != null) {
-                main.then(() => dispatch(setSession(req.response)));
+                dispatch(setSession(req.response))
             } else {
                 on_error("Unknown Error: " + req.status);
 
@@ -252,6 +268,13 @@ export default function RegisterView() {
             }
         })
     };
+
+    // Little bit of logic to trigger the captcha, and keep it enabled.
+    let [enableCaptcha, setEnableCaptcha] = useState(false);
+    let all_filled = state.valid_user && state.valid_email && state.valid_pass && state.dob.y && state.dob.m && state.dob.d;
+    if(!enableCaptcha && all_filled) {
+        setEnableCaptcha(true);
+    }
 
     let on_email_change = useCallback(e => form_dispatch({ type: RegisterActionType.UpdateEmail, value: e.currentTarget.value }), []),
         on_username_change = useCallback(e => form_dispatch({ type: RegisterActionType.UpdateUser, value: e.currentTarget.value }), []),
@@ -320,10 +343,22 @@ export default function RegisterView() {
                 </FormSelectGroup>
             </FormGroup>
 
+            {enableCaptcha && (
+                <FormGroup id="hcaptcha">
+                    <HCaptcha
+                        theme={is_light_theme ? "light" : "dark"}
+                        sitekey="7a2a9dd4-1fa3-44cf-aa98-147052e8ea25"
+                        onVerify={(token: string) => form_dispatch({ type: RegisterActionType.Verify, value: token })}
+                        onExpire={() => form_dispatch({ type: RegisterActionType.Verify, value: null })}
+                        reCaptchaCompat={false}
+                    />
+                </FormGroup>
+            )}
+
             {errorMsg && (
                 <FormGroup>
                     <div className="ln-login-error">
-                        Register Error: {errorMsg}
+                        Registration Error: {errorMsg}
                     </div>
                 </FormGroup>
             )}
