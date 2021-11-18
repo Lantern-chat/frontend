@@ -18,7 +18,9 @@
 
     &__user {
         display: flex;
-        flex-shrink: 0;
+        //flex-shrink: 0;
+        min-width: 0;
+        flex: 1;
 
         .ln-avatar,
         .ln-spinner {
@@ -40,9 +42,16 @@
         flex-direction: column;
         text-align: left;
         margin: auto 0 auto 0.5em;
+        overflow: hidden;
 
         &__discrim {
             color: $lnx-secondary-text-color;
+        }
+
+        &__name {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            line-height: normal;
         }
     }
 
@@ -50,7 +59,7 @@
         //display: flex;
         //justify-content: right;
         text-align: right;
-        width: 100%;
+        //width: 100%;
         font-size: 1.75em;
 
         > * {
