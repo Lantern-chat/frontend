@@ -151,15 +151,21 @@ module.exports = (env, argv) => {
                 {
                     test: /\.(jpg|jpeg|png|svg|wav)(\?v=\d+\.\d+\.\d+)?$/,
                     exclude: /(icons|fonts)/,
-                    use: [
-                        {
-                            loader: 'file-loader',
-                            options: {
-                                name: `[name].[ext]`,
-                                outputPath: 'assets/'
-                            }
-                        }
-                    ]
+                    type: 'asset/resource',
+                    generator: {
+                        filename: 'assets/[hash][ext][query]'
+                    }
+                    //use: [
+                    //    {
+                    //        loader: 'file-loader',
+                    //        options: {
+                    //            name: `[name].[ext]`,
+                    //            outputPath: 'assets/',
+                    //            useRelativePaths: true,
+                    //            publicPath: '../'
+                    //        }
+                    //    }
+                    //]
                 },
             ],
         },
