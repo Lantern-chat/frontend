@@ -57,8 +57,6 @@ const DEFAULT_SCROLL_STATE: IScrollState = {
     load_next: noop,
 };
 
-const high_res_now = performance.now ? () => performance.now() : () => Date.now();
-
 function ema(current: number, next: number): number {
     return current * 0.9 + next * 0.1; // 10%
 
@@ -119,9 +117,9 @@ export const InfiniteScroll = React.memo((props: IInfiniteScrollProps) => {
             let max_frame = 1000.0 / state.frame_time;
 
             if(state.active && state.frame++ < max_frame) {
-                let prev = high_res_now();
+                let prev = performance.now();
                 requestAnimationFrame(() => {
-                    state.frame_time = ema(state.frame_time, high_res_now() - prev);
+                    state.frame_time = ema(state.frame_time, performance.now() - prev);
                     state.scroll();
                 });
             } else {

@@ -27,8 +27,6 @@ function compute_at(e: HTMLElement, top: number): Anchor {
     }
 }
 
-const high_res_now = performance.now ? () => performance.now() : () => Date.now();
-
 function ema(current: number, next: number, size: number = 0.5): number {
     return (1.0 - size) * current + size * next;
 
@@ -348,7 +346,7 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
         if((now - this.start_time) < 1000) {
             requestAnimationFrame(() => {
                 if(this.polling) {
-                    let new_frame = high_res_now();
+                    let new_frame = performance.now();
                     this.frame_time = ema(this.frame_time, new_frame - now);
                     this.doScroll(new_frame);
                 }
@@ -373,7 +371,7 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
 
         // calls to `scrollTo` may trigger a scroll event, which will be at this.pos so ignore that.
         if(this.pos != pos) {
-            this.start_time = high_res_now();
+            this.start_time = performance.now();
             if(!this.polling) {
                 this.polling = true;
                 this.velocity = 0;
