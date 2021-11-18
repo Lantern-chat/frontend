@@ -7,3 +7,4 @@ export { IPartyState } from "./party";
 export { IHistoryState } from "./history";
 export { IPrefsState } from "./prefs";
 export { ICacheState } from "./cache";
+export { IToastState } from "./toasts";

@@ -1,0 +1,94 @@
+@import "lib/variables";
+
+$duration: 0.3s;
+
+.ln-toast-container {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    filter: drop-shadow(0 0.15rem 0.25rem #222);
+    z-index: 900;
+    max-height: 100vh;
+    max-width: 20rem;
+
+    &.top {
+        top: 0;
+    }
+
+    &.bottom {
+        bottom: 0;
+    }
+
+    &.left {
+        left: 0;
+        text-align: left;
+    }
+
+    &.right {
+        right: 0;
+        text-align: right;
+
+        .ln-enable-motion & .ln-toast {
+            animation: enter-right $duration ease-in-out forwards;
+
+            &.cleared {
+                animation: leave-right $duration ease-in-out forwards;
+            }
+        }
+    }
+
+    li {
+        display: inline-block;
+
+        margin: 0 1rem 1rem 1rem;
+
+        &:first-child {
+            margin-top: 1rem;
+        }
+    }
+
+    //ul {
+    //    position: relative;
+    //}
+}
+
+.ln-toast {
+    padding: 1rem;
+    border-radius: 1rem;
+    cursor: pointer;
+    position: relative;
+
+    &.info {
+        background-color: #5555ff;
+    }
+
+    &.success {
+        background-color: #006e00;
+    }
+
+    &.warning {
+        background-color: #ffaa00;
+    }
+
+    &.error {
+        background-color: #dd4444;
+    }
+}
+
+@keyframes enter-right {
+    from {
+        transform: translateX(calc(100% + 1rem));
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes leave-right {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(calc(100% + 1rem));
+    }
+}

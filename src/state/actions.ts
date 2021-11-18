@@ -23,6 +23,9 @@ export enum Type {
     MODAL_OPEN_CREATE_PARTY = "MODAL_OPEN_CREATE_PARTY",
     MODAL_CLOSE_CREATE_PARTY = "MODAL_CLOSE_CREATE_PARTY",
 
+    OPEN_TOAST = "OPEN_TOAST",
+    CLEAR_TOAST = "CLEAR_TOAST",
+
     UPDATE_PREFS = "UPDATE_PREFS",
 
     GATEWAY_EVENT = "GATEWAY_EVENT",
@@ -59,6 +62,8 @@ export type Action =
     ToggleFooters |
     ModalOpenCreateParty |
     ModalCloseCreateParty |
+    OpenToast |
+    ClearToast |
     GatewayEvent |
     GatewayRetry |
     PartyLoaded |
@@ -127,6 +132,17 @@ export interface ModalOpenCreateParty {
 
 export interface ModalCloseCreateParty {
     type: Type.MODAL_CLOSE_CREATE_PARTY
+}
+
+import { IToast } from "ui/components/toast";
+export interface OpenToast {
+    type: Type.OPEN_TOAST,
+    toast: PartialBy<IToast, 'id'>,
+}
+
+export interface ClearToast {
+    type: Type.CLEAR_TOAST,
+    id: number,
 }
 
 // GATEWAY ACTIONS

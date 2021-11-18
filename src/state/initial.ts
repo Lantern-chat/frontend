@@ -4,6 +4,7 @@ import { windowReducer } from "./reducers/window";
 import { userReducer } from "./reducers/user";
 import { prefsReducer } from "./reducers/prefs";
 import { historyReducer } from "./reducers/history";
+import { toastReducer } from "./reducers/toasts";
 
 import { Action } from "./actions";
 export { Type } from "./actions";
@@ -25,5 +26,6 @@ export const initialReducer = combineReducers<RootState, Action>({
     party: dummyReducer,
     prefs: prefsReducer,
     history: historyReducer,
+    toasts: toastReducer,
 });
 

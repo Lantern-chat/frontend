@@ -13,6 +13,7 @@ import { userReducer } from "./reducers/user";
 import { partyReducer } from "./reducers/party";
 import { prefsReducer } from "./reducers/prefs";
 import { historyReducer } from "./reducers/history";
+import { toastReducer } from "./reducers/toasts";
 
 import { Action } from "./actions";
 export { Type } from "./actions";
@@ -29,5 +30,6 @@ export const mainReducer = combineReducers<RootState, Action>({
     user: userReducer,
     party: partyReducer,
     prefs: prefsReducer,
-    history: historyReducer
+    history: historyReducer,
+    toasts: toastReducer,
 });
