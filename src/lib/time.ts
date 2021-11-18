@@ -89,3 +89,11 @@ export function timeout<T>(promise: Promise<T>, ms: number): Promise<T> {
         }, ms);
     })
 }
+
+//export class DurationCalculator {
+//    now: number = performance.now();
+//
+//    update(now?: number) {
+//      // TODO: Port over exponential moving average timing calculation from infinite scroll
+//    }
+//}
