@@ -1,4 +1,6 @@
+import classNames from "classnames";
 import React, { useState, useMemo, useReducer, useEffect, useContext, useCallback } from "react";
+
 import { useDispatch } from "react-redux";
 import { Dispatch } from "state/actions";
 import { setSession } from "state/commands";
@@ -14,7 +16,6 @@ import { fetch, XHRMethod } from "lib/fetch";
 import { Link } from "ui/components/history";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
-import { FullscreenModal } from "ui/components/modal";
 import { Tooltip } from "ui/components/common/tooltip";
 import { Spinner } from "ui/components/common/spinners/spinner";
 import { FormGroup, FormLabel, FormInput, FormText, FormSelect, FormSelectOption, FormSelectGroup } from "ui/components/form";
@@ -252,19 +253,6 @@ export default function RegisterView() {
         })
     };
 
-    let errorModal;
-
-    if(errorMsg != null) {
-        errorModal = (
-            <FullscreenModal style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
-                <div className="ln-center-standalone" style={{ color: 'white' }}>
-                    {errorMsg}
-                    <button onClick={() => setErrorMsg(null)}>Close</button>
-                </div>
-            </FullscreenModal>
-        );
-    }
-
     let on_email_change = useCallback(e => form_dispatch({ type: RegisterActionType.UpdateEmail, value: e.currentTarget.value }), []),
         on_username_change = useCallback(e => form_dispatch({ type: RegisterActionType.UpdateUser, value: e.currentTarget.value }), []),
         on_password_change = useCallback(e => form_dispatch({ type: RegisterActionType.UpdatePass, value: e.currentTarget.value }), []),
@@ -273,12 +261,10 @@ export default function RegisterView() {
         on_day_change = useCallback(e => form_dispatch({ type: RegisterActionType.UpdateDay, value: e.currentTarget.value }), []);
 
     return (
-        <form className="ln-form ln-login-form ln-register-form" onSubmit={on_submit}>
+        <form className="ln-form ln-login-form ln-register-form ui-text" onSubmit={on_submit}>
             <div id="title">
                 <h2><I18N t={Translation.REGISTER} /></h2>
             </div>
-
-            {errorModal}
 
             <FormGroup>
                 <FormLabel htmlFor="email"><I18N t={Translation.EMAIL_ADDRESS} /></FormLabel>
@@ -334,13 +320,27 @@ export default function RegisterView() {
                 </FormSelectGroup>
             </FormGroup>
 
+            {errorMsg && (
+                <FormGroup>
+                    <div className="ln-login-error">
+                        Register Error: {errorMsg}
+                    </div>
+                </FormGroup>
+            )}
+
             <hr />
 
             <FormGroup>
                 <div style={{ display: 'flex', padding: '0 1em' }}>
-                    <button className={state.is_registering ? 'ln-btn ln-btn--loading-icon' : 'ln-btn'} style={{ marginRight: 'auto' }}>
+                    <button
+                        className={classNames('ln-btn ui-text', { 'ln-btn--loading-icon': state.is_registering })}
+                        style={{ marginRight: 'auto' }}
+                        onClick={() => setErrorMsg(null)}
+                    >
                         {state.is_registering ? <Spinner size="2em" /> : "Register"}
                     </button>
+
+
                     <Link href="/login" className="ln-btn">Go to Login</Link>
                 </div>
             </FormGroup>

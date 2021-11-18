@@ -135,6 +135,16 @@ a {
     }
 }
 
+.ui-text {
+    // TODO: Fix line height in context menu?
+    //line-height: normal;
+    font-size: 1em;
+    //font-size: var(--ln-ui-font-size-adjust, 1em);
+    font-size: calc(1em / var(--ln-ui-font-size-adjust, 1));
+    font-family: $lnx-ui-font-family;
+    tab-size: 4;
+}
+
 .ln-theme-transition {
     *,
     *::before,

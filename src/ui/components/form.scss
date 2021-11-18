@@ -142,6 +142,7 @@ $btn-scale: 1.1;
     position: relative;
     transition: background-color $lnx-transition-timing ease;
     white-space: nowrap;
+    height: 3em;
 
     &--loading-icon {
         padding: golden_ratio(math.div(0.5, $btn-scale), em);

@@ -1,4 +1,6 @@
+import classNames from "classnames";
 import React, { useState, useMemo, useReducer, useEffect, useContext, useCallback } from "react";
+
 import { useDispatch } from "react-redux";
 import { Dispatch } from "state/actions";
 import { setSession } from "state/commands";
@@ -148,18 +150,7 @@ export default function LoginView() {
         })
     };
 
-    let error_modal, totp_modal;
-
-    if(errorMsg != null) {
-        error_modal = (
-            <FullscreenModal style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
-                <div className="ln-center-standalone" style={{ color: 'white' }}>
-                    {errorMsg}
-                    <button onClick={() => setErrorMsg(null)}>Close</button>
-                </div>
-            </FullscreenModal>
-        );
-    }
+    let totp_modal;
 
     if(state.totp_required) {
         totp_modal = (
@@ -187,12 +178,11 @@ export default function LoginView() {
         );
 
     return (
-        <form className="ln-form ln-login-form" onSubmit={on_submit}>
+        <form className="ln-form ln-login-form ui-text" onSubmit={on_submit}>
             <div id="title">
                 <h2><I18N t={Translation.LOGIN} /></h2>
             </div>
 
-            {error_modal}
             {totp_modal}
 
             <FormGroup>
@@ -223,13 +213,27 @@ export default function LoginView() {
                 </FormGroup>
             )}
 
+            {errorMsg && (
+                <FormGroup>
+                    <div className="ln-login-error">
+                        Login Error: {errorMsg}
+                    </div>
+                </FormGroup>
+            )}
+
             <hr />
 
             <FormGroup>
                 <div style={{ display: 'flex', padding: '0 1em' }}>
-                    <button className={state.is_logging_in ? 'ln-btn ln-btn--loading-icon' : 'ln-btn'} style={{ marginRight: 'auto' }}>
+                    <button
+                        className={classNames('ln-btn ui-text', { 'ln-btn--loading-icon': state.is_logging_in })}
+                        style={{ marginRight: 'auto' }}
+                        onClick={() => setErrorMsg(null)}
+                    >
                         {state.is_logging_in ? <Spinner size="2em" /> : "Login"}
                     </button>
+
+
                     <Link className="ln-btn" href="/register">Register</Link>
                 </div>
             </FormGroup>

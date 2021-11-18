@@ -70,7 +70,6 @@ import MainModals from "./modals";
 
 import { Hotkey, MainContext, OnClickHandler, OnKeyHandler, parseHotkey, useMainHotkey } from "ui/hooks/useMainClick";
 
-import "ui/styles/lib/fonts/lato.css";
 import "./main.scss";
 export const MainView: React.FunctionComponent = React.memo(() => {
     //let { parts } = useSelector(selectPath);

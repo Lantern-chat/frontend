@@ -47,7 +47,7 @@ export const FormInput: React.FunctionComponent<IFormInputProps> = React.memo((p
 
     return (
         <span className={classes}>
-            <input {...props} className="ln-form-control" />
+            <input {...props} className="ln-form-control ui-text" />
         </span>
     );
 });

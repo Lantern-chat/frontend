@@ -4,6 +4,7 @@ import { Provider, useSelector } from "react-redux";
 import { HISTORY, STORE } from "state/global";
 
 
+import { Toasts } from "./components/toast";
 import { Fireflies } from "ui/components/login/fireflies";
 import { ThemeWidget } from "ui/components/login/theme_widget";
 import { Ripple } from "ui/components/common/spinners/ripple";
@@ -82,11 +83,13 @@ const AppRouter = () => {
 const AppInner = React.memo(() => {
     return (
         <Provider store={STORE}>
+            <Toasts />
             <AppRouter />
         </Provider>
     );
 });
 
+import "ui/styles/lib/fonts/lato.css";
 export const App = () => {
     let [history, setHistory] = useState(recomputeHistoryContext(HISTORY));
 
