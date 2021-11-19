@@ -340,6 +340,11 @@
   resolved "https://registry.yarnpkg.com/@emotion/memoize/-/memoize-0.7.4.tgz#19bf0f5af19149111c40d98bb0cf82119f5d9eeb"
   integrity sha512-Ja/Vfqe3HpuzRsG1oBtWTHk2PGZ7GR+2Vz5iYGelAw8dx32K0y7PjVuxK6z1nMpZOqAFsRUPCkK1YjJ56qJlgw==
 
+"@hcaptcha/react-hcaptcha@^0.3.9":
+  version "0.3.9"
+  resolved "https://registry.yarnpkg.com/@hcaptcha/react-hcaptcha/-/react-hcaptcha-0.3.9.tgz#37f16f80827699d37fb77473a436ff10fe100e12"
+  integrity sha512-yc3rRVQCz3w+rq9+Y1yi+hUlZscMDoXli0st8liefZ79gkFRa3vqd2zl+qGeRq+3HG7i+ydNNIXmnWhg8wJCSg==
+
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@istanbuljs/load-nyc-config/-/load-nyc-config-1.1.0.tgz#fd3db1d59ecf7cf121e80650bb86712f9b55eced"
@@ -656,13 +661,6 @@
   integrity sha512-wLEm0QvaoawEDoTRwzTXp4b4jpwiJDvR5KMnFnVodm3scufTlBOWRD6N1OBf9TZMhjlNsSfcO5V+7AF4+Vy+9g==
   dependencies:
     "@types/unist" "*"
-
-"@types/hcaptcha__react-hcaptcha@^0.1.4":
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/@types/hcaptcha__react-hcaptcha/-/hcaptcha__react-hcaptcha-0.1.5.tgz#c531629fb7b017b255b2255718561a7ae5eb1d4c"
-  integrity sha512-HWSerODPnawycJmDj1Moveu4Q6oWj+fWMOhlEMUQeUHOH+Fn7RF2k1WU0Odksweg0FPR4Q1gjD7iwmgymr1N5w==
-  dependencies:
-    "@types/react" "*"
 
 "@types/hoist-non-react-statics@^3.3.0":
   version "3.3.1"

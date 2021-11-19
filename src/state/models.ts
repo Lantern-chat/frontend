@@ -39,6 +39,7 @@ export enum ErrorCode {
     TOTPRequired = 40027,
     InvalidPreferences = 40028,
     TemporarilyDisabled = 40029,
+    InvalidCaptcha = 40030,
 }
 
 export function errorKind(err: ApiError): ErrorKind {
