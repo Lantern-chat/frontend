@@ -8,6 +8,7 @@ import { selectPrefsFlag } from "state/selectors/prefs";
 
 export type IAnimatedGifProps = React.ImgHTMLAttributes<HTMLImageElement>;
 
+import "./gif.scss";
 export const AnimatedGif = React.memo((props: IAnimatedGifProps) => {
     let img = useRef<HTMLImageElement>(null),
         freeze = useRef<Freezeframe>(),
@@ -25,6 +26,6 @@ export const AnimatedGif = React.memo((props: IAnimatedGifProps) => {
 
     return (
         // use wrapper div to force React to recreate the DOM nodes on unfreeze
-        do_freeze ? <div><img {...props} ref={img} /></div> : <img {...props} />
+        do_freeze ? <div className="gif-wrapper ui-text"><img {...props} ref={img} /></div> : <img {...props} />
     );
 });
