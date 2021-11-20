@@ -9,6 +9,8 @@ export const AccessibilitySettingsTab = () => {
     return (
         <form className="ln-settings-form">
             <TogglePrefsFlag htmlFor="reduce_motion" label="Reduce Motion" flag={UserPreferenceFlags.ReduceAnimations} />
+
+            <TogglePrefsFlag htmlFor="unfocus_pause" label="Pause GIFs on Unfocus" flag={UserPreferenceFlags.UnfocusPause} />
         </form>
     )
 };

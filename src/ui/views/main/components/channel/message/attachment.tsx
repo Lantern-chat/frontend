@@ -11,6 +11,7 @@ import { message_attachment_url } from "config/urls";
 
 import { reactElement } from "ui/components/common/markdown/markdown";
 
+import { AnimatedGif } from "ui/components/common/gif";
 import { Glyphicon } from "ui/components/common/glyphicon";
 import { MimeIcon } from "ui/components/mime_icon";
 
@@ -64,7 +65,11 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
         } else if(mime.startsWith('image') && attachment.size < (1024 * 1024 * 30)) {
             //embed = <img title={title} onContextMenu={eat} src={url} onError={() => setError(true)} />;
 
-            embed = reactElement('img', id, common);
+            if(mime.indexOf("gif") > 0) {
+                embed = <AnimatedGif {...common} />
+            } else {
+                embed = reactElement('img', id, common);
+            }
         }
     }
 

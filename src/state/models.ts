@@ -153,7 +153,7 @@ export interface UserPreferences {
 }
 
 export function hasUserPrefFlag(prefs: Pick<UserPreferences, 'flags'>, flag: UserPreferenceFlags): boolean {
-    return (prefs.flags & flag) === flag;
+    return (prefs.flags & flag) !== 0;
 }
 
 export interface UserPresence {
