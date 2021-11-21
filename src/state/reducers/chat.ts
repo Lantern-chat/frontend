@@ -159,8 +159,8 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
 
                 room.msgs = [...final_msgs, ...new_msgs, ...old_msgs];
             });
-
         }
+
         case Type.CLEANUP_TYPING: return produce(state, draft => {
             let now = Date.now();
 
@@ -169,6 +169,35 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
                 room.typing = room.typing.filter(entry => (now - entry.ts) < 7000);
             }
         });
+
+        // case Type.CLEANUP_TYPING: {
+        //     let now = Date.now(),
+        //         changed = false,
+        //         rooms = new Map(state.rooms),
+        //         // collect values so `rooms` can be modified during iteration
+        //         values = Array.from(rooms.values());
+
+        //     // for all rooms, retain typing indicators if only in the last 7 seconds
+        //     for(let room of values) {
+        //         let before = room.typing.length;
+        //         let new_typing = room.typing.filter(entry => (now - entry.ts) < 7000);
+
+        //         if(new_typing.length != before) {
+        //             changed = true;
+
+        //             rooms.set(room.room.id, {
+        //                 ...room,
+        //                 typing: new_typing,
+        //             });
+        //         }
+        //     }
+
+        //     if(changed) {
+        //         return { ...state, rooms };
+        //     } else {
+        //         break;
+        //     }
+        // };
 
         case Type.GATEWAY_EVENT: {
             switch(action.payload.t) {

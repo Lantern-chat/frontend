@@ -133,10 +133,14 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
         // If the DOM changed significantly, reattach observer
         this.attachObserver();
 
-        if(prevProps.children != this.props.children ||
+        let children_differ = shallowEqualObjects(prevProps.children, this.props.children);
+
+        if(children_differ ||
             prevProps.load_next != this.props.load_next ||
             prevProps.load_prev != this.props.load_prev) {
-            __DEV__ && console.log("COMPONENT DID UPDATE");
+            if(__DEV__) {
+                console.log("COMPONENT DID UPDATE FROM CHILDREN? ", children_differ);
+            }
 
             this.fixPosition();
 

@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { createStructuredSelector } from 'reselect';
 import classNames from "classnames";
 
+import { shallowEqualObjects } from "lib/compare";
+
 import { Room, Snowflake, User, UserPreferenceFlags } from "state/models";
 import { RootState, Type } from "state/root";
 import { loadMessages, SearchMode } from "state/commands";
@@ -23,17 +25,34 @@ const feed_selector = createStructuredSelector({
     show_panel: (state: RootState) => state.window.show_panel,
 });
 
+// NOTE: Don't include fields that are updated often
+type PartialRoomState = Pick<IRoomState, 'room' | 'fully_loaded' | 'msgs'>;
+
 import "./feed.scss";
 export const MessageFeed = React.memo((props: IMessageListProps) => {
     let dispatch = useDispatch();
 
-    let room = useSelector((state: RootState) => state.chat.rooms.get(props.channel));
     let { use_mobile_view, show_panel } = useSelector(feed_selector);
+    let room = useSelector((state: RootState): PartialRoomState | undefined => {
+        let room_state = state.chat.rooms.get(props.channel);
+        if(room_state) {
+            return {
+                room: room_state.room,
+                fully_loaded: room_state.fully_loaded,
+                msgs: room_state.msgs
+            };
+        }
+        return;
+    }, shallowEqualObjects);
+
 
     //useTitle(room?.room.name);
 
     let groups: Array<IMessageState[]> = useMemo(() => {
-        if(room == null) return [];
+        if(!room) return [];
+
+        __DEV__ && console.log("REBUILDING GROUPS");
+
 
         let groups: IMessageState[][] = [];
 
@@ -85,7 +104,7 @@ export const MessageFeed = React.memo((props: IMessageListProps) => {
 });
 
 interface IMessageFeedInnerProps {
-    room: IRoomState | undefined,
+    room: PartialRoomState | undefined,
     groups: Array<IMessageState[]>,
 }
 
@@ -120,10 +139,12 @@ const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) =
         [load_next, load_prev]: Array<undefined | (() => void)> = useMemo(() => {
             if(!room || room.fully_loaded) return [];
 
+            __DEV__ && console.log("REBUILDING LOADING CALLBACKS");
+
             return [
                 () => { }, // TODO: Virtualization
                 () => {
-                    if(room && groups[0]) {
+                    if(groups[0]) {
                         dispatch(loadMessages(room.room.id, groups[0][0].msg.id, SearchMode.Before));
                     }
                 }
@@ -201,7 +222,7 @@ const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) =
     )
 });
 
-const MsgList = React.memo(({ room, groups, is_light_theme, compact }: { room: IRoomState, groups: IMessageState[][], is_light_theme: boolean, compact: boolean }) => {
+const MsgList = React.memo(({ room, groups, is_light_theme, compact }: { room: PartialRoomState, groups: IMessageState[][], is_light_theme: boolean, compact: boolean }) => {
     let header;
     if(room.fully_loaded) {
         header = (<MsgTop room={room.room} />)
@@ -237,7 +258,6 @@ interface IGotoBottomFooterProps {
 import ChevronDown from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-128-chevron-down.svg";
 
 const GotoBottomFooter = React.memo(({ onClick, use_mobile_view }: IGotoBottomFooterProps) => {
-
     if(use_mobile_view) {
         return (
             <span id="goto-now" onClick={() => onClick()}>
