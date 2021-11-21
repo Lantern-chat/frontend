@@ -21,7 +21,6 @@ import { Hotkey, MainContext, parseHotkey, useMainHotkey } from "ui/hooks/useMai
 
 import { Glyphicon } from "ui/components/common/glyphicon";
 import { EmotePicker } from "../common/emote_picker";
-import { MsgTextarea } from "./textarea";
 
 //import Smiley from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-901-slightly-smiling.svg";
 import Send from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-461-send.svg";
@@ -130,6 +129,15 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
         }
     };
 
+    let on_keyup = useCallback((e: React.KeyboardEvent) => {
+        let hotkey = parseHotkey(e.nativeEvent);
+        if(hotkey == null || hotkey == Hotkey.FocusTextArea) {
+            // not-hotkeys shouldn't escape, to save on processing time of keypress
+            // or if the textarea is already focused, don't refocus
+            e.stopPropagation();
+        }
+    }, []);
+
     let on_keydown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         setShowFocusBorder(false);
 
@@ -137,16 +145,91 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
             keyRef!.current!.innerText = (e.ctrlKey ? 'Ctrl+' : '') + (e.altKey ? 'Alt+' : '') + (e.shiftKey ? 'Shift+' : '') + (e.key === ' ' ? 'Spacebar' : e.key);
         }
 
-        if(e.key == 'Enter') {
-            __DEV__ && console.log("SENDING MESSAGE ON ENTER");
-            do_send();
+        let isInsideCodeblock = () => {
+            let cursor = ref.current!.selectionStart;
+
+            // check if the cursor is inside a code block, in which case allow plain newlines
+            let prev = { index: 0 }, delim, re = /`{3}/g, inside = false;
+            for(let idx = 0; delim = re.exec(state.value); idx++) {
+                if(prev.index <= cursor && cursor > delim.index) {
+                    inside = !inside;
+                }
+                prev = delim;
+            }
+
+            return inside;
+        };
+
+        let stop_prop = true;
+
+        switch(e.key) {
+            case 'Enter': {
+                if(use_mobile_view || e.shiftKey || state.value.length === 0 || isInsideCodeblock()) return;
+
+                e.preventDefault(); // don't add the newline
+
+                do_send();
+
+                break;
+            }
+            case 'Tab': {
+                // TODO: Remove this?
+                if(e.shiftKey || isInsideCodeblock()) {
+                    setState({ ...state, value: state.value + '\t' });
+                }
+
+                e.preventDefault();
+
+                break;
+            }
+            case 'ArrowUp':
+            case 'ArrowDown': {
+                let total_lines = countLines(state.value),
+                    current_line = countLines(state.value.slice(0, ref.current!.selectionStart));
+
+                // if on the first line
+                if(e.key === 'ArrowUp' && current_line === 1) {
+                    dispatch({ type: Type.MESSAGE_EDIT_PREV });
+                }
+                // else if on the last line
+                else if(e.key === 'ArrowDown' && current_line === (total_lines - 1)) {
+                    dispatch({ type: Type.MESSAGE_EDIT_NEXT });
+                } else {
+                    return;
+                }
+
+                setState({ ...state, isEditing: false }); // trigger reload
+                break;
+            }
+            case 'Escape':
+            case 'Esc': {
+                if(state.isEditing) { dispatch({ type: Type.MESSAGE_DISCARD_EDIT }); }
+                break;
+            }
+
+            // HOTKEY allowances
+
+            case 'PageUp':
+            case 'PageDown': {
+                stop_prop = false;
+                break;
+            }
+            default: {
+                if(e.ctrlKey || e.metaKey) {
+                    stop_prop = false;
+                }
+            }
+        }
+
+        if(stop_prop) {
+            e.stopPropagation();
         }
     };
 
-    let on_change = (new_value: string) => {
+    let on_change = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         // the "Enter" key newline is still present after keydown, so trim that
         // also prevents leading newlines
-        let ts = Date.now();
+        let ts = Date.now(), new_value = e.currentTarget.value.replace(/^\n+/, '');
 
         // NOTE: What qualifies as "typing" is adding more characters
         if(channel && new_value.length > state.value.length && (ts - state.ts) > 3500) {
@@ -230,14 +313,20 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
 
                 <EmotePicker />
 
-                <MsgTextarea
-                    onBlur={on_blur}
-                    onFocus={() => setFocused(true)}
-                    ref={ref}
-                    onKeyDown={on_keydown}
-                    onChange={on_change}
-                    value={state.value}
-                />
+                <div className="ln-msg-box__box">
+                    <TextareaAutosize disabled={disabled}
+                        onBlur={on_blur} // don't run on same frame?
+                        onFocus={() => setFocused(true)}
+                        cacheMeasurements={false}
+                        ref={ref}
+                        placeholder="Message..."
+                        rows={1} maxRows={max_rows} style={style as any}
+                        value={state.value}
+                        onKeyDown={on_keydown} onChange={on_change} onKeyUp={on_keyup}
+                        onContextMenu={on_cm}
+                        onHeightChange={onHeightChange}
+                    />
+                </div>
 
                 {
                     __DEV__ && <div className="ln-msg-box__debug"><span ref={keyRef}></span></div>
