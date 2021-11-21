@@ -15,22 +15,29 @@ import { MimeIcon } from "ui/components/mime_icon";
 
 import SaveIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-199-save.svg";
 
+import { AnchoredModal } from "ui/components/modal/anchored_modal";
+
 import "./attachment.scss";
 export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, attachment: Attachment }) => {
     let [error, setError] = useState(false),
         eat = useClickEater();
 
-    let embed, mime = attachment.mime,
+    let embed,
+        mime = attachment.mime,
         id = attachment.id,
         url = message_attachment_url(msg.room_id, id, attachment.filename),
         title = attachment.filename;
 
+
+    //let [showTitle, setShowTitle] = useState(false);
+
     if(mime && !error) {
         let common = {
-            title,
             onContextMenu: eat,
             src: url,
-            onError: () => setError(true)
+            onError: () => setError(true),
+            //onMouseEnter: () => setShowTitle(true),
+            //onMouseLeave: () => setShowTitle(false),
         };
 
         if(mime.startsWith('video')) {
@@ -64,8 +71,9 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
         } else if(mime.startsWith('image') && attachment.size < (1024 * 1024 * 30)) {
             //embed = <img title={title} onContextMenu={eat} src={url} onError={() => setError(true)} />;
 
-            if(mime.indexOf("gif") > 0) {
-                embed = <AnimatedGif {...common} />
+            let m: RegExpMatchArray | null;
+            if(m = mime.match(/gif|apng|webp|avif/i)) {
+                embed = <AnimatedGif img={common} which={m[0] as any} />
             } else {
                 embed = reactElement('img', id, common);
             }
@@ -91,6 +99,16 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
             </div>
         );
     }
+    //else {
+    //    embed = (
+    //        <>
+    //            <AnchoredModal show={showTitle}>
+    //                {title}
+    //            </AnchoredModal>
+    //            {embed}
+    //        </>
+    //    )
+    //}
 
     return (
         <div className="ln-msg-attachment">

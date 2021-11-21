@@ -19,6 +19,18 @@
         }
     }
 
+    &.apng::after {
+        content: "APNG";
+    }
+
+    &.webp::after {
+        content: "WebP";
+    }
+
+    &.avif::after {
+        content: "AVIF";
+    }
+
     &:hover::after {
         opacity: 0;
     }
