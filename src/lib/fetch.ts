@@ -35,14 +35,28 @@ export function fetch(params: string | XHRParameters): Promise<XMLHttpRequest> {
 
             if(params.timeout) { xhr.timeout = params.timeout; }
 
-            xhr.onprogress = params.onprogress || null;
-            xhr.onerror = e => reject(e);
-            xhr.onload = () => { if(xhr.status >= 200 && xhr.status < 400) { resolve(xhr) } else { reject(xhr) } };
+            let onprogress = params.onprogress || null,
+                onerror = (e: ProgressEvent) => {
+                    __DEV__ && console.error("Error loading XHR Request: ", e);
+                    reject(e);
+                },
+                onload = () => {
+                    //if(xhr.readyState != 4) return;
+
+                    if(xhr.status >= 200 && xhr.status < 400) { resolve(xhr) } else {
+                        __DEV__ && console.error("Rejecting XHR Request with status: ", xhr.status);
+                        reject(xhr)
+                    }
+                };
 
             if(params.upload) {
-                xhr.upload.onerror = xhr.onerror;
-                xhr.upload.onprogress = xhr.onprogress;
-                xhr.upload.onload = xhr.onload;
+                xhr.upload.onerror = onerror;
+                xhr.upload.onprogress = onprogress;
+                xhr.addEventListener('loadend', onload);
+            } else {
+                xhr.onerror = onerror;
+                xhr.onprogress = onprogress;
+                xhr.onload = onload;
             }
 
             xhr.open(params.method || "GET", params.url);
@@ -64,6 +78,8 @@ export function fetch(params: string | XHRParameters): Promise<XMLHttpRequest> {
 
             xhr.send(params.body);
         } catch(e) {
+            __DEV__ && console.error("Error constructing XHR Request");
+
             reject(e);
         }
     });
