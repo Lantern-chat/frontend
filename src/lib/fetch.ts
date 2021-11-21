@@ -30,34 +30,40 @@ export function fetch(params: string | XHRParameters): Promise<XMLHttpRequest> {
                 params = { url: params };
             }
 
-            let xhr = new XMLHttpRequest();
+            let xhr = new XMLHttpRequest(), ev = params.upload ? xhr.upload : xhr;
             xhr.responseType = params.type || "json";
 
             if(params.timeout) { xhr.timeout = params.timeout; }
 
-            let onprogress = params.onprogress || null,
-                onerror = (e: ProgressEvent) => {
-                    __DEV__ && console.error("Error loading XHR Request: ", e);
-                    reject(e);
-                },
-                onload = () => {
-                    //if(xhr.readyState != 4) return;
+            ev.onprogress = params.onprogress || null;
+            ev.onerror = (e: ProgressEvent) => {
+                __DEV__ && console.error("Error loading XHR Request: ", e);
+                reject(e);
+            };
 
-                    if(xhr.status >= 200 && xhr.status < 400) { resolve(xhr) } else {
-                        __DEV__ && console.error("Rejecting XHR Request with status: ", xhr.status);
-                        reject(xhr)
-                    }
-                };
+            xhr.addEventListener('loadend', () => {
+                //if(xhr.readyState != 4) return;
 
-            if(params.upload) {
-                xhr.upload.onerror = onerror;
-                xhr.upload.onprogress = onprogress;
-                xhr.addEventListener('loadend', onload);
-            } else {
-                xhr.onerror = onerror;
-                xhr.onprogress = onprogress;
-                xhr.onload = onload;
-            }
+                if(xhr.status >= 200 && xhr.status < 400) { resolve(xhr) } else {
+                    __DEV__ && console.error("Rejecting XHR Request with status: ", xhr.status);
+                    reject(xhr)
+                }
+            });
+
+            // // setup down/up events
+            // ev.onerror = (e: ProgressEvent) => {
+            //     __DEV__ && console.error("Error loading XHR Request: ", e);
+            //     reject(e);
+            // };
+            // ev.onprogress = params.onprogress || null;
+            // ev.addEventListener('loadend', () => {
+            //     //if(xhr.readyState != 4) return;
+
+            //     if(xhr.status >= 200 && xhr.status < 400) { resolve(xhr) } else {
+            //         __DEV__ && console.error("Rejecting XHR Request with status: ", xhr.status);
+            //         reject(xhr)
+            //     }
+            // });
 
             xhr.open(params.method || "GET", params.url);
 
@@ -87,7 +93,7 @@ export function fetch(params: string | XHRParameters): Promise<XMLHttpRequest> {
 
 fetch.submitFormUrlEncoded = function(params: XHRParameters): Promise<XMLHttpRequest> {
     if(params.body instanceof FormData) {
-        params.headers = params.headers || {};
+        params.headers ||= {};
         params.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
         var encoded = new URLSearchParams();
