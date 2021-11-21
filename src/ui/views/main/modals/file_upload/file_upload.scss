@@ -1,3 +1,13 @@
+@import "lib/variables";
+
+.ln-upload {
+    #upload-button {
+        text-align: right;
+    }
+
+    max-width: 90vw;
+}
+
 .ln-upload-previews {
     display: flex;
     flex-wrap: wrap;
@@ -10,6 +20,12 @@
     flex-wrap: nowrap;
     margin: 0 auto;
     padding: 0 0.5rem;
+    justify-content: center;
+    overflow: hidden;
+
+    @media (min-width: $ln-min-channel-width) {
+        flex: 1;
+    }
 
     .ln-media {
         width: auto;
@@ -27,21 +43,35 @@
         //text-align: center;
         //width: 100%;
     }
+
+    > span {
+        margin-bottom: 0.5em;
+        min-width: 0;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        line-height: normal;
+        word-wrap: break-word;
+    }
 }
 
 .ln-media {
+    max-width: 100%;
+
     .ln-multi-upload-2 & {
         //max-width: calc(45vw - 4rem);
         max-height: calc(45vh - 5rem);
+        //max-width: 45%;
     }
 
     .ln-multi-upload-3 & {
         //max-width: calc(33vw - 4rem);
         max-height: calc(33vh - 5rem);
+        //max-width: 30%;
     }
 
     .ln-multi-upload-4 & {
         //max-width: calc(20vw - 4rem);
         max-height: calc(20vh - 5rem);
+        //max-width: 22.5%;
     }
 }

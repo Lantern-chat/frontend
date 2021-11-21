@@ -1,66 +1,101 @@
-import React, { useRef, useMemo, useEffect, useState, forwardRef, createRef } from "react";
+import React, { useRef, useMemo, useEffect, useState, forwardRef, createRef, useCallback } from "react";
+import { useDispatch } from "react-redux";
+import { sendMessage } from "state/commands";
+import { sendFile } from "state/commands/sendfile";
+import { Snowflake } from "state/models";
+import { FormGroup } from "ui/components/form";
 
 import { MimeIcon } from "ui/components/mime_icon";
+import { MsgTextarea } from "../../components/channel/message/textarea";
 
 import { GenericModal, GenericModalProps } from "../generic";
 
 export interface FileUploadModalProps extends GenericModalProps {
-    files: FileList
-}
-
-interface FileUploadModalState {
-    files: File[],
-    media_refs: React.MutableRefObject<any>[];
+    files: FileList,
+    bearer: string,
+    room_id: Snowflake,
+    onClose: () => void,
 }
 
 import "./file_upload.scss";
-export class FileUploadModal extends React.Component<FileUploadModalProps, FileUploadModalState> {
-    constructor(props: FileUploadModalProps) {
-        super(props);
-
-        this.state = {
-            files: [],
-            media_refs: []
+export const FileUploadModal = React.memo((props: FileUploadModalProps) => {
+    let files = useMemo(() => {
+        let files = [];
+        for(let idx = 0; idx < props.files.length; idx++) {
+            files.push(props.files.item(idx)!);
         }
 
-        for(let idx = 0; idx < this.props.files.length; idx++) {
-            this.state.files.push(this.props.files.item(idx)!);
-            this.state.media_refs.push(createRef());
-        }
+        return files;
+    }, [props.files]);
+
+    let multiclass = ' ln-multi-upload-';
+    switch(files.length) {
+        case 1: multiclass = ''; break;
+        case 2: multiclass += '2'; break;
+        case 3: multiclass += '3'; break;
+        default: multiclass += '4'; break;
     }
 
-    componentDidMount() {
-        __DEV__ && console.log(this.state.media_refs.map(r => r.current));
-    }
+    let [uploading, setUploading] = useState(false);
 
-    render() {
-        let { files, media_refs } = this.state;
-
-        let multiclass = ' ln-multi-upload-';
-        switch(files.length) {
-            case 1: multiclass = ''; break;
-            case 2: multiclass += '2'; break;
-            case 3: multiclass += '3'; break;
-            default: multiclass += '4'; break;
+    let onClose = useCallback(() => {
+        if(!uploading) {
+            props.onClose();
         }
+    }, [props.onClose, uploading]);
 
-        return (
-            <GenericModal {...this.props}>
+    let dispatch = useDispatch();
+
+    let onUpload = useCallback(() => {
+        if(uploading) return;
+
+        setUploading(true);
+
+        sendFile({
+            file: files[0],
+            bearer: props.bearer,
+            onError: () => console.error("Upload error"),
+            onProgress: () => { }
+        }).then((id) => {
+            if(id) {
+                console.log("File uploaded: ", id);
+
+                dispatch(sendMessage(props.room_id, "", [id]));
+            }
+
+            setUploading(false);
+
+            props.onClose();
+        })
+    }, [props, files, uploading]);
+
+    let noop = () => { };
+
+    return (
+        <GenericModal {...props} onClose={onClose}>
+            <div className="ln-upload">
                 <div className={"ln-upload-previews" + multiclass}>
                     {files.map((file, i) => {
-                        return <MediaPreview key={file.name} file={file} ref={media_refs[i]} />
+                        return <MediaPreview key={file.name} file={file} />
                     })}
                 </div>
-            </GenericModal>
-        )
-    }
-}
 
+                <MsgTextarea value="" onChange={noop} onBlur={noop} onFocus={noop} onKeyDown={noop} />
 
-const MediaPreview = forwardRef(({ file }: { file: File }, ref: React.MutableRefObject<any>) => {
+                <FormGroup id="upload-button">
+                    <button className="ln-btn ui-text" onClick={onUpload}>
+                        Upload
+                    </button>
+                </FormGroup>
+            </div>
+        </GenericModal>
+    )
+});
+
+const MediaPreview = ({ file }: { file: File }) => {
     let [error, setError] = useState(false),
         t = file.type,
-        media;
+        media, ref = useRef<HTMLImageElement | HTMLVideoElement | HTMLAudioElement>(null);
 
     useEffect(() => {
         if(!ref.current) return;
@@ -74,11 +109,11 @@ const MediaPreview = forwardRef(({ file }: { file: File }, ref: React.MutableRef
         let on_error = () => setError(true), className = 'ln-media';
 
         if(t.startsWith('image/')) {
-            media = <img className={className} ref={ref} onError={on_error} />;
+            media = <img className={className} ref={ref as any} onError={on_error} />;
         } else if(t.startsWith('video/')) {
-            media = <video className={className} ref={ref} controls loop onError={on_error} />;
+            media = <video className={className} ref={ref as any} controls loop onError={on_error} />;
         } else if(t.startsWith('audio/')) {
-            media = <audio className={className} ref={ref} controls onError={on_error} />;
+            media = <audio className={className} ref={ref as any} controls onError={on_error} />;
         } else {
             break;
         }
@@ -92,8 +127,8 @@ const MediaPreview = forwardRef(({ file }: { file: File }, ref: React.MutableRef
 
     return (
         <div className="ln-upload-preview">
-            <span>{file.name}</span>
+            <span className="ui-text">{file.name}</span>
             {media}
         </div>
     );
-});
+};

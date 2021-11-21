@@ -8,10 +8,8 @@ interface IFileUploadOpts {
     file: File,
     bearer: string,
 
-    onStart(): void;
-    onProgress(p: number): void;
-    onError(): void;
-    onComplete(): void;
+    onProgress(loaded: number, total: number): void;
+    onError(xhr: XMLHttpRequest): void;
 }
 
 interface IFileUploadState {
@@ -31,6 +29,8 @@ export async function sendFile(opts: IFileUploadOpts): Promise<Snowflake | undef
         meta_header += ",mime " + encodeUTF8toBase64(mime);
     }
 
+    __DEV__ && console.info("POSTing new file ", name);
+
     let res = await fetch({
         url: '/api/v1/file',
         method: XHRMethod.POST,
@@ -45,26 +45,57 @@ export async function sendFile(opts: IFileUploadOpts): Promise<Snowflake | undef
 
     if(!file_id) return;
 
-    let offset = 0, last_time = 100, bandwidth = 0;
+    __DEV__ && console.info("Sucess! Uploading file ", file_id);
+
+    let chunk = 0,
+        offset = 0,
+        last_time = 100,
+        bandwidth = 0,
+        url = '/api/v1/file/' + file_id;
 
     while(offset < size) {
         let blob: Blob = file.slice(offset, offset + 8 * 1024 * 1024);
         let buf: ArrayBuffer = await blob.arrayBuffer();
         let hash = hash_base64(buf);
 
-        let res = await fetch({
-            url: '/api/v1/file/' + file_id,
-            bearer: opts.bearer,
-            method: XHRMethod.PATCH,
-            headers: {
-                'Upload-Offset': offset.toString(),
-                'Upload-Checksum': "crc32 " + hash,
-                'Content-Type': 'application/offset+octet-stream',
-            },
-            body: blob,
-        });
+        if(__DEV__) {
+            console.info("Sending chunk %d of size %d with hash %s", chunk, blob.size, hash);
+        }
+
+        let res;
+
+        try {
+            res = await fetch({
+                url,
+                bearer: opts.bearer,
+                method: XHRMethod.PATCH,
+                onprogress: (ev: ProgressEvent) => {
+                    opts.onProgress(offset + ev.loaded, size);
+                },
+                headers: {
+                    'Upload-Offset': offset.toString(),
+                    'Upload-Checksum': "crc32 " + hash,
+                    'Content-Type': 'application/offset+octet-stream',
+                },
+                body: blob,
+                upload: true,
+            });
+        } catch(e) {
+            __DEV__ && console.error("Error sending chunk: ", e);
+
+            return;
+        }
+
+        __DEV__ && console.info("Completed chunk!");
+
+        // TODO: Better error handling
+        if(res.status != 204) {
+            opts.onError(res);
+            return;
+        }
 
         offset += blob.size;
+        chunk++;
     }
 
     return file_id;
