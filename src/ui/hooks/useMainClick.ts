@@ -251,6 +251,7 @@ export function useSimplePositionedContextMenu(opts?: ISimpleMainClickOptions): 
     return [pos, props];
 }
 
+/// Returns `[show, props]` for handling a toggle of some kind
 export function useSimpleToggleOnClick(opts?: ISimpleMainClickOptions): [boolean, ClickEventHandlers] {
     let [show, setShow] = useState(false);
 
@@ -264,4 +265,20 @@ export function useSimpleToggleOnClick(opts?: ISimpleMainClickOptions): [boolean
     }, []);
 
     return [show, props];
+}
+
+/// Simple enhancement for `useCallback` for `MouseEvent` that will also trigger `main.clickAll`
+export function useClickCallback<E extends HTMLElement = HTMLElement>(cb: (e: React.MouseEvent<E>) => void, deps: any[]): (e: React.MouseEvent<E>) => void {
+    let main = useContext(MainContext);
+    return useCallback((e: React.MouseEvent<E>) => { main.clickAll(e); cb(e); }, [...deps, main]);
+}
+
+/// "Consumes" a click event, triggering `main.clickAll`, but also stopping propagation,
+/// allowing it to behave normally and efficiently.
+export function useClickEater(): (e: React.MouseEvent) => void {
+    let main = useContext(MainContext);
+    return useCallback((e: React.MouseEvent) => {
+        main.clickAll(e);
+        e.stopPropagation();
+    }, [main]);
 }

@@ -1,13 +1,11 @@
-import React, { useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { IS_MOBILE } from "lib/user_agent";
 import { format_bytes } from "lib/formatting";
 
-function eat(e: React.SyntheticEvent) {
-    e.stopPropagation();
-}
-
 import { Message, Attachment } from "state/models";
 import { message_attachment_url } from "config/urls";
+
+import { useClickEater } from "ui/hooks/useMainClick";
 
 import { reactElement } from "ui/components/common/markdown/markdown";
 
@@ -19,7 +17,8 @@ import SaveIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-s
 
 import "./attachment.scss";
 export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, attachment: Attachment }) => {
-    let [error, setError] = useState(false);
+    let [error, setError] = useState(false),
+        eat = useClickEater();
 
     let embed, mime = attachment.mime,
         id = attachment.id,
@@ -83,7 +82,7 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
                     <MimeIcon name={attachment.filename} hint={mime} />
                 </div>
                 <div className="ln-attachment-link ui-text">
-                    <a target="__blank" title={title} href={url}>{attachment.filename}</a>
+                    <a target="__blank" title={title} href={url} onContextMenu={eat}>{attachment.filename}</a>
                     <span className="ln-attachment-size">{size}</span>
                 </div>
                 <a target="__blank" title={title} href={url + '?download'}>

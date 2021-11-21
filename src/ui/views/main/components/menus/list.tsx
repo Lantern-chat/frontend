@@ -21,7 +21,7 @@ export const ContextMenu = React.memo(({ children, dark }: IContextMenuProps) =>
 
     return (
         <ul className={className} onContextMenu={eat}>
-            {(children as React.ReactNodeArray).map((child, i) => (<li key={i}>{child}</li>))}
+            {(children as React.ReactNode[]).map((child, i) => (<li key={i}>{child}</li>))}
         </ul>
     )
 })

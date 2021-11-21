@@ -41,6 +41,7 @@ export function fetch(params: string | XHRParameters): Promise<XMLHttpRequest> {
                 reject(e);
             };
 
+            // trigger this when server responds, not when the upload finishes
             xhr.addEventListener('loadend', () => {
                 //if(xhr.readyState != 4) return;
 

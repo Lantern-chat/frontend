@@ -8,7 +8,7 @@ import TextareaAutosize, { TextareaHeightChangeMeta } from 'react-textarea-autos
 import { RootState } from "state/root";
 
 import { useForceRender } from "ui/hooks/useForceRender";
-import { parseHotkey, Hotkey, MainContext } from "ui/hooks/useMainClick";
+import { parseHotkey, Hotkey, MainContext, useClickEater } from "ui/hooks/useMainClick";
 
 export interface IMsgTextareaProps {
     disabled?: boolean,
@@ -62,10 +62,8 @@ export const MsgTextarea = React.memo(forwardRef((props: IMsgTextareaProps, ref:
         forceRender();
     }, []);
 
-    let on_cm = useCallback((e: React.MouseEvent) => {
-        main.clickAll(e);
-        e.stopPropagation();
-    }, []);
+    // just stop propagation and allow it to behave normally
+    let on_cm = useClickEater();
 
     let { style, max_rows } = useMemo(() => {
         let style, max_rows = use_mobile_view ? 5 : 20;
