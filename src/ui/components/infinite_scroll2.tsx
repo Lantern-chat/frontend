@@ -1,5 +1,5 @@
 import { shallowEqualObjects } from "lib/compare";
-import React, { createRef } from "react";
+import React, { createContext, createRef } from "react";
 
 // will automatically use native ResizeObserver if available
 import ResizeObserverPolyfill from "resize-observer-polyfill";
@@ -58,9 +58,10 @@ interface IInfiniteScrollProps {
 
 const OBSERVER_OPTIONS: ResizeObserverOptions = { box: "border-box" };
 
+export const InfiniteScrollContext = createContext<InfiniteScroll | undefined>(void 0);
+
 import "./infinite_scroll.scss";
 export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
-
     public goToStart() {
         this.resetPosition();
     }
@@ -91,6 +92,13 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
             let height = container.clientHeight;
             (container as any).scrollBy({ top: height * top, behavior: 'smooth' });
         }
+    }
+
+    paused: boolean = false;
+
+    public pause(paused: boolean) {
+        __DEV__ && console.log("PAUSED? ", paused);
+        this.paused = paused;
     }
 
     observer: ResizeObserver;
@@ -261,7 +269,7 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
         let container = this.containerRef.current!,
             height = container.scrollHeight;
 
-        if(height == this.height) return;
+        if(height == this.height || this.paused) return;
 
         let top = this.pos, diff = 0;
 
@@ -401,7 +409,9 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
         return (
             <div ref={this.containerRef} className={container_classes}>
                 <div className={wrapper_classes} ref={this.wrapperRef}>
-                    {this.props.children}
+                    <InfiniteScrollContext.Provider value={this}>
+                        {this.props.children}
+                    </InfiniteScrollContext.Provider>
                 </div>
             </div>
         )
