@@ -1,0 +1,68 @@
+$timing: 0.15s;
+
+.ln-image-zoom {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+
+    img {
+        margin: auto;
+        max-height: 100%;
+        max-width: 100%;
+
+        .ln-enable-motion & {
+            transition: transform 0.1s ease-in-out forwards;
+
+            animation: img_enter $timing ease-in-out forwards;
+        }
+    }
+
+    .ln-enable-motion & {
+        animation: img_fade_in $timing ease-in-out;
+    }
+
+    .ln-enable-motion &.closing {
+        img {
+            animation: img_exit $timing ease-in-out forwards;
+        }
+
+        animation: img_fade_out $timing ease-in-out forwards;
+    }
+}
+
+@keyframes img_enter {
+    from {
+        transform: scale(0.4);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+@keyframes img_exit {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(0.4);
+    }
+}
+
+@keyframes img_fade_in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes img_fade_out {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}

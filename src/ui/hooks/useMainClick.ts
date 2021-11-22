@@ -1,8 +1,14 @@
 import React, { createContext, useContext, useEffect, useCallback, useMemo, useState } from "react";
 
 export enum Hotkey {
+    __NONE = 1,// start at 1 to simplify logic
+
+
+    // Context-sensitive escape
+    Escape,
+
     // Tab
-    FocusTextArea = 1, // start at 1 to simplify logic
+    FocusTextArea,
 
     // Ctrl+Alt+ArrowUp
     PrevParty,
@@ -36,6 +42,10 @@ interface IHotkeySpec {
 }
 
 const HOTKEYS: IHotkeySpec[] = [
+    {
+        hot: Hotkey.Escape,
+        key: "Escape",
+    },
     {
         hot: Hotkey.FocusTextArea,
         key: "Tab",

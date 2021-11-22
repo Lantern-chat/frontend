@@ -1,6 +1,7 @@
 .gif-wrapper {
     position: relative;
     display: inline-block;
+    cursor: pointer;
 
     &::after {
         content: "GIF";

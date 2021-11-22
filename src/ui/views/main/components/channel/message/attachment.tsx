@@ -5,10 +5,11 @@ import { format_bytes } from "lib/formatting";
 import { Message, Attachment } from "state/models";
 import { message_attachment_url } from "config/urls";
 
-import { useClickEater } from "ui/hooks/useMainClick";
+import { MainContext, useClickEater, useMainClick, useSimpleToggleOnClick } from "ui/hooks/useMainClick";
 
 import { reactElement } from "ui/components/common/markdown/markdown";
 
+import { ImageZoom } from "ui/views/main/modals/image_zoom";
 import { AnimatedGif } from "ui/components/common/gif";
 import { Glyphicon } from "ui/components/common/glyphicon";
 import { MimeIcon } from "ui/components/mime_icon";
@@ -33,6 +34,7 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
 
     if(mime && !error) {
         let common = {
+            id,
             onContextMenu: eat,
             src: url,
             onError: () => setError(true),
@@ -69,14 +71,7 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
             )
 
         } else if(mime.startsWith('image') && attachment.size < (1024 * 1024 * 30)) {
-            //embed = <img title={title} onContextMenu={eat} src={url} onError={() => setError(true)} />;
-
-            let m: RegExpMatchArray | null;
-            if(m = mime.match(/gif|apng|webp|avif/i)) {
-                embed = <AnimatedGif img={common} which={m[0] as any} />
-            } else {
-                embed = reactElement('img', id, common);
-            }
+            embed = <ImageAttachment img={common} attachment={attachment} />;
         }
     }
 
@@ -116,3 +111,38 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
         </div>
     )
 });
+
+interface IImageAttachmentProps {
+    img: React.ImgHTMLAttributes<HTMLImageElement>,
+    attachment: Attachment
+}
+
+const ImageAttachment = React.memo((props: IImageAttachmentProps) => {
+    //embed = <img title={title} onContextMenu={eat} src={url} onError={() => setError(true)} />;
+
+
+    let main = useContext(MainContext),
+        [show, setShow] = useState(false);
+
+    let onClick = useCallback((e: React.MouseEvent) => {
+        main.clickAll(e);
+        setShow(true);
+    }, [main]);
+
+    let img_props: React.ImgHTMLAttributes<HTMLImageElement> = { ...props.img, loading: 'lazy', onClick };
+
+    let embed, m: RegExpMatchArray | null;
+    if(m = props.attachment.mime!.match(/gif|apng|webp|avif/i)) {
+        embed = <AnimatedGif img={img_props} which={m[0] as any} />
+    } else {
+        embed = reactElement('img', props.img.id, img_props);
+    }
+
+    return (
+        <>
+            {embed}
+
+            {show && <ImageZoom src={props.img.src!} title={props.img.title!} onClose={() => setShow(false)} />}
+        </>
+    );
+})
