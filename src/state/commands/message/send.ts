@@ -5,10 +5,12 @@ import { Room, Snowflake } from "state/models";
 
 var msg_counter = 1;
 
-export function sendMessage(room_id: Snowflake, content: string): DispatchableAction {
+export function sendMessage(room_id: Snowflake, content: string, attachments?: Snowflake[]): DispatchableAction {
     return async (dispatch, getState) => {
         // TODO: Display error
-        if(content.length == 0 || content.length > 5000) return;
+        let has_attachments = attachments && attachments.length > 0;
+
+        if((!has_attachments && content.length == 0) || content.length > 5000) return;
 
         let state = getState(), { user, session } = state.user;
 
@@ -29,7 +31,7 @@ export function sendMessage(room_id: Snowflake, content: string): DispatchableAc
             url: `/api/v1/room/${room_id}/messages`,
             method: XHRMethod.POST,
             bearer: session!.auth,
-            json: { content },
+            json: { content, attachments },
         });
 
         // TODO: Handle errors
