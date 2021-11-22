@@ -46,8 +46,8 @@ const CollapsedCode = React.memo((props: ICodeWrapperprops & { loc: number, bloc
 
     // encode "expand/collapse" switching in CSS using `details[open]`
     return (
-        <details className="ln-code-details" open={open} onClick={onClick} onToggle={onToggle}>
-            <summary>
+        <details className="ln-code-details" open={open} onToggle={onToggle}>
+            <summary onClick={onClick}>
                 Click to&nbsp;
                 <span className="ln-code-details__closed">expand</span>
                 <span className="ln-code-details__open">collapse</span>
