@@ -9,7 +9,7 @@ import { MainContext, useClickEater, useMainClick, useSimpleToggleOnClick } from
 
 import { reactElement } from "ui/components/common/markdown/markdown";
 
-import { ImageZoom } from "ui/views/main/modals/image_zoom";
+import { LightBox } from "ui/views/main/modals/image_zoom";
 import { AnimatedGif } from "ui/components/common/gif";
 import { Glyphicon } from "ui/components/common/glyphicon";
 import { MimeIcon } from "ui/components/mime_icon";
@@ -142,7 +142,7 @@ const ImageAttachment = React.memo((props: IImageAttachmentProps) => {
         <>
             {embed}
 
-            {show && <ImageZoom src={props.img.src!} title={props.img.title!} onClose={() => setShow(false)} />}
+            {show && <LightBox src={props.img.src!} title={props.attachment.title || props.attachment.filename} size={props.attachment.size} onClose={() => setShow(false)} />}
         </>
     );
 })

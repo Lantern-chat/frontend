@@ -1,0 +1,95 @@
+$timing: 0.15s;
+
+.ln-lightbox {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+
+    &__footer {
+        text-align: center;
+        padding: 1em;
+        background-color: rgba(0, 0, 0, 0.6);
+        z-index: 1; // ensure on top of image
+        position: relative;
+    }
+
+    &-zoom {
+        position: absolute;
+        right: 1.5em;
+    }
+
+    &__container {
+        max-height: 100%;
+        max-width: 100%;
+        min-height: 0;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        flex: 1;
+        //flex-basis: 90%;
+
+        img {
+            margin: auto;
+            max-height: 100%;
+            max-width: 100%;
+            flex-shrink: 1;
+            min-height: 0;
+            min-width: 0;
+        }
+
+        .ln-enable-motion & {
+            animation: img_enter $timing ease-in-out;
+        }
+
+        .ln-enable-motion .closing & {
+            animation: img_exit $timing ease-in-out forwards;
+        }
+    }
+
+    .ln-enable-motion & {
+        animation: img_fade_in $timing ease-in-out;
+
+        &.closing {
+            animation: img_fade_out $timing ease-in-out forwards;
+        }
+    }
+}
+
+@keyframes img_enter {
+    from {
+        transform: scale(0.4);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+@keyframes img_exit {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(0.4);
+    }
+}
+
+@keyframes img_fade_in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes img_fade_out {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
