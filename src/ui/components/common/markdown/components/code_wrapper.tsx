@@ -30,14 +30,13 @@ const CollapsedCode = React.memo((props: ICodeWrapperprops & { loc: number, bloc
         [open, setOpen] = useState(false);
 
     let onClick = (e: React.SyntheticEvent) => {
-        if(!open) {
-            ifs?.pause(true);
+        ifs?.pause(true);
 
-            // fucking Safari gets weird with `onToggle`, so just set a timeout instead
-            if(IS_IOS_SAFARI) {
-                setTimeout(() => ifs?.pause(false), 100);
-            }
+        // fucking Safari gets weird with `onToggle`, so just set a timeout instead
+        if(IS_IOS_SAFARI) {
+            setTimeout(() => ifs?.pause(false), 100);
         }
+
         setOpen(!open);
         e.preventDefault();
     };

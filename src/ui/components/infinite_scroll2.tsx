@@ -86,6 +86,10 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
         this.scrollBy(0.1); // 1/10
     }
 
+    public at_start(): boolean {
+        return this.anchor === this.props.start;
+    }
+
     scrollBy(top: number) {
         let container = this.containerRef.current;
         if(container) {
@@ -269,7 +273,11 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
         let container = this.containerRef.current!,
             height = container.scrollHeight;
 
-        if(height == this.height || this.paused) return;
+        if(height == this.height || this.paused) {
+            this.height = height;
+            this.pos = container.scrollTop;
+            return;
+        }
 
         let top = this.pos, diff = 0;
 
