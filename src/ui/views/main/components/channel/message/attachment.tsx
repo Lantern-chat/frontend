@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { IS_MOBILE } from "lib/user_agent";
 import { format_bytes } from "lib/formatting";
 
@@ -6,6 +6,7 @@ import { Message, Attachment } from "state/models";
 import { message_attachment_url } from "config/urls";
 
 import { MainContext, useClickEater, useMainClick, useSimpleToggleOnClick } from "ui/hooks/useMainClick";
+import { InfiniteScrollContext } from "ui/components/infinite_scroll2";
 
 import { reactElement } from "ui/components/common/markdown/markdown";
 
@@ -15,8 +16,6 @@ import { Glyphicon } from "ui/components/common/glyphicon";
 import { MimeIcon } from "ui/components/mime_icon";
 
 import SaveIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-199-save.svg";
-
-import { AnchoredModal } from "ui/components/modal/anchored_modal";
 
 import "./attachment.scss";
 export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, attachment: Attachment }) => {
@@ -119,9 +118,9 @@ interface IImageAttachmentProps {
 
 const ImageAttachment = React.memo((props: IImageAttachmentProps) => {
     //embed = <img title={title} onContextMenu={eat} src={url} onError={() => setError(true)} />;
-
-
     let main = useContext(MainContext),
+        [visible, setVisible] = useState(false),
+        [loaded, setLoaded] = useState(false),
         [show, setShow] = useState(false);
 
     let onClick = useCallback((e: React.MouseEvent) => {
@@ -129,14 +128,49 @@ const ImageAttachment = React.memo((props: IImageAttachmentProps) => {
         setShow(true);
     }, [main]);
 
-    let img_props: React.ImgHTMLAttributes<HTMLImageElement> = { ...props.img, loading: 'lazy', onClick };
+    let animated_format = useMemo(() => {
+        let m = props.attachment.mime?.match(/gif|apng|webp|avif/i);
+        return m && m[0];
+    }, [props.attachment.mime]);
 
-    let embed, m: RegExpMatchArray | null;
-    if(m = props.attachment.mime!.match(/gif|apng|webp|avif/i)) {
-        embed = <AnimatedGif img={img_props} which={m[0] as any} />
+    let embed, embed_ref = useRef<HTMLImageElement>(null);
+
+    let onLoad = useCallback(() => {
+        setLoaded(true);
+        __DEV__ && console.log("Img %s now loaded", props.attachment.filename);
+    }, [embed_ref.current]);
+
+    let img_props: React.ImgHTMLAttributes<HTMLImageElement> = { ...props.img, onClick, style: loaded ? undefined : { height: '100em' } };
+
+    if(visible) {
+        if(animated_format) {
+            embed = <AnimatedGif img={{ ...img_props, onLoad }} which={animated_format as any} />
+        } else {
+            embed = <img {...img_props} onLoad={onLoad} />;
+        }
     } else {
-        embed = reactElement('img', props.img.id, img_props);
-    }
+        embed = <img {...img_props} ref={embed_ref} src={undefined} />;
+    };
+
+    let ifs = useContext(InfiniteScrollContext);
+
+    useEffect(() => {
+        let eref = embed_ref.current;
+        if(eref && !visible) {
+            let observer = new IntersectionObserver((entries) => {
+                if(entries[0].intersectionRatio > 0) {
+                    setVisible(true);
+                    __DEV__ && console.log("Img %s now visible", props.attachment.filename);
+                }
+            }, { root: ifs?.containerRef.current, rootMargin: '100%' });
+
+            observer.observe(eref);
+
+            return () => { observer.disconnect(); };
+        }
+
+        return;
+    }, [embed_ref.current, visible]);
 
     return (
         <>
