@@ -28,6 +28,10 @@ export enum Hotkey {
     FeedArrowDown,
     FeedEnd,
 
+    Plus,
+    Minus,
+    Equals,
+
     __MAX_HOTKEY
 }
 
@@ -99,6 +103,14 @@ const HOTKEYS: IHotkeySpec[] = [
         hot: Hotkey.ToggleLightTheme,
         key: "t",
         mod: CTRL_MODIFIER,
+    },
+    {
+        hot: Hotkey.Plus,
+        key: "+"
+    },
+    {
+        hot: Hotkey.Minus,
+        key: "-"
     }
 ];
 
