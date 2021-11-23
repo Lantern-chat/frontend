@@ -17,7 +17,6 @@ enum LbActType {
     Pan,
     Zoom,
     Clamp,
-    Rotate,
 }
 
 interface LbLoadAction {
@@ -54,12 +53,7 @@ interface LbClampAction {
     my: number,
 }
 
-interface LbRotateAction {
-    t: LbActType.Rotate,
-    a: number,
-}
-
-type LightboxAction = LbLoadAction | LbSetPanAction | LbSetZoomAction | LbPanAction | LbZoomAction | LbClampAction | LbRotateAction;
+type LightboxAction = LbLoadAction | LbSetPanAction | LbSetZoomAction | LbPanAction | LbZoomAction | LbClampAction;
 
 interface LightboxState {
     width: number,
@@ -67,12 +61,11 @@ interface LightboxState {
     x: number, // position relative to origin of image within 4 quadrants
     y: number, // position relative to origin of image within 4 quadrants
     z: number,
-    a: number,
     is_panning: boolean,
     is_zooming: boolean,
 }
 
-const DEFAULT_STATE: LightboxState = { width: 0, height: 0, x: 0, y: 0, z: 1, a: 0, is_panning: false, is_zooming: false };
+const DEFAULT_STATE: LightboxState = { width: 0, height: 0, x: 0, y: 0, z: 1, is_panning: false, is_zooming: false };
 
 function lb_reducer(state: LightboxState, action: LightboxAction): LightboxState {
     switch(action.t) {
@@ -99,6 +92,7 @@ function lb_reducer(state: LightboxState, action: LightboxAction): LightboxState
 
             let [ox, oy] = o || [0, 0],
                 e = Math.exp(z - state.z);
+
             // let m0 = Math.exp(state.z - 1),
             //     m1 = Math.exp(z - 1);
             // relocate origins to cursor, undo current zoom, do new zoom, shift back origin
@@ -121,9 +115,6 @@ function lb_reducer(state: LightboxState, action: LightboxAction): LightboxState
 
             return { ...state, x, y };
         }
-        case LbActType.Rotate: {
-            return { ...state, a: state.a + action.a };
-        }
     }
 
     return state;
@@ -136,7 +127,6 @@ export interface ILightBoxProps {
     onClose(): void;
 }
 
-import RotateIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-493-rotate.svg";
 import ZoomIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-28-search.svg";
 
 const MOMENTUM: number = 0.1;
@@ -167,25 +157,31 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
     useMainHotkey(Hotkey.Escape, () => do_close(), [do_close]);
 
     // `at` is a position on the PAGE (container, technically), not SCREEN. The screen extends beyond the page
-    let do_zoom = useCallback((dz: number, at: [number, number]) => {
-        let i = img.current!,
-            rect = i.getBoundingClientRect(),
-            [x, y] = at,
-            is_inside = (rect.left < x && x < rect.right) && (rect.top < y && y < rect.bottom),
-            o: [number, number] | undefined;
+    let do_zoom = useCallback((dz: number, at?: [number, number]) => {
+        let o: [number, number] = [0, 0];
 
-        // apply relative zoom if and only if the anchor is inside the image on-screen
-        if(is_inside) {
-            let container_rect = container_ref.current!.getBoundingClientRect();
+        if(at) {
+            let i = img.current!,
+                rect = i.getBoundingClientRect(),
+                [x, y] = at,
+                is_inside = (rect.left < x && x < rect.right) && (rect.top < y && y < rect.bottom);
 
-            o = [
-                (x - container_rect.left) - container_rect.width * 0.5,
-                (y - container_rect.top) - container_rect.height * 0.5,
-            ];
+            // apply relative zoom if and only if the anchor is inside the image on-screen
+            if(is_inside) {
+                let container_rect = container_ref.current!.getBoundingClientRect();
+
+                o = [
+                    (x - container_rect.left) - container_rect.width * 0.5,
+                    (y - container_rect.top) - container_rect.height * 0.5,
+                ];
+            }
         }
 
         dispatch({ t: LbActType.Zoom, dz: dz, o });
     }, [img.current, container_ref.current]);
+
+    useMainHotkey(Hotkey.Plus, () => do_zoom(0.25), [do_zoom]);
+    useMainHotkey(Hotkey.Minus, () => do_zoom(-0.25), [do_zoom]);
 
     interface IMouseState {
         // current coordinates
@@ -266,27 +262,18 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
                     cont_width = cont.clientWidth,
                     cont_height = cont.clientHeight,
                     client_width = i.clientWidth,
-                    client_height = i.clientHeight,
 
                     // fits on screen if the natural width is the same as full client width (ie: image is smaller than container)
                     fits_on_screen = width == client_width;
 
                 // at natural rendered size
                 if(state.z == 1) {
-                    let swap = state.a % 90 != 0, w = width, h = height;
-
-                    if(swap) {
-                        let tmp = w;
-                        w = h;
-                        h = tmp;
-                    }
-
                     if(fits_on_screen) {
                         // fit to screen
-                        z = Math.min(cont_width / w, cont_height / h);
+                        z = Math.min(cont_width / width, cont_height / height);
                     } else {
                         // zoom to 100%
-                        z = w / client_width;
+                        z = width / client_width;
                     }
 
                     // adjust for exponential zooming
@@ -419,18 +406,12 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
                             transition: (reduce_motion || state.is_panning || state.is_zooming) ? 'none' :
                                 // if mode mode is momentum, use an expo-ease-out cursive at 500ms
                                 (mouse.current.d == 2 ? 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)' : `transform 0.1s ease-out`),
-                            transform: `translate(${state.x}px, ${state.y}px) rotate(${state.a}deg) scale(${scale})`
+                            transform: `translate(${state.x}px, ${state.y}px) scale(${scale})`
                         }}
                     />
                 </div>
 
                 <div className="ln-lightbox__footer ui-text" onClick={on_click_image}>
-                    <div className="ln-lightbox__controls">
-                        <span id="zoom-in" onClick={() => dispatch({ t: LbActType.Zoom, dz: 0.25 })}><Glyphicon src={ZoomIcon} /></span>
-                        <span id="zoom-out" onClick={() => dispatch({ t: LbActType.Zoom, dz: -0.25 })}><Glyphicon src={ZoomIcon} /></span>
-                        <span id="rotate-cc" onClick={() => dispatch({ t: LbActType.Rotate, a: -90 })}><Glyphicon src={RotateIcon} /></span>
-                        <span id="rotate-cl" onClick={() => dispatch({ t: LbActType.Rotate, a: 90 })}><Glyphicon src={RotateIcon} /></span>
-                    </div>
                     <span>
                         <span className="ln-lightbox-title">{title}</span>
                         <span> — {meta}</span>
