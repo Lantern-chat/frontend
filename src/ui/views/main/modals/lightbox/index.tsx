@@ -142,31 +142,30 @@ const MOMENTUM: number = 0.1;
 
 import "./lightbox.scss";
 export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProps) => {
-    let reduce_motion = useSelector(selectPrefsFlag(UserPreferenceFlags.ReduceAnimations));
-
     let img = useRef<HTMLImageElement>(null),
         container_ref = useRef<HTMLDivElement>(null),
+        reduce_motion = useSelector(selectPrefsFlag(UserPreferenceFlags.ReduceAnimations)),
         eat = useClickEater(),
-        wx = window.innerWidth, wy = window.innerHeight,
+        // for triggering the closing animation
         [closing, setClosing] = useState(false),
         [state, dispatch] = useReducer(lb_reducer, DEFAULT_STATE);
 
+    // set this up to get natural dimensions of image
     let on_load = useCallback(() => {
         let i = img.current;
-        if(i) {
-            dispatch({ t: LbActType.Load, width: i.naturalWidth, height: i.naturalHeight });
-        }
+        if(i) { dispatch({ t: LbActType.Load, width: i.naturalWidth, height: i.naturalHeight }); }
     }, [img.current]);
 
     let do_close = useCallback(() => {
+        // close instantly when reduce_motion is on
         if(reduce_motion) return onClose();
 
-        setClosing(true);
-        setTimeout(() => onClose(), 150);
+        setClosing(true); setTimeout(() => onClose(), 150);
     }, [onClose, reduce_motion]);
+
     useMainHotkey(Hotkey.Escape, () => do_close(), [do_close]);
 
-    // `at` is a position on the PAGE, not SCREEN. The screen extends beyond the page
+    // `at` is a position on the PAGE (container, technically), not SCREEN. The screen extends beyond the page
     let do_zoom = (dz: number, at: [number, number]) => {
         let i = img.current!,
             rect = i.getBoundingClientRect(),
@@ -174,6 +173,7 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
             is_inside = (rect.left < x && x < rect.right) && (rect.top < y && y < rect.bottom),
             o: [number, number] | undefined;
 
+        // apply relative zoom if and only if the anchor is inside the image on-screen
         if(is_inside) {
             let container_rect = container_ref.current!.getBoundingClientRect();
 
@@ -195,6 +195,7 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
         sx: number,
         sy: number,
 
+        // velocity-ish
         vx: number,
         vy: number,
 
@@ -213,27 +214,38 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
     let mouse = useRef<IMouseState>({ x: 0, y: 0, c: 0, sx: 0, sy: 0, vx: 0, vy: 0, d: 0 });
 
     let on_mousedown = useCallback((e: React.MouseEvent<HTMLImageElement>) => {
-        if(e.button != 0) return;
-
         let m = mouse.current;
+
+        // left and middle clicks
+        if(e.button == 0) { dispatch({ t: LbActType.SetPan, panning: true }); }
+        else if(e.button == 1) { dispatch({ t: LbActType.SetZoom, zooming: true }); }
+        else return;
+
         m.sx = m.x = e.pageX;
         m.sy = m.y = e.pageY;
 
         m.vx = m.vy = 0;
 
-        dispatch({ t: LbActType.SetPan, panning: true });
-
-        // setup click handler. If mouseup is received before this timeout, then the click persists, otherwise it was a drag
-        m.c++;
-        m.ct = setTimeout(() => { m.c = 0; m.d = 0; }, 300);
+        // left click
+        if(e.button == 0) {
+            // setup click handler. If mouseup is received before this timeout, then the click persists, otherwise it was a drag
+            m.c++;
+            m.ct = setTimeout(() => { m.c = 0; m.d = 0; }, 300);
+        }
 
         e.preventDefault();
+        e.stopPropagation(); // must stop or else `on_mousedown_external` is also triggered
+    }, []);
+
+    let on_mousedown_external = useCallback((e: React.MouseEvent<HTMLImageElement>) => {
+        if(e.button == 1) on_mousedown(e);
+        e.stopPropagation();
     }, []);
 
     let on_mouseup = (e: React.MouseEvent<HTMLImageElement>) => {
-        if(!state.is_panning) return;
+        if(!(state.is_panning || state.is_zooming)) return;
 
-        let pan = true, m = mouse.current, { x, y, ct, c } = m;
+        let pan = state.is_panning, m = mouse.current, { x, y, ct, c } = m;
 
         if(c > 0) {
             clearTimeout(ct); // no longer panning
@@ -253,17 +265,22 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
                     cont_width = cont.clientWidth,
                     cont_height = cont.clientHeight,
                     client_width = i.clientWidth,
+
+                    // fits on screen if the natural width is the same as full client width (ie: image is smaller than container)
                     fits_on_screen = width == client_width;
 
                 // at natural rendered size
                 if(state.z == 1) {
                     if(fits_on_screen) {
                         // fit to screen
-                        z = Math.log(Math.min(cont_width / width, cont_height / height)) + 1;
+                        z = Math.min(cont_width / width, cont_height / height);
                     } else {
                         // zoom to 100%
-                        z = Math.log(width / client_width) + 1;
+                        z = width / client_width;
                     }
+
+                    // adjust for exponential zooming
+                    z = Math.log(z) + 1;
                 }
 
                 if(fits_on_screen) {
@@ -287,7 +304,8 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
         //m.vx = (m.vx * 0.3 + (e.pageX - m.x) * 0.7);
         //m.vy = (m.vy * 0.3 + (e.pageY - m.y) * 0.7);
 
-        dispatch({ t: LbActType.SetPan, panning: false });
+        if(state.is_panning) dispatch({ t: LbActType.SetPan, panning: false });
+        if(state.is_zooming) dispatch({ t: LbActType.SetZoom, zooming: false });
 
         if(pan && !closing && !reduce_motion) {
             if(!(m.vx != 0 || m.vy != 0)) return;
@@ -300,12 +318,14 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
 
             dispatch({ t: LbActType.Pan, dx, dy });
         }
+
+        e.stopPropagation();
     };
 
-    let on_mousemove = useCallback((e: React.MouseEvent<HTMLImageElement>) => {
+    let on_mousemove = (e: React.MouseEvent<HTMLImageElement>) => {
         let m = mouse.current;
 
-        if(state.is_panning && !closing) {
+        if((state.is_zooming || state.is_panning) && !closing) {
             let dx = e.pageX - m.x,
                 dy = e.pageY - m.y;
 
@@ -315,16 +335,19 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
 
             // if we do not receive another mousemove event, remove velocity
             clearTimeout(m.pt);
-            m.pt = setTimeout(() => { if(m.d == 0) { m.vx = m.vy = 0; } }, 100);
+            m.pt = setTimeout(() => { if(m.d != 2) { m.vx = m.vy = 0; } }, 100);
 
-            dispatch({ t: LbActType.Pan, dx, dy });
+            if(state.is_panning) { dispatch({ t: LbActType.Pan, dx, dy }); }
+            if(state.is_zooming) { do_zoom(dy / -500, [m.sx, m.sy]); }
+
+            e.stopPropagation(); // already handled, optimize
         }
 
         m.x = e.pageX;
         m.y = e.pageY;
 
         e.preventDefault();
-    }, [state.is_panning, closing]);
+    };
 
     let scale = Math.exp(state.z - 1);
 
@@ -332,13 +355,14 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
         let m = mouse.current;
         m.d = 1;
         do_zoom(e.deltaY / -500, [m.x, m.y]);
+        e.stopPropagation();
     }, [img.current, container_ref.current]);
 
     let on_click_image = (e: React.MouseEvent) => {
         e.stopPropagation();
     }, on_click_background = (e: React.MouseEvent) => {
         e.stopPropagation();
-        if(!state.is_panning) do_close(); // protect against fast/lagging panning
+        if(!(state.is_panning || state.is_zooming)) do_close(); // protect against fast/lagging panning/zooming
     };
 
     let meta = useMemo(() => {
@@ -352,25 +376,37 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
             return Math.round(i.clientWidth * scale / state.width * 100).toLocaleString("en-US") + '%';
         }
         return;
-    }, [scale, state.width]);
+    }, [img.current, scale, state.width]);
 
     // TODO: Clicking on footer and dragging to image triggers on_click_background
+
+    let cursor, cont_cursor;
+    if(state.is_panning) {
+        cursor = 'grabbing';
+    } else if(mouse.current.c > 0) {
+        cursor = state.z > 1 ? 'zoom-out' : 'zoom-in';
+    } else if(state.is_zooming) {
+        cont_cursor = mouse.current.vy > 0 ? 'zoom-out' : 'zoom-in';
+    } else {
+        cursor = 'grab';
+    }
 
     return (
         <FullscreenModal>
             <div className={classNames("ln-lightbox", { closing })}
                 onClick={on_click_background} onContextMenu={eat}
-                onMouseMove={on_mousemove} onMouseUp={on_mouseup} onWheel={on_wheel}
+                onMouseMove={on_mousemove} onMouseDown={on_mousedown_external} onMouseUp={on_mouseup} onWheel={on_wheel}
             >
-                <div className="ln-lightbox__container" ref={container_ref}>
+                <div className="ln-lightbox__container" ref={container_ref} style={{ cursor: cont_cursor }}>
                     <img src={src} ref={img}
                         onLoad={on_load}
                         onClick={on_click_image}
                         onMouseDown={on_mousedown}
 
                         style={{
-                            cursor: state.is_panning ? 'grabbing' : (mouse.current.c > 0 ? (state.z > 1 ? 'zoom-out' : 'zoom-in') : 'grab'),
-                            transition: (reduce_motion || state.is_panning) ? 'none' : (mouse.current.d == 2 ? 'transform 0.5s cubic-bezier(0, 0.55, 0.45, 1)' : `transform 0.065s ease-out`),
+                            cursor,
+                            transition: (reduce_motion || state.is_panning || state.is_zooming) ? 'none' :
+                                (mouse.current.d == 2 ? 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)' : `transform 0.065s ease-out`),
                             transform: `translate(${state.x}px, ${state.y}px) scale(${scale})`
                         }}
                     />
