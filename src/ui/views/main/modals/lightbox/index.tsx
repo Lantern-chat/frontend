@@ -6,6 +6,7 @@ import { UserPreferenceFlags } from "state/models";
 import { selectPrefsFlag } from "state/selectors/prefs";
 
 import { FullscreenModal } from "ui/components/modal";
+import { Glyphicon } from "ui/components/common/glyphicon";
 
 import { Hotkey, useClickEater, useMainHotkey } from "ui/hooks/useMainClick";
 
@@ -16,6 +17,7 @@ enum LbActType {
     Pan,
     Zoom,
     Clamp,
+    Rotate,
 }
 
 interface LbLoadAction {
@@ -52,7 +54,12 @@ interface LbClampAction {
     my: number,
 }
 
-type LightboxAction = LbLoadAction | LbSetPanAction | LbSetZoomAction | LbPanAction | LbZoomAction | LbClampAction;
+interface LbRotateAction {
+    t: LbActType.Rotate,
+    a: number,
+}
+
+type LightboxAction = LbLoadAction | LbSetPanAction | LbSetZoomAction | LbPanAction | LbZoomAction | LbClampAction | LbRotateAction;
 
 interface LightboxState {
     width: number,
@@ -60,14 +67,19 @@ interface LightboxState {
     x: number, // position relative to origin of image within 4 quadrants
     y: number, // position relative to origin of image within 4 quadrants
     z: number,
+    a: number,
     is_panning: boolean,
     is_zooming: boolean,
 }
 
-const DEFAULT_STATE: LightboxState = { width: 0, height: 0, x: 0, y: 0, z: 1, is_panning: false, is_zooming: false };
+const DEFAULT_STATE: LightboxState = { width: 0, height: 0, x: 0, y: 0, z: 1, a: 0, is_panning: false, is_zooming: false };
 
 function lb_reducer(state: LightboxState, action: LightboxAction): LightboxState {
     switch(action.t) {
+        case LbActType.Pan: {
+            let { dx, dy } = action;
+            return { ...state, x: state.x + dx, y: state.y + dy };
+        }
         case LbActType.Load: {
             let { width, height } = action;
             return { ...state, width, height };
@@ -77,10 +89,6 @@ function lb_reducer(state: LightboxState, action: LightboxAction): LightboxState
         }
         case LbActType.SetZoom: {
             return { ...state, is_zooming: action.zooming };
-        }
-        case LbActType.Pan: {
-            let { dx, dy } = action;
-            return { ...state, x: state.x + dx, y: state.y + dy };
         }
         case LbActType.Zoom: {
             let { dz, o } = action;
@@ -112,6 +120,9 @@ function lb_reducer(state: LightboxState, action: LightboxAction): LightboxState
 
             return { ...state, x, y };
         }
+        case LbActType.Rotate: {
+            return { ...state, a: (state.a + action.a) % 360 };
+        }
     }
 
     return state;
@@ -123,6 +134,11 @@ export interface ILightBoxProps {
     size?: number,
     onClose(): void;
 }
+
+import RotateIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-493-rotate.svg";
+import ZoomIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-28-search.svg";
+
+const MOMENTUM: number = 0.1;
 
 import "./lightbox.scss";
 export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProps) => {
@@ -179,17 +195,22 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
         sx: number,
         sy: number,
 
+        vx: number,
+        vy: number,
+
         /// click timer, for detecting if a click was a click or the start of a drag
         ct?: number,
+        /// Panning timer, for detecting if the mouse is moving or not
+        pt?: number,
 
         /// current number of clicks
         c: number,
 
-        // mode, 0 = pan, 1 = zoom
-        d: 0 | 1,
+        // mode, 0 = pan, 1 = zoom, 2 = momentum
+        d: 0 | 1 | 2,
     }
 
-    let mouse = useRef<IMouseState>({ x: 0, y: 0, c: 0, sx: 0, sy: 0, d: 0 });
+    let mouse = useRef<IMouseState>({ x: 0, y: 0, c: 0, sx: 0, sy: 0, vx: 0, vy: 0, d: 0 });
 
     let on_mousedown = useCallback((e: React.MouseEvent<HTMLImageElement>) => {
         if(e.button != 0) return;
@@ -198,11 +219,13 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
         m.sx = m.x = e.pageX;
         m.sy = m.y = e.pageY;
 
+        m.vx = m.vy = 0;
+
         dispatch({ t: LbActType.SetPan, panning: true });
 
         // setup click handler. If mouseup is received before this timeout, then the click persists, otherwise it was a drag
         m.c++;
-        m.ct = setTimeout(() => { m.c = 0; }, 300);
+        m.ct = setTimeout(() => { m.c = 0; m.d = 0; }, 300);
 
         e.preventDefault();
     }, []);
@@ -220,43 +243,95 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
             if(dist > 20) {
                 c = m.c = 0;
             } else if(c == 2) {
-                m.c = 0; // reset
+                m.d = m.c = 0; // reset
 
-                let z = (state.z > 1 || state.z < 1) ? 1 : 2;
+                let z = 1, // zoom to fit by default
+                    o: [number, number] = [e.pageX, e.pageY],
+                    { width, height } = state,
+                    i = img.current!,
+                    cont = container_ref.current!,
+                    cont_width = cont.clientWidth,
+                    cont_height = cont.clientHeight,
+                    client_width = i.clientWidth,
+                    fits_on_screen = width == client_width;
+
+                // at natural rendered size
+                if(state.z == 1) {
+                    if(fits_on_screen) {
+                        // fit to screen
+                        z = Math.log(Math.min(cont_width / width, cont_height / height)) + 1;
+                    } else {
+                        // zoom to 100%
+                        z = Math.log(width / client_width) + 1;
+                    }
+                }
+
+                if(fits_on_screen) {
+                    // compute relative proportion of image within container
+                    let dw = (cont_width - width) / cont_width,
+                        dh = (cont_height - height) / cont_height;
+
+                    // if the image fills less than 75% of the screen, keep it to center
+                    if(Math.max(dw, dh) > 0.25) {
+                        o = [0, 0];
+                    }
+                }
 
                 // force absolute z to dz
-                do_zoom(z - state.z, [e.pageX, e.pageY]);
+                do_zoom(z - state.z, o);
 
                 pan = false;
             }
         }
 
-        if(pan && !closing) {
-            dispatch({ t: LbActType.Pan, dx: e.pageX - x, dy: e.pageY - y });
-        }
+        //m.vx = (m.vx * 0.3 + (e.pageX - m.x) * 0.7);
+        //m.vy = (m.vy * 0.3 + (e.pageY - m.y) * 0.7);
 
         dispatch({ t: LbActType.SetPan, panning: false });
+
+        if(pan && !closing && !reduce_motion) {
+            if(!(m.vx != 0 || m.vy != 0)) return;
+
+            let dx = m.vx * 5, dy = m.vy * 5;
+
+            m.d = 2; // enable momentum
+
+            setTimeout(() => { if(m.d == 2) m.d = 0; }, 500); // allow for animation
+
+            dispatch({ t: LbActType.Pan, dx, dy });
+        }
     };
 
-    let on_mousemove = (e: React.MouseEvent<HTMLImageElement>) => {
+    let on_mousemove = useCallback((e: React.MouseEvent<HTMLImageElement>) => {
         let m = mouse.current;
 
         if(state.is_panning && !closing) {
-            dispatch({ t: LbActType.Pan, dx: e.pageX - m.x, dy: e.pageY - m.y });
+            let dx = e.pageX - m.x,
+                dy = e.pageY - m.y;
+
+            // EMA
+            m.vx = (m.vx + dx) * 0.5;
+            m.vy = (m.vy + dy) * 0.5;
+
+            // if we do not receive another mousemove event, remove velocity
+            clearTimeout(m.pt);
+            m.pt = setTimeout(() => { if(m.d == 0) { m.vx = m.vy = 0; } }, 100);
+
+            dispatch({ t: LbActType.Pan, dx, dy });
         }
 
         m.x = e.pageX;
         m.y = e.pageY;
 
         e.preventDefault();
-    };
+    }, [state.is_panning, closing]);
 
     let scale = Math.exp(state.z - 1);
 
     let on_wheel = useCallback((e: React.WheelEvent<HTMLImageElement>) => {
-        let { x, y } = mouse.current;
-
-        do_zoom(e.deltaY / -500, [x, y]);
+        let m = mouse.current;
+        m.d = 1;
+        do_zoom(e.deltaY / -500, [m.x, m.y]);
     }, [img.current, container_ref.current]);
 
     let on_click_image = (e: React.MouseEvent) => {
@@ -266,13 +341,10 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
         if(!state.is_panning) do_close(); // protect against fast/lagging panning
     };
 
-    let footer = useMemo(() => {
-        let footer = [];
-        title && footer.push(title);
-        size && footer.push(`${format_bytes(size)}`);
-
-        return footer.join(' — ');
-    }, [title, size]);
+    let meta = useMemo(() => {
+        let bytes = size ? format_bytes(size) : 'Unknown size';
+        return `${state.width} x ${state.height} (${bytes})`
+    }, [size, state.width]);
 
     let zoom_level = useMemo(() => {
         let i = img.current;
@@ -281,6 +353,8 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
         }
         return;
     }, [scale, state.width]);
+
+    // TODO: Clicking on footer and dragging to image triggers on_click_background
 
     return (
         <FullscreenModal>
@@ -296,14 +370,24 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
 
                         style={{
                             cursor: state.is_panning ? 'grabbing' : (mouse.current.c > 0 ? (state.z > 1 ? 'zoom-out' : 'zoom-in') : 'grab'),
-                            transition: (reduce_motion || state.is_panning) ? 'none' : 'transform 0.05s ease-in',
+                            transition: (reduce_motion || state.is_panning) ? 'none' : (mouse.current.d == 2 ? 'transform 0.5s cubic-bezier(0, 0.55, 0.45, 1)' : `transform 0.065s ease-out`),
                             transform: `translate(${state.x}px, ${state.y}px) scale(${scale})`
                         }}
                     />
                 </div>
 
                 <div className="ln-lightbox__footer ui-text" onClick={on_click_image}>
-                    {footer} <span className="ln-lightbox-zoom">{zoom_level}</span>
+                    <div className="ln-lightbox__controls">
+                        <span id="zoom-in"><Glyphicon src={ZoomIcon} /></span>
+                        <span id="zoom-out"><Glyphicon src={ZoomIcon} /></span>
+                        <span id="rotate-cc"><Glyphicon src={RotateIcon} /></span>
+                        <span id="rotate-cl"><Glyphicon src={RotateIcon} /></span>
+                    </div>
+                    <span>
+                        <span className="ln-lightbox-title">{title}</span>
+                        <span> — {meta}</span>
+                        <span className="ln-lightbox-zoom">{zoom_level}</span>
+                    </span>
                 </div>
             </div>
         </FullscreenModal>

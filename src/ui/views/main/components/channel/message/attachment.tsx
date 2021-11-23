@@ -9,7 +9,7 @@ import { MainContext, useClickEater, useMainClick, useSimpleToggleOnClick } from
 
 import { reactElement } from "ui/components/common/markdown/markdown";
 
-import { LightBox } from "ui/views/main/modals/image_zoom";
+import { LightBox } from "ui/views/main/modals/lightbox";
 import { AnimatedGif } from "ui/components/common/gif";
 import { Glyphicon } from "ui/components/common/glyphicon";
 import { MimeIcon } from "ui/components/mime_icon";
@@ -88,7 +88,7 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
                     <a target="__blank" title={title} href={url} onContextMenu={eat}>{attachment.filename}</a>
                     <span className="ln-attachment-size">{size}</span>
                 </div>
-                <a target="__blank" title={title} href={url + '?download'}>
+                <a target="__blank" title={title} href={url + '?download'} className="ln-msg-attachment__download">
                     <Glyphicon src={SaveIcon} />
                 </a>
             </div>

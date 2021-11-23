@@ -1,3 +1,5 @@
+@import "lib/variables";
+
 $timing: 0.15s;
 
 .ln-lightbox {
@@ -13,11 +15,46 @@ $timing: 0.15s;
         background-color: rgba(0, 0, 0, 0.6);
         z-index: 1; // ensure on top of image
         position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        line-height: normal;
+
+        > span {
+            display: flex;
+            justify-content: center;
+
+            @media (max-width: $ln-max-channel-width) {
+                font-size: 3.5vw;
+                justify-content: left;
+            }
+        }
     }
 
     &-zoom {
         position: absolute;
         right: 1.5em;
+    }
+
+    &-title {
+        max-width: 35vw; // TODO: Fix this, not ideal
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: inline-block;
+    }
+
+    &__controls {
+        position: absolute;
+        font-size: 3em;
+
+        @media (hover: none) and (pointer: coarse) {
+            display: none;
+        }
+
+        #rotate-cl svg {
+            transform: scaleX(-1);
+        }
     }
 
     &__container {
@@ -41,19 +78,19 @@ $timing: 0.15s;
         }
 
         .ln-enable-motion & {
-            animation: img_enter $timing ease-in-out;
+            animation: img_enter $timing ease-out;
         }
 
         .ln-enable-motion .closing & {
-            animation: img_exit $timing ease-in-out forwards;
+            animation: img_exit $timing ease-out forwards;
         }
     }
 
     .ln-enable-motion & {
-        animation: img_fade_in $timing ease-in-out;
+        animation: img_fade_in $timing ease-in;
 
         &.closing {
-            animation: img_fade_out $timing ease-in-out forwards;
+            animation: img_fade_out $timing ease-in forwards;
         }
     }
 }
