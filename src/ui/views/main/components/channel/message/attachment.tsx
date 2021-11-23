@@ -121,62 +121,60 @@ const ImageAttachment = React.memo((props: IImageAttachmentProps) => {
     let main = useContext(MainContext),
         [visible, setVisible] = useState(false),
         [loaded, setLoaded] = useState(false),
-        [show, setShow] = useState(false);
+        [show, setShow] = useState(false),
+        ref = useRef<HTMLImageElement>(null),
 
-    let onClick = useCallback((e: React.MouseEvent) => {
-        main.clickAll(e);
-        setShow(true);
-    }, [main]);
+        // on click of the image, show the lightbox modal
+        onClick = useCallback((e: React.MouseEvent) => { main.clickAll(e); setShow(true); }, [main]),
 
-    let animated_format = useMemo(() => {
-        let m = props.attachment.mime?.match(/gif|apng|webp|avif/i);
-        return m && m[0];
-    }, [props.attachment.mime]);
-
-    let embed, embed_ref = useRef<HTMLImageElement>(null);
-
-    let onLoad = useCallback(() => {
-        setLoaded(true);
-        __DEV__ && console.log("Img %s now loaded", props.attachment.filename);
-    }, [embed_ref.current]);
-
-    let img_props: React.ImgHTMLAttributes<HTMLImageElement> = { ...props.img, onClick, style: loaded ? undefined : { height: '100em' } };
-
-    if(visible) {
-        if(animated_format) {
-            embed = <AnimatedGif img={{ ...img_props, onLoad }} which={animated_format as any} />
-        } else {
-            embed = <img {...img_props} onLoad={onLoad} />;
-        }
-    } else {
-        embed = <img {...img_props} ref={embed_ref} src={undefined} />;
-    };
-
-    let ifs = useContext(InfiniteScrollContext);
+        // parse mime type to see if it's obviously animated
+        // TODO: Actually scan the file for animated flags
+        animated_format = useMemo(() => { let m = props.attachment.mime?.match(/gif|apng|webp|avif/i); return m && m[0]; }, [props.attachment.mime]),
+        // on load, replace height placeholder
+        onLoad = useCallback(() => setLoaded(true), [ref.current]),
+        // add onClick and style tweaks
+        img_props: React.ImgHTMLAttributes<HTMLImageElement> = { ...props.img, onClick, style: loaded ? props.img.style : { height: '100em' } },
+        // tap into InfiniteScroll for a reference to the container element, used for the intersection observer bounds
+        ifs = useContext(InfiniteScrollContext),
+        embed;
 
     useEffect(() => {
-        let eref = embed_ref.current;
-        if(eref && !visible) {
+        let img = ref.current;
+        if(img && !visible) {
             let observer = new IntersectionObserver((entries) => {
-                if(entries[0].intersectionRatio > 0) {
-                    setVisible(true);
-                    __DEV__ && console.log("Img %s now visible", props.attachment.filename);
-                }
+                if(entries[0].intersectionRatio > 0) { setVisible(true); }
             }, { root: ifs?.containerRef.current, rootMargin: '100%' });
 
-            observer.observe(eref);
-
+            observer.observe(img);
             return () => { observer.disconnect(); };
         }
 
         return;
-    }, [embed_ref.current, visible]);
+    }, [ref.current, visible, ifs]);
+
+    if(visible) {
+        img_props.onLoad = onLoad;
+
+        if(animated_format) {
+            embed = <AnimatedGif img={img_props} which={animated_format as any} />
+        } else {
+            embed = <img {...img_props} />;
+        }
+    } else {
+        // when not visible, show an empty placeholder img element with a large height
+        embed = <img {...img_props} ref={ref} src={undefined} />;
+    };
 
     return (
         <>
             {embed}
 
-            {show && <LightBox src={props.img.src!} title={props.attachment.title || props.attachment.filename} size={props.attachment.size} onClose={() => setShow(false)} />}
+            {show && <LightBox
+                src={props.img.src!}
+                title={props.attachment.title || props.attachment.filename}
+                size={props.attachment.size}
+                onClose={() => setShow(false)}
+            />}
         </>
     );
 })
