@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { format_bytes } from "lib/formatting";
-import React, { useCallback, useMemo, useReducer, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useMemo, useReducer, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { UserPreferenceFlags } from "state/models";
 import { selectPrefsFlag } from "state/selectors/prefs";
@@ -84,9 +84,8 @@ function lb_reducer(state: LightboxState, action: LightboxAction): LightboxState
             return { ...state, is_zooming: action.zooming };
         }
         case LbActType.Zoom: {
-            let { dz, o } = action;
-
-            let z = Math.max(-1.5, Math.min(3, state.z + dz));
+            let { dz, o } = action,
+                z = Math.max(-1.5, Math.min(3, state.z + dz));
 
             if(z == state.z) break; // at limits most likely
 
@@ -255,7 +254,7 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
                 m.d = m.c = 0; // reset
 
                 let z = 1, // zoom to fit by default
-                    o: [number, number] = [e.pageX, e.pageY],
+                    o: [number, number] | undefined = [e.pageX, e.pageY],
                     { width, height } = state,
                     i = img.current!,
                     cont = container_ref.current!,
@@ -287,7 +286,7 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
 
                     // if the image fills less than 75% of the screen, keep it to center
                     if(Math.max(dw, dh) > 0.25) {
-                        o = [0, 0];
+                        o = undefined;
                     }
                 }
 
@@ -351,8 +350,13 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
     let on_wheel = useCallback((e: React.WheelEvent<HTMLImageElement>) => {
         let m = mouse.current;
         m.d = 1;
-        do_zoom(e.deltaY / -500, [m.x, m.y]);
+
+        // TODO: Do a better Throttle this without throwing away subpixel zooms
+        if(Math.abs(e.deltaY) > 10) {
+            do_zoom(e.deltaY / -500, [m.x, m.y]);
+        }
         e.stopPropagation();
+
     }, [img.current, container_ref.current]);
 
     let on_click_image = (e: React.MouseEvent) => {
@@ -377,16 +381,37 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
 
     // TODO: Clicking on footer and dragging to image triggers on_click_background
 
-    let cursor, cont_cursor;
+    let cursor = 'grab', cont_cursor;
     if(state.is_panning) {
         cursor = 'grabbing';
     } else if(mouse.current.c > 0) {
         cursor = state.z > 1 ? 'zoom-out' : 'zoom-in';
     } else if(state.is_zooming) {
         cont_cursor = mouse.current.vy > 0 ? 'zoom-out' : 'zoom-in';
-    } else {
-        cursor = 'grab';
-    }
+        cursor = 'inherit';
+    } // else grab
+
+    useLayoutEffect(() => {
+        let i = img.current;
+        if(i) {
+            let instant = reduce_motion || state.is_panning || state.is_zooming,
+                transform = `translate(${state.x}px, ${state.y}px) scale(${scale})`;
+
+            // force transition to end point before the new transition is applied.
+            i.style['transition'] = 'none';
+            i.style['cursor'] = cursor;
+
+            if(instant) {
+                i.style['transform'] = transform;
+            } else {
+                requestAnimationFrame(() => {
+                    // if mouse mode is momentum, use an exponential-ease-out curve at 500ms, otherwise plain ease-out
+                    i!.style['transition'] = mouse.current.d == 2 ? 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)' : `transform 0.1s ease-out`;
+                    i!.style['transform'] = transform;
+                });
+            }
+        }
+    }, [state, cursor, img.current, reduce_motion]);
 
     return (
         <FullscreenModal>
@@ -399,15 +424,6 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
                         onLoad={on_load}
                         onClick={on_click_image}
                         onMouseDown={on_mousedown}
-
-                        style={{
-                            cursor,
-                            // if actively being controlled by user, don't use any transitions, update instantly
-                            transition: (reduce_motion || state.is_panning || state.is_zooming) ? 'none' :
-                                // if mode mode is momentum, use an expo-ease-out cursive at 500ms
-                                (mouse.current.d == 2 ? 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)' : `transform 0.1s ease-out`),
-                            transform: `translate(${state.x}px, ${state.y}px) scale(${scale})`
-                        }}
                     />
                 </div>
 
