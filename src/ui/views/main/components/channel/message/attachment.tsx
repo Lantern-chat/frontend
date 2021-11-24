@@ -113,7 +113,7 @@ const ImageAttachment = React.memo((props: IImageAttachmentProps) => {
         [loaded, setLoaded] = useState(false),
         [show, setShow] = useState(false),
         ref = useRef<HTMLImageElement>(null),
-        visible = useInfiniteScrollIntersectionOnce(ref, { rootMargin: '100%' }),
+        visible = useInfiniteScrollIntersectionOnce(ref, { rootMargin: '150%' }),
 
         // on click of the image, show the lightbox modal
         onClick = useCallback((e: React.MouseEvent) => { main.clickAll(e); setShow(true); }, [main]),
@@ -167,7 +167,7 @@ interface IVideoAttachmentProps {
 const VideoAttachment = React.memo((props: IVideoAttachmentProps) => {
     let [loaded, setLoaded] = useState(false),
         ref = useRef<HTMLVideoElement>(null),
-        visible = useInfiniteScrollIntersectionOnce(ref, { rootMargin: '100%' }),
+        visible = useInfiniteScrollIntersectionOnce(ref, { rootMargin: '150%' }),
         onLoad = useCallback(() => setLoaded(true), [ref.current]),
         vid_props: React.VideoHTMLAttributes<HTMLVideoElement> = { ...props.vid }; // clone props
 
