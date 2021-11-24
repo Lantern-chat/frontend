@@ -113,6 +113,7 @@ const inner_feed_selector = createStructuredSelector({
     is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
     compact: selectPrefsFlag(UserPreferenceFlags.CompactView),
     gl: selectPrefsFlag(UserPreferenceFlags.GroupLines),
+    reduce_motion: selectPrefsFlag(UserPreferenceFlags.ReduceAnimations),
 });
 
 import { Anchor, InfiniteScroll } from "ui/components/infinite_scroll2";
@@ -133,7 +134,7 @@ function compute_goto(ifs: InfiniteScroll): boolean {
 }
 
 const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) => {
-    let { use_mobile_view, is_light_theme, compact, gl } = useSelector(inner_feed_selector),
+    let { use_mobile_view, is_light_theme, compact, gl, reduce_motion } = useSelector(inner_feed_selector),
         dispatch = useDispatch(),
         infinite_scroll = useRef<InfiniteScroll>(null),
         [load_next, load_prev]: Array<undefined | (() => void)> = useMemo(() => {
@@ -210,6 +211,7 @@ const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) =
                 reset_on_changed={room.room.id}
                 containerClassName={wrapperClasses}
                 onScroll={onScroll}
+                reduce_motion={reduce_motion}
             >
 
                 <MsgList room={room} groups={groups} is_light_theme={is_light_theme} compact={compact} />

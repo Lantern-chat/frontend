@@ -54,6 +54,7 @@ interface IInfiniteScrollProps {
     containerClassName?: string,
     wrapperClassName?: string,
     onScroll?: (pos: number) => void,
+    reduce_motion?: boolean,
 }
 
 const OBSERVER_OPTIONS: ResizeObserverOptions = { box: "border-box" };
@@ -146,6 +147,11 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
             let clientHeight = container.clientHeight,
                 scrollHeight = container.scrollHeight;
 
+            if(this.props.reduce_motion) {
+                container.scrollTo({ top: this.props.start == Anchor.Bottom ? scrollHeight : 0 });
+                return;
+            }
+
             let page_border, page_end;
 
             if(this.props.start == Anchor.Bottom) {
@@ -169,7 +175,7 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
         let container = this.containerRef.current;
         if(container) {
             let height = container.clientHeight;
-            container.scrollBy({ top: height * top, behavior: 'smooth' });
+            container.scrollBy({ top: height * top, behavior: this.props.reduce_motion ? 'auto' : 'smooth' });
         }
     }
 
