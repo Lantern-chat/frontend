@@ -37,11 +37,17 @@ const CollapsedCode = React.memo((props: ICodeWrapperprops & { loc: number, bloc
             setTimeout(() => ifs?.pause(false), 100);
         }
 
+        __DEV__ && console.log("CLICKED");
         setOpen(!open);
         e.preventDefault();
     };
 
-    let onToggle = () => { if(!IS_IOS_SAFARI) ifs?.pause(false); };
+    let onToggle = () => {
+        if(!IS_IOS_SAFARI) {
+            __DEV__ && console.log("TOGGLED");
+            ifs?.pause(false);
+        }
+    };
 
     // encode "expand/collapse" switching in CSS using `details[open]`
     return (
