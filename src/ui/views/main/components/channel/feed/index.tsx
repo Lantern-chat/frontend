@@ -184,7 +184,7 @@ const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) =
         let ifs = infinite_scroll.current;
         if(!ifs) return;
 
-        ifs.goToStart();
+        ifs.goToStartSmooth();
     }, [infinite_scroll.current]);
 
     if(!room) {

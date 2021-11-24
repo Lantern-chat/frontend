@@ -120,35 +120,56 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
         this.resetPosition();
     }
 
-    public goToStartSmooth() {
-        // TODO: Scroll to one page from start, then smooth scroll the rest of the way
-    }
-
     public scrollPageUp() {
-        this.scrollBy(-0.8); // 4/5
+        this.scrollBy(-0.9); // 9/10
     }
 
     public scrollPageDown() {
-        this.scrollBy(0.8); // 4/5
+        this.scrollBy(0.9); // 9/10
     }
 
     public scrollArrowUp() {
-        this.scrollBy(-0.1); // 1/10
+        this.scrollBy(-0.2); // 1/5
     }
 
     public scrollArrowDown() {
-        this.scrollBy(0.1); // 1/10
+        this.scrollBy(0.2); // 1/5
     }
 
     public at_start(): boolean {
         return this.anchor === this.props.start;
     }
 
+    public goToStartSmooth() {
+        let container = this.containerRef.current;
+        if(container) {
+            let clientHeight = container.clientHeight,
+                scrollHeight = container.scrollHeight;
+
+            let page_border, page_end;
+
+            if(this.props.start == Anchor.Bottom) {
+                // scrollHeight - clientHeight is the scrollTop of the end, so clientHeight*2 to start one page above
+                page_border = scrollHeight - clientHeight * 2;
+
+                // this overshoots by about clientHeight amount, but is clamped
+                // by overshooting, any size changes as it comes into view are handled cleanly
+                page_end = scrollHeight;
+            } else {
+                page_border = clientHeight;
+                page_end = 0;
+            }
+
+            container.scrollTo({ top: page_border });
+            container.scrollTo({ top: page_end, behavior: 'smooth' });
+        }
+    }
+
     scrollBy(top: number) {
         let container = this.containerRef.current;
         if(container) {
             let height = container.clientHeight;
-            (container as any).scrollBy({ top: height * top, behavior: 'smooth' });
+            container.scrollBy({ top: height * top, behavior: 'smooth' });
         }
     }
 
