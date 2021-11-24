@@ -150,9 +150,9 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
         if(children_differ ||
             prevProps.load_next != this.props.load_next ||
             prevProps.load_prev != this.props.load_prev) {
-            if(__DEV__) {
-                console.log("COMPONENT DID UPDATE FROM CHILDREN? ", children_differ);
-            }
+            //if(__DEV__) {
+            //    console.log("COMPONENT DID UPDATE FROM CHILDREN? ", children_differ);
+            //}
 
             this.fixPosition();
 
@@ -220,7 +220,7 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
     fixPosition() {
         let was_fixing = this.fixing;
         if(!this.fixing) {
-            __DEV__ && console.log("FIXING NOW");
+            //__DEV__ && console.log("FIXING NOW");
             this.fixing = true;
             this.doResize();
         }
@@ -229,16 +229,16 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
             clearLater(this.fix_frame); // NOTE: Was created by do_later
         }
 
-        if(__DEV__ && was_fixing) {
-            console.log("FIXING LATER");
-        }
+        //if(__DEV__ && was_fixing) {
+        //    console.log("FIXING LATER");
+        //}
 
         this.fix_frame = do_later(() => {
             this.fixing = false;
 
             // try again this frame
             if(was_fixing) {
-                __DEV__ && console.log("FIXING LATER NOW");
+                //__DEV__ && console.log("FIXING LATER NOW");
                 this.fixPosition();
             }
         });
@@ -264,7 +264,7 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
     height: number = 0;
 
     doResize() {
-        __DEV__ && console.log("DO RESIZE");
+        //__DEV__ && console.log("DO RESIZE");
 
         // stop polling on any resize, so adjustments can be made without interference
         this.polling = false;
@@ -299,7 +299,7 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
                 (container as any).scrollTo({ top, behavior: 'instant' });
             }
 
-            __DEV__ && console.log("CORRECTED TO: ", top);
+            //__DEV__ && console.log("CORRECTED TO: ", top);
 
             this.anchor = compute_at(container, top);
 
@@ -379,7 +379,7 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
     /// SECTION: Event Callbacks
 
     onResize(_entries: ResizeObserverEntry[], _observer: ResizeObserver) {
-        __DEV__ && console.log("RESIZED");
+        //__DEV__ && console.log("RESIZED");
         this.fixPosition();
     }
 
