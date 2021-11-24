@@ -1,5 +1,5 @@
 import { shallowEqualObjects } from "lib/compare";
-import React, { createContext, createRef } from "react";
+import React, { createContext, createRef, useCallback, useContext, useLayoutEffect, useRef, useState } from "react";
 
 // will automatically use native ResizeObserver if available
 import ResizeObserverPolyfill from "resize-observer-polyfill";
@@ -59,6 +59,60 @@ interface IInfiniteScrollProps {
 const OBSERVER_OPTIONS: ResizeObserverOptions = { box: "border-box" };
 
 export const InfiniteScrollContext = createContext<InfiniteScroll | undefined>(void 0);
+
+/// NOTE: Callback changing will cause performance degredation by recreating the observer
+/// so ensure the callback is wrapped in `useCallback`
+export function useInfiniteScrollIntersection<T extends HTMLElement>(
+    ref: React.RefObject<T>,
+    cb: null | ((visible: boolean) => void),
+    opts: Pick<IntersectionObserverInit, 'rootMargin' | 'threshold'> = {},
+) {
+    let ifs = useContext(InfiniteScrollContext),
+        visible = useRef(false);
+
+    useLayoutEffect(() => {
+        if(cb && ifs && ref.current) {
+            let observer = new IntersectionObserver((entries) => {
+                let e = ref.current;
+                if(!e || entries.length == 0) return;
+
+                let r = entries[0].intersectionRatio;
+
+                if(r <= 0 && visible.current) {
+                    // gone out of view
+                    visible.current = false;
+                    cb(false);
+                } else if(r > 0 && !visible.current) {
+                    // come into view
+                    visible.current = true;
+                    cb(true);
+                }
+            }, { ...opts, root: ifs.containerRef.current });
+
+            observer.observe(ref.current);
+            return () => observer.disconnect();
+        }
+        return;
+    }, [cb, ref.current, ifs, ifs?.containerRef.current, opts.rootMargin, opts.threshold]);
+}
+
+export function useInfiniteScrollIntersectionOnce<T extends HTMLElement>(
+    ref: React.RefObject<T>,
+    opts: Pick<IntersectionObserverInit, 'rootMargin' | 'threshold'> = {},
+): boolean {
+    let [visible, setVisible] = useState(false),
+        onVisibilityChanged = useCallback((visible: boolean) => {
+            if(visible) {
+                setVisible(true);
+
+                __DEV__ && console.info("Element visible: ", ref.current);
+            }
+        }, []);
+
+    useInfiniteScrollIntersection(ref, visible ? null : onVisibilityChanged, opts);
+
+    return visible;
+}
 
 import "./infinite_scroll.scss";
 export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {

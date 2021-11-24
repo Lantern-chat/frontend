@@ -6,9 +6,7 @@ import { Message, Attachment } from "state/models";
 import { message_attachment_url } from "config/urls";
 
 import { MainContext, useClickEater, useMainClick, useSimpleToggleOnClick } from "ui/hooks/useMainClick";
-import { InfiniteScrollContext } from "ui/components/infinite_scroll2";
-
-import { reactElement } from "ui/components/common/markdown/markdown";
+import { useInfiniteScrollIntersectionOnce } from "ui/components/infinite_scroll2";
 
 import { LightBox } from "ui/views/main/modals/lightbox";
 import { AnimatedGif } from "ui/components/common/gif";
@@ -34,6 +32,8 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
     if(mime && !error) {
         let common = {
             id,
+            // alt or title can't be used here since they affect the UI negatively in some cases
+            "aria-label": attachment.filename,
             onContextMenu: eat,
             src: url,
             onError: () => setError(true),
@@ -48,24 +48,15 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
             }
 
             // TODO: Record playback position for moving into a modal and continuing playback?
-            embed = reactElement('video', id, {
-                ...common,
-                preload: "metadata",
-                controls: true,
-            });
+            embed = <VideoAttachment vid={{ ...common, preload: "metadata", controls: true }} attachment={attachment} />
 
             //embed = <video title={title} onContextMenu={eat} preload="metadata" src={url} controls onError={() => setError(true)} />;
         } else if(mime.startsWith('audio')) {
             //embed = <audio title={title} onContextMenu={eat} src={url} controls onError={() => setError(true)} />
 
-            embed = reactElement('audio', id, {
-                ...common,
-                controls: true,
-            });
-
             embed = (
                 <div className="ln-audio">
-                    {embed}
+                    <audio {...common} controls />
                 </div>
             )
 
@@ -119,10 +110,10 @@ interface IImageAttachmentProps {
 const ImageAttachment = React.memo((props: IImageAttachmentProps) => {
     //embed = <img title={title} onContextMenu={eat} src={url} onError={() => setError(true)} />;
     let main = useContext(MainContext),
-        [visible, setVisible] = useState(false),
         [loaded, setLoaded] = useState(false),
         [show, setShow] = useState(false),
         ref = useRef<HTMLImageElement>(null),
+        visible = useInfiniteScrollIntersectionOnce(ref, { rootMargin: '100%' }),
 
         // on click of the image, show the lightbox modal
         onClick = useCallback((e: React.MouseEvent) => { main.clickAll(e); setShow(true); }, [main]),
@@ -130,29 +121,17 @@ const ImageAttachment = React.memo((props: IImageAttachmentProps) => {
         // parse mime type to see if it's obviously animated
         // TODO: Actually scan the file for animated flags
         animated_format = useMemo(() => { let m = props.attachment.mime?.match(/gif|apng|webp|avif/i); return m && m[0]; }, [props.attachment.mime]),
+
         // on load, replace height placeholder
         onLoad = useCallback(() => setLoaded(true), [ref.current]),
+
         // add onClick and style tweaks
-        img_props: React.ImgHTMLAttributes<HTMLImageElement> = { ...props.img, onClick, style: loaded ? props.img.style : { height: '100em' } },
-        // tap into InfiniteScroll for a reference to the container element, used for the intersection observer bounds
-        ifs = useContext(InfiniteScrollContext),
-        embed;
+        img_props: React.ImgHTMLAttributes<HTMLImageElement> = { ...props.img, onClick, style: loaded ? props.img.style : { height: '100em' } };
 
-    useEffect(() => {
-        let img = ref.current;
-        if(img && !visible) {
-            let observer = new IntersectionObserver((entries) => {
-                if(entries[0].intersectionRatio > 0) { setVisible(true); }
-            }, { root: ifs?.containerRef.current, rootMargin: '100%' });
-
-            observer.observe(img);
-            return () => { observer.disconnect(); };
-        }
-
-        return;
-    }, [ref.current, visible, ifs]);
-
+    let embed;
     if(visible) {
+        // NOTE: img_props here was created with an object spread,
+        // so it's local and free to modify before passing along
         img_props.onLoad = onLoad;
 
         if(animated_format) {
@@ -162,6 +141,7 @@ const ImageAttachment = React.memo((props: IImageAttachmentProps) => {
         }
     } else {
         // when not visible, show an empty placeholder img element with a large height
+        // TODO: Replace this with blurhash
         embed = <img {...img_props} ref={ref} src={undefined} />;
     };
 
@@ -177,4 +157,37 @@ const ImageAttachment = React.memo((props: IImageAttachmentProps) => {
             />}
         </>
     );
-})
+});
+
+interface IVideoAttachmentProps {
+    vid: React.VideoHTMLAttributes<HTMLVideoElement>,
+    attachment: Attachment,
+}
+
+const VideoAttachment = React.memo((props: IVideoAttachmentProps) => {
+    let [loaded, setLoaded] = useState(false),
+        ref = useRef<HTMLVideoElement>(null),
+        visible = useInfiniteScrollIntersectionOnce(ref, { rootMargin: '100%' }),
+        onLoad = useCallback(() => setLoaded(true), [ref.current]),
+        vid_props: React.VideoHTMLAttributes<HTMLVideoElement> = { ...props.vid }; // clone props
+
+    if(!loaded) {
+        vid_props.style = { height: '100em' }; // large initial height, limited by max-height in CSS
+    }
+
+    let embed;
+    if(visible) {
+        vid_props.onLoad = onLoad;
+        embed = <video {...vid_props} />;
+    } else {
+        embed = <video {...vid_props} ref={ref} src={undefined} />;
+    }
+
+    return embed;
+});
+
+if(__DEV__) {
+    MsgAttachment.displayName = "MsgAttachment";
+    ImageAttachment.displayName = "ImageAttachment";
+    VideoAttachment.displayName = "VideoAttachment";
+}
