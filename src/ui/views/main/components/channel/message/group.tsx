@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import classNames from "classnames";
 
 import { User } from "state/models";
@@ -242,6 +242,61 @@ export const MessageGroup: React.FunctionComponent<IMessageGroupProps> = ({ grou
         </li>
     );
 };
+
+/*
+import { InfiniteScrollContext } from "ui/components/infinite_scroll2";
+import { useForceRender } from "ui/hooks/useForceRender";
+
+import throttle from 'lodash/throttle';
+
+export const MessageGroup2: React.FunctionComponent<IMessageGroupProps> = ({ group, is_light_theme, compact }: IMessageGroupProps) => {
+    // NOTE: Because `group` is recomputed below as part of `groups`, this will always render.
+
+    let height = useRef<number | null>(null),
+        forceRender = useForceRender(),
+        ifs = useContext(InfiniteScrollContext),
+        group_ref = useRef<HTMLLIElement>(null);
+
+    useEffect(() => {
+        let g = group_ref.current;
+        if(ifs && g) {
+            let observer = new IntersectionObserver(throttle((entries) => {
+                let r = entries[0].intersectionRatio;
+
+                if(!g) return;
+
+                if(r <= 0 && height.current == null) {
+                    // gone out of view
+
+                    let rect = g.getBoundingClientRect();
+                    let inner_scroll_height = g.clientHeight - (g.scrollHeight + (Math.floor(rect.height) - rect.height)) + g.scrollHeight
+
+                    height.current = inner_scroll_height;
+                    forceRender();
+                } else if(r > 0 && height.current != null) {
+                    // come into view
+                    height.current = null;
+                    forceRender();
+                }
+            }, 20, { trailing: true }), { root: ifs.containerRef.current, rootMargin: '50%' });
+
+            observer.observe(g);
+            return () => { observer.disconnect(); };
+        }
+        return;
+    }, [group_ref.current, ifs]);
+
+    let inner;
+    if(height.current == null) {
+        inner = group.map((msg, i) => <GroupMessage key={msg.msg.id} msg={msg} is_light_theme={is_light_theme} first={i == 0} compact={compact} />);
+    } else {
+        inner = <div style={{ height: height.current, padding: 0, margin: 0, border: 'none', outline: 'none' }} />;
+    }
+
+    return (<li className="ln-msg-list__group" ref={group_ref}>{inner}</li>);
+};
+*/
+
 
 if(__DEV__) {
     MessageGroup.displayName = "MessageGroup";
