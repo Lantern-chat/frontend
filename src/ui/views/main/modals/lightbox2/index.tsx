@@ -268,6 +268,7 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
 
         // if not panning or zooming, allow close
         if(mode != Mode.Panning && mode != Mode.Zooming) {
+            //console.log("MOUSE CLICK: ", Mode[mode]);
             this.close();
         }
     }
@@ -409,7 +410,7 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
             }
         }
 
-        m.mode = Mode.Idle;
+        //console.log("MOUSE UP: ", Mode[m.mode]);
 
         if(panning && !this.state.closing && !this.props.reduce_motion) {
             if(m.vx != 0 || m.vy != 0) {
@@ -429,8 +430,22 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
             }
         }
 
+        // Prevent onClick from triggering
+        if(m.mode != Mode.Momentum) {
+            let t0 = m.t;
+            requestAnimationFrame(() => {
+                // if no extra events happened
+                if(m.t == t0) {
+                    m.mode = Mode.Idle;
+                    this.update_ui();
+                }
+            });
+        }
+
+
         this.update_ui();
 
+        e.preventDefault();
         e.stopPropagation();
     }
 
