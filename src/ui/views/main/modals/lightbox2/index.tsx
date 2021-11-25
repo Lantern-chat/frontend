@@ -141,7 +141,7 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
     }
 
     check_bounds() {
-        let state = this.i, img = this.img.current!,
+        let state = this.i,
             cont = this.container.current!,
             cont_width = cont.clientWidth,
             cont_height = cont.clientHeight,
@@ -158,15 +158,19 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
             // bottom border
             state.y -= Math.max(0, rect.bottom - cont_height);
         } else {
-            if(rect.width > cont_width) {
+            let min_dimension = Math.min(cont_width, cont_height),
+                margin = min_dimension * 0.35,
+                max_left = cont_width - margin,
+                max_right = margin,
+                max_top = cont_height - margin,
+                max_bottom = margin;
 
-            }
+            state.x += Math.min(0, max_left - rect.left);
+            state.x += Math.max(0, max_right - rect.right);
+
+            state.y += Math.min(0, max_top - rect.top);
+            state.y += Math.max(0, max_bottom - rect.bottom);
         }
-
-        //if(rect.left < 0 || rect.top < 0 || rect.right > cont_width || rect.bottom > cont_height) {
-        //
-        //}
-
     }
 
     do_translate(dx: number, dy: number) {
