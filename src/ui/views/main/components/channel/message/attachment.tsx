@@ -177,9 +177,10 @@ const VideoAttachment = React.memo((props: IVideoAttachmentProps) => {
 
     let embed;
     if(visible) {
-        vid_props.onLoad = onLoad;
+        vid_props.onLoadedMetadata = vid_props.onLoad = onLoad;
         embed = <video {...vid_props} />;
     } else {
+        // empty video element with the large size to act as a placeholder
         embed = <video {...vid_props} ref={ref} src={undefined} />;
     }
 
