@@ -71,6 +71,9 @@ function lb_reducer(state: LightboxState, action: LightboxAction): LightboxState
     switch(action.t) {
         case LbActType.Pan: {
             let { dx, dy } = action;
+
+            if(dx == dy && dy == 0) break;
+
             return { ...state, x: state.x + dx, y: state.y + dy };
         }
         case LbActType.Load: {
@@ -125,10 +128,6 @@ export interface ILightBoxProps {
     size?: number,
     onClose(): void;
 }
-
-import ZoomIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-28-search.svg";
-
-const MOMENTUM: number = 0.1;
 
 import "./lightbox.scss";
 export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProps) => {
@@ -203,11 +202,19 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
         /// current number of clicks
         c: number,
 
+        /// Last mouse event
+        t: number,
+
+        /// animation frame handle
+        f?: number,
+
+        tr?: string,
+
         // mode, 0 = pan, 1 = zoom, 2 = momentum
         d: 0 | 1 | 2,
     }
 
-    let mouse = useRef<IMouseState>({ x: 0, y: 0, c: 0, sx: 0, sy: 0, vx: 0, vy: 0, d: 0 });
+    let mouse = useRef<IMouseState>({ x: 0, y: 0, c: 0, sx: 0, sy: 0, vx: 0, vy: 0, d: 0, t: 0 });
 
     let on_mousedown = useCallback((e: React.MouseEvent<HTMLImageElement>) => {
         let m = mouse.current;
@@ -220,7 +227,24 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
         m.sx = m.x = e.pageX;
         m.sy = m.y = e.pageY;
 
+        let now = performance.now();
+
+        if(m.d == 2) {
+            let dt = (now - m.t) / 500, t0 = dt >= 1 ? 0 : (Math.pow(2, -10 * dt));
+            // currently applying momentum
+
+            let dx = m.vx * -100 * t0,
+                dy = m.vy * -100 * t0;
+
+            __DEV__ && console.log("Cancelling momentum by: ", dx, dy);
+
+            dispatch({ t: LbActType.Pan, dx, dy });
+        }
+
+        m.d = 0;
+
         m.vx = m.vy = 0;
+        m.t = now;
 
         // left click
         if(e.button == 0) {
@@ -306,9 +330,11 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
         if(pan && !closing && !reduce_motion) {
             if(!(m.vx != 0 || m.vy != 0)) return;
 
-            let dx = m.vx * 5, dy = m.vy * 5;
+            let dx = m.vx * 100,
+                dy = m.vy * 100;
 
             m.d = 2; // enable momentum
+            m.t = performance.now();
 
             setTimeout(() => { if(m.d == 2) m.d = 0; }, 500); // allow for animation
 
@@ -323,11 +349,14 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
 
         if((state.is_zooming || state.is_panning) && !closing) {
             let dx = e.pageX - m.x,
-                dy = e.pageY - m.y;
+                dy = e.pageY - m.y,
+                t1 = performance.now(),
+                dt = t1 - m.t;
 
             // EMA
-            m.vx = (m.vx + dx) * 0.5;
-            m.vy = (m.vy + dy) * 0.5;
+            m.vx = (m.vx + dx / dt) * 0.5;
+            m.vy = (m.vy + dy / dt) * 0.5;
+            m.t = t1;
 
             // if we do not receive another mousemove event, remove velocity
             clearTimeout(m.pt);
@@ -397,18 +426,38 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
             let instant = reduce_motion || state.is_panning || state.is_zooming,
                 transform = `translate(${state.x}px, ${state.y}px) scale(${scale})`;
 
-            // force transition to end point before the new transition is applied.
-            i.style['transition'] = 'none';
             i.style['cursor'] = cursor;
 
             if(instant) {
+                mouse.current.tr = i.style['transition'] = 'none';
                 i.style['transform'] = transform;
             } else {
-                requestAnimationFrame(() => {
-                    // if mouse mode is momentum, use an exponential-ease-out curve at 500ms, otherwise plain ease-out
-                    i!.style['transition'] = mouse.current.d == 2 ? 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)' : `transform 0.1s ease-out`;
-                    i!.style['transform'] = transform;
-                });
+                if(mouse.current.f) {
+                    cancelAnimationFrame(mouse.current.f);
+                    mouse.current.f = undefined;
+                }
+
+                let new_transition = mouse.current.d == 2 ? 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)' : `transform 0.1s ease-out`;
+
+                if(mouse.current.tr == new_transition) {
+                    __DEV__ && console.log("Reusing transition");
+
+                    i.style['transform'] = transform;
+                } else {
+                    mouse.current.tr = i.style['transition'] = 'none';
+
+                    mouse.current.f = requestAnimationFrame(() => {
+                        // if mouse mode is momentum, use an exponential-ease-out curve at 500ms, otherwise plain ease-out
+                        mouse.current.tr = i!.style['transition'] = mouse.current.d == 2 ? 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)' : `transform 0.1s ease-out`;
+
+                        // ugh
+                        mouse.current.f = requestAnimationFrame(() => {
+                            i!.style['transform'] = transform;
+
+                            mouse.current.f = undefined;
+                        });
+                    });
+                }
             }
         }
     }, [state, cursor, img.current, reduce_motion]);
