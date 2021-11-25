@@ -116,12 +116,67 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
         setTimeout(() => onClose(), 150);
     }
 
+    compute_img_rect(): undefined | Pick<DOMRect, 'width' | 'height' | 'left' | 'right' | 'top' | 'bottom'> {
+        let img = this.img.current, state = this.i;
+        if(!img) return;
+
+        let scale = state.scale,
+            width = img.offsetWidth,
+            height = img.offsetHeight,
+            scaled_width = width * scale,
+            scaled_height = height * scale,
+            dw = width - scaled_width,
+            dh = height - scaled_height;
+
+        let left = img.offsetLeft + state.x + dw * 0.5,
+            top = img.offsetTop + state.y + dh * 0.5,
+            right = left + scaled_width,
+            bottom = top + scaled_height;
+
+        return {
+            width: scaled_width,
+            height: scaled_height,
+            left, right, top, bottom
+        }
+    }
+
+    check_bounds() {
+        let state = this.i, img = this.img.current!,
+            cont = this.container.current!,
+            cont_width = cont.clientWidth,
+            cont_height = cont.clientHeight,
+            rect = this.compute_img_rect()!;
+
+        // if less than or equal to container size
+        if(state.scale <= 1 || (state.z100 <= 1 && state.z <= state.zfit)) {
+            // left border
+            state.x -= Math.min(0, rect.left);
+            // top border
+            state.y -= Math.min(0, rect.top);
+            // right border
+            state.x -= Math.max(0, rect.right - cont_width);
+            // bottom border
+            state.y -= Math.max(0, rect.bottom - cont_height);
+        } else {
+            if(rect.width > cont_width) {
+
+            }
+        }
+
+        //if(rect.left < 0 || rect.top < 0 || rect.right > cont_width || rect.bottom > cont_height) {
+        //
+        //}
+
+    }
+
     do_translate(dx: number, dy: number) {
         if(dx == dy && dy == 0 || this.state.nat_height == 0) return;
 
         let state = this.i;
         state.x += dx;
         state.y += dy;
+
+        this.check_bounds();
 
         this.request_animation_update();
     }
@@ -161,6 +216,7 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
         state.z = z;
         state.scale = Math.exp(z - 1);
 
+        this.check_bounds();
         this.recompute_zoom_level();
         this.request_animation_update();
         this.update_ui();
@@ -409,6 +465,7 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
                             onLoad={() => this.on_load()}
                             onClick={e => e.stopPropagation()}
                             onMouseDown={e => this.on_mousedown(e)}
+                            onMouseMove={e => { /*fast path*/ this.on_mousemove(e); e.stopPropagation(); }}
                         />
                     </div>
 
@@ -448,6 +505,12 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
 
         let instant = reduce_motion || [Mode.Panning, Mode.Zooming].includes(mode),
             transform = `translate(${i.x}px, ${i.y}px) scale(${i.scale})`;
+
+        if(__DEV__) {
+            if(isNaN(i.x) || isNaN(i.y) || isNaN(i.scale)) {
+                alert("NaN value in LightBox::updated_animation: " + transform);
+            }
+        }
 
         if(this.tr_frame) {
             cancelAnimationFrame(this.tr_frame);
