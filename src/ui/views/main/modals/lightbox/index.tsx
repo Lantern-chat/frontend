@@ -465,9 +465,14 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
     return (
         <FullscreenModal>
             <div className={classNames("ln-lightbox", { closing })}
-                onClick={on_click_background} onContextMenu={eat}
-                onMouseMove={on_mousemove} onMouseDown={on_mousedown_external} onMouseUp={on_mouseup} onWheel={on_wheel}
+                onClick={on_click_background}
+                onContextMenu={eat}
+                onMouseMove={on_mousemove}
+                onMouseDown={on_mousedown_external}
+                onMouseUp={on_mouseup}
+                onWheel={on_wheel}
             >
+
                 <div className="ln-lightbox__container" ref={container_ref} style={{ cursor: cont_cursor }}>
                     <img src={src} ref={img}
                         onLoad={on_load}

@@ -11,14 +11,20 @@ $timing: 0.15s;
 
     &__footer {
         text-align: center;
-        padding: 1em;
+        padding: 0.5em 1em;
         background-color: rgba(0, 0, 0, 0.6);
+
+        .ln-light-mode & {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
         z-index: 1; // ensure on top of image
         position: relative;
         display: flex;
         flex-direction: column;
         justify-content: center;
         line-height: normal;
+        color: #ddd;
 
         > span {
             display: flex;
@@ -75,6 +81,7 @@ $timing: 0.15s;
             flex-shrink: 1;
             min-height: 0;
             min-width: 0;
+            cursor: grab;
         }
 
         .ln-enable-motion & {
