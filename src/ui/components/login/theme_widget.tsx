@@ -21,7 +21,7 @@ export const ThemeWidget: React.FunctionComponent = React.memo(() => {
     let [interactive, setInteractive] = useState(theme);
 
     let doSetTheme = (temperature: number, is_light: boolean) => {
-        setInteractive({ temperature, is_light });
+        setInteractive({ temperature, is_light, oled: theme.oled });
         dispatch(setTheme(temperature, is_light, theme.oled));
     };
 

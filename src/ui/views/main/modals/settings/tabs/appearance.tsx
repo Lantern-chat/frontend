@@ -41,7 +41,7 @@ const ThemeSetting = React.memo(() => {
         theme = useSelector(themeSelector),
         dispatch = useDispatch(),
         [interactive, setInteractive] = useState(theme),
-        doSetTheme = (temperature: number, is_light: boolean, oled?: boolean) => {
+        doSetTheme = (temperature: number, is_light: boolean, oled: boolean) => {
             setInteractive({ temperature, is_light, oled });
 
             batch(() => {

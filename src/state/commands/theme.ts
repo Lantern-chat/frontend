@@ -5,7 +5,7 @@ import { hasUserPrefFlag, UserPreferenceFlags, UserPreferences } from "state/mod
 
 var dispatch_timeout: number;
 
-export function setTheme(temperature: number, is_light: boolean, oled?: boolean): DispatchableAction {
+export function setTheme(temperature: number, is_light: boolean, oled: boolean): DispatchableAction {
     return (dispatch, getState) => {
         let reduce_motion = hasUserPrefFlag(getState().prefs, UserPreferenceFlags.ReduceAnimations);
 
@@ -34,8 +34,6 @@ export function setTheme(temperature: number, is_light: boolean, oled?: boolean)
                 flags,
                 temp: temperature,
             };
-
-            localStorage.setItem(StorageKey.PREFS, JSON.stringify({ ...prefs, ...partial_prefs }));
 
             dispatch({ type: Type.UPDATE_PREFS, prefs: partial_prefs });
         }, 500);

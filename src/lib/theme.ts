@@ -13,7 +13,7 @@ export interface IThemeColors {
 export interface ITheme {
     temperature: number,
     is_light: boolean,
-    oled?: boolean,
+    oled: boolean,
 }
 
 export const MIN_TEMP: number = 965.0;
@@ -23,7 +23,7 @@ let clamp_temp = (temp: number): number => min(MAX_TEMP, max(MIN_TEMP, temp));
 
 export var LIGHT_THEME: boolean = false;
 
-export function genDarkTheme(temperature: number, oled?: boolean): IThemeColors {
+export function genDarkTheme(temperature: number, oled: boolean): IThemeColors {
     temperature = clamp_temp(temperature);
     let k = kelvin2(temperature);
 
@@ -117,7 +117,7 @@ export function setTheme({ temperature, is_light, oled }: ITheme, animate: boole
     setThemeColors(colors, animate, is_light, oled);
 }
 
-export function setThemeColors(colors: IThemeColors, animate: boolean, is_light: boolean, oled?: boolean) {
+export function setThemeColors(colors: IThemeColors, animate: boolean, is_light: boolean, oled: boolean) {
     LIGHT_THEME = is_light;
 
     let de = document.documentElement;
