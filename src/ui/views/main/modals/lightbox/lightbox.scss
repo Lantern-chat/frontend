@@ -153,3 +153,31 @@ $timing: 0.15s;
         opacity: 0;
     }
 }
+
+.ln-enable-motion.ln-lightbox-open .ln-main {
+    animation: blur_in $timing ease-out forwards;
+}
+
+.ln-enable-motion.ln-lightbox-closing .ln-main {
+    animation: blur-out $timing ease-in forwards;
+}
+
+$blur_amt: 6px;
+
+@keyframes blur_in {
+    from {
+        filter: blur(0);
+    }
+    to {
+        filter: blur($blur_amt);
+    }
+}
+
+@keyframes blur_out {
+    from {
+        filter: blur($blur_amt);
+    }
+    to {
+        filter: blur(0);
+    }
+}

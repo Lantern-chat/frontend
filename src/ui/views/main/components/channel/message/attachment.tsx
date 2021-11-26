@@ -8,7 +8,7 @@ import { message_attachment_url } from "config/urls";
 import { MainContext, useClickEater, useMainClick, useSimpleToggleOnClick } from "ui/hooks/useMainClick";
 import { useInfiniteScrollIntersectionOnce } from "ui/components/infinite_scroll2";
 
-import { LightBox } from "ui/views/main/modals/lightbox2";
+import { LightBox } from "ui/views/main/modals/lightbox";
 import { AnimatedGif } from "ui/components/common/gif";
 import { Glyphicon } from "ui/components/common/glyphicon";
 import { MimeIcon } from "ui/components/mime_icon";

@@ -1,227 +1,311 @@
 import classNames from "classnames";
-import { format_bytes } from "lib/formatting";
-import React, { useCallback, useLayoutEffect, useMemo, useReducer, useRef, useState } from "react";
+import React, { createRef, useLayoutEffect, useRef } from "react";
 import { useSelector } from "react-redux";
+
+import { format_bytes } from "lib/formatting";
+
 import { UserPreferenceFlags } from "state/models";
 import { selectPrefsFlag } from "state/selectors/prefs";
 
 import { FullscreenModal } from "ui/components/modal";
-import { Glyphicon } from "ui/components/common/glyphicon";
+import { Hotkey, useMainHotkeys } from "ui/hooks/useMainClick";
 
-import { Hotkey, useClickEater, useMainHotkey } from "ui/hooks/useMainClick";
+/// State that requires re-rendering when updated
+interface ILightBoxState {
+    closing: boolean,
+    nat_width: number,
+    nat_height: number,
 
-enum LbActType {
-    Load,
-    SetPan,
-    SetZoom,
-    Pan,
-    Zoom,
-    Clamp,
+    // cached zoom percentage string
+    zoom_level: string,
 }
 
-interface LbLoadAction {
-    t: LbActType.Load,
-    width: number,
-    height: number,
+enum Mode {
+    Idle = 0,
+    Momentum = 1,
+    Panning = 2,
+    Zooming = 3,
 }
 
-interface LbSetPanAction {
-    t: LbActType.SetPan,
-    panning: boolean,
+interface IMouseState {
+    /// Time of last mouse event
+    t: number,
+
+    /// Current mouse position
+    x: number, y: number,
+
+    /// Mouse starting position (when clicked and dragged)
+    sx: number, sy: number,
+
+    /// Mouse velocity
+    vx: number, vy: number,
+
+    mode: Mode,
+
+    c: number,
 }
 
-interface LbSetZoomAction {
-    t: LbActType.SetZoom,
-    zooming: boolean,
-}
+interface IImageState {
+    /// Image translation, excluding bounds checking
+    x: number, y: number,
 
-interface LbPanAction {
-    t: LbActType.Pan,
-    dx: number,
-    dy: number,
-}
+    /// Real image translation
+    rx: number, ry: number,
 
-interface LbZoomAction {
-    t: LbActType.Zoom,
-    dz: number,
-    o?: [number, number]
-}
+    /// Zoom and scale value
+    z: number, scale: number,
 
-interface LbClampAction {
-    t: LbActType.Clamp,
-    mx: number,
-    my: number,
-}
-
-type LightboxAction = LbLoadAction | LbSetPanAction | LbSetZoomAction | LbPanAction | LbZoomAction | LbClampAction;
-
-interface LightboxState {
-    width: number,
-    height: number,
-    x: number, // position relative to origin of image within 4 quadrants
-    y: number, // position relative to origin of image within 4 quadrants
-    z: number,
-    is_panning: boolean,
-    is_zooming: boolean,
-}
-
-const DEFAULT_STATE: LightboxState = { width: 0, height: 0, x: 0, y: 0, z: 1, is_panning: false, is_zooming: false };
-
-function lb_reducer(state: LightboxState, action: LightboxAction): LightboxState {
-    switch(action.t) {
-        case LbActType.Pan: {
-            let { dx, dy } = action;
-
-            if(dx == dy && dy == 0) break;
-
-            return { ...state, x: state.x + dx, y: state.y + dy };
-        }
-        case LbActType.Load: {
-            let { width, height } = action;
-            return { ...state, width, height };
-        }
-        case LbActType.SetPan: {
-            return { ...state, is_panning: action.panning };
-        }
-        case LbActType.SetZoom: {
-            return { ...state, is_zooming: action.zooming };
-        }
-        case LbActType.Zoom: {
-            let { dz, o } = action,
-                z = Math.max(-1.5, Math.min(3, state.z + dz));
-
-            if(z == state.z) break; // at limits most likely
-
-            let [ox, oy] = o || [0, 0],
-                e = Math.exp(z - state.z);
-
-            // let m0 = Math.exp(state.z - 1),
-            //     m1 = Math.exp(z - 1);
-            // relocate origins to cursor, undo current zoom, do new zoom, shift back origin
-            // let x = (state.x - ox) / m0 * m1 + ox;
-            // let y = (state.y - oy) / m0 * m1 + oy;
-
-            return {
-                ...state, z,
-
-                // optimized version of above
-                x: (state.x - ox) * e + ox,
-                y: (state.y - oy) * e + oy,
-            };
-        }
-        case LbActType.Clamp: {
-            let { mx, my } = action;
-
-            let x = Math.min(mx, Math.max(-mx, state.x));
-            let y = Math.min(my, Math.max(-my, state.y));
-
-            return { ...state, x, y };
-        }
-    }
-
-    return state;
+    zmin: number, zmax: number,
+    zfit: number, z100: number,
 }
 
 export interface ILightBoxProps {
     src: string,
     title?: string,
     size?: number,
+    reduce_motion?: boolean,
+
     onClose(): void;
+    startClose(): void;
 }
 
+const LN5_00 = Math.log(5.00);
+const LN0_05 = Math.log(0.05);
+
 import "./lightbox.scss";
-export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProps) => {
-    let img = useRef<HTMLImageElement>(null),
-        container_ref = useRef<HTMLDivElement>(null),
-        reduce_motion = useSelector(selectPrefsFlag(UserPreferenceFlags.ReduceAnimations)),
-        eat = useClickEater(),
-        // for triggering the closing animation
-        [closing, setClosing] = useState(false),
-        [state, dispatch] = useReducer(lb_reducer, DEFAULT_STATE);
+export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxState> {
+    constructor(props: ILightBoxProps) {
+        super(props);
 
-    // set this up to get natural dimensions of image
-    let on_load = useCallback(() => {
-        let i = img.current;
-        if(i) { dispatch({ t: LbActType.Load, width: i.naturalWidth, height: i.naturalHeight }); }
-    }, [img.current]);
+        this.state = {
+            closing: false,
+            nat_height: 0,
+            nat_width: 0,
+            zoom_level: '%'
+        };
 
-    let do_close = useCallback(() => {
-        // close instantly when reduce_motion is on
+        window['lightbox'] = this;
+    }
+
+    img: React.RefObject<HTMLImageElement> = createRef();
+    container: React.RefObject<HTMLDivElement> = createRef();
+
+    m: IMouseState = {
+        t: 0,
+
+        x: 0, y: 0,
+
+        sx: 0, sy: 0,
+
+        vx: 0, vy: 0,
+
+        mode: Mode.Idle,
+
+        c: 0,
+    };
+
+    i: IImageState = {
+        x: 0, y: 0,
+        rx: 0, ry: 0,
+        z: 1, scale: 1,
+        zmin: -1.5, zmax: 3.5,
+        z100: 1, zfit: 1,
+    };
+
+    close() {
+        let { reduce_motion, onClose } = this.props;
+
         if(reduce_motion) return onClose();
 
-        setClosing(true); setTimeout(() => onClose(), 150);
-    }, [onClose, reduce_motion]);
+        this.props.startClose();
+        this.setState({ closing: true });
+        setTimeout(() => onClose(), 150);
+    }
 
-    useMainHotkey(Hotkey.Escape, () => do_close(), [do_close]);
+    compute_img_rect(): undefined | Pick<DOMRect, 'width' | 'height' | 'left' | 'right' | 'top' | 'bottom'> {
+        let img = this.img.current;
+        if(!img) return;
 
-    // `at` is a position on the PAGE (container, technically), not SCREEN. The screen extends beyond the page
-    let do_zoom = useCallback((dz: number, at?: [number, number]) => {
-        let o: [number, number] = [0, 0];
+        let { scale, x, y } = this.i,
+            width = img.offsetWidth,
+            height = img.offsetHeight,
+            scaled_width = width * scale,
+            scaled_height = height * scale,
+            dw = width - scaled_width,
+            dh = height - scaled_height;
+
+        let left = img.offsetLeft + x + dw * 0.5,
+            top = img.offsetTop + y + dh * 0.5,
+            right = left + scaled_width,
+            bottom = top + scaled_height;
+
+        return {
+            width: scaled_width,
+            height: scaled_height,
+            left, right, top, bottom
+        }
+    }
+
+    /// Takes the "real" position and applies it back to the working position
+    apply_bounds() {
+        let state = this.i;
+
+        state.x = state.rx;
+        state.y = state.ry;
+    }
+
+    /// Takes the current position, constrain it to screen bounds, and stores it in the "real" position
+    check_bounds() {
+        let state = this.i,
+            { x, y } = state,
+            cont = this.container.current!,
+            cont_width = cont.clientWidth,
+            cont_height = cont.clientHeight,
+            rect = this.compute_img_rect()!;
+
+        // if less than or equal to container size
+        if(state.scale <= 1 || (state.z100 <= 1 && state.z <= state.zfit)) {
+            // left border
+            x -= Math.min(0, rect.left);
+            // top border
+            y -= Math.min(0, rect.top);
+            // right border
+            x -= Math.max(0, rect.right - cont_width);
+            // bottom border
+            y -= Math.max(0, rect.bottom - cont_height);
+        } else {
+            let min_dimension = Math.min(cont_width, cont_height),
+                margin = min_dimension * 0.35,
+                max_left = cont_width - margin,
+                max_right = margin,
+                max_top = cont_height - margin,
+                max_bottom = margin;
+
+            x += Math.min(0, max_left - rect.left);
+            x += Math.max(0, max_right - rect.right);
+            y += Math.min(0, max_top - rect.top);
+            y += Math.max(0, max_bottom - rect.bottom);
+        }
+
+        state.rx = x;
+        state.ry = y;
+    }
+
+    do_translate(dx: number, dy: number) {
+        if(dx == dy && dy == 0 || this.state.nat_height == 0) return;
+
+        let state = this.i;
+        state.x += dx;
+        state.y += dy;
+
+        this.check_bounds();
+        this.request_animation_update();
+    }
+
+    do_zoom(dz: number, at?: [number, number]) {
+        if(this.state.nat_height == 0) return;
+
+        let state = this.i, z = Math.max(state.zmin, Math.min(state.zmax, state.z + dz));
+
+        if(state.z == z) return; // at limit most likely
 
         if(at) {
-            let i = img.current!,
+            let i = this.img.current!,
                 rect = i.getBoundingClientRect(),
                 [x, y] = at,
                 is_inside = (rect.left < x && x < rect.right) && (rect.top < y && y < rect.bottom);
 
             // apply relative zoom if and only if the anchor is inside the image on-screen
-            if(is_inside) {
-                let container_rect = container_ref.current!.getBoundingClientRect();
+            if(is_inside && !(x == y && y == 0)) {
+                let container_rect = this.container.current!.getBoundingClientRect(),
+                    ox = (x - container_rect.left) - container_rect.width * 0.5,
+                    oy = (y - container_rect.top) - container_rect.height * 0.5,
+                    e = Math.exp(z - state.z);
 
-                o = [
-                    (x - container_rect.left) - container_rect.width * 0.5,
-                    (y - container_rect.top) - container_rect.height * 0.5,
-                ];
+                // let m0 = Math.exp(state.z - 1),
+                //     m1 = Math.exp(z - 1);
+                // relocate origins to cursor, undo current zoom, do new zoom, shift back origin
+                // let x = (state.x - ox) / m0 * m1 + ox;
+                // let y = (state.y - oy) / m0 * m1 + oy;
+
+                // optimized version of above
+                state.x = (state.x - ox) * e + ox;
+                state.y = (state.y - oy) * e + oy;
             }
         }
 
-        dispatch({ t: LbActType.Zoom, dz: dz, o });
-    }, [img.current, container_ref.current]);
+        state.z = z;
+        state.scale = Math.exp(z - 1);
 
-    useMainHotkey(Hotkey.Plus, () => do_zoom(0.25), [do_zoom]);
-    useMainHotkey(Hotkey.Minus, () => do_zoom(-0.25), [do_zoom]);
-
-    interface IMouseState {
-        // current coordinates
-        x: number,
-        y: number,
-
-        // starting coordinates
-        sx: number,
-        sy: number,
-
-        // velocity-ish
-        vx: number,
-        vy: number,
-
-        /// click timer, for detecting if a click was a click or the start of a drag
-        ct?: number,
-        /// Panning timer, for detecting if the mouse is moving or not
-        pt?: number,
-
-        /// current number of clicks
-        c: number,
-
-        /// Last mouse event
-        t: number,
-
-        /// animation frame handle
-        f?: number,
-
-        tr?: string,
-
-        // mode, 0 = pan, 1 = zoom, 2 = momentum
-        d: 0 | 1 | 2,
+        this.check_bounds();
+        this.apply_bounds();
+        this.recompute_zoom_level();
+        this.request_animation_update();
+        this.update_ui();
     }
 
-    let mouse = useRef<IMouseState>({ x: 0, y: 0, c: 0, sx: 0, sy: 0, vx: 0, vy: 0, d: 0, t: 0 });
+    recompute_zoom_level() {
+        let img = this.img.current;
+        if(img) {
+            let zoom_level = Math.round(img.clientWidth * this.i.scale / this.state.nat_width * 100).toLocaleString('en-US') + '%';
+            this.setState(prev => ({ ...prev, zoom_level }));
+        }
+    }
 
-    let on_mousedown = useCallback((e: React.MouseEvent<HTMLImageElement>) => {
-        let m = mouse.current;
+    // TODO: Setup a resize observer for this
+    recompute_zoom_bounds() {
+        let i = this.i,
+            img = this.img.current!,
+            cont = this.container.current!,
+            nat_width = img.naturalWidth,
+            nat_height = img.naturalHeight,
+            cont_width = cont.clientWidth,
+            cont_height = cont.clientHeight;
 
-        // left and middle clicks
-        if(e.button == 0) { dispatch({ t: LbActType.SetPan, panning: true }); }
-        else if(e.button == 1) { dispatch({ t: LbActType.SetZoom, zooming: true }); }
+        i.z100 = Math.log(Math.max(nat_width / cont_width, nat_height / cont_height)) + 1;
+        i.zfit = Math.log(Math.min(cont_width / nat_width, cont_height / nat_height)) + 1;
+        i.zmin = Math.max(i.z100, i.zfit) + LN0_05; // 5% of 100% or fit
+        i.zmax = Math.max(i.z100 + LN5_00, i.zfit); // 500% or fit
+
+        this.do_zoom(0); // apply any bounds checking (both of z and borders)
+    }
+
+    on_load() {
+        let img = this.img.current, cont = this.container.current;
+        if(img && cont) {
+            let nat_width = img.naturalWidth,
+                nat_height = img.naturalHeight,
+                zoom_level = Math.round(img.clientWidth * this.i.scale / nat_width * 100).toLocaleString('en-US') + '%';
+
+            this.recompute_zoom_bounds();
+
+            __DEV__ && console.log("Image State after Load: ", this.i);
+
+            this.setState((prev) => ({ ...prev, nat_width, nat_height, zoom_level }));
+        }
+    }
+
+    on_click(e: React.MouseEvent) {
+        if(this.m.mode == Mode.Idle) {
+            //console.log("MOUSE CLICK: ", Mode[mode]);
+            this.close();
+        }
+        e.stopPropagation();
+    }
+
+    on_mousedown_external(e: React.MouseEvent) {
+        if(e.button == 1) this.on_mousedown(e);
+        e.stopPropagation();
+    }
+
+    /// Click timer
+    ct?: number;
+
+    on_mousedown(e: React.MouseEvent) {
+        let m = this.m, was_momentum = m.mode == Mode.Momentum;
+
+        if(e.button == 0) { m.mode = Mode.Panning; }
+        else if(e.button == 1) { m.mode = Mode.Zooming; }
         else return;
 
         m.sx = m.x = e.pageX;
@@ -229,141 +313,64 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
 
         let now = performance.now();
 
-        if(m.d == 2) {
-            let dt = (now - m.t) / 500, t0 = dt >= 1 ? 0 : (Math.pow(2, -10 * dt));
-            // currently applying momentum
+        if(was_momentum) {
+            let dt = (now - m.t) / 500,
+                t0 = dt >= 1 ? 0 : Math.pow(2, -10 * dt);
 
             let dx = m.vx * -100 * t0,
                 dy = m.vy * -100 * t0;
 
-            __DEV__ && console.log("Cancelling momentum by: ", dx, dy);
-
-            dispatch({ t: LbActType.Pan, dx, dy });
+            this.do_translate(dx, dy);
         }
-
-        m.d = 0;
 
         m.vx = m.vy = 0;
         m.t = now;
 
-        // left click
         if(e.button == 0) {
-            // setup click handler. If mouseup is received before this timeout, then the click persists, otherwise it was a drag
             m.c++;
-            m.ct = setTimeout(() => { m.c = 0; m.d = 0; }, 300);
+            clearTimeout(this.ct);
+            this.ct = setTimeout(() => { m.c = 0; }, 300);
         }
+
+        this.update_ui();
 
         e.preventDefault();
         e.stopPropagation(); // must stop or else `on_mousedown_external` is also triggered
-    }, []);
+    }
 
-    let on_mousedown_external = useCallback((e: React.MouseEvent<HTMLImageElement>) => {
-        if(e.button == 1) on_mousedown(e);
-        e.stopPropagation();
-    }, []);
+    /// Panning timer
+    pt?: number;
 
-    let on_mouseup = (e: React.MouseEvent<HTMLImageElement>) => {
-        if(!(state.is_panning || state.is_zooming)) return;
+    on_mousemove(e: React.MouseEvent) {
+        let m = this.m;
 
-        let pan = state.is_panning, m = mouse.current, { x, y, ct, c } = m;
-
-        if(c > 0) {
-            clearTimeout(ct); // no longer panning
-
-            let dist = Math.hypot(m.x - m.sx, m.y - m.sy);
-
-            if(dist > 20) {
-                c = m.c = 0;
-            } else if(c == 2) {
-                m.d = m.c = 0; // reset
-
-                let z = 1, // zoom to fit by default
-                    o: [number, number] | undefined = [e.pageX, e.pageY],
-                    { width, height } = state,
-                    i = img.current!,
-                    cont = container_ref.current!,
-                    cont_width = cont.clientWidth,
-                    cont_height = cont.clientHeight,
-                    client_width = i.clientWidth,
-
-                    // fits on screen if the natural width is the same as full client width (ie: image is smaller than container)
-                    fits_on_screen = width == client_width;
-
-                // at natural rendered size
-                if(state.z == 1) {
-                    if(fits_on_screen) {
-                        // fit to screen
-                        z = Math.min(cont_width / width, cont_height / height);
-                    } else {
-                        // zoom to 100%
-                        z = width / client_width;
-                    }
-
-                    // adjust for exponential zooming
-                    z = Math.log(z) + 1;
-                }
-
-                if(fits_on_screen) {
-                    // compute relative proportion of image within container
-                    let dw = (cont_width - width) / cont_width,
-                        dh = (cont_height - height) / cont_height;
-
-                    // if the image fills less than 75% of the screen, keep it to center
-                    if(Math.max(dw, dh) > 0.25) {
-                        o = undefined;
-                    }
-                }
-
-                // force absolute z to dz
-                do_zoom(z - state.z, o);
-
-                pan = false;
-            }
-        }
-
-        //m.vx = (m.vx * 0.3 + (e.pageX - m.x) * 0.7);
-        //m.vy = (m.vy * 0.3 + (e.pageY - m.y) * 0.7);
-
-        if(state.is_panning) dispatch({ t: LbActType.SetPan, panning: false });
-        if(state.is_zooming) dispatch({ t: LbActType.SetZoom, zooming: false });
-
-        if(pan && !closing && !reduce_motion) {
-            if(!(m.vx != 0 || m.vy != 0)) return;
-
-            let dx = m.vx * 100,
-                dy = m.vy * 100;
-
-            m.d = 2; // enable momentum
-            m.t = performance.now();
-
-            setTimeout(() => { if(m.d == 2) m.d = 0; }, 500); // allow for animation
-
-            dispatch({ t: LbActType.Pan, dx, dy });
-        }
-
-        e.stopPropagation();
-    };
-
-    let on_mousemove = (e: React.MouseEvent<HTMLImageElement>) => {
-        let m = mouse.current;
-
-        if((state.is_zooming || state.is_panning) && !closing) {
+        if(!this.state.closing && (m.mode == Mode.Panning || m.mode == Mode.Zooming)) {
             let dx = e.pageX - m.x,
                 dy = e.pageY - m.y,
                 t1 = performance.now(),
                 dt = t1 - m.t;
 
-            // EMA
-            m.vx = (m.vx + dx / dt) * 0.5;
-            m.vy = (m.vy + dy / dt) * 0.5;
-            m.t = t1;
+            if(dt > 0) {
+                // EMA
+                m.vx = (m.vx + dx / dt) * 0.5;
+                m.vy = (m.vy + dy / dt) * 0.5;
+                m.t = t1;
+            }
 
-            // if we do not receive another mousemove event, remove velocity
-            clearTimeout(m.pt);
-            m.pt = setTimeout(() => { if(m.d != 2) { m.vx = m.vy = 0; } }, 100);
+            clearTimeout(this.pt);
 
-            if(state.is_panning) { dispatch({ t: LbActType.Pan, dx, dy }); }
-            if(state.is_zooming) { do_zoom(dy / -500, [m.sx, m.sy]); }
+            if(m.mode == Mode.Panning) {
+                // if we do not receive another mousemove event, remove velocity
+                this.pt = setTimeout(() => {
+                    if(m.mode != Mode.Momentum) {
+                        m.vx = m.vy = 0;
+                    }
+                }, 100);
+
+                this.do_translate(dx, dy);
+            } else if(m.mode == Mode.Zooming) {
+                this.do_zoom(dy / -500, [m.sx, m.sy]);
+            }
 
             e.stopPropagation(); // already handled, optimize
         }
@@ -372,127 +379,299 @@ export const LightBox = React.memo(({ src, title, size, onClose }: ILightBoxProp
         m.y = e.pageY;
 
         e.preventDefault();
-    };
+    }
 
-    let scale = Math.exp(state.z - 1);
+    on_mouseup(e: React.MouseEvent) {
+        let m = this.m, panning = m.mode == Mode.Panning;
 
-    let on_wheel = useCallback((e: React.WheelEvent<HTMLImageElement>) => {
-        let m = mouse.current;
-        m.d = 1;
+        if(!panning && m.mode != Mode.Zooming) return;
 
-        // TODO: Do a better Throttle this without throwing away subpixel zooms
-        if(Math.abs(e.deltaY) > 10) {
-            do_zoom(e.deltaY / -500, [m.x, m.y]);
-        }
-        e.stopPropagation();
+        // if there was a detectable click
+        if(m.c > 0) {
+            clearTimeout(this.ct);
 
-    }, [img.current, container_ref.current]);
+            let dist = Math.hypot(m.x - m.sx, m.y - m.sy);
 
-    let on_click_image = (e: React.MouseEvent) => {
-        e.stopPropagation();
-    }, on_click_background = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        if(!(state.is_panning || state.is_zooming)) do_close(); // protect against fast/lagging panning/zooming
-    };
+            if(dist > 10) {
+                m.c = 0;
+            } else if(m.c == 2) {
+                panning = false;
+                m.mode = Mode.Idle;
+                m.c = 0;
 
-    let meta = useMemo(() => {
-        let bytes = size ? format_bytes(size) : 'Unknown size';
-        return `${state.width} x ${state.height} (${bytes})`
-    }, [size, state.width]);
+                let z = 1, // zoom to fit by default
+                    i = this.i,
+                    img = this.img.current!,
+                    o: [number, number] | undefined = [e.pageX, e.pageY],
+                    fits_on_screen = i.z100 < 1;
 
-    let zoom_level = useMemo(() => {
-        let i = img.current;
-        if(i) {
-            return Math.round(i.clientWidth * scale / state.width * 100).toLocaleString("en-US") + '%';
-        }
-        return;
-    }, [img.current, scale, state.width]);
-
-    // TODO: Clicking on footer and dragging to image triggers on_click_background
-
-    let cursor = 'grab', cont_cursor;
-    if(state.is_panning) {
-        cursor = 'grabbing';
-    } else if(mouse.current.c > 0) {
-        cursor = state.z > 1 ? 'zoom-out' : 'zoom-in';
-    } else if(state.is_zooming) {
-        cont_cursor = mouse.current.vy > 0 ? 'zoom-out' : 'zoom-in';
-        cursor = 'inherit';
-    } // else grab
-
-    useLayoutEffect(() => {
-        let i = img.current;
-        if(i) {
-            let instant = reduce_motion || state.is_panning || state.is_zooming,
-                transform = `translate(${state.x}px, ${state.y}px) scale(${scale})`;
-
-            i.style['cursor'] = cursor;
-
-            if(instant) {
-                mouse.current.tr = i.style['transition'] = 'none';
-                i.style['transform'] = transform;
-            } else {
-                if(mouse.current.f) {
-                    cancelAnimationFrame(mouse.current.f);
-                    mouse.current.f = undefined;
+                // at rendered size
+                if(i.z == 1) {
+                    if(fits_on_screen) {
+                        z = i.zfit;
+                    } else {
+                        z = i.z100;
+                    }
                 }
 
-                let new_transition = mouse.current.d == 2 ? 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)' : `transform 0.1s ease-out`;
+                if(fits_on_screen) {
+                    let cont = this.container.current!,
+                        cont_width = cont.clientWidth,
+                        cont_height = cont.clientHeight;
 
-                if(mouse.current.tr == new_transition) {
-                    __DEV__ && console.log("Reusing transition");
+                    // compute relative proportion of image within container
+                    let dw = (cont_width - img.naturalWidth) / cont_width,
+                        dh = (cont_height - img.naturalHeight) / cont_height;
 
-                    i.style['transform'] = transform;
-                } else {
-                    mouse.current.tr = i.style['transition'] = 'none';
-
-                    mouse.current.f = requestAnimationFrame(() => {
-                        // if mouse mode is momentum, use an exponential-ease-out curve at 500ms, otherwise plain ease-out
-                        mouse.current.tr = i!.style['transition'] = mouse.current.d == 2 ? 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)' : `transform 0.1s ease-out`;
-
-                        // ugh
-                        mouse.current.f = requestAnimationFrame(() => {
-                            i!.style['transform'] = transform;
-
-                            mouse.current.f = undefined;
-                        });
-                    });
+                    // if the image fills less than 75% of the screen, keep it to center
+                    if(Math.max(dw, dh) > 0.25) {
+                        o = undefined;
+                    }
                 }
+
+                // force absolute z to dz
+                this.do_zoom(z - i.z, o);
             }
         }
-    }, [state, cursor, img.current, reduce_motion]);
 
-    return (
-        <FullscreenModal>
-            <div className={classNames("ln-lightbox", { closing })}
-                onClick={on_click_background}
-                onContextMenu={eat}
-                onMouseMove={on_mousemove}
-                onMouseDown={on_mousedown_external}
-                onMouseUp={on_mouseup}
-                onWheel={on_wheel}
-            >
+        //console.log("MOUSE UP: ", Mode[m.mode]);
 
-                <div className="ln-lightbox__container" ref={container_ref} style={{ cursor: cont_cursor }}>
-                    <img src={src} ref={img}
-                        onLoad={on_load}
-                        onClick={on_click_image}
-                        onMouseDown={on_mousedown}
-                    />
+        if(panning && !this.state.closing && !this.props.reduce_motion) {
+            if(m.vx != 0 || m.vy != 0) {
+                let dx = m.vx * 100,
+                    dy = m.vy * 100;
+
+                m.mode = Mode.Momentum;
+                m.t = performance.now();
+
+                setTimeout(() => {
+                    if(m.mode == Mode.Momentum) {
+                        m.mode = Mode.Idle;
+                    }
+                }, 500);
+
+                this.do_translate(dx, dy);
+            }
+        } else {
+            m.mode = Mode.Idle;
+        }
+
+        // Prevent onClick from triggering
+        if(m.mode != Mode.Momentum && m.mode != Mode.Idle) {
+            let t0 = m.t;
+            requestAnimationFrame(() => {
+                // if no extra events happened
+                if(m.t == t0) {
+                    m.mode = Mode.Idle;
+                    this.update_ui();
+                }
+            });
+        }
+
+        // apply bounds checking for momentum or previous panning off-screen (virtual overflow)
+        this.apply_bounds();
+        this.update_ui();
+
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    on_wheel(e: React.WheelEvent) {
+        let m = this.m;
+
+        // TODO: Throttle
+        this.do_zoom(e.deltaY / -500, [m.x, m.y]);
+
+        e.stopPropagation();
+    }
+
+    render() {
+        let { src, title, size } = this.props,
+            { nat_width, nat_height, closing, zoom_level } = this.state,
+            bytes = size ? format_bytes(size) : 'Unknown Size',
+            meta = `${nat_width} x ${nat_height} (${bytes})`;
+
+        return (
+            <FullscreenModal>
+                <div className={classNames("ln-lightbox", { closing })}
+                    onClick={e => this.on_click(e)}
+                    onMouseMove={e => this.on_mousemove(e)}
+                    onMouseDown={e => this.on_mousedown_external(e)}
+                    onMouseUp={e => this.on_mouseup(e)}
+                    onWheel={e => this.on_wheel(e)}
+                    onContextMenu={e => e.stopPropagation()}
+                >
+
+                    <div className="ln-lightbox__container" ref={this.container}>
+                        <img src={src} ref={this.img}
+                            onLoad={() => this.on_load()}
+                            onClick={e => e.stopPropagation()}
+                            onMouseDown={e => this.on_mousedown(e)}
+                            onMouseMove={e => { /*fast path*/ this.on_mousemove(e); e.stopPropagation(); }}
+                        />
+                    </div>
+
+                    <div className="ln-lightbox__footer ui-text" onClick={e => e.stopPropagation()}>
+                        <span>
+                            <span className="ln-lightbox-title">{title}</span>
+                            <span> — {meta}</span>
+                            <span className="ln-lightbox-zoom">{zoom_level}</span>
+                        </span>
+                    </div>
                 </div>
+            </FullscreenModal>
+        );
+    }
 
-                <div className="ln-lightbox__footer ui-text" onClick={on_click_image}>
-                    <span>
-                        <span className="ln-lightbox-title">{title}</span>
-                        <span> — {meta}</span>
-                        <span className="ln-lightbox-zoom">{zoom_level}</span>
-                    </span>
-                </div>
-            </div>
-        </FullscreenModal>
-    );
-});
+    animation_frame?: number;
 
-if(__DEV__) {
-    LightBox.displayName = "LightBox";
+    request_animation_update() {
+        if(!this.animation_frame) {
+            this.img.current!.style['will-change'] = 'transform';
+            this.animation_frame = requestAnimationFrame(() => this.update_animation());
+        }
+    }
+
+    /// current transition type
+    tr: string = 'none';
+    tr_frame?: number;
+    pix?: number;
+
+    update_animation() {
+        this.animation_frame = undefined;
+
+        let img = this.img.current, cont = this.container.current;
+        if(!img || !cont) return;
+
+        let { reduce_motion } = this.props, m = this.m, i = this.i,
+            transform = `translate3d(${i.rx}px, ${i.ry}px, 0) scale(${i.scale})`;
+
+        if(__DEV__) {
+            if(isNaN(i.x) || isNaN(i.y) || isNaN(i.scale)) {
+                alert("NaN value in LightBox::updated_animation: " + transform);
+            }
+        }
+
+        cancelAnimationFrame(this.tr_frame!);
+
+        //if(!this.pix) { img.style['image-rendering'] = 'pixelated'; }
+        //clearTimeout(this.pix);
+        //this.pix = setTimeout(() => {
+        //    img!.style['image-rendering'] = 'auto';
+        //    img!.style['image-rendering'] = 'optimizeQuality';
+        //    img!.style['image-rendering'] = 'smooth';
+        //    this.pix = undefined;
+        //}, 900);
+
+        if(reduce_motion) {
+            if(this.tr == 'none') {
+                this.tr = img!.style['transform'] = 'none';
+            }
+
+            img.style['transform'] = transform;
+
+            this.tr_frame = requestAnimationFrame(() => { img!.style['will-change'] = 'auto'; });
+        } else {
+            let new_transition: string;
+            if(m.mode == Mode.Momentum) {
+                // expo-ease-out
+                new_transition = 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
+            } else if(m.mode == Mode.Panning || m.mode == Mode.Zooming) {
+                new_transition = 'transform 0.1s cubic-bezier(0.16, 1, 0.3, 1)';
+            } else {
+                new_transition = `transform 0.1s ease-out`;
+            }
+
+            if(this.tr == new_transition) {
+                img.style['transform'] = transform;
+
+                this.tr_frame = requestAnimationFrame(() => { img!.style['will-change'] = 'auto'; });
+            } else {
+                // stop animation
+                this.tr = img.style['transition'] = 'none';
+
+                img.style['will-change'] = 'transition, transform';
+
+                this.tr_frame = requestAnimationFrame(() => {
+                    this.tr = img!.style['transition'] = new_transition;
+
+                    this.tr_frame = requestAnimationFrame(() => {
+                        img!.style['transform'] = transform;
+
+                        this.tr_frame = requestAnimationFrame(() => { img!.style['will-change'] = 'auto'; });
+                    });
+                });
+            }
+        }
+    }
+
+    update_ui() {
+        let img = this.img.current, cont = this.container.current;
+        if(!img || !cont) return;
+
+        let m = this.m,
+            i = this.i,
+            mode = m.mode,
+            is_panning = mode == Mode.Panning,
+            is_zooming = mode == Mode.Zooming;
+
+        let cursor = 'auto', set_cont = false;
+        if(is_panning) {
+            cursor = 'grabbing';
+        } else if(m.c > 0) {
+            cursor = i.z > 1 ? 'zoom-out' : 'zoom-in';
+        } else if(is_zooming) {
+            set_cont = true;
+            cont.style['cursor'] = cursor = m.vy > 0 ? 'zoom-out' : 'zoom-in';
+        } else {
+            cursor = 'grab';
+        }
+
+        if(!set_cont) {
+            cont.style['cursor'] = 'auto';
+        }
+
+        let new_contain = i.scale <= 1 ? 'paint' : 'layout';
+        if(cont.style['contain'] != new_contain) {
+            cont.style['contain'] = new_contain;
+        }
+
+        img.style['cursor'] = cursor;
+    }
 }
+
+export const LightBox = React.memo((props: Omit<ILightBoxProps, 'startClose'>) => {
+    let lb = useRef<LightBoxInner>(null),
+        reduce_motion = useSelector(selectPrefsFlag(UserPreferenceFlags.ReduceAnimations)),
+        de = document.documentElement;
+
+    useMainHotkeys([Hotkey.Escape, Hotkey.Plus, Hotkey.Minus], (hotkey: Hotkey, e: KeyboardEvent) => {
+        let l = lb.current;
+        if(l) {
+            switch(hotkey) {
+                case Hotkey.Escape: return l.close();
+                case Hotkey.Plus: return l.do_zoom(0.25);
+                case Hotkey.Minus: return l.do_zoom(-0.25);
+            }
+        }
+    }, [lb.current]);
+
+    useLayoutEffect(() => {
+        if(!reduce_motion) {
+            de.classList.add("ln-lightbox-open");
+        }
+
+        return () => {
+            de.classList.remove("ln-lightbox-open");
+            de.classList.remove("ln-lightbox-closing");
+        };
+    }, [reduce_motion]);
+
+    let startClose = () => {
+        if(!reduce_motion) {
+            de.classList.add("ln-lightbox-closing");
+        }
+    };
+
+    return <LightBoxInner {...props} ref={lb} reduce_motion={reduce_motion} startClose={startClose} />;
+});
