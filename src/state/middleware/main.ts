@@ -253,9 +253,10 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
 
                         setTheme({
                             temperature: full_prefs.temp,
-                            is_light: hasUserPrefFlag(state.prefs, UserPreferenceFlags.LightMode),
-                            oled: hasUserPrefFlag(state.prefs, UserPreferenceFlags.OledMode),
+                            is_light: hasUserPrefFlag(full_prefs, UserPreferenceFlags.LightMode),
+                            oled: hasUserPrefFlag(full_prefs, UserPreferenceFlags.OledMode),
                         }, false);
+
                         dispatch({ type: Type.UPDATE_PREFS, prefs: full_prefs }); // do side-effects
                     }
 
