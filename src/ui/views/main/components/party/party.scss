@@ -14,6 +14,8 @@
     display: flex;
     flex-wrap: nowrap;
     width: 100%;
+    height: 100%;
+    overflow: hidden;
     flex-basis: 100%;
 
     &__user-list {
@@ -25,6 +27,10 @@
             right: 0;
             border-radius: 1em 0 0 1em;
         }
+
+        .ln-oled-theme & {
+            border-left: 1px solid #333;
+        }
     }
 
     &__sidebar {
@@ -33,6 +39,10 @@
         @media (max-width: $ln-max-channel-width) {
             max-width: calc(86vw - 4.2em);
             border-radius: 0 1em 1em 0;
+        }
+
+        .ln-oled-theme & {
+            border-right: 1px solid #333;
         }
     }
 

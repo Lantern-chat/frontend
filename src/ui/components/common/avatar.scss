@@ -38,5 +38,9 @@
             width: 100%;
             font-size: 1.2em;
         }
+
+        .ln-oled-theme & {
+            border: 1px solid #333;
+        }
     }
 }

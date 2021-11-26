@@ -17,6 +17,10 @@
     //box-shadow: 0em 0.1rem 0.2em $lnx-secondary-surface-color;
     //z-index: 1;
 
+    .ln-oled-theme & {
+        border-bottom: 1px solid #333;
+    }
+
     &__wrapper {
         display: flex;
         flex-wrap: nowrap;

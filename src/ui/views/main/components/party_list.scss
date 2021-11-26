@@ -144,5 +144,9 @@
 
         height: 100%;
         background-color: $lnx-secondary-surface-color;
+
+        .ln-oled-theme & {
+            border-right: 1px solid #333;
+        }
     }
 }

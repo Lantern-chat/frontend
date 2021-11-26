@@ -44,6 +44,10 @@
         @media (max-width: $ln-max-channel-width) {
             display: none;
         }
+
+        .ln-oled-theme & {
+            border-left: 1px solid #333;
+        }
     }
 
     &__banners {

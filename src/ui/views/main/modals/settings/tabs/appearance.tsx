@@ -12,7 +12,7 @@ import { RootState } from "state/root";
 
 import { FormGroup, FormInput, FormLabel, FormSelect } from "ui/components/form";
 
-import { TogglePrefsFlag } from "../components/toggle";
+import { Toggle, TogglePrefsFlag } from "../components/toggle";
 import { RadioSelect } from "../components/radio";
 
 import { MIN_TEMP, MAX_TEMP } from "lib/theme";
@@ -41,13 +41,14 @@ const ThemeSetting = React.memo(() => {
         theme = useSelector(themeSelector),
         dispatch = useDispatch(),
         [interactive, setInteractive] = useState(theme),
-        doSetTheme = (temperature: number, is_light: boolean) => {
-            setInteractive({ temperature, is_light });
+        doSetTheme = (temperature: number, is_light: boolean, oled?: boolean) => {
+            setInteractive({ temperature, is_light, oled });
 
             batch(() => {
-                dispatch(setTheme(temperature, is_light));
+                dispatch(setTheme(temperature, is_light, oled));
                 dispatch(savePrefs({ temp: temperature }));
                 dispatch(savePrefsFlag(UserPreferenceFlags.LightMode, is_light));
+                dispatch(savePrefsFlag(UserPreferenceFlags.OledMode, !!oled));
             });
         };
 
@@ -57,7 +58,7 @@ const ThemeSetting = React.memo(() => {
             let touch = e.touches[0].clientX - x;
             if(touch < 0 || touch > width) return;
             let t = touch / width, temperature = (1 - t) * MIN_TEMP + t * MAX_TEMP;
-            doSetTheme(temperature, interactive.is_light);
+            doSetTheme(temperature, interactive.is_light, interactive.oled);
         }
     }, 50, { trailing: true });
 
@@ -69,7 +70,7 @@ const ThemeSetting = React.memo(() => {
                     name="light_theme"
                     options={[["light", "Light Theme"], ["dark", "Dark Theme"]]}
                     selected={interactive.is_light ? 'light' : 'dark'}
-                    onChange={value => doSetTheme(interactive.temperature, value == 'light')}
+                    onChange={value => doSetTheme(interactive.temperature, value == 'light', interactive.oled)}
                 />
             </div>
 
@@ -79,10 +80,14 @@ const ThemeSetting = React.memo(() => {
                     <input ref={input} type="range" className="ln-slider" name="temperature"
                         min={MIN_TEMP} max={MAX_TEMP} step="1"
                         value={interactive.temperature}
-                        onInput={e => doSetTheme(parseFloat(e.currentTarget.value), interactive.is_light)}
+                        onInput={e => doSetTheme(parseFloat(e.currentTarget.value), interactive.is_light, interactive.oled)}
                         onTouchMove={onTempTouchMove} onTouchStart={onTempTouchMove} />
                 </div>
             </div>
+
+            <Toggle htmlFor="oled_mode" label="Enable OLED Mode" checked={interactive.oled}
+                onChange={(checked: boolean) => doSetTheme(interactive.temperature, interactive.is_light, checked)}
+            />
         </>
     )
 });

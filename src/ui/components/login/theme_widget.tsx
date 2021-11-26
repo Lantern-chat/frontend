@@ -22,7 +22,7 @@ export const ThemeWidget: React.FunctionComponent = React.memo(() => {
 
     let doSetTheme = (temperature: number, is_light: boolean) => {
         setInteractive({ temperature, is_light });
-        dispatch(setTheme(temperature, is_light));
+        dispatch(setTheme(temperature, is_light, theme.oled));
     };
 
     let onTempTouchMove = throttle((e: React.TouchEvent<HTMLInputElement>) => {

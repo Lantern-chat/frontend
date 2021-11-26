@@ -224,12 +224,12 @@ const MainHotkeyHandler = React.memo(() => {
     useMainHotkey(Hotkey.ToggleLightTheme, () => {
         // avoid actually using a selector this high up
         let thunk: DispatchableAction = (dispatch, getState) => {
-            let { temperature, is_light } = themeSelector(getState());
+            let { temperature, is_light, oled } = themeSelector(getState());
 
             is_light = !is_light;
 
             batch(() => {
-                dispatch(setTheme(temperature, is_light));
+                dispatch(setTheme(temperature, is_light, oled));
                 dispatch(savePrefs({ temp: temperature }));
                 dispatch(savePrefsFlag(UserPreferenceFlags.LightMode, is_light));
             });

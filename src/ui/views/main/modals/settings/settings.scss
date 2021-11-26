@@ -226,6 +226,10 @@
             flex-direction: column;
             justify-content: center;
 
+            .ln-oled-theme & {
+                border: 1px solid #333;
+            }
+
             &:hover {
                 text-decoration: underline;
             }

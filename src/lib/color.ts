@@ -137,7 +137,7 @@ export function rgb2hsv(rgb: RGBColor): HSVColor {
 
 export function change_color(rgb: RGBColor, { h: hue, s: saturation, l: lightness }: IChangeColorOptions): RGBColor {
     let { h, s, l } = rgb2hsl(rgb),
-        k = (v: number, s: number | undefined) => s != undefined ? clamp01(s) : v;
+        k = (v: number, s: number | undefined) => s !== undefined ? clamp01(s) : v;
 
     return hsl2rgb({
         h: hue != undefined ? hue : h,
@@ -148,7 +148,7 @@ export function change_color(rgb: RGBColor, { h: hue, s: saturation, l: lightnes
 
 export function adjust_color(rgb: RGBColor, { h: hue, s: saturation, l: lightness }: IChangeColorOptions): RGBColor {
     let { h, s, l } = rgb2hsl(rgb),
-        k = (v: number, s: number | undefined) => s != undefined ? clamp01(s + v) : v;
+        k = (v: number, s: number | undefined) => s !== undefined ? clamp01(s + v) : v;
 
     return hsl2rgb({
         h: hue != undefined ? clamp0360(h + hue) : h,
@@ -160,7 +160,7 @@ export function adjust_color(rgb: RGBColor, { h: hue, s: saturation, l: lightnes
 export function scale_color(rgb: RGBColor, { h: hue, s: saturation, l: lightness }: IChangeColorOptions): RGBColor {
     let { h, s, l } = rgb2hsl(rgb),
         j = (v: number, s: number) => v + s * (s > 0 ? 1 - s : s),
-        k = (v: number, s: number | undefined) => s != undefined ? clamp01(j(v, s)) : v;
+        k = (v: number, s: number | undefined) => s !== undefined ? clamp01(j(v, s)) : v;
 
     return hsl2rgb({
         h: hue != undefined ? clamp0360(j(hue, h)) : h,

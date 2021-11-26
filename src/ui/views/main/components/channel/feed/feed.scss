@@ -127,6 +127,10 @@
             //position: relative;
             //top: 0.035em; // TODO: Improve this somehow
         }
+
+        .ln-oled-theme & {
+            border: 1px solid #222;
+        }
     }
 }
 

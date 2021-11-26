@@ -13,6 +13,7 @@ export interface IThemeColors {
 export interface ITheme {
     temperature: number,
     is_light: boolean,
+    oled?: boolean,
 }
 
 export const MIN_TEMP: number = 965.0;
@@ -22,23 +23,31 @@ let clamp_temp = (temp: number): number => min(MAX_TEMP, max(MIN_TEMP, temp));
 
 export var LIGHT_THEME: boolean = false;
 
-export function genDarkTheme(temperature: number): IThemeColors {
+export function genDarkTheme(temperature: number, oled?: boolean): IThemeColors {
     temperature = clamp_temp(temperature);
     let k = kelvin2(temperature);
 
+    // compute saturation
     let s = (temperature - 7000) / 20000;
     s *= s;
     s += 0.05;
 
+    let l = 0.2;
+
+    if(oled) {
+        s *= 0.5;
+        l = 0.05;
+    }
+
     //console.log("saturation: ", s);
 
-    let primary_surface_color = change_color(k, { l: 0.2, s: s });
-    let secondary_surface_color = darken(primary_surface_color, 0.05);
-    let tertiary_surface_color = lighten(primary_surface_color, 0.05);
+    let primary_surface_color = change_color(k, { l, s });
+    let secondary_surface_color = oled ? primary_surface_color : darken(primary_surface_color, 0.05);
+    let tertiary_surface_color = oled ? primary_surface_color : lighten(primary_surface_color, 0.05);
 
     let primary_text_color = change_color(primary_surface_color, {
         s: 0,
-        l: 1.1 - lightness(primary_surface_color),
+        l: oled ? 0.8 : (1.1 - lightness(primary_surface_color)),
     });
     let secondary_text_color = darken(primary_text_color, 0.2);
 
@@ -102,13 +111,13 @@ export function genLightTheme(temperature: number): IThemeColors {
 
 var currentTimer: ReturnType<typeof setTimeout>;
 
-export function setTheme({ temperature, is_light }: ITheme, animate: boolean) {
-    let colors = is_light ? genLightTheme(temperature) : genDarkTheme(temperature);
+export function setTheme({ temperature, is_light, oled }: ITheme, animate: boolean) {
+    let colors = is_light ? genLightTheme(temperature) : genDarkTheme(temperature, oled);
 
-    setThemeColors(colors, animate, is_light);
+    setThemeColors(colors, animate, is_light, oled);
 }
 
-export function setThemeColors(colors: IThemeColors, animate: boolean, is_light: boolean) {
+export function setThemeColors(colors: IThemeColors, animate: boolean, is_light: boolean, oled?: boolean) {
     LIGHT_THEME = is_light;
 
     let de = document.documentElement;
@@ -123,6 +132,12 @@ export function setThemeColors(colors: IThemeColors, animate: boolean, is_light:
     } else {
         de.classList.add('ln-dark-theme');
         de.classList.remove('ln-light-theme');
+    }
+
+    if(oled) {
+        de.classList.add('ln-oled-theme');
+    } else {
+        de.classList.remove('ln-oled-theme');
     }
 
     for(let key in colors) {
