@@ -162,9 +162,10 @@ a {
 
     -webkit-overflow-scrolling: touch;
 
-    &::-webkit-scrollbar {
-        width: 7px;
-    }
+    // don't repaint on scroll
+    transform: translateZ(0);
+    backface-visibility: hidden;
+
 
     &::-webkit-scrollbar-thumb {
         border-radius: 1ex;

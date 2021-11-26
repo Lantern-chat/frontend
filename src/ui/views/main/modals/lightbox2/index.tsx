@@ -117,10 +117,10 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
     }
 
     compute_img_rect(): undefined | Pick<DOMRect, 'width' | 'height' | 'left' | 'right' | 'top' | 'bottom'> {
-        let img = this.img.current, state = this.i;
+        let img = this.img.current;
         if(!img) return;
 
-        let scale = state.scale,
+        let { scale, x, y } = this.i,
             width = img.offsetWidth,
             height = img.offsetHeight,
             scaled_width = width * scale,
@@ -128,8 +128,8 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
             dw = width - scaled_width,
             dh = height - scaled_height;
 
-        let left = img.offsetLeft + state.x + dw * 0.5,
-            top = img.offsetTop + state.y + dh * 0.5,
+        let left = img.offsetLeft + x + dw * 0.5,
+            top = img.offsetTop + y + dh * 0.5,
             right = left + scaled_width,
             bottom = top + scaled_height;
 
@@ -181,7 +181,6 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
         state.y += dy;
 
         this.check_bounds();
-
         this.request_animation_update();
     }
 
@@ -249,7 +248,7 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
         i.zmin = Math.max(i.z100, i.zfit) + LN0_05; // 5% of 100% or fit
         i.zmax = Math.max(i.z100 + LN5_00, i.zfit); // 500% or fit
 
-        this.do_zoom(0); // apply any bounds checking
+        this.do_zoom(0); // apply any bounds checking (both of z and borders)
     }
 
     on_load() {
@@ -268,13 +267,11 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
     }
 
     on_click(e: React.MouseEvent) {
-        let mode = this.m.mode;
-
-        // if not panning or zooming, allow close
-        if(mode != Mode.Panning && mode != Mode.Zooming) {
+        if(this.m.mode == Mode.Idle) {
             //console.log("MOUSE CLICK: ", Mode[mode]);
             this.close();
         }
+        e.stopPropagation();
     }
 
     on_mousedown_external(e: React.MouseEvent) {
@@ -432,10 +429,12 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
 
                 this.do_translate(dx, dy);
             }
+        } else {
+            m.mode = Mode.Idle;
         }
 
         // Prevent onClick from triggering
-        if(m.mode != Mode.Momentum) {
+        if(m.mode != Mode.Momentum && m.mode != Mode.Idle) {
             let t0 = m.t;
             requestAnimationFrame(() => {
                 // if no extra events happened
@@ -504,6 +503,7 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
 
     request_animation_update() {
         if(!this.animation_frame) {
+            this.img.current!.style['will-change'] = 'transform';
             this.animation_frame = requestAnimationFrame(() => this.update_animation());
         }
     }
@@ -519,11 +519,8 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
         let img = this.img.current, cont = this.container.current;
         if(!img || !cont) return;
 
-        let { reduce_motion } = this.props,
-            m = this.m, i = this.i, mode = m.mode;
-
-        let instant = reduce_motion || [Mode.Panning, Mode.Zooming].includes(mode),
-            transform = `translate(${i.x}px, ${i.y}px) scale(${i.scale})`;
+        let { reduce_motion } = this.props, m = this.m, i = this.i;
+        let transform = `translate3d(${i.x}px, ${i.y}px, 0) scale(${i.scale})`;
 
         if(__DEV__) {
             if(isNaN(i.x) || isNaN(i.y) || isNaN(i.scale)) {
@@ -531,10 +528,7 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
             }
         }
 
-        if(this.tr_frame) {
-            cancelAnimationFrame(this.tr_frame);
-            this.tr_frame = undefined;
-        }
+        cancelAnimationFrame(this.tr_frame!);
 
         //if(!this.pix) { img.style['image-rendering'] = 'pixelated'; }
         //clearTimeout(this.pix);
@@ -545,21 +539,34 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
         //    this.pix = undefined;
         //}, 900);
 
-        if(instant) {
-            // TODO: Apply `image-rendering: pixelated` during movement
-            this.tr = img.style['transition'] = 'none';
+        if(reduce_motion) {
+            if(this.tr == 'none') {
+                this.tr = img!.style['transform'] = 'none';
+            }
+
             img.style['transform'] = transform;
+
+            this.tr_frame = requestAnimationFrame(() => { img!.style['will-change'] = 'auto'; });
         } else {
-            let new_transition = m.mode == Mode.Momentum ?
+            let new_transition: string;
+            if(m.mode == Mode.Momentum) {
                 // expo-ease-out
-                'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)' :
-                `transform 0.1s ease-out`;
+                new_transition = 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
+            } else if(m.mode == Mode.Panning || m.mode == Mode.Zooming) {
+                new_transition = 'transform 0.1s cubic-bezier(0.16, 1, 0.3, 1)';
+            } else {
+                new_transition = `transform 0.1s ease-out`;
+            }
 
             if(this.tr == new_transition) {
                 img.style['transform'] = transform;
+
+                this.tr_frame = requestAnimationFrame(() => { img!.style['will-change'] = 'auto'; });
             } else {
                 // stop animation
                 this.tr = img.style['transition'] = 'none';
+
+                img.style['will-change'] = 'transition, transform';
 
                 this.tr_frame = requestAnimationFrame(() => {
                     this.tr = img!.style['transition'] = new_transition;
@@ -567,7 +574,7 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
                     this.tr_frame = requestAnimationFrame(() => {
                         img!.style['transform'] = transform;
 
-                        this.tr_frame = undefined;
+                        this.tr_frame = requestAnimationFrame(() => { img!.style['will-change'] = 'auto'; });
                     });
                 });
             }
@@ -584,19 +591,28 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
             is_panning = mode == Mode.Panning,
             is_zooming = mode == Mode.Zooming;
 
-        let cursor = 'auto', cont_cursor = 'auto';
+        let cursor = 'auto', set_cont = false;
         if(is_panning) {
             cursor = 'grabbing';
         } else if(m.c > 0) {
             cursor = i.z > 1 ? 'zoom-out' : 'zoom-in';
         } else if(is_zooming) {
-            cursor = cont_cursor = m.vy > 0 ? 'zoom-out' : 'zoom-in';
+            set_cont = true;
+            cont.style['cursor'] = cursor = m.vy > 0 ? 'zoom-out' : 'zoom-in';
         } else {
             cursor = 'grab';
         }
 
+        if(!set_cont) {
+            cont.style['cursor'] = 'auto';
+        }
+
+        let new_contain = i.scale <= 1 ? 'paint' : 'layout';
+        if(cont.style['contain'] != new_contain) {
+            cont.style['contain'] = new_contain;
+        }
+
         img.style['cursor'] = cursor;
-        cont.style['cursor'] = cont_cursor;
     }
 }
 

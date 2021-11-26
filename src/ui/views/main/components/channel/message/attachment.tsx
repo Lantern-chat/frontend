@@ -126,7 +126,12 @@ const ImageAttachment = React.memo((props: IImageAttachmentProps) => {
         onLoad = useCallback(() => setLoaded(true), [ref.current]),
 
         // add onClick and style tweaks
-        img_props: React.ImgHTMLAttributes<HTMLImageElement> = { ...props.img, onClick, style: loaded ? props.img.style : { height: '100em' } };
+        img_props: React.ImgHTMLAttributes<HTMLImageElement> = {
+            ...props.img,
+            onClick,
+            style: loaded ? props.img.style : { height: '100em' },
+            loading: 'lazy'
+        };
 
     let embed;
     if(visible) {

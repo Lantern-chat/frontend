@@ -69,6 +69,7 @@
 
         @media (max-width: $ln-max-channel-width) {
             position: fixed;
+            backface-visibility: hidden;
             top: 0;
             left: 0;
             right: 0;

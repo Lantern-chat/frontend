@@ -4,6 +4,7 @@ $duration: 0.3s;
 
 .ln-toast-container {
     position: fixed;
+    backface-visibility: hidden;
     display: flex;
     flex-direction: column;
     filter: drop-shadow(0 0.15rem 0.25rem #222);

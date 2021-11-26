@@ -9,6 +9,9 @@ $timing: 0.15s;
     display: flex;
     flex-direction: column;
 
+    contain: paint;
+    overflow: hidden;
+
     &__footer {
         text-align: center;
         padding: 0.5em 1em;
@@ -25,6 +28,7 @@ $timing: 0.15s;
         justify-content: center;
         line-height: normal;
         color: #ddd;
+        cursor: auto;
 
         > span {
             display: flex;
@@ -74,6 +78,8 @@ $timing: 0.15s;
         flex: 1;
         //flex-basis: 90%;
 
+        transform: translate3d(0, 0, 0);
+
         img {
             margin: auto;
             max-height: 100%;
@@ -82,6 +88,16 @@ $timing: 0.15s;
             min-height: 0;
             min-width: 0;
             cursor: grab;
+            backface-visibility: hidden;
+
+            // removes scale blur in chrome
+            filter: none;
+            -webkit-filter: blur(0px);
+            -moz-filter: blur(0px);
+            -ms-filter: blur(0px);
+
+            //will-change: transform;
+            //will-change: transform, transition;
         }
 
         .ln-enable-motion & {

@@ -13,6 +13,9 @@
         overflow-anchor: none;
         overflow-y: scroll;
 
+        // try optimize scrolling animations
+        will-change: scroll-position;
+
         //scrollbar-width: none;
         //&::-webkit-scrollbar {
         //    display: none;
