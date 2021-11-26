@@ -17,6 +17,14 @@ import { Ripple } from "ui/components/common/spinners/ripple";
 
 const DEBUG_TOUCH = false;
 
+//function do_resize() {
+//    let root = document.getElementById("ln-root")!;
+//    root.style['height'] = document.body.style['height'] = window.innerHeight.toString();
+//}
+//window.addEventListener('resize', do_resize);
+//window.addEventListener('touchmove', do_resize);
+//do_resize();
+
 let Root = () => {
     let locale = createLocale();
 
