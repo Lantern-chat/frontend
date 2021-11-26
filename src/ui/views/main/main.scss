@@ -6,6 +6,7 @@
     height: 100%;
     flex-wrap: nowrap;
     background-color: $lnx-tertiary-surface-color;
+    overflow: hidden;
 
     font-size: var(--ln-ui-font-size, 1rem);
 }

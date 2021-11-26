@@ -130,7 +130,7 @@ const ImageAttachment = React.memo((props: IImageAttachmentProps) => {
             ...props.img,
             onClick,
             style: loaded ? props.img.style : { height: '100em' },
-            loading: 'lazy'
+            //loading: 'lazy'
         };
 
     let embed;

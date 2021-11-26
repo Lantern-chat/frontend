@@ -79,6 +79,7 @@ $timing: 0.15s;
         //flex-basis: 90%;
 
         transform: translate3d(0, 0, 0);
+        user-select: none;
 
         img {
             margin: auto;
@@ -89,6 +90,7 @@ $timing: 0.15s;
             min-width: 0;
             cursor: grab;
             backface-visibility: hidden;
+            user-select: none;
 
             // removes scale blur in chrome
             filter: none;

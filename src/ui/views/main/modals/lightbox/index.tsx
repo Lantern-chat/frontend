@@ -165,14 +165,10 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
 
         // if less than or equal to container size
         if(state.scale <= 1 || (state.z100 <= 1 && state.z <= state.zfit)) {
-            // left border
-            x -= Math.min(0, rect.left);
-            // top border
-            y -= Math.min(0, rect.top);
-            // right border
-            x -= Math.max(0, rect.right - cont_width);
-            // bottom border
-            y -= Math.max(0, rect.bottom - cont_height);
+            x -= Math.min(0, rect.left); // left border
+            y -= Math.min(0, rect.top); // top border
+            x -= Math.max(0, rect.right - cont_width); // right border
+            y -= Math.max(0, rect.bottom - cont_height); // bottom border
         } else {
             let min_dimension = Math.min(cont_width, cont_height),
                 margin = min_dimension * 0.35,
@@ -489,7 +485,8 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
         let { src, title, size } = this.props,
             { nat_width, nat_height, closing, zoom_level } = this.state,
             bytes = size ? format_bytes(size) : 'Unknown Size',
-            meta = `${nat_width} x ${nat_height} (${bytes})`;
+            meta = `${nat_width} x ${nat_height} (${bytes})`,
+            eat = (e: React.SyntheticEvent) => e.stopPropagation();
 
         return (
             <FullscreenModal>
@@ -505,13 +502,15 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
                     <div className="ln-lightbox__container" ref={this.container}>
                         <img src={src} ref={this.img}
                             onLoad={() => this.on_load()}
-                            onClick={e => e.stopPropagation()}
+                            onClick={eat}
                             onMouseDown={e => this.on_mousedown(e)}
-                            onMouseMove={e => { /*fast path*/ this.on_mousemove(e); e.stopPropagation(); }}
+                            onMouseMove={e => { /*fast path*/ this.on_mousemove(e); eat(e); }}
                         />
                     </div>
 
-                    <div className="ln-lightbox__footer ui-text" onClick={e => e.stopPropagation()}>
+                    <div className="ln-lightbox__footer ui-text"
+                        onClick={eat} onMouseMove={eat} onMouseDown={eat} onMouseUp={eat} onContextMenu={eat}
+                    >
                         <span>
                             <span className="ln-lightbox-title">{title}</span>
                             <span> — {meta}</span>

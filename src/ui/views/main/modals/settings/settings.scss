@@ -50,7 +50,6 @@
     .ln-enable-motion & {
         animation-duration: 0.2s;
         animation-timing-function: ease-in;
-        animation-fill-mode: forwards;
     }
 
     &--opened {
@@ -64,6 +63,8 @@
     }
 
     &--closing {
+        animation-fill-mode: forwards;
+
         @media (min-width: $ln-min-channel-width) {
             animation-name: settings-zoom-out, settings-fade-out;
         }
