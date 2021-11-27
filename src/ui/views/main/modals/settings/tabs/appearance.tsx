@@ -85,7 +85,7 @@ const ThemeSetting = React.memo(() => {
                 </div>
             </div>
 
-            <Toggle htmlFor="oled_mode" label="Enable OLED Mode" checked={interactive.oled}
+            <Toggle htmlFor="oled_mode" label="Enable OLED Dark Mode" checked={interactive.oled}
                 onChange={(checked: boolean) => doSetTheme(interactive.temperature, interactive.is_light, checked)}
             />
         </>

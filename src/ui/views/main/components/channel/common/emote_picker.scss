@@ -21,5 +21,9 @@
     border: 1px solid $lnx-secondary-surface-color;
     box-shadow: 0.25rem 0.25rem 0.5rem $lnx-primary-surface-color;
 
+    .ln-oled-theme & {
+        border-color: $ln-oled-border-color;
+    }
+
     padding: 2rem;
 }

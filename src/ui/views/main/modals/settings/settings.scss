@@ -228,7 +228,7 @@
             justify-content: center;
 
             .ln-oled-theme & {
-                border: 1px solid #333;
+                border-color: $ln-oled-border-color;
             }
 
             &:hover {

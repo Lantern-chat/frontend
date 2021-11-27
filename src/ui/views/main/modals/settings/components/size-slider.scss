@@ -62,6 +62,10 @@
         background: rgba(128, 128, 128, 0.4);
         border: 1px solid $lnx-secondary-surface-color;
         border-radius: 0.25em;
+
+        .ln-oled-theme & {
+            border-color: $ln-oled-border-color;
+        }
     }
 
     &__steps {

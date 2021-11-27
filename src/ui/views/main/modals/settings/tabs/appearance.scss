@@ -23,6 +23,10 @@
     input,
     select {
         border: 1px solid $lnx-secondary-surface-color;
+
+        .ln-oled-theme & {
+            border-color: $ln-oled-border-color !important;
+        }
     }
 
     input {
@@ -38,6 +42,10 @@
     select {
         ~ .ln-form-select-arrow {
             border-color: $lnx-secondary-surface-color;
+
+            .ln-oled-theme & {
+                border-color: $ln-oled-border-color !important;
+            }
         }
 
         &:focus,

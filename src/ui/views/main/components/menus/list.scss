@@ -10,6 +10,10 @@
         border-color: $lnx-primary-surface-color;
     }
 
+    .ln-oled-theme & {
+        border-color: $ln-oled-border-color;
+    }
+
     border-radius: 0.5rem;
     overflow: hidden;
     user-select: none;
