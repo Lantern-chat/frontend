@@ -1,4 +1,4 @@
-import { change_color, darken, lighten, lightness, RGBColor, desaturate, formatRGB, adjust_color, kelvin2, rgb, rgb2hsl, hue, saturation, hsl2rgb } from "./color";
+import { change_color, darken, lighten, lightness, RGBColor, desaturate, formatRGB, adjust_color, kelvin2, rgb, rgb2hsl, hue, saturation, hsl2rgb, formatRGBHex } from "./color";
 
 const { min, max, round } = Math;
 
@@ -36,7 +36,7 @@ export function genDarkTheme(temperature: number, oled: boolean): IThemeColors {
 
     if(oled) {
         s *= 0.5;
-        l = 0.05;
+        l = 5.0 / 256.0;
     }
 
     //console.log("saturation: ", s);
@@ -134,11 +134,18 @@ export function setThemeColors(colors: IThemeColors, animate: boolean, is_light:
         de.classList.remove('ln-light-theme');
     }
 
-    if(oled) {
+    if(oled && !is_light) {
         de.classList.add('ln-oled-theme');
     } else {
         de.classList.remove('ln-oled-theme');
     }
+
+    let metaThemeColor = document.querySelector("meta[name=theme-color]");
+    let appleThemeColor = document.querySelector("meta[name=apple-mobile-web-app-status-bar-style]");
+    let color = formatRGBHex(colors.tertiary_surface_color);
+    __DEV__ && console.log("Setting theme-color to", color);
+    metaThemeColor?.setAttribute("content", color);
+    appleThemeColor?.setAttribute("content", color);
 
     for(let key in colors) {
         let varname = "--ln-" + key.replace(/_/g, '-');

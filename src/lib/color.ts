@@ -328,6 +328,18 @@ export function formatRGB(c: RGBColor, alpha?: number, srgb?: boolean): string {
     return prefix + `(${rgb.join(',')})`;
 }
 
+export function formatRGBHex(c: RGBColor, srgb?: boolean): string {
+    if(__DEV__) {
+        let l = (v: number): boolean => v < 0.0 || v > 1.0;
+        if(l(c.r) || l(c.g) || l(c.b)) console.log("Invalid color: ", c);
+    }
+
+    let { r, g, b } = srgb ? linear2srgb(c) : linear2u8(c),
+        rgb = [r, g, b];
+
+    return '#' + rgb.map(c => c.toString(16).padStart(2, '0')).join('');
+}
+
 export function formatRgbBinary(value: number): string {
     let r = value & 0xff, g = (value >> 8) & 0xff, b = (value >> 16) & 0xff;
 
