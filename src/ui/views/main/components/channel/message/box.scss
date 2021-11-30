@@ -48,7 +48,8 @@
     color: $lnx-primary-text-color;
     background-color: rgba(128, 128, 128, 0.5);
 
-    .ln-light-theme & {
+    .ln-light-theme &,
+    .ln-oled-theme & {
         background-color: rgba(128, 128, 128, 0.2);
     }
 
