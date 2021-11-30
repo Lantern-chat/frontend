@@ -15,10 +15,6 @@ $timing: 0.15s;
     touch-action: none;
 
     &__footer {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
         text-align: center;
         padding: 0.5em 1em;
         background-color: rgba(0, 0, 0, 0.6);
@@ -28,6 +24,7 @@ $timing: 0.15s;
         }
 
         z-index: 1; // ensure on top of image
+        position: relative;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -59,51 +56,22 @@ $timing: 0.15s;
         display: inline-block;
     }
 
-    //&__controls {
-    //    position: absolute;
-    //    font-size: 3em;
-    //
-    //    @media (hover: none) and (pointer: coarse) {
-    //        display: none;
-    //    }
-    //
-    //    #rotate-cl svg {
-    //        transform: scaleX(-1);
-    //    }
-    //}
-
-    &__img {
-    }
-
-    canvas {
+    &__controls {
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        font-size: 3em;
 
-        transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
-        transform-origin: 50% 50%;
-        backface-visibility: hidden;
-        user-select: none;
-        transform-style: preserve-3d;
-    }
-
-    canvas,
-    &__img {
-        height: 100%;
-        width: 100%;
-
-        .ln-enable-motion & {
-            animation: img_enter $timing ease-out;
+        @media (hover: none) and (pointer: coarse) {
+            display: none;
         }
 
-        .ln-enable-motion .closing & {
-            animation: img_exit $timing ease-out forwards;
+        #rotate-cl svg {
+            transform: scaleX(-1);
         }
     }
 
-    &.opening &__img {
+    &__container {
+        max-height: 100%;
+        max-width: 100%;
         min-height: 0;
         min-width: 0;
         display: flex;
@@ -147,6 +115,14 @@ $timing: 0.15s;
 
             //will-change: transform;
             //will-change: transform, transition;
+        }
+
+        .ln-enable-motion & {
+            animation: img_enter $timing ease-out;
+        }
+
+        .ln-enable-motion .closing & {
+            animation: img_exit $timing ease-out forwards;
         }
     }
 
