@@ -218,8 +218,9 @@
         // This needs no padding thanks to justify-content: space-between on the message wrapper
 
         .compact & {
-            display: inline;
+            display: inline-flex;
             text-indent: 0;
+            vertical-align: bottom;
         }
     }
 
@@ -272,7 +273,8 @@
         flex-shrink: 0;
         padding-left: 0.75em;
         position: relative;
-        display: flex;
+        //display: flex;
+        display: block;
         //padding-right: 0.6em;
         //text-align: center;
 
