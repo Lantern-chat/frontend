@@ -99,19 +99,6 @@ export const MemberList = React.memo(() => {
     if(grouped_members) {
         let { hoisted, online, offline } = grouped_members;
 
-        if(hoisted) {
-            hoisted_list = hoisted.map((({ role, members }) => members.length == 0 ? null : (
-                <div key={role.id}>
-                    <h4 className="ui-text">{role.name} – {members.length}</h4>
-                    <ul>
-                        {members.map((member, i) => (
-                            <ListedMember key={member.user.id || i} member={member} owner={owner!} is_light_theme={is_light_theme} />
-                        ))}
-                    </ul>
-                </div>
-            )));
-        }
-
         let gen_list = (list: Array<PartyMemberExtra>, name: string) => (
             list.length == 0 ? null : <div>
                 <h4 className="ui-text">{name} – {list.length}</h4>
@@ -122,6 +109,10 @@ export const MemberList = React.memo(() => {
                 </ul>
             </div>
         );
+
+        if(hoisted) {
+            hoisted_list = hoisted.map(({ role, members }) => gen_list(members, role.name));
+        }
 
         online_list = gen_list(online, "Online");
         offline_list = gen_list(offline, "Offline");

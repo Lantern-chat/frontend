@@ -298,7 +298,7 @@ export interface Role {
     id: Snowflake,
     party_id: Snowflake,
     icon?: string,
-    name: string | null,
+    name: string,
     permissions: Permission,
     color: number | null,
     position: number,
