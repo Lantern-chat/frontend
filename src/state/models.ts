@@ -239,12 +239,17 @@ export interface Embed {
     // TODO
 }
 
-export interface Attachment extends EmbedMediaAttributes {
+export interface File {
     id: Snowflake,
     filename: string,
     size: number,
     mime?: string,
+    width?: number,
+    height?: number,
+    preview?: string,
 }
+
+export interface Attachment extends File { }
 
 export interface PartialParty {
     id: Snowflake,
