@@ -14,16 +14,45 @@ $timing: 0.15s;
 
     touch-action: none;
 
-    &__footer {
-        text-align: center;
-        padding: 0.5em 1em;
+    &__mobile-controls {
+        @media (min-width: $ln-min-channel-width) {
+            display: none;
+        }
+
+        position: absolute;
+        right: -0.25rem;
+        top: -0.25rem;
+        display: flex;
+
+        border-bottom-left-radius: 1rem;
+
+        > div {
+            //padding: 1rem;
+
+            &:first-child {
+                margin-right: -1em;
+            }
+
+            .ln-glyphicon {
+                font-size: 4rem;
+            }
+        }
+    }
+
+    &__footer,
+    &__mobile-controls {
+        z-index: 1; // ensure on top of image
+
         background-color: rgba(0, 0, 0, 0.6);
 
         .ln-light-mode & {
             background-color: rgba(0, 0, 0, 0.8);
         }
+    }
 
-        z-index: 1; // ensure on top of image
+    &__footer {
+        text-align: center;
+        padding: 0.5em 1em;
         position: relative;
         display: flex;
         flex-direction: column;

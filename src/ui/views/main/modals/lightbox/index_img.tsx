@@ -3,10 +3,12 @@ import React, { createRef, useLayoutEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 
 import { format_bytes } from "lib/formatting";
+import { IS_IOS_SAFARI } from "lib/user_agent";
 
 import { UserPreferenceFlags } from "state/models";
 import { selectPrefsFlag } from "state/selectors/prefs";
 
+import { Glyphicon } from "ui/components/common/glyphicon";
 import { FullscreenModal } from "ui/components/modal";
 import { Hotkey, useMainHotkeys } from "ui/hooks/useMainClick";
 
@@ -74,8 +76,11 @@ const LN0_05 = Math.log(0.05);
 
 type PartialTouch = Pick<React.Touch, 'pageX' | 'pageY' | 'identifier'>;
 
+import CloseIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-599-menu-close.svg";
+import FullscreenOff from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-215-fullscreen-off.svg";
+import FullscreenOn from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-216-fullscreen.svg";
+
 import "./lightbox_img.scss";
-import { IS_IOS_SAFARI } from "lib/user_agent";
 export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxState> {
     constructor(props: ILightBoxProps) {
         super(props);
@@ -631,12 +636,25 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
         this.touches = [];
     }
 
+    do_toggle_zoom() {
+        let i = this.i, z;
+
+        if(i.scale < 1 || i.scale > 1) {
+            z = 1;
+        } else {
+            z = i.z100;
+        }
+
+        this.do_zoom(z - i.z);
+    }
+
     render() {
         let { src, title, size } = this.props,
-            { nat_width, nat_height, closing, zoom_level } = this.state,
+            { nat_width, nat_height, closing, zoom_level } = this.state, i = this.i,
             bytes = size ? format_bytes(size) : 'Unknown Size',
             meta = `${nat_width} x ${nat_height} (${bytes})`,
-            eat = (e: React.SyntheticEvent) => e.stopPropagation();
+            eat = (e: React.SyntheticEvent) => e.stopPropagation(),
+            eat_click = { onClick: eat, onMouseMove: eat, onMouseDown: eat, onMouseUp: eat, onContextMenu: eat, onTouchStart: eat };
 
         return (
             <FullscreenModal>
@@ -651,6 +669,14 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
                     onTouchEnd={e => this.on_touchend(e)}
                     onTouchCancel={e => this.on_touchcancel(e)}
                 >
+                    <div className="ln-lightbox__mobile-controls" {...eat_click}>
+                        <div onClick={() => this.close()}>
+                            <Glyphicon src={CloseIcon} />
+                        </div>
+                        <div onClick={() => this.do_toggle_zoom()}>
+                            <Glyphicon src={(i.scale <= 1) ? FullscreenOn : FullscreenOff} />
+                        </div>
+                    </div>
 
                     <div className="ln-lightbox__container" ref={this.container}>
                         <img src={src} ref={this.img}
@@ -662,9 +688,7 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
                         />
                     </div>
 
-                    <div className="ln-lightbox__footer ui-text"
-                        onClick={eat} onMouseMove={eat} onMouseDown={eat} onMouseUp={eat} onContextMenu={eat}
-                    >
+                    <div className="ln-lightbox__footer ui-text" {...eat_click} >
                         <span>
                             <span className="ln-lightbox-title">{title}</span>
                             <span> — {meta}</span>
