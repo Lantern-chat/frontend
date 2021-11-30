@@ -654,7 +654,8 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
             bytes = size ? format_bytes(size) : 'Unknown Size',
             meta = `${nat_width} x ${nat_height} (${bytes})`,
             eat = (e: React.SyntheticEvent) => e.stopPropagation(),
-            eat_click = { onClick: eat, onMouseMove: eat, onMouseDown: eat, onMouseUp: eat, onContextMenu: eat, onTouchStart: eat };
+            eat_click = { onClick: eat, onMouseMove: eat, onMouseDown: eat, onMouseUp: eat, onContextMenu: eat, onTouchStart: eat },
+            is_full = i.scale > 1;
 
         return (
             <FullscreenModal>
@@ -673,8 +674,8 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
                         <div onClick={() => this.close()}>
                             <Glyphicon src={CloseIcon} />
                         </div>
-                        <div onClick={() => this.do_toggle_zoom()}>
-                            <Glyphicon src={(i.scale <= 1) ? FullscreenOn : FullscreenOff} />
+                        <div onClick={() => this.do_toggle_zoom()} data-full={is_full}>
+                            <Glyphicon src={is_full ? FullscreenOff : FullscreenOn} />
                         </div>
                     </div>
 

@@ -36,6 +36,10 @@ $timing: 0.15s;
             .ln-glyphicon {
                 font-size: 4rem;
             }
+
+            &[data-full="false"] {
+                transform: scale(0.8); // hack
+            }
         }
     }
 
