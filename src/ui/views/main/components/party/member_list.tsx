@@ -1,11 +1,13 @@
-import { pickColorFromHash } from "lib/palette";
 import React, { useMemo } from "react";
 import { shallowEqual, useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
-import { hasUserPrefFlag, parse_presence, PartyMember, Role, Snowflake, UserPreferenceFlags } from "state/models";
+import intersect from 'fast_array_intersect';
+
+import { parse_presence, PartyMember, Role, Snowflake, UserPreferenceFlags } from "state/models";
 import { RootState } from "state/root";
 import { activeParty } from "state/selectors/active";
 import { selectPrefsFlag } from "state/selectors/prefs";
+
 import { Glyphicon } from "ui/components/common/glyphicon";
 
 import { UserAvatar } from "../user_avatar";

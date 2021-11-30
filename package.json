@@ -23,6 +23,7 @@
     "buffer": "^6.0.3",
     "classnames": "^2.2.6",
     "dayjs": "^1.10.6",
+    "fast_array_intersect": "^1.1.0",
     "fflate": "^0.7.1",
     "freezeframe": "^5.0.2",
     "history": "^5.0.1",
