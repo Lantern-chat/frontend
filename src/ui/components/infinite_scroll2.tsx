@@ -97,7 +97,7 @@ export function useInfiniteScrollIntersection<T extends HTMLElement>(
     }, [cb, ref.current, ifs, ifs?.containerRef.current, opts.rootMargin, opts.threshold]);
 }
 
-export function useInfiniteScrollIntersectionOnce<T extends HTMLElement>(
+export function useInfiniteScrollIntersectionTrigger<T extends HTMLElement>(
     ref: React.RefObject<T>,
     opts: Pick<IntersectionObserverInit, 'rootMargin' | 'threshold'> = {},
 ): boolean {
