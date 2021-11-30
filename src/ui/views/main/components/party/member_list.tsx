@@ -58,24 +58,27 @@ export const MemberList = React.memo(() => {
         if(!sorted_members) return;
 
         let offline = [], online = [],
-            role_groups: undefined | Array<{ role: Role, members: PartyMemberExtra[] }>;
+            hoisted: undefined | Array<{ role: Role, members: PartyMemberExtra[] }>;
+
         if(roles) {
             // find all roles that should be hoisted and initialize them
-            role_groups = roles.filter(role => ((role.flags & 1) == 1)).map(role => ({ role, members: [] }));
+            hoisted = roles.filter(role => ((role.flags & 1) == 1)).map(role => ({ role, members: [] }));
 
             // sort the hoistable roles
-            role_groups.sort((a, b) => a.role.position - b.role.position);
+            hoisted.sort((a, b) => a.role.position - b.role.position);
         }
 
         outer: for(let member of sorted_members) {
             // if online (not offline)
             if(member.status != 'offline') {
-                if(member.roles && role_groups) {
+                // if the member is in any roles AND if there are any roles to hoist
+                if(member.roles && hoisted) {
+                    // iterate through each hoisted role and check if this member is part of it
                     // TODO: More efficient array intersection
-                    for(let rg of role_groups) {
-                        if(member.roles.includes(rg.role.id)) {
-                            rg.members.push(member);
-                            continue outer;
+                    for(let hr of hoisted) {
+                        if(member.roles.includes(hr.role.id)) {
+                            hr.members.push(member);
+                            continue outer; // don't include in other sections
                         }
                     }
                 }
@@ -87,7 +90,7 @@ export const MemberList = React.memo(() => {
             }
         }
 
-        return { hoisted: role_groups, offline, online };
+        return { hoisted, offline, online };
     }, [sorted_members, roles]);
 
     type MaybeEmptyList = Array<React.ReactNode> | React.ReactNode;
