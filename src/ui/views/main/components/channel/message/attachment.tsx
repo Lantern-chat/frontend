@@ -8,7 +8,7 @@ import { RootState } from "state/root";
 import { Message, Attachment } from "state/models";
 import { message_attachment_url } from "config/urls";
 
-import { MainContext, useClickEater, useMainClick, useSimpleToggleOnClick } from "ui/hooks/useMainClick";
+import { MainContext, useClickEater } from "ui/hooks/useMainClick";
 import { useInfiniteScrollIntersectionTrigger } from "ui/components/infinite_scroll2";
 
 import { LightBox } from "ui/views/main/modals/lightbox/index_img";
