@@ -4,12 +4,23 @@
     background-color: $lnx-primary-surface-color;
     height: 100%;
 
-    &__item {
+    &__item,
+    h4 {
         padding: 0.25em 0.75em;
     }
 
     .ln-avatar {
         font-size: 1.5em;
+    }
+
+    h4 {
+        color: $lnx-secondary-text-color;
+        margin-top: 1em;
+        font-weight: bold;
+    }
+
+    > div:last-child {
+        margin-bottom: 1em;
     }
 
     li {
@@ -18,14 +29,6 @@
         line-height: normal;
         cursor: pointer;
         border-radius: 0.2em;
-
-        &:first-child {
-            margin-top: 1em;
-        }
-
-        &:last-child {
-            margin-bottom: 1em;
-        }
 
         &:hover {
             background-color: rgba(128, 128, 128, 0.1);
