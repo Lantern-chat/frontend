@@ -39,19 +39,10 @@
 .ln-member {
     &__name {
         font-weight: bold;
-        margin-left: 0.5em;
         display: inline-flex;
         flex-direction: column;
         justify-content: center;
-        text-overflow: ellipsis;
         overflow: hidden;
-        white-space: nowrap;
-
-        span {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
 
         .ln-light-theme & {
             //filter: drop-shadow(1px 1px 0 black);
@@ -77,5 +68,37 @@
         .ln-glyphicon {
             display: inline-flex;
         }
+    }
+
+    &__meta,
+    &__title {
+        display: flex;
+        flex-wrap: nowrap;
+        width: 100%;
+    }
+
+    &__meta {
+        overflow: hidden;
+        margin-left: 0.5em;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    &__name,
+    &__status {
+        > span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    //&__title {
+    //}
+
+    &__status {
+        color: $lnx-secondary-text-color;
+        font-size: 0.8em;
+        display: inline-flex;
     }
 }

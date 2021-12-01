@@ -101,8 +101,8 @@ export const MemberList = React.memo(() => {
     if(grouped_members) {
         let { hoisted, online, offline } = grouped_members;
 
-        let gen_list = (list: Array<PartyMemberExtra>, name: string) => (
-            list.length == 0 ? null : <div>
+        let gen_list = (list: Array<PartyMemberExtra>, name: string, key: string = name) => (
+            list.length == 0 ? null : <div key={key}>
                 <h4 className="ui-text">{name} – {list.length}</h4>
                 <ul>
                     {list.map((member, i) => (
@@ -113,7 +113,8 @@ export const MemberList = React.memo(() => {
         );
 
         if(hoisted) {
-            hoisted_list = hoisted.map(({ role, members }) => gen_list(members, role.name));
+            // NOTE: __role is appended for if someone makes a role named "Online" or "Offline" to avoid duplicate keys
+            hoisted_list = hoisted.map(({ role, members }) => gen_list(members, role.name, role.name + "__role"));
         }
 
         online_list = gen_list(online, "Online");
@@ -138,7 +139,7 @@ interface IListedMemberProps {
 const ListedMember = ({ member, owner, is_light_theme }: IListedMemberProps) => {
     let user = member.user,
         nick = member.nick || user.username,
-        crown;
+        crown, status;
 
     let color = useSelector((state: RootState) => {
         let party_id = activeParty(state);
@@ -161,16 +162,30 @@ const ListedMember = ({ member, owner, is_light_theme }: IListedMemberProps) => 
         );
     }
 
+    if(user.status && member.status != PresenceStatus.Offline) {
+        status = (
+            <div className="ln-member__status">
+                <span className="chat-text">{user.status}</span>
+            </div>
+        );
+    }
+
     return (
         <li className="ln-member-list__item">
             <UserAvatar nickname={nick} user={user} status={member.status}
                 is_light_theme={is_light_theme} is_mobile={member.is_mobile} />
 
-            <div className="ln-member__name">
-                <span className="ui-text" style={{ color }}>{nick}</span>
-            </div>
+            <div className="ln-member__meta">
+                <div className="ln-member__title">
+                    <div className="ln-member__name">
+                        <span className="ui-text" style={{ color }}>{nick}</span>
+                    </div>
 
-            {crown}
+                    {crown}
+                </div>
+
+                {status}
+            </div>
         </li>
     );
 };
