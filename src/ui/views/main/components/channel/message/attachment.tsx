@@ -1,11 +1,13 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { createStructuredSelector } from "reselect";
 
 import { IS_MOBILE } from "lib/user_agent";
 import { format_bytes } from "lib/formatting";
 
 import { RootState } from "state/root";
-import { Message, Attachment } from "state/models";
+import { Message, Attachment, UserPreferenceFlags } from "state/models";
+import { selectPrefsFlag } from "state/selectors/prefs";
 import { message_attachment_url } from "config/urls";
 
 import { MainContext, useClickEater } from "ui/hooks/useMainClick";
@@ -193,14 +195,23 @@ interface IVideoAttachmentProps {
     attachment: Attachment,
 }
 
+const video_attachment_selector = createStructuredSelector({
+    use_mobile_view: (state: RootState) => state.window.use_mobile_view,
+    mute_media: selectPrefsFlag(UserPreferenceFlags.MuteMedia),
+})
+
 const VideoAttachment = React.memo((props: IVideoAttachmentProps) => {
     let atch = props.attachment,
         [loaded, setLoaded] = useState(false),
         ref = useRef<HTMLVideoElement>(null),
         visible = useInfiniteScrollIntersectionTrigger(ref, { rootMargin: '150%' }),
-        use_mobile_view = useSelector((state: RootState) => state.window.use_mobile_view),
+        { use_mobile_view, mute_media } = useSelector(video_attachment_selector),
         onLoad = useCallback(() => setLoaded(true), [ref.current]),
-        vid_props: React.VideoHTMLAttributes<HTMLVideoElement> = { ...props.vid, style: props.vid.style || {} }, // clone props
+        vid_props: React.VideoHTMLAttributes<HTMLVideoElement> = {
+            ...props.vid,
+            style: props.vid.style || {},
+            muted: mute_media, // TODO: Don't unmute during playback when setting changes
+        }, // clone props
         style = vid_props.style!;
 
     if(!loaded) {
