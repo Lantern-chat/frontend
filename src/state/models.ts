@@ -369,13 +369,20 @@ export interface MemberEvent extends PartyMember {
     party_id: Snowflake,
 }
 
-export function parse_presence(p?: UserPresence): { status: "online" | "away" | "busy" | "offline", is_mobile: boolean } {
-    let status: "online" | "away" | "busy" | "offline" = "offline", is_mobile = false;
+export enum PresenceStatus {
+    Online,
+    Away,
+    Busy,
+    Offline,
+}
+
+export function parse_presence(p?: UserPresence): { status: PresenceStatus, is_mobile: boolean } {
+    let status = PresenceStatus.Offline, is_mobile = false;
 
     if(p) {
-        if((p.flags & 1) == 1) status = 'online';
-        else if((p.flags & 2) == 2) status = 'away';
-        else if((p.flags & 4) == 4) status = 'busy';
+        if((p.flags & 1) == 1) status = PresenceStatus.Online;
+        else if((p.flags & 2) == 2) status = PresenceStatus.Away;
+        else if((p.flags & 4) == 4) status = PresenceStatus.Busy;
         is_mobile = (p.flags & 8) == 8;
     }
 

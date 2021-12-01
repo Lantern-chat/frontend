@@ -5,7 +5,7 @@ import { createSelector, createStructuredSelector } from "reselect";
 import { RootState } from "state/root";
 import { activeParty } from "state/selectors/active";
 import { selectPrefsFlag } from "state/selectors/prefs";
-import { parse_presence, UserPreferenceFlags } from "state/models";
+import { parse_presence, PresenceStatus, UserPreferenceFlags } from "state/models";
 
 import { UserAvatar } from "../user_avatar";
 import { Glyphicon } from "ui/components/common/glyphicon";
@@ -23,13 +23,18 @@ let status_selector = createSelector(
     (state: RootState) => state.party.parties,
     activeParty,
     (user, parties, active_party) => {
-        if(!active_party || active_party == '@me') return 'online';
+        if(!active_party || active_party == '@me') return PresenceStatus.Online;
         let party = parties.get(active_party);
-        if(!party) return 'offline';
-        let member = party.members.get(user.id);
-        if(!member) return 'offline';
 
-        return parse_presence(member.presence).status;
+        if(party) {
+            let member = party.members.get(user.id);
+
+            if(member) {
+                return parse_presence(member.presence).status;
+            }
+        }
+
+        return PresenceStatus.Offline;
     }
 )
 
@@ -41,12 +46,11 @@ let footer_selector = createStructuredSelector({
 
 import "./party_footer.scss";
 export const PartyFooter = React.memo(() => {
-    let { user, is_light_theme, status } = useSelector(footer_selector);
+    let { user, is_light_theme, status } = useSelector(footer_selector),
+        [mute, setMute] = useState(false),
+        [deaf, setDeaf] = useState(false),
+        user_info;
 
-    let [mute, setMute] = useState(false);
-    let [deaf, setDeaf] = useState(false);
-
-    let user_info;
     if(user) {
         user_info = (
             <>

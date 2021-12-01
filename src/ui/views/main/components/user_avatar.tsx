@@ -1,7 +1,7 @@
 import { pickColorFromHash } from 'lib/palette';
 import React from 'react';
 
-import { Snowflake, User } from 'state/models';
+import { PresenceStatus, Snowflake, User } from 'state/models';
 
 import { user_avatar_url } from 'config/urls';
 
@@ -13,16 +13,14 @@ import MobilePhone from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/indiv
 export interface IUserAvatarProps {
     user: User,
     nickname: string,
-    status: 'online' | 'away' | 'busy' | 'offline',
+    status: PresenceStatus,
     is_light_theme: boolean,
     is_mobile?: boolean,
 }
 
 import "./user_avatar.scss";
 export const UserAvatar = React.memo(({ nickname, user, status, is_light_theme, is_mobile }: IUserAvatarProps) => {
-    let presence = (status == 'online' && is_mobile) ? <Glyphicon src={MobilePhone} /> : <span className={status} />;
-
-    let url, backgroundColor, status_title;
+    let url, backgroundColor, status_title, status_class;
     if(user.avatar) {
         url = user_avatar_url(user.id, user.avatar);
     } else {
@@ -30,11 +28,28 @@ export const UserAvatar = React.memo(({ nickname, user, status, is_light_theme, 
     }
 
     switch(status) {
-        case 'online': status_title = "Online"; break;
-        case 'busy': status_title = "Busy/Do Not Disturb"; break;
-        case 'away': status_title = "Away"; break;
-        default: status_title = "Offline";
+        case PresenceStatus.Online: {
+            status_title = "Online";
+            status_class = "online";
+            break;
+        }
+        case PresenceStatus.Busy: {
+            status_title = "Busy/Do Not Disturb";
+            status_class = "busy";
+            break;
+        }
+        case PresenceStatus.Away: {
+            status_title = "Away";
+            status_class = "away";
+            break;
+        }
+        default: {
+            status_title = "Offline";
+            status_class = "offline";
+        }
     }
+
+    let presence = (status == PresenceStatus.Online && is_mobile) ? <Glyphicon src={MobilePhone} /> : <span className={status_class} />;
 
     return (
         <div className="ln-user-avatar">

@@ -3,7 +3,7 @@ import { shallowEqual, useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
 import intersect from 'fast_array_intersect';
 
-import { parse_presence, PartyMember, Role, Snowflake, UserPreferenceFlags } from "state/models";
+import { parse_presence, PartyMember, PresenceStatus, Role, Snowflake, UserPreferenceFlags } from "state/models";
 import { RootState } from "state/root";
 import { activeParty } from "state/selectors/active";
 import { selectPrefsFlag } from "state/selectors/prefs";
@@ -72,7 +72,7 @@ export const MemberList = React.memo(() => {
 
         outer: for(let member of sorted_members) {
             // if online (not offline)
-            if(member.status != 'offline') {
+            if(member.status != PresenceStatus.Offline) {
                 // if the member is in any roles AND if there are any roles to hoist
                 if(member.roles && hoisted) {
                     // iterate through each hoisted role and check if this member is part of it
