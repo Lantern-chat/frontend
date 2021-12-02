@@ -43,6 +43,7 @@ summary {
 
         .compact & {
             display: inline;
+            vertical-align: bottom;
 
             &::after {
                 content: "";
