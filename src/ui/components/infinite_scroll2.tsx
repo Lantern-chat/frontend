@@ -145,25 +145,25 @@ export class InfiniteScroll extends React.Component<IInfiniteScrollProps, {}> {
         let container = this.containerRef.current;
         if(container) {
             let clientHeight = container.clientHeight,
-                scrollHeight = container.scrollHeight;
+                scrollHeight = container.scrollHeight,
+                page_border = clientHeight,
+                // this overshoots by about clientHeight amount, but is clamped
+                // by overshooting, any size changes as it comes into view are handled cleanly
+                page_end = this.props.start == Anchor.Bottom ? scrollHeight : 0,
+                onScroll = this.props.onScroll;
 
-            if(this.props.reduce_motion) {
-                container.scrollTo({ top: this.props.start == Anchor.Bottom ? scrollHeight : 0 });
-                return;
+            if(onScroll) {
+                onScroll(page_end);
             }
 
-            let page_border, page_end;
+            if(this.props.reduce_motion) {
+                container.scrollTo({ top: page_end });
+                return;
+            }
 
             if(this.props.start == Anchor.Bottom) {
                 // scrollHeight - clientHeight is the scrollTop of the end, so clientHeight*2 to start one page above
                 page_border = scrollHeight - clientHeight * 2;
-
-                // this overshoots by about clientHeight amount, but is clamped
-                // by overshooting, any size changes as it comes into view are handled cleanly
-                page_end = scrollHeight;
-            } else {
-                page_border = clientHeight;
-                page_end = 0;
             }
 
             container.scrollTo({ top: page_border });

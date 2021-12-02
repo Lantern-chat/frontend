@@ -123,14 +123,14 @@ const NoTimeline = React.memo(() => <></>);
 import { Hotkey, useMainHotkeys } from "ui/hooks/useMainClick";
 const HOTKEYS = [Hotkey.FeedArrowDown, Hotkey.FeedArrowUp, Hotkey.FeedPageDown, Hotkey.FeedPageUp, Hotkey.FeedEnd];
 
-function compute_goto(ifs: InfiniteScroll): boolean {
+function compute_goto(ifs: InfiniteScroll, pos: number): boolean {
     let container = ifs.containerRef.current;
     if(!container) return false;
 
     let clientHeight = container.clientHeight,
         scrollHeight = container.scrollHeight - container.offsetHeight;
 
-    return ifs.pos < (scrollHeight - clientHeight * 5);
+    return pos < (scrollHeight - clientHeight * 5);
 }
 
 const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) => {
@@ -167,13 +167,13 @@ const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) =
 
     let initial_goto = useMemo(() => {
         let ifs = infinite_scroll.current;
-        return !!ifs && compute_goto(ifs);
+        return !!ifs && compute_goto(ifs, ifs.pos);
     }, [infinite_scroll.current, groups])
 
     let [goto, setGoto] = useState(initial_goto);
-    let onScroll = useCallback(() => {
+    let onScroll = useCallback((pos: number) => {
         let ifs = infinite_scroll.current;
-        if(ifs) setGoto(compute_goto(ifs));
+        if(ifs) setGoto(compute_goto(ifs, pos));
     }, [infinite_scroll.current]);
 
     // Use effect to only dispatch on meaningful changes
