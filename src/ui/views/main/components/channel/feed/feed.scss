@@ -227,8 +227,9 @@
     &__username {
         font-size: 1em;
         font-weight: bold;
-        display: inline;
+        display: inline-flex;
         margin-right: 0.5em;
+        max-width: 20em;
         cursor: pointer;
 
         color: white;
@@ -251,6 +252,13 @@
             position: absolute;
             bottom: 0;
             top: 0;
+            left: 0;
+            right: 0;
+        }
+
+        span.ui-text {
+            text-overflow: ellipsis;
+            overflow: hidden;
         }
 
         //.compact & {
