@@ -76,7 +76,7 @@ export const MemberList = React.memo(() => {
                 // if the member is in any roles AND if there are any roles to hoist
                 if(member.roles && hoisted) {
                     // iterate through each hoisted role and check if this member is part of it
-                    // TODO: More efficient array intersection
+                    // TODO: More efficient array intersection, probably using sets/maps
                     for(let hr of hoisted) {
                         if(member.roles.includes(hr.role.id)) {
                             hr.members.push(member);
