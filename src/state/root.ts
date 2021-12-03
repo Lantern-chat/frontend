@@ -25,7 +25,7 @@ export interface RootState {
 export const DYNAMIC_MIDDLEWARE = createDynamicMiddlewares();
 
 export const enhancers = __DEV__ ?
-    composeWithDevTools(applyMiddleware(thunk, DYNAMIC_MIDDLEWARE.enhancers, promiseMiddleware, createLogger())) :
+    composeWithDevTools(applyMiddleware(thunk, DYNAMIC_MIDDLEWARE.enhancers, promiseMiddleware, createLogger({ level: 'debug' }))) :
     applyMiddleware(thunk, DYNAMIC_MIDDLEWARE.enhancers, promiseMiddleware);
 
 
