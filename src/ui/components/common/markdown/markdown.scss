@@ -175,6 +175,9 @@ summary {
         white-space: pre;
         display: inline-flex;
         //width: fit-content;
+        min-width: 0;
+        width: auto;
+        max-width: calc(100% - 0.5em); // same as margin
     }
 
     pre,
@@ -215,6 +218,6 @@ summary {
     pre code {
         padding: 0;
         line-height: normal;
-        margin-right: 1em;
+        //margin-right: 1em;
     }
 }
