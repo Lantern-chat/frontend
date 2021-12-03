@@ -1,0 +1,56 @@
+@import "lib/variables";
+
+.ln-home-sidebar {
+    background-color: $lnx-primary-surface-color;
+    width: 100%;
+    height: 100%;
+
+    color: $lnx-secondary-text-color;
+
+    // This cannot be raw due to Safari bug
+    svg {
+        fill: $lnx-secondary-text-color;
+    }
+    background-color: $lnx-primary-surface-color;
+
+    li {
+        margin: 1em 0;
+        border-radius: 0.2em;
+
+        &:hover {
+            background-color: rgba(128, 128, 128, 0.1);
+
+            .ln-light-theme & {
+                background-color: rgba(128, 128, 128, 0.05);
+            }
+        }
+
+        &.selected,
+        &.selected:hover,
+        &.selected:active,
+        &.selected:focus {
+            svg {
+                fill: $lnx-primary-text-color;
+            }
+            color: $lnx-primary-text-color;
+            background-color: $lnx-tertiary-surface-color;
+        }
+    }
+
+    #dm-header {
+        padding-top: 2em;
+    }
+
+    h4,
+    a,
+    a:hover,
+    a:active,
+    a:focus {
+        text-decoration: inherit;
+        color: inherit;
+        display: flex;
+        padding: 0.35em 0;
+        padding-left: 5%;
+        //line-height: normal;
+    }
+}

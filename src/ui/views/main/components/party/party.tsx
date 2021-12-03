@@ -7,6 +7,7 @@ import { MemberList } from "./member_list";
 import { PartyHeader } from "./party_header";
 import { PartyFooter } from "./party_footer";
 import { Channel } from "../channel/channel";
+import { HomeSideBar } from "../home/sidebar";
 
 import { Snowflake } from "state/models";
 import { RootState, Type } from "state/root";
@@ -110,22 +111,51 @@ export const Party = React.memo(() => {
         }
 
         if(show_right) {
+            if(active_party === '@me') {
+                right = (
+                    <div>Something</div>
+                )
+            } else {
+
+                right = <MemberList />;
+            }
+
             right = (
-                <div className={user_list_classes.join(' ')}>
-                    <MemberList />
-                </div>
-            );
+                <div className={user_list_classes.join(' ')}>{right}</div>
+            )
         }
     }
 
     if(show_left) {
+        if(active_party == '@me') {
+            left = (
+                <>
+                    <HomeSideBar />
+                </>
+            );
+        } else {
+            left = (
+                <>
+                    <PartyHeader />
+                    <ChannelList />
+
+                </>
+            );
+        }
+
         left = (
             <div className={sidebar_classes.join(' ')}>
-                <PartyHeader />
-                <ChannelList />
+                {left}
                 <PartyFooter />
             </div>
-        );
+        )
+    }
+
+    let center;
+    if(active_party == '@me') {
+        center = "Test"
+    } else {
+        center = <Channel channel={active_room} />;
     }
 
     return (
@@ -136,7 +166,7 @@ export const Party = React.memo(() => {
             {left}
 
             <div className={classes.join(' ')}>
-                <Channel channel={active_room} />
+                {center}
             </div>
 
             {right}
