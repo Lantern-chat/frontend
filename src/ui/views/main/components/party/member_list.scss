@@ -43,6 +43,11 @@
         flex-direction: column;
         justify-content: center;
         overflow: hidden;
+        color: $lnx-secondary-text-color;
+
+        li:hover & {
+            color: $lnx-primary-text-color;
+        }
 
         .ln-light-theme & {
             //filter: drop-shadow(1px 1px 0 black);
