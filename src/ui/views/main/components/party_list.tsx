@@ -1,13 +1,17 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
 
 import { copyText } from "lib/clipboard";
+import { gaussian2 } from "lib/math";
+import { change_color, formatRGBHex, kelvin2 } from "lib/color";
+import { MAX_TEMP, MIN_TEMP } from "lib/theme";
 
 import { RootState, Type } from "state/root";
 import { activateParty } from "state/commands";
 import { activeParty } from "state/selectors/active";
 import { selectPrefsFlag } from "state/selectors/prefs";
+import { themeSelector } from "state/selectors/theme";
 import { GatewayStatus } from "state/reducers/gateway";
 
 import { pickColorFromHash } from "lib/palette";
@@ -43,6 +47,7 @@ let party_list_selector = createStructuredSelector({
     last_channel: (state: RootState) => state.party.last_channel,
     create_party_open: (state: RootState) => state.modals.create_party_open,
     gateway_status: (state: RootState) => state.gateway.status,
+    theme: themeSelector,
     active_party: activeParty,
 });
 
@@ -64,7 +69,8 @@ export const PartyList = React.memo(() => {
         parties,
         last_channel,
         active_party,
-        gateway_status
+        gateway_status,
+        theme,
     } = useSelector(party_list_selector);
 
     let dispatch = useDispatch();
@@ -99,11 +105,42 @@ export const PartyList = React.memo(() => {
         );
     }
 
+    let home_ref = useRef<HTMLLIElement>(null);
+
+    useLayoutEffect(() => {
+        if(!home_ref.current) return;
+
+        let { temperature, is_light } = theme;
+
+        let s, l, c = kelvin2(Math.max(6000, Math.min(theme.temperature, 12000)));
+
+        if(!is_light) {
+            // lopsided upside-down gaussian, slower to rise on the hotter side
+            let t = 1 - gaussian2(temperature - 6500, (temperature - MIN_TEMP) * 0.1);
+            t *= t; // flatten it out a bit
+
+            s = t * 0.65 + (1 - t) * 0.05;
+            l = t * 0.55 + (1 - t) * 0.25;
+
+        } else {
+            // TODO: Improve this light theme color
+            s = (temperature - 7000) / 19000;
+            s *= s;
+            s += 0.5;
+
+            l = (temperature - 6500) / (1.5 * MAX_TEMP - MIN_TEMP);
+            l *= -l;
+            l += 0.99;
+        }
+
+        home_ref.current.style.setProperty('--ln-home-color', formatRGBHex(change_color(c, { s, l })));
+    }, [home_ref.current, theme]);
+
     return (
         <div className="ln-party-list__wrapper">
             <ol className="ln-party-list ln-scroll-y ln-scroll-y--invisible ln-scroll-fixed"
                 onScroll={on_scroll} onTouchStart={on_touchstart} onTouchEnd={on_touchend}>
-                <li id="user-home" className={'@me' == active_party ? 'selected' : ''}>
+                <li id="user-home" className={'@me' == active_party ? 'selected' : ''} ref={home_ref}>
                     <Link title="Home" href="/channels/@me" onNavigate={e => ('@me' != active_party && can_navigate) || e.preventDefault()} >
                         <Avatar rounded username="Home">
                             <Glyphicon src={HomeIcon} />
