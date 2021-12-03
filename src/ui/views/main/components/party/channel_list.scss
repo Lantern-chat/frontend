@@ -72,7 +72,7 @@
         //line-height: normal;
     }
 
-    //@include scrollbar($lnx-secondary-text-color, $lnx-primary-surface-color);
+    @include scrollbar($lnx-secondary-text-color, $lnx-primary-surface-color);
 
     &__channel {
         //display: flex;
