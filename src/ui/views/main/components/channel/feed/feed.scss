@@ -164,8 +164,12 @@
         padding: 0.25rem 0;
         position: relative;
 
+        // TODO: Re-evaluate this when removing scrollbar
+        margin-right: 0.5em;
+
         .compact & {
             padding: 0;
+            margin-right: 0;
         }
     }
 
