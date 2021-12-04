@@ -239,11 +239,12 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
                         // so any reconnects will re-activate the selected party, which
                         // will also trigger loading messages/users
                         dispatch(activateParty(active_party, active_room));
-                    }
-                    // TODO: Expand upon this or remove it entirely.
-                    else if(!['settings'].includes(state.history.parts[0])) {
-                        __DEV__ && console.log("Ready event received but no party is active, redirecting to default");
-                        HISTORY.replace(DEFAULT_LOGGED_IN_CHANNEL);
+                    } else {
+                        // TODO: Expand upon this or remove it entirely.
+                        if(!['settings', '@me'].includes(state.history.parts[0])) {
+                            __DEV__ && console.log("Ready event received but no party is active, redirecting to default");
+                            HISTORY.replace(DEFAULT_LOGGED_IN_CHANNEL);
+                        }
                     }
 
                     let prefs = msg.p.user.preferences;
