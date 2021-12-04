@@ -46,27 +46,38 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
             //onMouseLeave: () => setShowTitle(false),
         };
 
-        if(mime.startsWith('video')) {
-            if(IS_MOBILE) {
-                // the #t=0.0001 forces iOS Safari to preload the first frame and display that as a preview
-                common.src += '#t=0.0001';
+        switch(mime.slice(0, 5)) {
+            case 'video': {
+                if(IS_MOBILE) {
+                    // the #t=0.0001 forces iOS Safari to preload the first frame and display that as a preview
+                    common.src += '#t=0.0001';
+                }
+
+                // TODO: Record playback position for moving into a modal and continuing playback?
+                embed = <VideoAttachment vid={{ ...common, preload: "metadata", controls: true }} attachment={attachment} />
+
+                //embed = <video title={title} onContextMenu={eat} preload="metadata" src={url} controls onError={() => setError(true)} />;
+
+                break;
             }
+            case 'image': {
+                if(attachment.size < (1024 * 1024 * 30)) {
+                    embed = <ImageAttachment img={common} attachment={attachment} />;
+                }
 
-            // TODO: Record playback position for moving into a modal and continuing playback?
-            embed = <VideoAttachment vid={{ ...common, preload: "metadata", controls: true }} attachment={attachment} />
+                break;
+            }
+            case 'audio': {
+                //embed = <audio title={title} onContextMenu={eat} src={url} controls onError={() => setError(true)} />
 
-            //embed = <video title={title} onContextMenu={eat} preload="metadata" src={url} controls onError={() => setError(true)} />;
-        } else if(mime.startsWith('audio')) {
-            //embed = <audio title={title} onContextMenu={eat} src={url} controls onError={() => setError(true)} />
+                embed = (
+                    <div className="ln-audio">
+                        <audio {...common} controls />
+                    </div>
+                );
 
-            embed = (
-                <div className="ln-audio">
-                    <audio {...common} controls />
-                </div>
-            )
-
-        } else if(mime.startsWith('image') && attachment.size < (1024 * 1024 * 30)) {
-            embed = <ImageAttachment img={common} attachment={attachment} />;
+                break;
+            }
         }
     }
 
