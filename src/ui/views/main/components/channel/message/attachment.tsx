@@ -20,12 +20,19 @@ import { MimeIcon } from "ui/components/mime_icon";
 
 import SaveIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-199-save.svg";
 
+const attachment_selector = createStructuredSelector({
+    use_mobile_view: (state: RootState) => state.window.use_mobile_view,
+    mute_media: selectPrefsFlag(UserPreferenceFlags.MuteMedia),
+    hide_unknown: selectPrefsFlag(UserPreferenceFlags.HideUnknown),
+});
+
 import "./attachment.scss";
 export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, attachment: Attachment }) => {
     let [error, setError] = useState(false),
         eat = useClickEater();
 
     let embed,
+        { use_mobile_view, mute_media, hide_unknown } = useSelector(attachment_selector),
         mime = attachment.mime,
         id = attachment.id,
         url = message_attachment_url(msg.room_id, id, attachment.filename),
@@ -48,21 +55,32 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
 
         switch(mime.slice(0, 5)) {
             case 'video': {
+                if(hide_unknown && !(attachment.width && attachment.height)) break;
+
                 if(IS_MOBILE) {
                     // the #t=0.0001 forces iOS Safari to preload the first frame and display that as a preview
                     common.src += '#t=0.0001';
                 }
 
                 // TODO: Record playback position for moving into a modal and continuing playback?
-                embed = <VideoAttachment vid={{ ...common, preload: "metadata", controls: true }} attachment={attachment} />
+                embed = <VideoAttachment
+                    vid={{ ...common, preload: "metadata", controls: true }}
+                    attachment={attachment}
+                    use_mobile_view={use_mobile_view}
+                    mute_media={mute_media} />
 
                 //embed = <video title={title} onContextMenu={eat} preload="metadata" src={url} controls onError={() => setError(true)} />;
 
                 break;
             }
             case 'image': {
+                if(hide_unknown && !(attachment.width && attachment.height)) break;
+
                 if(attachment.size < (1024 * 1024 * 30)) {
-                    embed = <ImageAttachment img={common} attachment={attachment} />;
+                    embed = <ImageAttachment
+                        img={common}
+                        attachment={attachment}
+                        use_mobile_view={use_mobile_view} />;
                 }
 
                 break;
@@ -70,11 +88,10 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
             case 'audio': {
                 //embed = <audio title={title} onContextMenu={eat} src={url} controls onError={() => setError(true)} />
 
-                embed = (
-                    <div className="ln-audio">
-                        <audio {...common} controls />
-                    </div>
-                );
+                embed = <AudioAttachment
+                    audio={common}
+                    attachment={attachment}
+                    mute_media={mute_media} />;
 
                 break;
             }
@@ -120,7 +137,8 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
 
 interface IImageAttachmentProps {
     img: React.ImgHTMLAttributes<HTMLImageElement>,
-    attachment: Attachment
+    attachment: Attachment,
+    use_mobile_view: boolean,
 }
 
 function computeModifiedStyle(style: React.CSSProperties, atch: Attachment, use_mobile_view: boolean) {
@@ -146,7 +164,6 @@ const ImageAttachment = React.memo((props: IImageAttachmentProps) => {
         [show, setShow] = useState(false),
         ref = useRef<HTMLImageElement>(null),
         visible = useInfiniteScrollIntersectionTrigger(ref, { rootMargin: '150%' }),
-        use_mobile_view = useSelector((state: RootState) => state.window.use_mobile_view),
 
         // on click of the image, show the lightbox modal
         onClick = useCallback((e: React.MouseEvent) => { main.clickAll(e); setShow(true); }, [main]),
@@ -167,7 +184,7 @@ const ImageAttachment = React.memo((props: IImageAttachmentProps) => {
         }, style = img_props.style!;
 
     if(!loaded) {
-        computeModifiedStyle(style, atch, use_mobile_view);
+        computeModifiedStyle(style, atch, props.use_mobile_view);
     }
 
     let embed;
@@ -204,29 +221,25 @@ const ImageAttachment = React.memo((props: IImageAttachmentProps) => {
 interface IVideoAttachmentProps {
     vid: React.VideoHTMLAttributes<HTMLVideoElement>,
     attachment: Attachment,
+    use_mobile_view: boolean,
+    mute_media: boolean,
 }
-
-const video_attachment_selector = createStructuredSelector({
-    use_mobile_view: (state: RootState) => state.window.use_mobile_view,
-    mute_media: selectPrefsFlag(UserPreferenceFlags.MuteMedia),
-})
 
 const VideoAttachment = React.memo((props: IVideoAttachmentProps) => {
     let atch = props.attachment,
         [loaded, setLoaded] = useState(false),
         ref = useRef<HTMLVideoElement>(null),
         visible = useInfiniteScrollIntersectionTrigger(ref, { rootMargin: '150%' }),
-        { use_mobile_view, mute_media } = useSelector(video_attachment_selector),
         onLoad = useCallback(() => setLoaded(true), [ref.current]),
         vid_props: React.VideoHTMLAttributes<HTMLVideoElement> = {
             ...props.vid,
             style: props.vid.style || {},
-            muted: mute_media, // TODO: Don't unmute during playback when setting changes
+            muted: props.mute_media, // TODO: Don't unmute during playback when setting changes
         }, // clone props
         style = vid_props.style!;
 
     if(!loaded) {
-        computeModifiedStyle(style, atch, use_mobile_view);
+        computeModifiedStyle(style, atch, props.use_mobile_view);
     }
 
     let embed;
@@ -241,8 +254,23 @@ const VideoAttachment = React.memo((props: IVideoAttachmentProps) => {
     return embed;
 });
 
+interface IAudioAttachmentProps {
+    audio: React.AudioHTMLAttributes<HTMLAudioElement>,
+    attachment: Attachment,
+    mute_media: boolean,
+}
+
+const AudioAttachment = React.memo((props: IAudioAttachmentProps) => {
+    return (
+        <div className="ln-audio">
+            <audio {...props.audio} controls muted={props.mute_media} />
+        </div>
+    );
+});
+
 if(__DEV__) {
     MsgAttachment.displayName = "MsgAttachment";
     ImageAttachment.displayName = "ImageAttachment";
     VideoAttachment.displayName = "VideoAttachment";
+    AudioAttachment.displayName = "AudioAttachment";
 }

@@ -134,7 +134,7 @@ export enum UserPreferenceFlags {
     HideAvatars = 1 << 5,
     OledMode = 1 << 6,
     MuteMedia = 1 << 7,
-
+    HideUnknown = 1 << 8,
     CompactView = 1 << 9,
 
     DeveloperMode = 1 << 15,
