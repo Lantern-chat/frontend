@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useLayoutEffect } from "react";
 
 import "./fireflies.scss";
 
@@ -34,6 +34,7 @@ const DARK_PALETTE: GradientStop[][] = DARK_PALETTE_HUES.map(hue => gen_gradient
 const LIGHT_PALETTE_HUES: number[] = [0, 40, 80, 120, 160, 200, 240, 280, 320];
 const LIGHT_PALETTE: GradientStop[][] = LIGHT_PALETTE_HUES.map(hue => gen_gradient(color.linear2srgb(color.hsl2rgb({ h: hue, s: 0.7, l: 0.5 })), 8));
 
+// TODO: Ease between palettes using EASE_IN and [0.5 * (D % 3 + L % 9)] merging
 
 interface IFireflyProps {
     density?: number,
@@ -278,7 +279,7 @@ const MOUSE_EVENTS = ['mousemove', 'movedown', 'mouseup'];
 export const Fireflies: React.FunctionComponent<IFireflyProps> = React.memo((props: IFireflyProps) => {
     let canvas_ref = useRef(null);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         let state: IFireflyState = { ff: [], paused: false, m: [1e9, 1e9, false], density: props.density || 175 },
             interval = setInterval(() => {
                 if(!state.paused) {
