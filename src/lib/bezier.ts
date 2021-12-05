@@ -1,5 +1,6 @@
 const EPSILON = 1e-2; // Precision
 
+// https://github.com/thednp/CubicBezier
 export class CubicBezier {
     cx: number;
     bx: number;
