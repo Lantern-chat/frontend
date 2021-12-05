@@ -156,10 +156,21 @@ export function setThemeColors(colors: IThemeColors, animate: boolean, is_light:
         de.style.setProperty(varname, value);
     }
 
+    LIGHT_TIME = performance.now();
+
     if(animate) {
         clearTimeout(currentTimer);
         currentTimer = setTimeout(() => {
             de.classList.remove("ln-theme-transition");
+            __DEV__ && console.log("Theme transition ended");
         }, 1000);
+    } else {
+        LIGHT_TIME -= 1000;
     }
+}
+
+export var LIGHT_TIME: number = 0;
+
+export function themeProgress(now: number): number {
+    return Math.min(1, Math.max(0, (now - LIGHT_TIME) / 1000));
 }

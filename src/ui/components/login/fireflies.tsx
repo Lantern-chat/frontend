@@ -5,7 +5,8 @@ import "./fireflies.scss";
 import { isPageHidden, visibilityChange } from "ui/utils";
 import { smoothstep, squine3, gaussian2, smin, broad_sine2 } from "lib/math";
 import * as color from "lib/color";
-import { LIGHT_THEME } from "lib/theme";
+import { LIGHT_THEME, themeProgress } from "lib/theme";
+import { CubicBezier } from "lib/bezier";
 
 const { sqrt, cbrt, sin, cos, random, abs, sign, PI, min, max, floor } = Math;
 
@@ -67,6 +68,8 @@ interface IFireflyState {
 const MAX_SPEED = 60;
 const EJECT = MAX_SPEED * 2;
 const ANGLE_INTERVAL: number = 1;
+const EASE_IN: CubicBezier = new CubicBezier(0.42, 0, 1, 1);
+const EASE_OUT: CubicBezier = new CubicBezier(0, 0, 0.58, 1);
 
 function gen_firefly(min_x: number, max_x: number, min_y: number, max_y: number): IFirefly {
     let a = random() * PI * 2.0;
@@ -93,7 +96,7 @@ function desiredCount(w: number, h: number, density: number): number {
     return (w * h) / (density * density);
 }
 
-function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObject<HTMLCanvasElement | null>, time: number) {
+function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObject<HTMLCanvasElement | null>, time_ms: number) {
     if(!canvas_ref.current) { return; }
     let canvas = canvas_ref.current;
 
@@ -139,7 +142,7 @@ function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObje
         state.ff.push(gen_firefly(0, canvas.width, 0, canvas.height));
     }
 
-    time /= 1000; // we want to work in seconds, not milliseconds
+    let time = time_ms / 1000; // we want to work in seconds, not milliseconds
 
     if(!state.paused && !state.just_unpaused) {
         let dt = 0;
@@ -250,7 +253,11 @@ function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObje
 
             ctx.fillStyle = palette[floor(firefly.offset * palette.length)];
 
-            ctx.setTransform(firefly.size, 0, 0, firefly.size, firefly.px, firefly.py);
+            let progress = EASE_IN.y(themeProgress(time_ms)),
+                scale = LIGHT_THEME ? (1 + progress) : (2 - progress),
+                size = firefly.size * scale;
+
+            ctx.setTransform(size, 0, 0, size, firefly.px, firefly.py);
             ctx.fillRect(-FIREFLY_RADIUS, -FIREFLY_RADIUS, FIREFLY_WIDTH, FIREFLY_WIDTH);
         }
 
@@ -272,24 +279,30 @@ export const Fireflies: React.FunctionComponent<IFireflyProps> = React.memo((pro
     let canvas_ref = useRef(null);
 
     useEffect(() => {
-        let state: IFireflyState = { ff: [], paused: false, m: [1e9, 1e9, false], density: props.density || 175 };
-        let interval = setInterval(() => {
-            if(state.paused) return;
-            for(let firefly of state.ff) {
-                firefly.ta += (random() * 2.0 - 1.0) * PI * 0.1;
-            }
-        }, 1 / ANGLE_INTERVAL);
+        let state: IFireflyState = { ff: [], paused: false, m: [1e9, 1e9, false], density: props.density || 175 },
+            interval = setInterval(() => {
+                if(!state.paused) {
+                    for(let firefly of state.ff) {
+                        firefly.ta += (random() * 2.0 - 1.0) * PI * 0.1;
+                    }
+                }
+            }, 1 / ANGLE_INTERVAL);
+
         let mouse_listener = (e: MouseEvent) => { state.m = [e.x, e.y, e.buttons == 1]; }
         for(let e of MOUSE_EVENTS) {
             window.addEventListener(e, mouse_listener);
         }
+
         let hidden_listener = () => {
             state.paused = isPageHidden(); state.just_unpaused = !state.paused;
 
             __DEV__ && console.log("FIREFLIES PAUSED? ", state.paused);
         };
         if(visibilityChange) { document.addEventListener(visibilityChange, hidden_listener); }
+
+
         state.frame = requestAnimationFrame((time: number) => render_fireflies(state, canvas_ref, time));
+
         return () => {
             // cancel animation first
             if(state.frame) cancelAnimationFrame(state.frame);
