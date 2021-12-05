@@ -35,6 +35,18 @@ const LIGHT_PALETTE_HUES: number[] = [0, 40, 80, 120, 160, 200, 240, 280, 320];
 const LIGHT_PALETTE: GradientStop[][] = LIGHT_PALETTE_HUES.map(hue => gen_gradient(color.linear2srgb(color.hsl2rgb({ h: hue, s: 0.7, l: 0.5 })), 8));
 
 // TODO: Ease between palettes using EASE_IN and [0.5 * (D % 3 + L % 9)] merging
+//function genPalette(t: number): GradientStop[][] {
+//    let from, to;
+//    if(LIGHT_THEME) {
+//        from = DARK_PALETTE;
+//        to = LIGHT_PALETTE;
+//    } else {
+//        from = LIGHT_PALETTE;
+//        to = DARK_PALETTE;
+//    }
+//    if(t <= 0) return from;
+//    if(t >= 1) return to;
+//}
 
 interface IFireflyProps {
     density?: number,
@@ -146,7 +158,10 @@ function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObje
     let time = time_ms / 1000; // we want to work in seconds, not milliseconds
 
     if(!state.paused && !state.just_unpaused) {
-        let dt = 0;
+        let dt = 0,
+            progress = EASE_IN.y(themeProgress(time_ms)),
+            scale = LIGHT_THEME ? (1 + progress) : (2 - progress);
+
         if(state.time) {
             dt = time - state.time;
         }
@@ -254,9 +269,7 @@ function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObje
 
             ctx.fillStyle = palette[floor(firefly.offset * palette.length)];
 
-            let progress = EASE_IN.y(themeProgress(time_ms)),
-                scale = LIGHT_THEME ? (1 + progress) : (2 - progress),
-                size = firefly.size * scale;
+            let size = firefly.size * scale;
 
             ctx.setTransform(size, 0, 0, size, firefly.px, firefly.py);
             ctx.fillRect(-FIREFLY_RADIUS, -FIREFLY_RADIUS, FIREFLY_WIDTH, FIREFLY_WIDTH);
