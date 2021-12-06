@@ -8,6 +8,8 @@ export const MediaSettingsTab = () => {
             <TogglePrefsFlag htmlFor="mute_media" label="Mute Media by Default" flag={UserPreferenceFlags.MuteMedia} />
 
             <TogglePrefsFlag htmlFor="hide_unknown" label="Disable Attachments of Unknown Size" flag={UserPreferenceFlags.HideUnknown} />
+
+            <TogglePrefsFlag htmlFor="use_platform_emojis" label="Use Platform Emojis" flag={UserPreferenceFlags.UsePlatformEmojis} />
         </form>
     )
 };

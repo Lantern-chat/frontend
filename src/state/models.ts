@@ -136,6 +136,7 @@ export enum UserPreferenceFlags {
     MuteMedia = 1 << 7,
     HideUnknown = 1 << 8,
     CompactView = 1 << 9,
+    UsePlatformEmojis = 1 << 10,
 
     DeveloperMode = 1 << 15,
 }
