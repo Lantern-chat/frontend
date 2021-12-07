@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
 
 import { copyText } from "lib/clipboard";
-import { gaussian2 } from "lib/math";
+import { gaussian2, mix } from "lib/math";
 import { change_color, formatRGBHex, kelvin2 } from "lib/color";
 import { MAX_TEMP, MIN_TEMP } from "lib/theme";
 
@@ -119,8 +119,8 @@ export const PartyList = React.memo(() => {
             let t = 1 - gaussian2(temperature - 6500, (temperature - MIN_TEMP) * 0.1);
             t *= t; // flatten it out a bit
 
-            s = t * 0.65 + (1 - t) * 0.05;
-            l = t * 0.55 + (1 - t) * 0.25;
+            s = mix(0.05, 0.65, t);
+            l = mix(0.25, 0.55, t);
 
         } else {
             // TODO: Improve this light theme color

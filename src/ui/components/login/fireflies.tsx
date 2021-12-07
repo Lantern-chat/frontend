@@ -3,7 +3,7 @@ import React, { useRef, useEffect, useLayoutEffect } from "react";
 import "./fireflies.scss";
 
 import { isPageHidden, visibilityChange } from "ui/utils";
-import { smoothstep, squine3, gaussian2, smin, broad_sine2 } from "lib/math";
+import { smoothstep, squine3, gaussian2, smin, broad_sine2, mix } from "lib/math";
 import * as color from "lib/color";
 import { LIGHT_THEME, themeProgress } from "lib/theme";
 import { CubicBezier } from "lib/bezier";
@@ -168,7 +168,7 @@ function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObje
 
         for(let firefly of state.ff) {
             let t = dt * ANGLE_INTERVAL;
-            firefly.a = firefly.a * (1 - t) + t * firefly.ta;
+            firefly.a = mix(firefly.a, firefly.ta, t);
 
             // adjust velocity
             let v = dt * MAX_SPEED;

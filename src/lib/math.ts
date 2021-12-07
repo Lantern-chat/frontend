@@ -8,16 +8,16 @@ export function smoothstep(x: number): number {
     if(x <= 0) return 0;
     if(x >= 1) return 1;
 
-    let x2 = x * x;
-    let x3 = x2 * x;
+    let x2 = x * x,
+        x3 = x2 * x;
 
     return 6 * x3 * x2 - 15 * x2 * x2 + 10 * x3;
 }
 
 export function squine3(x0: number): number {
-    let quad = (x: number) => (1 + cbrt(x * x * x - 1));
-    let semi = (x: number) => (x <= 1 ? quad(x) : (2 - quad(-x + 2)));
-    let full = (x: number) => (x <= 2 ? semi(x) : semi(-x + 4));
+    let quad = (x: number) => (1 + cbrt(x * x * x - 1)),
+        semi = (x: number) => (x <= 1 ? quad(x) : (2 - quad(-x + 2))),
+        full = (x: number) => (x <= 2 ? semi(x) : semi(-x + 4));
 
     return full(x0 % 4.0);
 }

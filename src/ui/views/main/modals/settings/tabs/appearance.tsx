@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector, batch } from "react-redux";
 
 import throttle from "lodash/throttle";
+import { mix } from "lib/math";
 
 import { setTheme } from "state/commands/theme";
 import { savePrefs, savePrefsFlag } from "state/commands/prefs";
@@ -14,11 +15,11 @@ import { FormGroup, FormInput, FormLabel, FormSelect } from "ui/components/form"
 
 import { Toggle, TogglePrefsFlag } from "../components/toggle";
 import { RadioSelect } from "../components/radio";
+import { SizeSlider } from "../components/size-slider";
 
 import { MIN_TEMP, MAX_TEMP } from "lib/theme";
 
 import "./appearance.scss";
-import { SizeSlider } from "../components/size-slider";
 export const AppearanceSettingsTab = () => {
     return (
         <form className="ln-settings-form">
@@ -57,7 +58,7 @@ const ThemeSetting = React.memo(() => {
             let { width, x } = input.current.getBoundingClientRect();
             let touch = e.touches[0].clientX - x;
             if(touch < 0 || touch > width) return;
-            let t = touch / width, temperature = (1 - t) * MIN_TEMP + t * MAX_TEMP;
+            let t = touch / width, temperature = mix(MIN_TEMP, MAX_TEMP, t);
             doSetTheme(temperature, interactive.is_light, interactive.oled);
         }
     }, 50, { trailing: true });

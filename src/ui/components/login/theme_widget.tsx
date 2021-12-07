@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { themeSelector } from "state/selectors/theme";
 import { setTheme } from "state/commands/theme";
 
+import { mix } from "lib/math";
 import { MIN_TEMP, MAX_TEMP } from "lib/theme";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
@@ -34,7 +35,7 @@ export const ThemeWidget: React.FunctionComponent = React.memo(() => {
                 return;
             }
 
-            let t = touch / width, temperature = (1 - t) * MIN_TEMP + t * MAX_TEMP;
+            let t = touch / width, temperature = mix(MIN_TEMP, MAX_TEMP, t);
 
             doSetTheme(temperature, interactive.is_light);
         }

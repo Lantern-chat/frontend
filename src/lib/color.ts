@@ -1,6 +1,7 @@
 const { min, max, round } = Math;
 
-const clamp01 = (x: number) => min(1, max(0, x));
+import { saturate as clamp01 } from "./math";
+
 const clamp0360 = (x: number) => max(0, x % 360);
 
 const DEGREES = 360;
