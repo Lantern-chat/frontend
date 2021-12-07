@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Spoiler } from "./components/spoiler";
 import { Code, Math } from "./lazy";
 import { CodeWrapper } from "./components/code_wrapper";
+import { compareString } from "lib/compare";
 
 //import Code from "./components/code";
 //import Math from "./components/math";
@@ -299,18 +300,21 @@ export function parserFor(rules: ParserRules, defaultState?: State): Parser {
 
         if(secondaryOrderA !== secondaryOrderB) {
             return secondaryOrderA - secondaryOrderB;
-
-            // Then based on increasing unicode lexicographic ordering
-        } else if(typeA < typeB) {
-            return -1;
-        } else if(typeA > typeB) {
-            return 1;
-
         } else {
-            // Rules should never have the same name,
-            // but this is provided for completeness.
-            return 0;
+            // Then based on increasing unicode lexicographic ordering
+            return compareString(typeA, typeB);
         }
+
+        //} else if(typeA < typeB) {
+        //    return -1;
+        //} else if(typeA > typeB) {
+        //    return 1;
+        //
+        //} else {
+        //    // Rules should never have the same name,
+        //    // but this is provided for completeness.
+        //    return 0;
+        //}
     });
 
     var latestState: State;

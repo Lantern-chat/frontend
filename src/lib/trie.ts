@@ -1,5 +1,4 @@
 import { toCodePoints } from "./unicode";
-import { binarySearch } from "./util";
 
 export interface TrieItem {
     id: number,
@@ -11,12 +10,6 @@ interface TrieNode<T extends TrieItem> {
 }
 
 const EMPTY = new Set<number>();
-
-function str_order(a: string, b: string): number {
-    if(a > b) return -1;
-    if(a < b) return 1;
-    return 0;
-}
 
 export class TrieMap<T extends TrieItem> {
     root: TrieNode<T> = {

@@ -1,5 +1,3 @@
-
-
 export const SUPPORTS_PASSIVE: boolean = (() => {
     var supportsPassive = false, w = window as any;
     try {

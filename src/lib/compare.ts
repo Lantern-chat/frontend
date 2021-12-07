@@ -49,3 +49,10 @@ export function shallowEqualObjects<T>(objA: T | null | undefined, objB: T | nul
 
     return true;
 }
+
+/// NOTE: Use Intl.Collator for locale-aware comparisons
+export function compareString(a: string, b: string): number {
+    if(a < b) return -1;
+    else if(a > b) return 1;
+    else return 0;
+}

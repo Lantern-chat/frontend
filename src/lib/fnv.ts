@@ -1,8 +1,7 @@
 // Legacy implementation for 32-bit + number types
 export function fnv1a(string: string): number {
     // Handle Unicode code points > 0x7f
-    let hash = 2166136261;
-    let isUnicoded = false;
+    let hash = 2166136261, isUnicoded = false;
 
     for(let i = 0; i < string.length; i++) {
         let characterCode = string.charCodeAt(i);
