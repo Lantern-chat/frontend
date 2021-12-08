@@ -27,7 +27,7 @@ export const SettingsModal = React.memo(() => {
         do_return = useCallback(() => {
             if(!closing) {
                 setClosing(true);
-                setTimeout(() => HISTORY.push(return_path), 200);
+                setTimeout(() => HISTORY.pushMobile(return_path), 200);
             }
         }, [return_path, closing]);
 

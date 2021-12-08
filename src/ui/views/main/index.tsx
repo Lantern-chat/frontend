@@ -48,14 +48,14 @@ if(!GLOBAL.gateway) {
     });
 }
 
-// Duct-tape mobile browsers where dragging left can navigate back
-if(IS_MOBILE) {
-    // https://stackoverflow.com/questions/12381563/how-can-i-stop-the-browser-back-button-using-javascript/34337617#34337617
-    HISTORY.push(location.href, null);
-    window.addEventListener('popstate', () => {
-        HISTORY.push(location.href, null);
-    });
-}
+// // Duct-tape mobile browsers where dragging left can navigate back
+// if(IS_MOBILE) {
+//     // https://stackoverflow.com/questions/12381563/how-can-i-stop-the-browser-back-button-using-javascript/34337617#34337617
+//     HISTORY.push(location.href, null);
+//     window.addEventListener('popstate', () => {
+//         HISTORY.push(location.href, null);
+//     });
+// }
 
 //GATEWAY.addEventListener('error', err => {
 //    STORE.dispatch({ type: 'GATEWAY_ERROR', payload: err });

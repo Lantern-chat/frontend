@@ -24,14 +24,14 @@ export function activateParty(party_id: Snowflake, room_id?: Snowflake): Dispatc
         let state = getState(), party = state.party.parties.get(party_id);
 
         if(party && !party.needs_refresh) {
-            HISTORY.push(room_url(party_id, room_id || get_default_room(party.rooms)));
+            HISTORY.pushMobile(room_url(party_id, room_id || get_default_room(party.rooms)));
 
             return;
         }
 
         try {
             let navigated = false, nav_timeout = setTimeout(() => {
-                HISTORY.push(room_url(party_id, room_id)); navigated = true;
+                HISTORY.pushMobile(room_url(party_id, room_id)); navigated = true;
             }, NAV_TIMEOUT);
 
             // TODO: Handle errors
@@ -56,7 +56,7 @@ export function activateParty(party_id: Snowflake, room_id?: Snowflake): Dispatc
 
                     // if the nav timeout hasn't run yet, just do a regular push
                     if(!navigated) {
-                        HISTORY.push(url);
+                        HISTORY.pushMobile(url);
                     } else if(!room_id || !rooms.find(room => room.id == room_id)) {
                         // otherwise, if the room_id given was invalid, replace with a valid one
                         HISTORY.replace(url);

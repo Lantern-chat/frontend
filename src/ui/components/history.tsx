@@ -2,14 +2,9 @@ import React, { AnchorHTMLAttributes, forwardRef, useContext, createContext, Con
 import { History, State, Location } from 'history';
 
 import { IHistoryState } from "state/reducers/history";
-import { HISTORY } from 'state/global';
+import { HISTORY, IHistoryExt } from 'state/global';
+import { IS_MOBILE } from 'lib/user_agent';
 export { recomputeHistoryContext } from "state/reducers/history";
-
-export interface IHistoryContext {
-    history: History,
-    location: Location,
-    parts: string[]
-}
 
 export const HistoryContext: Context<IHistoryState> = createContext<IHistoryState>(null!);
 
@@ -46,7 +41,7 @@ export const Link = React.memo(forwardRef((props: ILinkProps, ref: React.Mutable
     let { href, onClick, onTouchEnd, onNavigate, replace, state, target, useDiv, noAction } = props,
         ctx = useContext(HistoryContext),
         history = ctx.history,
-        method = replace ? history.replace : history.push;
+        method = (IS_MOBILE || replace) ? history.replace : history.pushMobile;
 
     if(href) {
         var ran_onNavigate = false;

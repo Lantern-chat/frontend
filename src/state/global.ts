@@ -1,7 +1,7 @@
 import { createStore } from "redux";
 import { enhancers, initialReducer, Type } from "./initial";
 
-import { createBrowserHistory } from "history";
+import { BrowserHistory, createBrowserHistory, To } from "history";
 
 import { setTheme } from "lib/theme";
 import { recomputeHistoryContext } from "ui/components/history";
@@ -10,6 +10,7 @@ import { DEFAULT_STATE as DEFAULT_USER } from './reducers/user';
 import { StorageKey, loadSession, loadPrefs } from "./storage";
 import { GatewayCommand } from "worker/gateway/cmd";
 import { themeSelector } from "./selectors/theme";
+import { IS_MOBILE } from "lib/user_agent";
 
 export { DYNAMIC_MIDDLEWARE } from "./root";
 
@@ -24,7 +25,13 @@ interface IGlobalState {
 
 export const GLOBAL: IGlobalState = {};
 
-export const HISTORY = createBrowserHistory();
+export interface IHistoryExt extends BrowserHistory {
+    pushMobile(to: To, state?: any): void;
+}
+
+export const HISTORY: IHistoryExt = createBrowserHistory() as any;
+
+HISTORY.pushMobile = IS_MOBILE ? HISTORY.replace : HISTORY.push;
 
 export const STORE = createStore(initialReducer, {
     history: recomputeHistoryContext(HISTORY),

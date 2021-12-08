@@ -23,11 +23,11 @@ export function setSession(session: ISession | null): DispatchableAction {
 
             dispatch({ type: Type.SESSION_LOGIN, session });
 
-            HISTORY.push(DEFAULT_LOGGED_IN_CHANNEL);
+            HISTORY.pushMobile(DEFAULT_LOGGED_IN_CHANNEL);
         } else {
             dispatch({ type: Type.SESSION_EXPIRED });
 
-            HISTORY.push('/login');
+            HISTORY.pushMobile('/login');
         }
     }
 };

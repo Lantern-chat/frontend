@@ -1,13 +1,14 @@
 import { History, Location } from "history";
 import { Action, Type } from "state/actions";
+import { IHistoryExt } from "state/global";
 
 export interface IHistoryState {
-    history: History,
+    history: IHistoryExt,
     location: Location,
     parts: string[],
 }
 
-export function recomputeHistoryContext(history: History): IHistoryState {
+export function recomputeHistoryContext(history: IHistoryExt): IHistoryState {
     let location = history.location,
         parts = location.pathname.slice(1).split('/');
 
