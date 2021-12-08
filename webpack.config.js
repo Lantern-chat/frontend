@@ -229,9 +229,10 @@ module.exports = (env, argv) => {
             //}),
             new CopyPlugin({
                 patterns: [
-                    { from: "./assets", to: "assets" }
+                    { from: "./assets", to: "assets" },
+                    { from: "./manifest.json", to: "manifest.json" }
                 ]
-            })
+            }),
         ],
     };
 

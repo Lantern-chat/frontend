@@ -1,0 +1,31 @@
+{
+    "name": "Lantern Chat",
+    "short_name": "Lantern",
+    "description": "Lantern Chat",
+    "version": "0.0.0.1",
+    "manifest_version": 2,
+    "default_locale": "en-US",
+    "author": "Nova",
+    "start_url": "/@me",
+    "display": "standalone",
+    "orientation": "portrait",
+    "theme_color": "#fbda6c",
+    "background_color": "#fbda6c",
+    "icons": [],
+    "app": {
+        "urls": [
+            "http://lantern.chat/"
+        ],
+        "launch": {
+            "web_url": "https://lantern.chat/"
+        },
+        "background": {
+            "scripts": []
+        },
+        "permissions": [
+            "unlimitedStorage",
+            "notifications",
+            "fullscreen"
+        ]
+    }
+}
