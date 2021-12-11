@@ -153,13 +153,32 @@ export const MainView: React.FunctionComponent = React.memo(() => {
             }
         }
 
+        interface IKeyState {
+            keys: Set<string>,
+        }
+
+        var key_state: IKeyState = { keys: new Set() };
+
+        let on_keyup = (e: KeyboardEvent) => {
+            if(parseHotkey(e)) {
+                e.preventDefault(); e.stopPropagation();
+            }
+
+            key_state.keys.delete(e.key);
+        };
+
+        let on_keydown = (e: KeyboardEvent) => {
+            key_state.keys.add(e.key);
+            triggerAnyHotkey(e);
+        };
+
         return {
             on_click: (e: React.MouseEvent) => clickAll(e),
             // by default, block real context menu. Placing it here caches it with memo
-            on_cm: (e: React.MouseEvent) => e.preventDefault(),
-            on_ku: (e: KeyboardEvent) => { if(parseHotkey(e)) { e.preventDefault(); e.stopPropagation(); } },
+            on_cm: (e: React.MouseEvent) => { if(!e.shiftKey && !key_state.keys.has('Shift')) { e.preventDefault(); e.stopPropagation(); } },
+            on_ku: on_keyup,
             // certain hotkeys cause side-effects, like Tab, so kill those
-            on_kd: (e: KeyboardEvent) => triggerAnyHotkey(e),
+            on_kd: on_keydown,
             value: {
                 addOnClick,
                 addOnHotkey,
@@ -168,6 +187,8 @@ export const MainView: React.FunctionComponent = React.memo(() => {
                 clickAll,
                 triggerHotkey,
                 triggerAnyHotkey,
+                hasKey: (key: string) => key_state.keys.has(key),
+                consumeKey: (key: string) => key_state.keys.delete(key),
             }
         }
     }, []);

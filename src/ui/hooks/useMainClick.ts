@@ -153,14 +153,16 @@ export type OnClickHandler = (e: React.MouseEvent) => void;
 export type OnKeyHandler = (e: KeyboardEvent) => void;
 
 export interface IMainContext {
-    addOnClick(listener: OnClickHandler): void,
-    removeOnClick(listener: OnClickHandler): void,
-    addOnHotkey(hotkey: Hotkey, listener: OnKeyHandler): void,
-    removeOnHotkey(hotkey: Hotkey, listener: OnKeyHandler): void,
+    addOnClick(listener: OnClickHandler): void;
+    removeOnClick(listener: OnClickHandler): void;
+    addOnHotkey(hotkey: Hotkey, listener: OnKeyHandler): void;
+    removeOnHotkey(hotkey: Hotkey, listener: OnKeyHandler): void;
 
-    clickAll(e: React.MouseEvent): void,
-    triggerHotkey(hotkey: Hotkey, e: KeyboardEvent): void,
-    triggerAnyHotkey(e: KeyboardEvent): void,
+    clickAll(e: React.MouseEvent): void;
+    triggerHotkey(hotkey: Hotkey, e: KeyboardEvent): void;
+    triggerAnyHotkey(e: KeyboardEvent): void;
+    hasKey(key: string): boolean;
+    consumeKey(key: string): boolean;
 }
 
 const noop = () => { };
@@ -172,6 +174,8 @@ export const MainContext = createContext<IMainContext>({
     removeOnHotkey: noop,
     triggerHotkey: noop,
     triggerAnyHotkey: noop,
+    hasKey: () => false,
+    consumeKey: () => false,
 });
 
 // TODO: Move this someplace useful
@@ -201,7 +205,14 @@ export function useMainClick(opt: IMainClickOptions, deps: any[]): ClickEventHan
             // block scoped, moved into closure
             let cb: OnClickHandler | undefined;
             if(cb = opt[key]) { // check undefined while assigning
-                props[key] = (e: React.MouseEvent) => { main.clickAll(e); cb!(e); };
+                props[key] = (e: React.MouseEvent) => {
+                    main.clickAll(e);
+                    if(!main.consumeKey('Shift')) {
+                        cb!(e);
+                    } else {
+                        e.stopPropagation();
+                    }
+                };
             }
         }
 
