@@ -277,6 +277,7 @@ function format_users_typing(user: User, members: Map<Snowflake, PartyMember>, u
             continue;
         };
 
+        // pick out a max of 3 names to display before it shows "and X"
         let member = members.get(entry.user);
         if(member) {
             let nick = member.nick || member.user.username;
@@ -288,19 +289,24 @@ function format_users_typing(user: User, members: Map<Snowflake, PartyMember>, u
         }
     }
 
+    // decrement remaining count by the count selected for listing
     remaining -= typing_nicks.length;
 
     let res, len = typing_nicks.length;
 
-    if(len == 0) return;
+    if(len == 0) return; // no one is typing
     else if(len == 1) {
+        // OneUser is typing...
         res = typing_nicks[0] + ' is typing...';
     } else if(remaining <= 0) {
-        res = typing_nicks.slice(0, len - 1).join(', ') + ` and ${typing_nicks[len - 1]} are typing...`;
+        // Foo, Bar, and Cathy are typing...
+        res = typing_nicks.slice(0, len - 1).join(', ') + `, and ${typing_nicks[len - 1]} are typing...`;
     } else {
+        // Foo, Bar, Cathy, and 10 other users are typing...
+        // Foo, Bar, Cathy, and 1 other user are typing...
         let user_plural = remaining > 1 ? "users" : "user";
 
-        res = typing_nicks.join(', ') + ` and ${remaining} ${user_plural} are typing...`;
+        res = typing_nicks.join(', ') + `, and ${remaining} other ${user_plural} are typing...`;
     }
 
     return res;
@@ -316,4 +322,4 @@ const UsersTyping = React.memo(() => {
     return (
         <span className="ui-text">{users_typing}</span>
     )
-})
+});
