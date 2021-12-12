@@ -7,6 +7,7 @@ import TextareaAutosize, { TextareaHeightChangeMeta } from 'react-textarea-autos
 
 import { countLines } from "lib/util";
 import { IS_MOBILE } from "lib/user_agent";
+import { shallowEqualObjects } from "lib/compare";
 
 //import { IMessageState } from "ui/views/main/reducers/messages";
 import { RootState } from "state/root";
@@ -28,6 +29,29 @@ import Send from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/g
 import Plus from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-371-plus.svg";
 
 export interface IMessageBoxProps {
+    active_room: Snowflake,
+    mobile: boolean,
+    showing_footers: boolean,
+}
+
+interface IMessageBoxState {
+    value: string,
+}
+
+export class MessageBox extends React.Component<IMessageBoxProps, IMessageBoxState> {
+    constructor(props: IMessageBoxProps) {
+        super(props);
+    }
+
+    shouldComponentUpdate(nextProps: IMessageBoxProps, nextState: IMessageBoxState): boolean {
+        return !(
+            shallowEqualObjects(this.state, nextState) &&
+            shallowEqualObjects(this.props, nextProps)
+        );
+    }
+}
+
+export interface IMessageBoxOldProps {
     channel?: Snowflake,
 }
 
@@ -40,7 +64,7 @@ const msg_box_selector = createStructuredSelector({
 });
 
 import "./box.scss";
-export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
+export const MessageBoxOld = React.memo(({ channel }: IMessageBoxOldProps) => {
     let disabled = !channel;
 
     let {
