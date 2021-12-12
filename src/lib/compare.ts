@@ -50,6 +50,34 @@ export function shallowEqualObjects<T>(objA: T | null | undefined, objB: T | nul
     return true;
 }
 
+export function shallowEqualObjectsExclude<T>(objA: T | null | undefined, objB: T | null | undefined, e: string[]): boolean {
+    if(objA === objB) {
+        return true;
+    }
+
+    if(!objA || !objB) {
+        return false;
+    }
+
+    let aKeys = Object.keys(objA).filter(key => !e.includes(key)),
+        bKeys = Object.keys(objB).filter(key => !e.includes(key)),
+        len = aKeys.length;
+
+    if(bKeys.length !== len) {
+        return false;
+    }
+
+    for(let i = 0; i < len; i++) {
+        let key = aKeys[i];
+
+        if(objA[key] !== objB[key] || !Object.prototype.hasOwnProperty.call(objB, key)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 /// NOTE: Use Intl.Collator for locale-aware comparisons
 export function compareString(a: string, b: string): number {
     if(a < b) return -1;
