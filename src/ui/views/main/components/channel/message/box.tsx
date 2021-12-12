@@ -1,7 +1,10 @@
+import classNames from "classnames";
+
 import React, { ChangeEventHandler, forwardRef, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
-import classNames from "classnames";
+
+import { selectPrefsFlag } from "state/selectors/prefs";
 
 import TextareaAutosize, { TextareaHeightChangeMeta } from 'react-textarea-autosize';
 
@@ -12,7 +15,7 @@ import { shallowEqualObjects } from "lib/compare";
 //import { IMessageState } from "ui/views/main/reducers/messages";
 import { RootState } from "state/root";
 import { Type } from "state/actions";
-import { PartyMember, Snowflake, User } from "state/models";
+import { PartyMember, Snowflake, User, UserPreferenceFlags } from "state/models";
 import { sendMessage, startTyping } from "state/commands";
 import { activeParty, activeRoom } from "state/selectors/active";
 import { ITypingState } from "state/reducers/chat";
@@ -61,6 +64,7 @@ const msg_box_selector = createStructuredSelector({
     use_mobile_view: (state: RootState) => state.window.use_mobile_view,
     showing_footers: (state: RootState) => state.window.showing_footers,
     session: (state: RootState) => state.user.session,
+    enable_spellcheck: selectPrefsFlag(UserPreferenceFlags.EnableSpellcheck),
 });
 
 import "./box.scss";
@@ -73,6 +77,7 @@ export const MessageBoxOld = React.memo(({ channel }: IMessageBoxOldProps) => {
         active_room,
         showing_footers,
         session,
+        enable_spellcheck,
     } = useSelector(msg_box_selector);
 
     let dispatch = useDispatch();
@@ -247,6 +252,7 @@ export const MessageBoxOld = React.memo(({ channel }: IMessageBoxOldProps) => {
                     value={state.value}
                     mobile={use_mobile_view}
                     onContextMenu={on_cm}
+                    spellcheck={enable_spellcheck}
                 />
 
                 {

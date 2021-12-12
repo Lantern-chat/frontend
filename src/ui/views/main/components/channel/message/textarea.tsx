@@ -11,6 +11,7 @@ export interface IMsgTextareaProps {
     value: string,
     mobile: boolean,
     taRef?: React.RefObject<HTMLTextAreaElement>;
+    spellcheck?: boolean,
 
     onChange(value: string): void;
     onBlur(): void;
@@ -22,6 +23,7 @@ export interface IMsgTextareaProps {
 
 interface IMsgTextareaState {
     rows: number,
+    spellcheck: boolean,
 }
 
 import "./textarea.scss";
@@ -31,7 +33,7 @@ export class MsgTextarea extends React.Component<IMsgTextareaProps, IMsgTextarea
     constructor(props: IMsgTextareaProps) {
         super(props);
 
-        this.state = { rows: 1 };
+        this.state = { rows: 1, spellcheck: !!props.spellcheck };
     }
 
     shouldComponentUpdate(nextProps: IMsgTextareaProps, nextState: IMsgTextareaState): boolean {
@@ -54,6 +56,10 @@ export class MsgTextarea extends React.Component<IMsgTextareaProps, IMsgTextarea
         }
 
         return null;
+    }
+
+    componentDidMount() {
+        this.ta.current!.addEventListener('selectionchange', this.onSelectionChange.bind(this));
     }
 
     onHeightChange(height: number, { rowHeight }: TextareaHeightChangeMeta) {
@@ -135,6 +141,13 @@ export class MsgTextarea extends React.Component<IMsgTextareaProps, IMsgTextarea
         let ta = e.currentTarget;
         ta.value = ta.value.replace(/^\n+/, ''); // remove leading whitespace
         this.props.onChange(ta.value);
+        this.onSelectionChange(e.nativeEvent);
+    }
+
+    onSelectionChange(e: Event) {
+        let ta: HTMLTextAreaElement = e.target as HTMLTextAreaElement;
+        let do_spellcheck = this.props.spellcheck && !isInsideCodeBlock(ta);
+        this.setState({ spellcheck: !!do_spellcheck });
     }
 
     // binded callbacks for memoization
@@ -171,6 +184,7 @@ export class MsgTextarea extends React.Component<IMsgTextareaProps, IMsgTextarea
                     onKeyUp={this.onku}
                     onKeyDown={this.onkd}
                     onChange={this.onch}
+                    spellCheck={this.state.spellcheck}
                 />
             </div>
         )

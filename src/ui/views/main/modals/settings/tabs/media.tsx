@@ -10,6 +10,8 @@ export const MediaSettingsTab = () => {
             <TogglePrefsFlag htmlFor="hide_unknown" label="Disable Attachments of Unknown Size" flag={UserPreferenceFlags.HideUnknown} />
 
             <TogglePrefsFlag htmlFor="use_platform_emojis" label="Use Platform Emojis" flag={UserPreferenceFlags.UsePlatformEmojis} />
+
+            <TogglePrefsFlag htmlFor="enable_spellcheck" label="Enable Spellcheck" flag={UserPreferenceFlags.EnableSpellcheck} />
         </form>
     )
 };

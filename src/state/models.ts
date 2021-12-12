@@ -137,6 +137,7 @@ export enum UserPreferenceFlags {
     HideUnknown = 1 << 8,
     CompactView = 1 << 9,
     UsePlatformEmojis = 1 << 10,
+    EnableSpellcheck = 1 << 11,
 
     DeveloperMode = 1 << 15,
 }
