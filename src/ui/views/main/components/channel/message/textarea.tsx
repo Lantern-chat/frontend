@@ -1,160 +1,193 @@
-import React, { useState, useCallback, useEffect, useRef, useLayoutEffect, forwardRef, useContext, useMemo } from "react";
+import React, { createRef } from "react";
 
-import { useDispatch, useSelector } from "react-redux";
-import { createSelector, createStructuredSelector } from "reselect";
+import { shallowEqualObjects, shallowEqualObjectsExclude } from "lib/compare";
 
 import TextareaAutosize, { TextareaHeightChangeMeta } from 'react-textarea-autosize';
 
-import { RootState } from "state/root";
-
-import { useForceRender } from "ui/hooks/useForceRender";
-import { parseHotkey, Hotkey, MainContext, useClickEater } from "ui/hooks/useMainClick";
+import { parseHotkey, Hotkey } from "ui/hooks/useMainClick";
 
 export interface IMsgTextareaProps {
     disabled?: boolean,
     value: string,
+    mobile: boolean,
+    taRef?: React.RefObject<HTMLTextAreaElement>;
 
     onChange(value: string): void;
     onBlur(): void;
     onFocus(): void;
     onChange(value: string): void;
     onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>): void;
+    onContextMenu(e: React.MouseEvent<HTMLTextAreaElement>): void;
+}
+
+interface IMsgTextareaState {
+    rows: number,
 }
 
 import "./textarea.scss";
-export const MsgTextarea = React.memo(forwardRef((props: IMsgTextareaProps, ref: React.MutableRefObject<HTMLTextAreaElement>) => {
-    let { disabled } = props;
+export class MsgTextarea extends React.Component<IMsgTextareaProps, IMsgTextareaState> {
+    ta: React.RefObject<HTMLTextAreaElement> = this.props.taRef || createRef();
 
-    let use_mobile_view = useSelector((state: RootState) => state.window.use_mobile_view),
-        main = useContext(MainContext),
-        value = useRef<string>(props.value),
-        forceRender = useForceRender();
+    constructor(props: IMsgTextareaProps) {
+        super(props);
 
-    useLayoutEffect(() => {
-        value.current = props.value;
-        forceRender();
-    }, [props.value]);
+        this.state = { rows: 1 };
+    }
 
-    let on_keyup = useCallback((e: React.KeyboardEvent) => {
+    shouldComponentUpdate(nextProps: IMsgTextareaProps, nextState: IMsgTextareaState): boolean {
+        let ta = this.ta.current,
+            // textarea can lose position when overwriting with the same value,
+            // so compare to it directly rather than the previous props
+            same_value = ta ? ta.value == nextProps.value : false;
+
+        return !(
+            same_value &&
+            shallowEqualObjects(this.state, nextState) &&
+            shallowEqualObjectsExclude(this.props, nextProps, ['value'])
+        );
+    }
+
+    static getDerivedStateFromProps(props: IMsgTextareaProps, state: IMsgTextareaState) {
+        // reset rows if value erased
+        if(props.value.length == 0) {
+            return { rows: 1 };
+        }
+
+        return null;
+    }
+
+    onHeightChange(height: number, { rowHeight }: TextareaHeightChangeMeta) {
+        this.setState({ rows: Math.floor(height / rowHeight) });
+    }
+
+    onKeyUp(e: React.KeyboardEvent) {
         let hotkey = parseHotkey(e.nativeEvent);
         if(hotkey == null || hotkey == Hotkey.FocusTextArea) {
             // not-hotkeys shouldn't escape, to save on processing time of keypress
             // or if the textarea is already focused, don't refocus
             e.stopPropagation();
         }
-    }, []);
+    }
 
-    let [rows, setRows] = useState(1);
-    let onHeightChange = useCallback((height: number, { rowHeight }: TextareaHeightChangeMeta) => {
-        setRows(Math.floor(height / rowHeight));
-    }, []);
+    onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+        let { onKeyDown, mobile } = this.props,
+            ta = e.currentTarget,
+            value = ta.value,
+            cursor = ta.selectionStart,
+            stop_prop = true,
+            modified = false,
+            bubble = true;
 
-    let on_keydown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        // filter events
-        if(onKeydown(e, use_mobile_view, value)) {
-            props.onKeyDown(e);
+        switch(e.key) {
+            case 'Enter': {
+                let do_not_send = mobile || e.shiftKey || value.length == 0 || isInsideCodeBlock(ta);
+
+                if(do_not_send) {
+                    bubble = false;
+                } else {
+                    // do_send() done above in the tree
+                    e.preventDefault();
+                }
+
+                break;
+            }
+            case 'Tab': {
+                e.preventDefault();
+
+                if(e.shiftKey || isInsideCodeBlock(ta)) {
+                    ta.value = value.slice(0, cursor) + '\t' + value.slice(cursor);
+                    modified = true;
+
+                    ta.selectionEnd = ta.selectionStart = cursor + 1;
+                }
+
+                break;
+            }
+
+            // HOTKEY allowances
+
+            case 'PageUp':
+            case 'PageDown': {
+                stop_prop = false;
+                break;
+            }
+            default: {
+                if(e.ctrlKey || e.metaKey) {
+                    stop_prop = false;
+                }
+            }
         }
-    }, [use_mobile_view]);
 
-    let on_change = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        value.current = e.currentTarget.value.replace(/^\n+/, '');
-        props.onChange(value.current);
-        forceRender();
-    }, []);
+        if(stop_prop) {
+            e.stopPropagation();
+        }
 
-    // just stop propagation and allow it to behave normally
-    let on_cm = useClickEater();
+        if(modified) {
+            this.props.onChange(ta.value);
+        }
 
-    let { style, max_rows } = useMemo(() => {
-        let style, max_rows = use_mobile_view ? 5 : 20;
+        if(bubble) {
+            onKeyDown(e);
+        }
+    }
 
-        if(rows < max_rows) {
+    onChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+        let ta = e.currentTarget;
+        ta.value = ta.value.replace(/^\n+/, ''); // remove leading whitespace
+        this.props.onChange(ta.value);
+    }
+
+    // binded callbacks for memoization
+    onhc = this.onHeightChange.bind(this);
+    onku = this.onKeyUp.bind(this);
+    onkd = this.onKeyDown.bind(this);
+    onch = this.onChange.bind(this);
+
+    render() {
+        let { disabled, value, mobile, onBlur, onFocus, onContextMenu } = this.props,
+            style, max_rows = mobile ? 5 : 20;
+
+        if(this.state.rows < max_rows) {
             style = { overflowY: 'hidden' };
         }
 
-        return { style, max_rows };
-    }, [use_mobile_view, rows]);
+        // https://github.com/buildo/react-autosize-textarea/issues/52
+        return (
+            <div className="ln-msg-textarea">
+                {disabled ? <span className="ln-msg-textarea__disable"></span> : null}
 
-    return (
-        <div className="ln-msg-textarea">
-            {disabled ? <span className="ln-msg-textarea__disable"></span> : null}
+                <TextareaAutosize
+                    disabled={disabled}
+                    value={value}
+                    onBlur={onBlur}
+                    onFocus={onFocus}
+                    onContextMenu={onContextMenu}
+                    cacheMeasurements={false}
+                    ref={this.ta}
+                    placeholder="Message..."
+                    rows={1} maxRows={max_rows}
+                    style={style as any}
+                    onHeightChange={this.onhc}
+                    onKeyUp={this.onku}
+                    onKeyDown={this.onkd}
+                    onChange={this.onch}
+                />
+            </div>
+        )
+    }
+}
 
-            <TextareaAutosize disabled={disabled}
-                onBlur={props.onBlur}
-                onFocus={props.onFocus}
-                cacheMeasurements={false}
-                ref={ref}
-                placeholder="Message..."
-                rows={1} maxRows={max_rows} style={style as any}
-                value={value.current}
-                onKeyDown={on_keydown} onChange={on_change} onKeyUp={on_keyup}
-                onContextMenu={on_cm}
-                onHeightChange={onHeightChange}
-            />
-        </div>
-    );
-}));
+function isInsideCodeBlock(ta: HTMLTextAreaElement): boolean {
+    let cursor = ta.selectionStart, value = ta.value; // value is before new key
 
-function onKeydown(e: React.KeyboardEvent<HTMLTextAreaElement>, use_mobile_view: boolean, value: React.MutableRefObject<string>): boolean {
-    let ta = e.currentTarget;
-
-    let isInsideCodeblock = () => {
-        let cursor = ta.selectionStart;
-
-        // check if the cursor is inside a code block, in which case allow plain newlines
-        let prev = { index: 0 }, delim, re = /`{3}/g, inside = false;
-        for(let idx = 0; delim = re.exec(value.current); idx++) {
-            if(prev.index <= cursor && cursor > delim.index) {
-                inside = !inside;
-            }
-            prev = delim;
+    // check if the cursor is inside a code block, in which case allow plain newlines
+    let prev = { index: 0 }, delim, re = /`{3}/g, inside = false;
+    for(let idx = 0; delim = re.exec(value); idx++) {
+        if(prev.index <= cursor && cursor > delim.index) {
+            inside = !inside;
         }
-
-        return inside;
-    };
-
-    let stop_prop = true;
-
-    switch(e.key) {
-        case 'Enter': {
-            if(use_mobile_view || e.shiftKey || value.current.length == 0 || isInsideCodeblock()) return false;
-
-            e.preventDefault();
-
-            // do_send() done above
-
-            break;
-        }
-        case 'Tab': {
-            if(e.shiftKey || isInsideCodeblock()) {
-                value.current += '\t';
-
-                // TODO: Test if this is done automatically
-                //ta.value = value.current;
-            }
-
-            e.preventDefault();
-
-            break;
-        }
-
-        // HOTKEY allowances
-
-        case 'PageUp':
-        case 'PageDown': {
-            stop_prop = false;
-            break;
-        }
-        default: {
-            if(e.ctrlKey || e.metaKey) {
-                stop_prop = false;
-            }
-        }
+        prev = delim;
     }
 
-    if(stop_prop) {
-        e.stopPropagation();
-    }
-
-    return true;
+    return inside;
 }

@@ -80,7 +80,7 @@ export const FileUploadModal = React.memo((props: FileUploadModalProps) => {
                     })}
                 </div>
 
-                <MsgTextarea value="" onChange={noop} onBlur={noop} onFocus={noop} onKeyDown={noop} />
+                <MsgTextarea value="" onChange={noop} onBlur={noop} onFocus={noop} onKeyDown={noop} onContextMenu={noop} mobile={false} />
 
                 <FormGroup id="upload-button">
                     <button className="ln-btn ui-text" onClick={onUpload}>

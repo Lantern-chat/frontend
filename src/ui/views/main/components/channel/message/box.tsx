@@ -17,7 +17,7 @@ import { activeParty, activeRoom } from "state/selectors/active";
 import { ITypingState } from "state/reducers/chat";
 
 import { FileUploadModal } from "ui/views/main/modals/file_upload";
-import { Hotkey, MainContext, parseHotkey, useMainHotkey } from "ui/hooks/useMainClick";
+import { Hotkey, MainContext, parseHotkey, useClickEater, useMainHotkey } from "ui/hooks/useMainClick";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
 import { EmotePicker } from "../common/emote_picker";
@@ -193,22 +193,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
 
     let on_right_click = is_empty ? open_upload_click : on_send_click;
 
-    let on_cm = useCallback((e: React.MouseEvent) => {
-        main.clickAll(e);
-        e.stopPropagation();
-    }, []);
-
-    let [rows, setRows] = useState(1);
-    let onHeightChange = useCallback((height: number, { rowHeight }: TextareaHeightChangeMeta) => {
-        setRows(Math.floor(height / rowHeight));
-    }, []);
-
-    let max_rows = use_mobile_view ? 5 : 20;
-
-    let style;
-    if(rows < max_rows) {
-        style = { overflowY: 'hidden' };
-    }
+    let on_cm = useClickEater();
 
     let box_classes = classNames("ln-msg-box", {
         'ln-msg-box--disabled': disabled,
@@ -216,7 +201,6 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
         'with-footers': showing_footers,
     });
 
-    // https://github.com/buildo/react-autosize-textarea/issues/52
     return (
         <>
             {(files?.length && session?.auth && active_room) ? <FileUploadModal onClose={on_file_close} files={files} bearer={session.auth} room_id={active_room} /> : null}
@@ -233,10 +217,12 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
                 <MsgTextarea
                     onBlur={on_blur}
                     onFocus={() => setFocused(true)}
-                    ref={ref}
+                    taRef={ref}
                     onKeyDown={on_keydown}
                     onChange={on_change}
                     value={state.value}
+                    mobile={use_mobile_view}
+                    onContextMenu={on_cm}
                 />
 
                 {
