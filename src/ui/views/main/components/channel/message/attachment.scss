@@ -10,8 +10,19 @@
     //    margin-bottom: 0.5em;
     //}
 
-    .ln-msg ~ & > * {
+    // spacing between multiple attachments
+    &:not(:first-child) > * {
         margin-top: 0.5em;
+    }
+
+    // first attachments that come after some message text, needs spacing after text
+    .ln-msg ~ & > *:first-child {
+        margin-top: 0.5em;
+    }
+
+    // first attachments with no preceeding text, no spacing (otherwise since it's not the first child in parent the "multiple attachments" rule applies)
+    .ln-msg__title ~ & > *:first-child {
+        margin-top: 0;
     }
 
     &.spoiler {

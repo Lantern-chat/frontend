@@ -168,6 +168,8 @@ const CompactGroupMessage = React.memo(({ msg, is_light_theme, first, attachment
 
 import ArrowThinRight from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-216-arrow-thin-right.svg";
 import { Glyphicon } from "ui/components/common/glyphicon";
+import { compareString } from "lib/compare";
+import { useSorted } from "ui/hooks/useSorted";
 
 const SystemMessage = React.memo((props: IGroupMessageProps) => {
     let msg = props.msg, raw = msg.msg;
@@ -184,7 +186,8 @@ const SystemMessage = React.memo((props: IGroupMessageProps) => {
 });
 
 const GroupMessage = React.memo((props: IGroupMessageProps) => {
-    let attachments, msg = props.msg, raw = msg.msg, a = raw.attachments;
+    let attachments, msg = props.msg, raw = msg.msg,
+        a = useSorted(raw.attachments || [], (a, b) => compareString(a.id, b.id), [raw.attachments]);
 
     if(a && a.length) {
         attachments = a.map(attachment => <MsgAttachment key={attachment.id} msg={raw} attachment={attachment} />)
