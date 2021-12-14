@@ -86,11 +86,33 @@ export enum Intent {
 
 export type Snowflake = string;
 
+export enum UserFlags {
+    Deleted = 1 << 0,
+    Verified = 1 << 1,
+    MfaEnabled = 1 << 2,
+
+    // 3 bits
+    Elevation = 7 << 6,
+
+    // 3 bits
+    Premium = 7 << 9,
+
+    // 2 bits
+    ExtraStorage = 3 << 13,
+}
+
+export enum ElevationLevel {
+    None = 0,
+    Bot = 1,
+    Staff = 3,
+    System = 4,
+}
+
 export interface User {
     id: Snowflake,
     username: string,
     discriminator: number,
-    flags: number,
+    flags: number | UserFlags,
     avatar?: string,
     status?: string,
     bio?: string,
@@ -145,7 +167,7 @@ export enum UserPreferenceFlags {
 export interface UserPreferences {
     locale: number,
     friend_add: number,
-    flags: number,
+    flags: number | UserPreferenceFlags,
     temp: number,
     chat_font: Font,
     ui_font: Font,
@@ -160,8 +182,15 @@ export function hasUserPrefFlag(prefs: Pick<UserPreferences, 'flags'>, flag: Use
     return (prefs.flags & flag) !== 0;
 }
 
+export enum UserPresenceFlags {
+    Online = 1 << 0,
+    Away = 1 << 1,
+    Busy = 1 << 2,
+    Mobile = 1 << 3,
+}
+
 export interface UserPresence {
-    flags: number,
+    flags: number | UserPresenceFlags,
     updated_at?: string,
     activity?: Activity,
 }
@@ -174,6 +203,15 @@ export interface Friend {
     user: User,
 }
 
+export enum RoomFlags {
+    Text = 1 << 0,
+    Direct = 1 << 1,
+    Voice = 1 << 2,
+    Group = 1 << 3,
+    Nsfw = 1 << 4,
+    Default = 1 << 5,
+}
+
 export interface Room {
     id: Snowflake,
     party_id?: Snowflake,
@@ -181,10 +219,17 @@ export interface Room {
     name: string,
     topic?: string,
     position: number,
-    flags: number,
+    flags: number | RoomFlags,
     rate_limit_per_user?: number,
     parent_id?: Snowflake,
     overwrites?: Overwrite[],
+}
+
+export enum MessageFlags {
+    MentionsEveryone = 1 << 1,
+    MentionsHere = 1 << 2,
+    Pinned = 1 << 3,
+    TTS = 1 << 4,
 }
 
 export interface Message {
@@ -197,7 +242,7 @@ export interface Message {
     created_at: string,
     edited_at?: string,
     content: string,
-    flags: number,
+    flags: number | MessageFlags,
     user_mentions?: Snowflake[],
     role_mentions?: Snowflake[],
     room_mentions?: Snowflake[],
@@ -252,7 +297,13 @@ export interface File {
     preview?: string,
 }
 
-export interface Attachment extends File { }
+export enum AttachmentFlags {
+    Spoiler = 1 << 0,
+}
+
+export interface Attachment extends File {
+    flags?: number | AttachmentFlags,
+}
 
 export interface PartialParty {
     id: Snowflake,
@@ -383,10 +434,10 @@ export function parse_presence(p?: UserPresence): { status: PresenceStatus, is_m
     let status = PresenceStatus.Offline, is_mobile = false;
 
     if(p) {
-        if((p.flags & 1) == 1) status = PresenceStatus.Online;
-        else if((p.flags & 2) == 2) status = PresenceStatus.Away;
-        else if((p.flags & 4) == 4) status = PresenceStatus.Busy;
-        is_mobile = (p.flags & 8) == 8;
+        if(p.flags & UserPresenceFlags.Online) status = PresenceStatus.Online;
+        else if(p.flags & UserPresenceFlags.Away) status = PresenceStatus.Away;
+        else if(p.flags & UserPresenceFlags.Busy) status = PresenceStatus.Busy;
+        is_mobile = (p.flags & UserPresenceFlags.Mobile) != 0;
     }
 
     return { status, is_mobile };
