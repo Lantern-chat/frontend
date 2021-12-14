@@ -14,6 +14,15 @@
         margin-top: 0.5em;
     }
 
+    &.spoiler {
+        overflow: hidden;
+
+        img,
+        video {
+            filter: blur(2em);
+        }
+    }
+
     @media (max-width: $ln-max-channel-width) {
         //padding-left: 1rem;
         padding-right: 1rem;

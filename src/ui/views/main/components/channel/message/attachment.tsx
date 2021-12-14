@@ -6,7 +6,7 @@ import { IS_MOBILE } from "lib/user_agent";
 import { format_bytes } from "lib/formatting";
 
 import { RootState } from "state/root";
-import { Message, Attachment, UserPreferenceFlags } from "state/models";
+import { Message, Attachment, UserPreferenceFlags, AttachmentFlags } from "state/models";
 import { selectPrefsFlag } from "state/selectors/prefs";
 import { message_attachment_url } from "config/urls";
 
@@ -27,6 +27,7 @@ const attachment_selector = createStructuredSelector({
 });
 
 import "./attachment.scss";
+import classNames from "classnames";
 export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, attachment: Attachment }) => {
     let [error, setError] = useState(false),
         eat = useClickEater();
@@ -35,6 +36,7 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
         { use_mobile_view, mute_media, hide_unknown } = useSelector(attachment_selector),
         mime = attachment.mime,
         id = attachment.id,
+        flags = attachment.flags || 0,
         url = message_attachment_url(msg.room_id, id, attachment.filename),
         title = attachment.filename;
 
@@ -128,8 +130,10 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
     //    )
     //}
 
+    let attachment_classes = classNames("ln-msg-attachment", { spoiler: (flags & AttachmentFlags.Spoiler) != 0 });
+
     return (
-        <div className="ln-msg-attachment">
+        <div className={attachment_classes}>
             {embed}
         </div>
     )
