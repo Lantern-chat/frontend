@@ -19,6 +19,7 @@ export interface IMsgTextareaProps {
     onChange(value: string): void;
     onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>): void;
     onContextMenu(e: React.MouseEvent<HTMLTextAreaElement>): void;
+    onSelectionChange?(ta: HTMLTextAreaElement, in_code: boolean): void;
 }
 
 interface IMsgTextareaState {
@@ -145,9 +146,15 @@ export class MsgTextarea extends React.Component<IMsgTextareaProps, IMsgTextarea
     }
 
     onSelectionChange(e: Event) {
-        let ta: HTMLTextAreaElement = e.target as HTMLTextAreaElement;
-        let do_spellcheck = this.props.spellcheck && !isInsideCodeBlock(ta);
+        let ta: HTMLTextAreaElement = e.target as HTMLTextAreaElement,
+            { onSelectionChange } = this.props,
+            do_spellcheck = this.props.spellcheck && !isInsideCodeBlock(ta);
+
         this.setState({ spellcheck: !!do_spellcheck });
+
+        if(onSelectionChange) {
+            onSelectionChange(ta, isInsideCodeBlock(ta));
+        }
     }
 
     // binded callbacks for memoization

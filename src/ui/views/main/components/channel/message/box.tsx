@@ -1,6 +1,6 @@
 import classNames from "classnames";
 
-import React, { ChangeEventHandler, forwardRef, useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, { ChangeEventHandler, forwardRef, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
 
@@ -35,6 +35,7 @@ export interface IMessageBoxProps {
     active_room: Snowflake,
     mobile: boolean,
     showing_footers: boolean,
+    enable_spellcheck: boolean,
 }
 
 interface IMessageBoxState {
@@ -51,6 +52,10 @@ export class MessageBox extends React.Component<IMessageBoxProps, IMessageBoxSta
             shallowEqualObjects(this.state, nextState) &&
             shallowEqualObjects(this.props, nextProps)
         );
+    }
+
+    render() {
+        return null;
     }
 }
 
