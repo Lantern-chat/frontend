@@ -86,7 +86,7 @@ export const MessageBoxOld = React.memo(({ channel }: IMessageBoxOldProps) => {
     //let file_ref = useRef<HTMLInputElement>(null);
 
     // focus text-area on room navigation
-    useEffect(() => {
+    useLayoutEffect(() => {
         let ta = ref.current;
         if(ta && !IS_MOBILE) { ta.focus(); }
     }, [ref.current, active_room]);
