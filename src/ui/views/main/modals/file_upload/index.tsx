@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { sendMessage } from "state/commands";
 import { sendFile } from "state/commands/sendfile";
 import { Snowflake } from "state/models";
+import { DispatchableAction } from "state/root";
 import { FormGroup } from "ui/components/form";
 
 import { MimeIcon } from "ui/components/mime_icon";
@@ -51,22 +52,26 @@ export const FileUploadModal = React.memo((props: FileUploadModalProps) => {
 
         setUploading(true);
 
-        sendFile({
-            file: files[0],
-            bearer: props.bearer,
-            onError: () => console.error("Upload error"),
-            onProgress: () => { }
-        }).then((id) => {
-            if(id) {
-                console.log("File uploaded: ", id);
+        dispatch((async (dispatch, getState) => {
+            let bearer = getState().user.session!.auth;
 
-                dispatch(sendMessage(props.room_id, "", [id]));
-            }
+            let onError = () => console.error("Upload error");
+            let onProgress = () => { };
+
+            let uploads = files.map(file => sendFile(bearer, { file: { file }, onError, onProgress }));
+
+            let ids = await Promise.all(uploads);
+
+            console.log("Files uploaded:", ids);
+
+            dispatch(sendMessage(props.room_id, "", ids.filter(id => typeof id == 'string') as string[]));
 
             setUploading(false);
 
             props.onClose();
-        })
+
+        }) as DispatchableAction);
+
     }, [props, files, uploading]);
 
     let noop = () => { };

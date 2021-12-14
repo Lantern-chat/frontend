@@ -4,48 +4,45 @@ import { fetch, XHRMethod } from "lib/fetch";
 import { Snowflake } from "state/models";
 import { DispatchableAction, Type } from "state/root";
 
-interface IFileUploadOpts {
+interface IFileParameters {
     file: File,
-    bearer: string,
+    preview?: string,
+    width?: number,
+    height?: number,
+}
+
+interface IFileUploadOptions {
+    file: IFileParameters,
 
     onProgress(loaded: number, total: number): void;
     onError(xhr: XMLHttpRequest): void;
 }
 
-interface IFileUploadState {
-    offset: number,
-    last_time: number,
-    bandwidth: number,
-}
-
-export async function sendFile(opts: IFileUploadOpts): Promise<Snowflake | undefined> {
-    let file = opts.file,
+export async function sendFile(bearer: string, opts: IFileUploadOptions): Promise<Snowflake | undefined> {
+    let { file, preview, width, height } = opts.file,
         size = file.size,
         name = file.name,
         mime = file.type;
 
-    let meta_header = "filename " + encodeUTF8toBase64(name);
-    if(mime) {
-        meta_header += ",mime " + encodeUTF8toBase64(mime);
-    }
-
-    __DEV__ && console.info("POSTing new file ", name);
-
     let res = await fetch({
         url: '/api/v1/file',
         method: XHRMethod.POST,
-        bearer: opts.bearer,
-        headers: {
-            'Upload-Metadata': meta_header,
-            'Upload-Length': size.toString(),
+        bearer,
+        json: {
+            filename: name,
+            mime,
+            size,
+            width,
+            height,
+            preview,
         }
     });
 
     let file_id: Snowflake | null = res.getResponseHeader('Location');
-
     if(!file_id) return;
 
-    __DEV__ && console.info("Sucess! Uploading file ", file_id);
+    __DEV__ && console.log("File created! Uploading now with at", file_id);
+
 
     let chunk = 0,
         offset = 0,
@@ -67,7 +64,7 @@ export async function sendFile(opts: IFileUploadOpts): Promise<Snowflake | undef
         try {
             res = await fetch({
                 url,
-                bearer: opts.bearer,
+                bearer,
                 method: XHRMethod.PATCH,
                 onprogress: (ev: ProgressEvent) => {
                     opts.onProgress(offset + ev.loaded, size);
