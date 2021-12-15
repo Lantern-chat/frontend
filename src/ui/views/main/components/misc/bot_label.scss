@@ -6,6 +6,8 @@ span.bot-label {
     display: inline-flex;
     justify-content: center;
     flex-direction: column;
+    cursor: default;
+    //user-select: none;
 
     span {
         padding: 0.125em 0.25em;
