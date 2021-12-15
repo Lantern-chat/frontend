@@ -260,7 +260,7 @@ export const MessageBox = React.memo(({ channel }: IMessageBoxProps) => {
     useMainHotkey(Hotkey.FocusTextArea, () => {
         let ta = ref.current;
         if(!disabled && ta) { ta.focus(); setShowFocusBorder(true); }
-    }, [disabled, ref.current]);
+    }, [disabled]);
 
     let on_file_change = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         __DEV__ && console.log("File list changed");

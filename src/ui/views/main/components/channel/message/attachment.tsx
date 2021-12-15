@@ -177,7 +177,7 @@ const ImageAttachment = React.memo((props: IImageAttachmentProps) => {
         animated_format = useMemo(() => { let m = atch.mime?.match(/gif|apng|webp|avif/i); return m && m[0]; }, [atch.mime]),
 
         // on load, replace height placeholder
-        onLoad = useCallback(() => setLoaded(true), [ref.current]),
+        onLoad = useCallback(() => setLoaded(true), []),
 
         // add onClick and style tweaks
         img_props: React.ImgHTMLAttributes<HTMLImageElement> = {
@@ -234,7 +234,7 @@ const VideoAttachment = React.memo((props: IVideoAttachmentProps) => {
         [loaded, setLoaded] = useState(false),
         ref = useRef<HTMLVideoElement>(null),
         visible = useInfiniteScrollIntersectionTrigger(ref, { rootMargin: '150%' }),
-        onLoad = useCallback(() => setLoaded(true), [ref.current]),
+        onLoad = useCallback(() => setLoaded(true), []),
         vid_props: React.VideoHTMLAttributes<HTMLVideoElement> = {
             ...props.vid,
             style: props.vid.style || {},

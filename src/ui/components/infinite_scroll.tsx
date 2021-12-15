@@ -203,7 +203,7 @@ export const InfiniteScroll = React.memo((props: IInfiniteScrollProps) => {
                 state.active = false;
                 state.resize(container.scrollHeight);
             }
-        }, [state, container_ref.current]),
+        }, [state]),
     });
 
     useEffect(() => {
