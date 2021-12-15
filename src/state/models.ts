@@ -120,6 +120,25 @@ export interface User {
     preferences?: Partial<UserPreferences>,
 }
 
+export function parse_user_elevation(user: User): ElevationLevel | undefined {
+    let flags = (user.flags & UserFlags.Elevation) >> 6;
+    switch(flags) {
+        case 0: return ElevationLevel.None;
+        case 1: return ElevationLevel.Bot;
+        case 3: return ElevationLevel.Staff;
+        case 4: return ElevationLevel.System;
+        default: return;
+    }
+}
+
+export function user_is_system(user: User): boolean {
+    return (user.flags & 256) === 256;
+}
+
+export function user_is_bot(user: User): boolean {
+    return (user.flags & 64) === 64;
+}
+
 export interface AnonymousSession {
     expires: string,
 }

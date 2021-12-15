@@ -3,7 +3,7 @@ import { shallowEqual, useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
 import intersect from 'fast_array_intersect';
 
-import { parse_presence, PartyMember, PresenceStatus, Role, Snowflake, UserPreferenceFlags } from "state/models";
+import { parse_presence, PartyMember, PresenceStatus, Role, Snowflake, UserPreferenceFlags, user_is_bot } from "state/models";
 import { RootState } from "state/root";
 import { activeParty } from "state/selectors/active";
 import { selectPrefsFlag } from "state/selectors/prefs";
@@ -11,6 +11,7 @@ import { selectPrefsFlag } from "state/selectors/prefs";
 import { Glyphicon } from "ui/components/common/glyphicon";
 
 import { UserAvatar } from "../user_avatar";
+import { BotLabel } from "../misc/bot_label";
 
 import CrownIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-425-crown.svg";
 
@@ -170,6 +171,11 @@ const ListedMember = ({ member, owner, is_light_theme }: IListedMemberProps) => 
         );
     }
 
+    let bot;
+    if(user_is_bot(user)) {
+        bot = <BotLabel />
+    }
+
     return (
         <li className="ln-member-list__item">
             <UserAvatar nickname={nick} user={user} status={member.status}
@@ -177,11 +183,14 @@ const ListedMember = ({ member, owner, is_light_theme }: IListedMemberProps) => 
 
             <div className="ln-member__meta">
                 <div className="ln-member__title">
+
                     <div className="ln-member__name">
                         <span className="ui-text" style={{ color }}>{nick}</span>
                     </div>
 
                     {crown}
+
+                    {bot}
                 </div>
 
                 {status}

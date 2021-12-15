@@ -1,0 +1,13 @@
+span.bot-label {
+    background-color: #5674e1; //#7289da;
+    border-radius: 0.25em;
+    font-size: 0.75em;
+    margin-left: 0.5em;
+    display: inline-flex;
+    justify-content: center;
+    flex-direction: column;
+
+    span {
+        padding: 0.125em 0.25em;
+    }
+}

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import classNames from "classnames";
 
-import { User } from "state/models";
+import { User, user_is_bot, user_is_system } from "state/models";
 import { IMessageState } from "state/reducers/chat";
 
 import { user_avatar_url } from "config/urls";
@@ -15,6 +15,7 @@ import { AnchoredModal } from "ui/components/modal/anchored_modal";
 import { PositionedModal } from "ui/components/modal/positioned_modal";
 import { MsgContextMenu } from "../../menus/msg_context";
 import { UserCard } from "../../menus/user_card";
+import { BotLabel } from "../../misc/bot_label";
 
 import { useSimplePositionedContextMenu, useSimpleToggleOnClick } from "ui/hooks/useMainClick";
 import { useSelector } from "react-redux";
@@ -98,6 +99,11 @@ const CozyGroupMessage = React.memo(({ msg, is_light_theme, first, attachments }
 
     // if first message in the group, give it the user avatar and title
     if(first) {
+        let bot;
+        if(user_is_bot(raw.author)) {
+            bot = <BotLabel />;
+        }
+
         title = (
             <div className="ln-msg__title">
                 <MessageUserName name={nickname} user={raw.author} />
@@ -107,6 +113,8 @@ const CozyGroupMessage = React.memo(({ msg, is_light_theme, first, attachments }
                 <span className="ln-msg__ts" title={ts}>
                     <span className="ui-text">{msg.ts.calendar()}</span>
                 </span>
+
+                {bot}
             </div>
         );
 
@@ -209,8 +217,8 @@ const GroupMessage = React.memo((props: IGroupMessageProps) => {
     // select inner message component based on style.
     // The identifier must be Proper-case to be used as a Component below.
     let Inner;
-    if((raw.author.flags & 256) == 256) {
-        Inner = SystemMessage
+    if(user_is_system(raw.author)) {
+        Inner = SystemMessage;
     } else {
         Inner = props.compact ? CompactGroupMessage : CozyGroupMessage
     }
