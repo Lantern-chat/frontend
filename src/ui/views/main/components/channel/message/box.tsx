@@ -1,6 +1,6 @@
 import classNames from "classnames";
 
-import React, { ChangeEventHandler, forwardRef, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { ChangeEventHandler, forwardRef, useCallback, useContext, useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector, createStructuredSelector } from "reselect";
 
@@ -31,38 +31,6 @@ import { MsgTextarea } from "./textarea";
 import Send from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-461-send.svg";
 import Plus from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-371-plus.svg";
 
-export interface IMessageBoxProps {
-    active_room: Snowflake,
-    mobile: boolean,
-    showing_footers: boolean,
-    enable_spellcheck: boolean,
-}
-
-interface IMessageBoxState {
-    value: string,
-}
-
-export class MessageBox extends React.Component<IMessageBoxProps, IMessageBoxState> {
-    constructor(props: IMessageBoxProps) {
-        super(props);
-    }
-
-    shouldComponentUpdate(nextProps: IMessageBoxProps, nextState: IMessageBoxState): boolean {
-        return !(
-            shallowEqualObjects(this.state, nextState) &&
-            shallowEqualObjects(this.props, nextProps)
-        );
-    }
-
-    render() {
-        return null;
-    }
-}
-
-export interface IMessageBoxOldProps {
-    channel?: Snowflake,
-}
-
 const msg_box_selector = createStructuredSelector({
     active_room: activeRoom,
     msg: (state: RootState) => ({ messages: [] as any[], current_edit: null }), // TODO
@@ -72,10 +40,83 @@ const msg_box_selector = createStructuredSelector({
     enable_spellcheck: selectPrefsFlag(UserPreferenceFlags.EnableSpellcheck),
 });
 
-import "./box.scss";
-export const MessageBoxOld = React.memo(({ channel }: IMessageBoxOldProps) => {
-    let disabled = !channel;
+interface IMessageBoxState {
+    value: string,
 
+    /// Files selected
+    files: FileList | null,
+    /// Timestamp of last things
+    ts: number,
+
+    /// If the textarea is focused
+    focused: boolean,
+
+    /// If to show the focus border around the message box
+    show_focus: boolean,
+}
+
+const DEFAULT_MSG_BOX_STATE: IMessageBoxState = {
+    value: "",
+    files: null,
+    ts: 0,
+    focused: false,
+    show_focus: false,
+};
+
+
+enum MsgBoxActionType {
+    SetValue,
+    SetFocus,
+    SetShowFocus,
+    SetFiles,
+}
+
+interface MsgBoxActionSetValue {
+    t: MsgBoxActionType.SetValue,
+    v: string,
+    ts: number,
+}
+
+interface MsgBoxActionSetFocus {
+    t: MsgBoxActionType.SetFocus,
+    v: boolean,
+}
+
+interface MsgBoxActionSetShowFocus {
+    t: MsgBoxActionType.SetShowFocus,
+    v: boolean,
+}
+
+interface MsgBoxActionSetFiles {
+    t: MsgBoxActionType.SetFiles,
+    v: FileList | null,
+}
+
+
+type MsgBoxAction = MsgBoxActionSetValue | MsgBoxActionSetFocus | MsgBoxActionSetShowFocus | MsgBoxActionSetFiles;
+
+function msg_box_reducer(state: IMessageBoxState, action: MsgBoxAction): IMessageBoxState {
+
+    switch(action.t) {
+        case MsgBoxActionType.SetValue: {
+            return { ...state, value: action.v, ts: action.ts };
+        }
+        case MsgBoxActionType.SetFocus: {
+            return { ...state, focused: action.v };
+        }
+        case MsgBoxActionType.SetShowFocus: {
+            return { ...state, show_focus: action.v };
+        }
+        case MsgBoxActionType.SetFiles: {
+            return { ...state, files: action.v };
+        }
+    }
+
+    return state;
+}
+
+import "./box.scss";
+export const MessageBoxOld = React.memo(() => {
     let {
         msg: { messages, current_edit },
         use_mobile_view,
@@ -85,10 +126,10 @@ export const MessageBoxOld = React.memo(({ channel }: IMessageBoxOldProps) => {
         enable_spellcheck,
     } = useSelector(msg_box_selector);
 
-    let dispatch = useDispatch();
-
-    let ref = useRef<HTMLTextAreaElement>(null);
-    //let file_ref = useRef<HTMLInputElement>(null);
+    let dispatch = useDispatch(),
+        main = useContext(MainContext),
+        ref = useRef<HTMLTextAreaElement>(null),
+        keyRef = __DEV__ ? useRef<HTMLSpanElement>(null) : undefined;
 
     // focus text-area on room navigation
     useLayoutEffect(() => {
@@ -96,151 +137,122 @@ export const MessageBoxOld = React.memo(({ channel }: IMessageBoxOldProps) => {
         if(ta && !IS_MOBILE) { ta.focus(); }
     }, [ref.current, active_room]);
 
-    let keyRef = __DEV__ ? useRef<HTMLSpanElement>(null) : undefined;
+    let [state, dispatchBox] = useReducer(msg_box_reducer, DEFAULT_MSG_BOX_STATE);
 
-    interface MsgBoxState {
-        value: string,
-        backup: string | null,
-        isEditing: boolean,
-        ts: number,
-    }
+    let state_ref = useRef(state);
+    state_ref.current = state;
 
-    let [files, setFiles] = useState<FileList | null>(null);
-
-    let [focused, setFocused] = useState(false);
-    let [showFocusBorder, setShowFocusBorder] = useState(false);
-    let [state, setState] = useState<MsgBoxState>({
-        value: "",
-        backup: null,
-        isEditing: false,
-        ts: 0,
-    });
-
-    if(state.isEditing === true && current_edit == null) { // in edit-mode but no message is selected for edit
-        setState({ ...state, isEditing: false, value: "" });
-
-    } else if(state.isEditing === false && state.backup != null) { // not editing but there is a backup value
-        setState({ ...state, value: state.backup, backup: null });
-
-    } else if(state.isEditing === false && current_edit != null) { // not editing but there is a message that needs editing
-        // backup value only if there isn't already a backup (like if the message being edited changed)
-        setState({
-            ...state,
-            backup: state.backup || state.value,
-            value: messages.find((msg) => msg.id == current_edit)!.msg,
-            isEditing: true,
-        });
-    }
-
-    let do_nothing = useCallback(() => { }, []);
-
-    let do_send = () => {
-        dispatch(sendMessage(channel!, state.value.trim()));
-        //dispatch({ type: state.isEditing ? Type.MESSAGE_SEND_EDIT : Type.MESSAGE_SEND, payload: state.value });
-        setState({ ...state, value: "" });
-    };
-
-    let open_upload_click = disabled ? do_nothing : (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
-        e.stopPropagation(); // prevent refocus if not focused
-
-        //if(file_ref.current) {
-        //    file_ref.current.click();
-        //}
-
-        if(focused) {
-            ref.current!.focus(); // refocus just in-case, since on Safari it blurs automatically
+    let do_send = useCallback(() => {
+        if(active_room) {
+            dispatch(sendMessage(active_room, state_ref.current.value.trim()));
+            dispatchBox({ t: MsgBoxActionType.SetValue, v: "", ts: 0 });
         }
-    };
+    }, [active_room]);
 
-    let on_send_click = disabled ? do_nothing : (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
-        e.stopPropagation(); // prevent refocus if not focused
+    let on_upload_click = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
+        main.clickAll(e);
 
-        if(state.value.length > 0) {
+        // refocus just in-case, since on Safari it blurs automatically
+        if(state_ref.current.focused) {
+            ref.current!.focus();
+        }
+    }, []);
+
+    let on_send_click = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
+        main.clickAll(e);
+
+        let { value, focused } = state_ref.current;
+
+        if(value) {
             do_send();
         }
 
+        // refocus just in-case, since on Safari it blurs automatically
         if(focused) {
-            ref.current!.focus(); // refocus just in-case, since on Safari it blurs automatically
+            ref.current!.focus();
         }
-    };
+    }, [do_send]);
 
-    let on_keydown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        setShowFocusBorder(false);
+    let on_keydown = useCallback((e: React.KeyboardEvent) => {
+        dispatchBox({ t: MsgBoxActionType.SetShowFocus, v: false });
 
         if(__DEV__) {
             keyRef!.current!.innerText = (e.ctrlKey ? 'Ctrl+' : '') + (e.altKey ? 'Alt+' : '') + (e.shiftKey ? 'Shift+' : '') + (e.key === ' ' ? 'Spacebar' : e.key);
         }
 
         if(e.key == 'Enter') {
-            __DEV__ && console.log("SENDING MESSAGE ON ENTER");
             do_send();
         }
-    };
+    }, [do_send]);
 
-    let on_change = (new_value: string) => {
-        // the "Enter" key newline is still present after keydown, so trim that
-        // also prevents leading newlines
-        let ts = Date.now();
+    let on_change = useCallback((new_value: string) => {
+        let new_ts = Date.now(), { ts, value } = state_ref.current;
 
-        // NOTE: What qualifies as "typing" is adding more characters
-        if(channel && new_value.length > state.value.length && (ts - state.ts) > 3500) {
-            dispatch(startTyping(channel));
+        if(active_room && new_value.length > value.length && (new_ts - ts) > 3500) {
+            dispatch(startTyping(active_room));
         } else {
-            // use old value if not sent
-            ts = state.ts;
+            new_ts = ts;
         }
 
-        setState({ ...state, value: new_value, ts });
-    };
-
-    let on_blur = useCallback(() => {
-        setTimeout(() => { setFocused(false); setShowFocusBorder(false); }, 0);
+        dispatchBox({ t: MsgBoxActionType.SetValue, v: new_value, ts: new_ts });
     }, []);
 
-    let main = useContext(MainContext);
+    let on_focus = useCallback(() => {
+        dispatchBox({ t: MsgBoxActionType.SetFocus, v: true });
+    }, []);
+
+    let on_blur = useCallback(() => {
+        setTimeout(() => {
+            dispatchBox({ t: MsgBoxActionType.SetFocus, v: false });
+            dispatchBox({ t: MsgBoxActionType.SetShowFocus, v: false });
+        }, 0);
+    }, []);
 
     let on_click_focus = useCallback((e: React.MouseEvent) => {
-        if(disabled) return;
-        main.clickAll(e);
         e.stopPropagation();
-        ref.current!.focus();
-    }, [disabled]);
+        main.clickAll(e);
 
-    //let [tabIndex, setTabIndex] = useState(0);
+        if(active_room) {
+            ref.current!.focus();
+        }
+    }, [active_room]);
 
     useMainHotkey(Hotkey.FocusTextArea, () => {
         let ta = ref.current;
-        if(!disabled && ta) { ta.focus(); setShowFocusBorder(true); }
-    }, [disabled, ref.current]);
+        if(active_room && ta) {
+            ta.focus();
+            dispatchBox({ t: MsgBoxActionType.SetShowFocus, v: true });
+        }
+    }, [active_room]);
 
     let on_file_change = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        __DEV__ && console.log("File list changed");
-
-        setFiles(e.currentTarget.files);
+        dispatchBox({ t: MsgBoxActionType.SetFiles, v: e.target.files });
     }, []);
 
     let on_file_close = useCallback(() => {
-        setFiles(null);
+        dispatchBox({ t: MsgBoxActionType.SetFiles, v: null });
     }, []);
 
     let is_empty = state.value.length == 0;
 
-    let on_right_click = is_empty ? open_upload_click : on_send_click;
+    let on_right_click = is_empty ? on_upload_click : on_send_click;
 
     let on_cm = useClickEater();
 
     let box_classes = classNames("ln-msg-box", {
-        'ln-msg-box--disabled': disabled,
-        'focused': showFocusBorder,
+        'ln-msg-box--disabled': !active_room,
+        'focused': state.show_focus,
         'with-footers': showing_footers,
     });
 
     return (
         <>
-            {(files?.length && session?.auth && active_room) ? <FileUploadModal onClose={on_file_close} files={files} bearer={session.auth} room_id={active_room} /> : null}
+            {(state.files?.length && session?.auth && active_room) ? <FileUploadModal onClose={on_file_close} files={state.files} bearer={session.auth} room_id={active_room} /> : null}
 
             <div className={box_classes} onClick={on_click_focus}>
-                {disabled ? <span className="ln-msg-box__disable"></span> : null}
+                {!active_room ? <span className="ln-msg-box__disable"></span> : null}
 
                 <div className="ln-typing ln-typing__top">
                     {use_mobile_view ? <UsersTyping /> : null}
@@ -250,7 +262,7 @@ export const MessageBoxOld = React.memo(({ channel }: IMessageBoxOldProps) => {
 
                 <MsgTextarea
                     onBlur={on_blur}
-                    onFocus={() => setFocused(true)}
+                    onFocus={on_focus}
                     taRef={ref}
                     onKeyDown={on_keydown}
                     onChange={on_change}
@@ -264,7 +276,7 @@ export const MessageBoxOld = React.memo(({ channel }: IMessageBoxOldProps) => {
                     __DEV__ && <div className="ln-msg-box__debug"><span ref={keyRef}></span></div>
                 }
 
-                <div className="ln-msg-box__send" onClick={on_right_click} onTouchEnd={on_right_click}>
+                <div className="ln-msg-box__send" onClick={on_right_click}>
                     <input multiple type={is_empty ? "file" : "text"} name="file_upload" onChange={on_file_change}
                         style={is_empty ? undefined : { zIndex: -999, left: -999, pointerEvents: 'none', display: 'none' }}
                     />

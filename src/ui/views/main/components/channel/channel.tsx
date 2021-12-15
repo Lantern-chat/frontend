@@ -39,7 +39,7 @@ export const Channel = React.memo((props: IChannelProps) => {
                 {__DEV__ && <DevBanner />}
             </div>
             {feed_box}
-            <MessageBoxOld channel={props.channel} />
+            <MessageBoxOld />
         </div>
     );
 
