@@ -6,7 +6,7 @@ import { RootState } from "state/root";
 
 import { ChannelHeader } from "./header";
 import { MessageFeed } from "./feed";
-import { MessageBoxOld } from "./message/box";
+import { MessageBoxOld } from "./input/box";
 import { Snowflake } from "state/models";
 import { ErrorBoundary } from "ui/components/error";
 import { MemberList } from "../party/member_list";

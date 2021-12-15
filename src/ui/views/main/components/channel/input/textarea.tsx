@@ -1,16 +1,12 @@
 import React, { createRef } from "react";
-
-import { shallowEqualObjects, shallowEqualObjectsExclude } from "lib/compare";
-
 import TextareaAutosize, { TextareaHeightChangeMeta } from 'react-textarea-autosize';
 
+import { shallowEqualObjects, shallowEqualObjectsExclude } from "lib/compare";
 import { parseHotkey, Hotkey } from "ui/hooks/useMainClick";
 
 export interface IMsgTextareaProps {
     disabled?: boolean,
-    value: string,
     mobile: boolean,
-    taRef?: React.RefObject<HTMLTextAreaElement>;
     spellcheck?: boolean,
 
     onChange(value: string): void;
@@ -29,7 +25,19 @@ interface IMsgTextareaState {
 
 import "./textarea.scss";
 export class MsgTextarea extends React.Component<IMsgTextareaProps, IMsgTextareaState> {
-    ta: React.RefObject<HTMLTextAreaElement> = this.props.taRef || createRef();
+    public ta: React.RefObject<HTMLTextAreaElement> = createRef();
+
+    public setValue(value: string) {
+        let ta = this.ta.current;
+        if(ta) {
+            this.value = ta.value = value;
+            ta.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    }
+
+    public focus() {
+        this.ta.current?.focus();
+    }
 
     constructor(props: IMsgTextareaProps) {
         super(props);
@@ -37,30 +45,31 @@ export class MsgTextarea extends React.Component<IMsgTextareaProps, IMsgTextarea
         this.state = { rows: 1, spellcheck: !!props.spellcheck };
     }
 
-    shouldComponentUpdate(nextProps: IMsgTextareaProps, nextState: IMsgTextareaState): boolean {
-        let ta = this.ta.current,
-            // textarea can lose position when overwriting with the same value,
-            // so compare to it directly rather than the previous props
-            same_value = ta ? ta.value == nextProps.value : false;
+    componentDidMount() {
+        this.ta.current!.addEventListener('selectionchange', this.onSelectionChange.bind(this));
+    }
 
+    shouldComponentUpdate(nextProps: IMsgTextareaProps, nextState: IMsgTextareaState): boolean {
         return !(
-            same_value &&
             shallowEqualObjects(this.state, nextState) &&
-            shallowEqualObjectsExclude(this.props, nextProps, ['value'])
+            shallowEqualObjects(this.props, nextProps)
         );
     }
 
-    static getDerivedStateFromProps(props: IMsgTextareaProps, state: IMsgTextareaState) {
-        // reset rows if value erased
-        if(props.value.length == 0) {
-            return { rows: 1 };
+    /// Outside of React, keep a backup of the value, and assign it when the DOM is changed
+    /// Also doubles as an easy-access value
+    public value: string = "";
+
+    ta2?: HTMLTextAreaElement;
+
+    componentDidUpdate() {
+        let ta = this.ta.current;
+
+        // if there is a textarea, and it does not match the one recorded
+        if(ta && this.ta2 !== ta) {
+            ta.value = this.value;
+            this.ta2 = ta;
         }
-
-        return null;
-    }
-
-    componentDidMount() {
-        this.ta.current!.addEventListener('selectionchange', this.onSelectionChange.bind(this));
     }
 
     onHeightChange(height: number, { rowHeight }: TextareaHeightChangeMeta) {
@@ -83,6 +92,7 @@ export class MsgTextarea extends React.Component<IMsgTextareaProps, IMsgTextarea
             cursor = ta.selectionStart,
             stop_prop = true,
             modified = false,
+            prevent_default = false,
             bubble = true;
 
         switch(e.key) {
@@ -93,13 +103,13 @@ export class MsgTextarea extends React.Component<IMsgTextareaProps, IMsgTextarea
                     bubble = false;
                 } else {
                     // do_send() done above in the tree
-                    e.preventDefault();
+                    prevent_default = true;
                 }
 
                 break;
             }
             case 'Tab': {
-                e.preventDefault();
+                prevent_default = true;
 
                 if(e.shiftKey || isInsideCodeBlock(ta)) {
                     ta.value = value.slice(0, cursor) + '\t' + value.slice(cursor);
@@ -125,6 +135,10 @@ export class MsgTextarea extends React.Component<IMsgTextareaProps, IMsgTextarea
             }
         }
 
+        if(prevent_default) {
+            e.preventDefault();
+        }
+
         if(stop_prop) {
             e.stopPropagation();
         }
@@ -139,9 +153,8 @@ export class MsgTextarea extends React.Component<IMsgTextareaProps, IMsgTextarea
     }
 
     onChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
-        let ta = e.currentTarget;
-        ta.value = ta.value.replace(/^\n+/, ''); // remove leading whitespace
-        this.props.onChange(ta.value);
+        let ta = e.currentTarget, value = ta.value = ta.value.replace(/^\n+/, ''); // remove leading whitespace
+        this.props.onChange(this.value = value); // don't forget to record the new value
         this.onSelectionChange(e.nativeEvent);
     }
 
@@ -164,7 +177,7 @@ export class MsgTextarea extends React.Component<IMsgTextareaProps, IMsgTextarea
     onch = this.onChange.bind(this);
 
     render() {
-        let { disabled, value, mobile, onBlur, onFocus, onContextMenu } = this.props,
+        let { disabled, mobile, onBlur, onFocus, onContextMenu } = this.props,
             style, max_rows = mobile ? 5 : 20;
 
         if(this.state.rows < max_rows) {
@@ -178,7 +191,6 @@ export class MsgTextarea extends React.Component<IMsgTextareaProps, IMsgTextarea
 
                 <TextareaAutosize
                     disabled={disabled}
-                    value={value}
                     onBlur={onBlur}
                     onFocus={onFocus}
                     onContextMenu={onContextMenu}
