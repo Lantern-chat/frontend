@@ -25,3 +25,10 @@ export const Code = (props: ICodeProps) => (
         <LazyCode {...props} />
     </React.Suspense>
 );
+
+if(__DEV__) {
+    MathFallback.displayName = "MathFallback";
+    CodeFallback.displayName = "CodeFallback";
+    Math.displayName = "LazyMath";
+    Code.displayName = "LazyCode";
+}

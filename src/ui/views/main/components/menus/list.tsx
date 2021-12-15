@@ -23,5 +23,9 @@ export const ContextMenu = React.memo(({ children, dark }: IContextMenuProps) =>
         <ul className={className} onContextMenu={eat}>
             {(children as React.ReactNode[]).map((child, i) => (<li key={i}>{child}</li>))}
         </ul>
-    )
-})
+    );
+});
+
+if(__DEV__) {
+    ContextMenu.displayName = "ContextMenu";
+}

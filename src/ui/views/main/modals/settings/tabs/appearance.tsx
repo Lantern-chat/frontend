@@ -235,5 +235,13 @@ const FontSizeSlider = React.memo(({ which }: IFontSelectorProps) => {
 
     return (
         <SizeSlider htmlFor={prefs_key} label={label} min={8} max={32} step={1} value={size} onInput={onInput} steps={[8, 12, 16, 20, 24, 32]} />
-    )
-})
+    );
+});
+
+if(__DEV__) {
+    ThemeSetting.displayName = "ThemeSetting";
+    ViewSelector.displayName = "ViewSelector";
+    FontSelector.displayName = "FontSelector";
+    GroupPaddingSlider.displayName = "GroupPaddingSlider";
+    FontSizeSlider.displayName = "FontSizeSlider";
+}

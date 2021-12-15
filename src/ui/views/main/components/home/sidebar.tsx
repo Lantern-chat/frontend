@@ -28,5 +28,9 @@ export const HomeSideBar = React.memo(() => {
 
 
         </div>
-    )
+    );
 });
+
+if(__DEV__) {
+    HomeSideBar.displayName = "HomeSideBar";
+}

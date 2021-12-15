@@ -44,11 +44,15 @@ export const SizeSlider = React.memo((props: ISizeSliderProps) => {
 
                             return (
                                 <span key={i} style={style}>{step}px</span>
-                            )
+                            );
                         })
                     }
                 </div>
             </div>
         </div>
-    )
-})
+    );
+});
+
+if(__DEV__) {
+    SizeSlider.displayName = "SizeSlider";
+}

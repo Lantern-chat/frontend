@@ -37,5 +37,9 @@ export const CanvasRenderer = React.memo(function CanvasRenderer<S extends ICanv
         }
     }, [props.render, props.init, props.onVisibilityChange, props.teardown]);
 
-    return (<canvas {...props.canvas} ref={canvas_ref} />)
+    return (<canvas {...props.canvas} ref={canvas_ref} />);
 });
+
+if(__DEV__) {
+    CanvasRenderer.displayName = "CanvasRenderer";
+}

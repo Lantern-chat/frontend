@@ -57,5 +57,9 @@ export const UserAvatar = React.memo(({ nickname, user, status, is_light_theme, 
                 backgroundColor={backgroundColor} />
             <div className="ln-user-status" title={status_title}>{presence}</div>
         </div>
-    )
+    );
 });
+
+if(__DEV__) {
+    UserAvatar.displayName = "UserAvatar";
+}

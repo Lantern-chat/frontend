@@ -1705,3 +1705,7 @@ export function ReactMarkdown(props: ReactMarkdownProps): ReactElement {
         divProps
     );
 };
+
+if(__DEV__) {
+    ReactMarkdown.displayName = "ReactMarkdown";
+}

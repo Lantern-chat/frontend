@@ -29,7 +29,7 @@ export const Toggle = React.memo((props: IToggleProps) => {
             <span className="spacer" />
             <input type="checkbox" name={props.htmlFor} id={props.htmlFor} checked={checked} onChange={onChange} />
         </div>
-    )
+    );
 });
 
 export interface ITogglePrefsFlagProps {
@@ -47,5 +47,10 @@ export const TogglePrefsFlag = React.memo((props: ITogglePrefsFlagProps) => {
 
     return (
         <Toggle htmlFor={props.htmlFor} label={props.label} checked={current_flag} onChange={onChange} />
-    )
+    );
 });
+
+if(__DEV__) {
+    Toggle.displayName = "Toggle";
+    TogglePrefsFlag.displayName = "TogglePrefsFlag";
+}

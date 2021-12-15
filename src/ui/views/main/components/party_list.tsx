@@ -159,9 +159,6 @@ export const PartyList = React.memo(() => {
         </div>
     );
 });
-if(__DEV__) {
-    PartyList.displayName = "PartyList";
-}
 
 interface IPartyAvatarProps {
     party: Party,
@@ -239,5 +236,11 @@ const ListedPartyMenu = React.memo((props: IListedPartyMenuProps) => {
                 )
             }
         </ContextMenu>
-    )
-})
+    );
+});
+
+if(__DEV__) {
+    PartyList.displayName = "PartyList";
+    PartyAvatar.displayName = "PartyAvatar";
+    ListedPartyMenu.displayName = "ListedPartyMenu";
+}

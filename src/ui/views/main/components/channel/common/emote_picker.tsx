@@ -39,3 +39,8 @@ const EmotePickerModal = React.memo(() => {
         </div>
     )
 });
+
+if(__DEV__) {
+    EmotePicker.displayName = "EmotePicker";
+    EmotePickerModal.displayName = "EmotePickerModal";
+}

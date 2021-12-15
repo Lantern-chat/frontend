@@ -27,5 +27,9 @@ export const RadioSelect = React.memo((props: IRadioProps) => {
                 </div>
             ))}
         </div>
-    )
+    );
 });
+
+if(__DEV__) {
+    RadioSelect.displayName = "RadioSelect";
+}

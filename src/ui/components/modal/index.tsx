@@ -33,3 +33,7 @@ export const FullscreenModal = React.memo((props: IFullscreenModalProps) => {
 
     return (<Modal><div {...props} className={className} /></Modal>)
 });
+
+if(__DEV__) {
+    FullscreenModal.displayName = "FullscreenModal";
+}

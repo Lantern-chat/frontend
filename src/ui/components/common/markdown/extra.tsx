@@ -43,4 +43,8 @@ export function ReactMarkdownExtra(props: ReactMarkdownProps): ReactElement {
         null,
         divProps
     );
+};
+
+if(__DEV__) {
+    ReactMarkdownExtra.displayName = "ReactMarkdownExtra";
 }

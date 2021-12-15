@@ -26,3 +26,7 @@ export const GenericModal = React.memo((props: GenericModalProps) => {
         </FullscreenModal>
     );
 });
+
+if(__DEV__) {
+    GenericModal.displayName = "GenericModal";
+}

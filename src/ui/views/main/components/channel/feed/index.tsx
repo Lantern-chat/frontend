@@ -277,3 +277,12 @@ const GotoBottomFooter = React.memo(({ onClick, use_mobile_view }: IGotoBottomFo
         </div>
     );
 });
+
+if(__DEV__) {
+    MessageFeed.displayName = "MessageFeed";
+    NoTimeline.displayName = "NoTimeline";
+    MessageFeedInner.displayName = "MessageFeedInner";
+    MsgList.displayName = "MsgList";
+    MsgTop.displayName = "MsgTop";
+    GotoBottomFooter.displayName = "GotoBottomFooter";
+}

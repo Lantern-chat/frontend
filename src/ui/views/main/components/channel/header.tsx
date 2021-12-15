@@ -67,3 +67,7 @@ export const ChannelHeader = React.memo(() => {
         </div>
     );
 });
+
+if(__DEV__) {
+    ChannelHeader.displayName = "ChannelHeader";
+}

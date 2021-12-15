@@ -68,3 +68,7 @@ export const ContextMenu = React.memo((props: IContextMenuProps) => {
         </>
     );
 });
+
+if(__DEV__) {
+    ContextMenu.displayName = "ContextMenu";
+}

@@ -32,3 +32,7 @@ export const AnimatedGif = React.memo((props: IAnimatedGifProps) => {
         do_freeze ? <div className={"gif-wrapper ui-text " + props.which}><img {...props.img} ref={img} /></div> : <img {...props.img} />
     );
 });
+
+if(__DEV__) {
+    AnimatedGif.displayName = "AnimatedGif";
+}

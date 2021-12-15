@@ -97,4 +97,8 @@ export const MimeIcon = React.memo(({ name, hint }: { name: string, hint?: strin
     }
 
     return (<Glyphicon src={deduced_icon} />);
-})
+});
+
+if(__DEV__) {
+    MimeIcon.displayName = "MimeIcon";
+}

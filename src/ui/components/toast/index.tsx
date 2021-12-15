@@ -56,7 +56,7 @@ export const Toasts = React.memo(() => {
                 </ul>
             </div>
         </Modal>
-    )
+    );
 });
 
 
@@ -94,5 +94,10 @@ const Toast = React.memo((props: IToastProps) => {
 
             <span>{props.text}</span>
         </li>
-    )
+    );
 });
+
+if(__DEV__) {
+    Toasts.displayName = "Toasts";
+    Toast.displayName = "Toast";
+}

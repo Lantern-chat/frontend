@@ -49,5 +49,9 @@ export const Tooltip = React.memo((props: ITooltipProps) => {
                 {props.children}
             </div>
         </div>
-    )
+    );
 });
+
+if(__DEV__) {
+    Tooltip.displayName = "Tooltip";
+}

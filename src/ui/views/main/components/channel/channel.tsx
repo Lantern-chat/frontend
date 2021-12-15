@@ -78,5 +78,10 @@ const DevBanner = React.memo(() => {
         <div className="ln-banner error ui-text">
             This is a development build.
         </div>
-    )
-})
+    );
+});
+
+if(__DEV__) {
+    DevBanner.displayName = "DevBanner";
+    Channel.displayName = "Channel";
+}
