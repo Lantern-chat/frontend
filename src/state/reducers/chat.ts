@@ -48,10 +48,6 @@ export class RoomState {
 }
 */
 
-
-
-
-
 export interface IMessageState {
     msg: Message,
     ts: Dayjs,
@@ -69,6 +65,7 @@ export interface IRoomState {
     current_edit: null | Snowflake,
     typing: ITypingState[],
     fully_loaded: boolean,
+    draft: string,
 }
 
 export interface IChatState {
@@ -111,6 +108,7 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
                     current_edit: null,
                     typing: [],
                     fully_loaded: false,
+                    draft: "",
                 });
             }
         });
@@ -280,6 +278,15 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
             }
 
             break;
+        }
+
+        case Type.MESSAGE_DRAFT: {
+            return produce(state, draft => {
+                let room = draft.rooms.get(action.room);
+                if(room) {
+                    room.draft = action.draft;
+                }
+            });
         }
 
         // fast filter before invoking Immer

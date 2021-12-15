@@ -41,6 +41,8 @@ export enum Type {
     MESSAGE_EDIT_NEXT = "MESSAGE_EDIT_NEXT",
     MESSAGE_DISCARD_EDIT = "MESSAGE_DISCARD_EDIT",
 
+    MESSAGE_DRAFT = "MESSAGE_DRAFT",
+
     UPDATE_QUOTA = "UPDATE_QUOTA",
 }
 
@@ -76,6 +78,7 @@ export type Action =
     MessageEditPrev |
     MessageEditNext |
     MessageSendEdit |
+    MessageDraft |
     UpdateQuota;
 
 
@@ -206,6 +209,12 @@ export interface MessageEditNext {
 export interface MessageSendEdit {
     type: Type.MESSAGE_SEND_EDIT,
     payload: string,
+}
+
+export interface MessageDraft {
+    type: Type.MESSAGE_DRAFT,
+    room: Snowflake,
+    draft: string,
 }
 
 // MISC ACTIONS
