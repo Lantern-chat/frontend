@@ -48,7 +48,7 @@
 
     &__users {
         text-align: right;
-        flex: 1 0 3em;
+        flex: 0 1 3em;
 
         > span {
             padding-right: 0;
@@ -100,7 +100,7 @@
         flex-direction: column;
         justify-content: center;
         min-width: 0;
-        flex: 0 1 auto;
+        flex: 1 1 auto;
     }
 
     text-overflow: ellipsis;
