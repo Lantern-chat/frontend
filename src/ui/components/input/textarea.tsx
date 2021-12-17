@@ -30,8 +30,9 @@ export class MsgTextarea extends React.Component<IMsgTextareaProps, IMsgTextarea
     public setValue(value: string) {
         let ta = this.ta.current;
         if(ta) {
-            this.value = ta.value = value;
+            this.props.onChange(this.value = ta.value = value);
             ta.dispatchEvent(new Event('change', { bubbles: true }));
+
         }
     }
 

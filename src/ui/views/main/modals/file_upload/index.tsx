@@ -7,7 +7,7 @@ import { DispatchableAction } from "state/root";
 import { FormGroup } from "ui/components/form";
 
 import { MimeIcon } from "ui/components/mime_icon";
-import { MsgTextarea } from "../../components/channel/message/textarea";
+import { MsgTextarea } from "ui/components/input/textarea";
 
 import { GenericModal, GenericModalProps } from "../generic";
 
@@ -85,7 +85,7 @@ export const FileUploadModal = React.memo((props: FileUploadModalProps) => {
                     })}
                 </div>
 
-                <MsgTextarea value="" onChange={noop} onBlur={noop} onFocus={noop} onKeyDown={noop} onContextMenu={noop} mobile={false} />
+                <MsgTextarea onChange={noop} onBlur={noop} onFocus={noop} onKeyDown={noop} onContextMenu={noop} mobile={false} />
 
                 <FormGroup id="upload-button">
                     <button className="ln-btn ui-text" onClick={onUpload}>

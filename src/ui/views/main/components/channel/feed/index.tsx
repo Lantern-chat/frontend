@@ -227,7 +227,7 @@ const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) =
 const MsgList = React.memo(({ room, groups, is_light_theme, compact }: { room: PartialRoomState, groups: IMessageState[][], is_light_theme: boolean, compact: boolean }) => {
     let header;
     if(room.fully_loaded) {
-        header = (<MsgTop room={room.room} />)
+        header = (<MsgTop room={room.room} />);
     }
 
     return (
@@ -249,7 +249,7 @@ const MsgTop = React.memo(({ room }: { room: Room }) => {
                 Congrats on making it this far.
             </div>
         </li>
-    )
+    );
 });
 
 interface IGotoBottomFooterProps {

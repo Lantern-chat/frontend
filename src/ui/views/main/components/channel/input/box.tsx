@@ -21,8 +21,8 @@ import { useForceRender } from "ui/hooks/useForceRender";
 import { Hotkey, MainContext, useClickEater, useMainHotkey } from "ui/hooks/useMainClick";
 
 import { Glyphicon } from "ui/components/common/glyphicon";
+import { MsgTextarea } from "ui/components/input/textarea";
 import { EmotePicker } from "../common/emote_picker";
-import { MsgTextarea } from "./textarea";
 
 //import Smiley from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-901-slightly-smiling.svg";
 import Send from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-461-send.svg";
@@ -206,21 +206,22 @@ export const MessageBoxOld = React.memo(() => {
     }, [do_send]);
 
     // passively keep track of value on change, and force render when needed to refresh UI
-    let prev_value = useRef(""), forceRender = useForceRender();
+    let value = useRef(""), forceRender = useForceRender();
 
     let on_change = useCallback((new_value: string) => {
-        let value = prev_value.current,
+        let old_value = value.current,
             new_ts = Date.now(), { ts } = state_ref.current;
 
-        if(active_room && new_value.length > value.length && (new_ts - ts) > 3500) {
+        if(active_room && new_value.length > old_value.length && (new_ts - ts) > 3500) {
             dispatch(startTyping(active_room));
             dispatchBox({ t: MsgBoxActionType.SetTs, ts: new_ts });
         }
 
-        prev_value.current = new_value;
+        value.current = new_value;
 
         // Refresh UI to switch between send/file stuff
         if(new_value.length <= 1) {
+            __DEV__ && console.log("Swapping icons");
             forceRender();
         }
     }, []);
@@ -252,7 +253,7 @@ export const MessageBoxOld = React.memo(() => {
         dispatchBox({ t: MsgBoxActionType.SetFiles, v: null });
     }, []);
 
-    let is_empty = prev_value.current.length == 0;
+    let is_empty = value.current.length == 0;
 
     let on_right_click = is_empty ? on_upload_click : on_send_click;
 
