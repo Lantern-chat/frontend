@@ -34,14 +34,14 @@ export function incr(self: FreeState, input: string, new_position: number) {
     input = input.slice(p, new_position);
 
     for(i = 0; i < input.length; i += 1) {
+        if(f & ESCAPED) {
+            f &= ~ESCAPED; continue;
+        }
+
         c = input[i];
 
         if(c == '\\') {
             f |= ESCAPED; continue;
-        }
-
-        if((f & ESCAPED) != 0) {
-            f &= ~ESCAPED; continue;
         }
 
         if(c == '`') {
@@ -50,7 +50,7 @@ export function incr(self: FreeState, input: string, new_position: number) {
             // if this character is not part of a code token,
             // but there were two consecitive code tokens,
             // then it was probably a zero-length inline code span
-            if(cc == 2 && 0 == (f & INSIDE_CODE_BLOCK)) {
+            if(cc == 2 && !(f & INSIDE_CODE_BLOCK)) {
                 f ^= INSIDE_INLINE_CODE;
             }
 
@@ -69,24 +69,26 @@ export function incr(self: FreeState, input: string, new_position: number) {
 
             // remove inline code flag
             f &= ~INSIDE_INLINE_CODE;
-        } else if((f & INSIDE_CODE_BLOCK) == 0) {
-            // if does not contain code block flag
+        } else {
+            if(!(f & INSIDE_CODE_BLOCK)) {
+                // if does not contain code block flag
 
-            if(cc == 1) {
-                f ^= INSIDE_INLINE_CODE;
+                if(cc == 1) {
+                    f ^= INSIDE_INLINE_CODE;
+                }
+
+                if(cs == 2) {
+                    f ^= INSIDE_SPOILER;
+                }
             }
 
-            if(cs == 2) {
-                f ^= INSIDE_SPOILER;
-            }
-        }
-
-        // if not in any code
-        if((f & INSIDE_ANY_CODE) == 0) {
-            if(c == ':') {
-                f ^= INSIDE_EMOTE;
-            } else if(!VALID_EMOTE_CHAR.test(c)) {
-                f &= ~INSIDE_EMOTE;
+            // if not in any code
+            if(!(f & INSIDE_ANY_CODE)) {
+                if(c == ':') {
+                    f ^= INSIDE_EMOTE;
+                } else if(!VALID_EMOTE_CHAR.test(c)) {
+                    f &= ~INSIDE_EMOTE;
+                }
             }
         }
     }
@@ -123,7 +125,7 @@ export function is_inside_code(input: string, position: number): boolean {
 
     incr(f, input, position);
 
-    return 0 != (f.f & (INSIDE_INLINE_CODE | INSIDE_CODE_BLOCK));
+    return !!(f.f & (INSIDE_INLINE_CODE | INSIDE_CODE_BLOCK));
 }
 
 export function is_inside_spoiler(input: string, position: number): boolean {
@@ -132,7 +134,7 @@ export function is_inside_spoiler(input: string, position: number): boolean {
     let f = create([]);
     incr(f, input, position);
 
-    return 0 != (f.f & INSIDE_SPOILER);
+    return !!(f.f & INSIDE_SPOILER);
 }
 
 export function emote_start(input: string, position: number): number {
