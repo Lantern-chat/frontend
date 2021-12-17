@@ -174,6 +174,8 @@
     }
 
     &__outer {
+        scroll-margin: 50vh;
+
         &:hover,
         &.highlighted {
             background-color: rgba(0, 0, 0, 0.1);
@@ -278,6 +280,20 @@
     &__ts {
         font-size: 0.8em;
         color: $lnx-secondary-text-color;
+
+        svg {
+            fill: $lnx-secondary-text-color;
+        }
+
+        .edited {
+            margin-left: 0.5em;
+
+            .ln-glyphicon {
+                vertical-align: bottom;
+                display: inline;
+                font-size: 1.2em;
+            }
+        }
     }
 
     &__side {

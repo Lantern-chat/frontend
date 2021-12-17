@@ -78,6 +78,8 @@ const MessageUserAvatar = React.memo(({ name, user, is_light_theme }: Omit<IUser
     )
 });
 
+import PencilIcon from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-13-pencil.svg";
+
 interface IGroupMessageProps {
     msg: IMessageState,
     is_light_theme: boolean,
@@ -95,13 +97,23 @@ const CozyGroupMessage = React.memo(({ msg, is_light_theme, first, attachments }
             return selectCachedUser(state, raw.author.id, raw.party_id) || { user: raw.author, nick: raw.member?.nick };
         }),
         nickname = cached_member.nick || cached_member.user.username,
-        message = <Message editing={false} msg={raw} />;
+        message = <Message editing={false} msg={raw} />,
+        edited_ts = msg.et?.format("dddd, MMMM DD, h:mm A");
 
     // if first message in the group, give it the user avatar and title
     if(first) {
         let bot;
         if(user_is_bot(raw.author)) {
             bot = <BotLabel />;
+        }
+
+        let edited;
+        if(msg.et) {
+            edited = (
+                <span className="edited" title={"Edited " + edited_ts}>
+                    <Glyphicon src={PencilIcon} />
+                </span>
+            );
         }
 
         title = (
@@ -112,6 +124,7 @@ const CozyGroupMessage = React.memo(({ msg, is_light_theme, first, attachments }
 
                 <span className="ln-msg__ts" title={ts}>
                     <span className="ui-text">{msg.ts.calendar()}</span>
+                    {edited}
                 </span>
 
                 {bot}
@@ -220,7 +233,7 @@ const GroupMessage = React.memo((props: IGroupMessageProps) => {
     if(user_is_system(raw.author)) {
         Inner = SystemMessage;
     } else {
-        Inner = props.compact ? CompactGroupMessage : CozyGroupMessage
+        Inner = props.compact ? CompactGroupMessage : CozyGroupMessage;
     }
 
     let outer_class = classNames("ln-msg__outer", {
@@ -229,7 +242,7 @@ const GroupMessage = React.memo((props: IGroupMessageProps) => {
     });
 
     return (
-        <div key={raw.id} className={outer_class} {...main_click_props}>
+        <div key={raw.id} id={raw.id} className={outer_class} {...main_click_props}>
             <div className="ln-msg__wrapper">
                 <Inner {...props} attachments={attachments} />
                 {cm}

@@ -51,6 +51,7 @@ export class RoomState {
 export interface IMessageState {
     msg: Message,
     ts: Dayjs,
+    et: Dayjs | null,
 }
 
 export interface ITypingState {
@@ -140,7 +141,8 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
                 let old_msgs = room.msgs,
                     new_msgs = raw_msgs.map(msg => ({
                         msg,
-                        ts: dayjs(msg.created_at)
+                        ts: dayjs(msg.created_at),
+                        et: msg.edited_at ? dayjs(msg.edited_at) : null,
                     })),
                     final_msgs: Array<IMessageState> = [];
 
@@ -225,7 +227,8 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
                         case GatewayEventCode.MessageCreate: {
                             let raw_msg = event.p, msg = {
                                 msg: raw_msg,
-                                ts: dayjs(raw_msg.created_at)
+                                ts: dayjs(raw_msg.created_at),
+                                et: raw_msg.edited_at ? dayjs(raw_msg.edited_at) : null,
                             };
 
                             return produce(state, draft => {
@@ -255,6 +258,24 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
                                         room.typing.splice(idx, 1); // delete 1
                                         break;
                                     }
+                                }
+                            });
+                        }
+                        case GatewayEventCode.MessageUpdate: {
+                            let raw_msg = event.p, msg = {
+                                msg: raw_msg,
+                                ts: dayjs(raw_msg.created_at),
+                                et: raw_msg.edited_at ? dayjs(raw_msg.edited_at) : null,
+                            };
+
+                            return produce(state, draft => {
+                                let room = draft.rooms.get(raw_msg.room_id);
+                                if(!room) return;
+
+                                let { idx, found } = binarySearch(room.msgs, m => m.ts.diff(msg.ts));
+
+                                if(found && room.msgs[idx].msg.id == raw_msg.id) {
+                                    room.msgs[idx] = msg;
                                 }
                             });
                         }

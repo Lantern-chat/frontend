@@ -40,12 +40,14 @@ export interface GenericEvent<O, P = undefined> {
 export type GatewayEventHello = GenericEvent<GatewayEventCode.Hello, HelloEvent>;
 export type GatewayEventHeartbeatACK = GenericEvent<GatewayEventCode.HeartbeatACK>;
 export type GatewayEventReady = GenericEvent<GatewayEventCode.Ready, ReadyEvent>;
-export type GatewayEventMsgCreate = GenericEvent<GatewayEventCode.MessageCreate, Message>;
-export type GatewayEventMsgDelete = GenericEvent<GatewayEventCode.MessageDelete, MessageDeleteEvent>;
 export type GatewayEventTypingStart = GenericEvent<GatewayEventCode.TypingStart, TypingStartEvent>;
 export type GatewayEventPresenceUpdate = GenericEvent<GatewayEventCode.PresenceUpdate, UserPresenceUpdateEvent>;
 export type GatewayEventUserUpdate = GenericEvent<GatewayEventCode.UserUpdate, UserUpdateEvent>;
 export type GatewayEventInvalidSession = GenericEvent<GatewayEventCode.InvalidSession>;
+
+export type GatewayEventMsgCreate = GenericEvent<GatewayEventCode.MessageCreate, Message>;
+export type GatewayEventMsgUpdate = GenericEvent<GatewayEventCode.MessageUpdate, Message>;
+export type GatewayEventMsgDelete = GenericEvent<GatewayEventCode.MessageDelete, MessageDeleteEvent>;
 
 export type GatewayEventMemberAdd = GenericEvent<GatewayEventCode.MemberAdd, MemberEvent>;
 export type GatewayEventMemberRemove = GenericEvent<GatewayEventCode.MemberRemove, MemberEvent>;
@@ -63,6 +65,7 @@ export type GatewayEvent =
     GatewayEventHeartbeatACK |
     GatewayEventReady |
     GatewayEventMsgCreate |
+    GatewayEventMsgUpdate |
     GatewayEventMsgDelete |
     GatewayEventTypingStart |
     GatewayEventPresenceUpdate |
