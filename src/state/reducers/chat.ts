@@ -5,7 +5,7 @@ import { binarySearch } from "lib/util";
 
 import { Action, Type } from "../actions";
 
-import { Message, Snowflake, Room } from "../models";
+import { Message, Snowflake, Room, Attachment } from "../models";
 import { GatewayMessageDiscriminator } from "worker/gateway/msg";
 import { GatewayEventCode } from "worker/gateway/event";
 import { SearchMode } from "state/commands";
@@ -58,9 +58,15 @@ export interface ITypingState {
     ts: number,
 }
 
+export interface IAttachmentState {
+    at: Attachment,
+    msg: Message,
+}
+
 export interface IRoomState {
     room: Room,
     msgs: IMessageState[],
+    attachments: IAttachmentState[],
     pending: IMessageState[],
     current_edit: null | Snowflake,
     typing: ITypingState[],
@@ -104,6 +110,7 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
                 draft.rooms.set(room.id, {
                     room,
                     msgs: [],
+                    attachments: [],
                     pending: [],
                     current_edit: null,
                     typing: [],
