@@ -113,7 +113,7 @@ export interface User {
     username: string,
     discriminator: number,
     flags: number | UserFlags,
-    avatar?: string,
+    avatar: string | null,
     status?: string,
     bio?: string,
     email?: string,
@@ -234,7 +234,7 @@ export enum RoomFlags {
 export interface Room {
     id: Snowflake,
     party_id?: Snowflake,
-    avatar?: string,
+    avatar: string | null,
     name: string,
     topic?: string,
     position: number,
@@ -327,15 +327,15 @@ export interface Attachment extends File {
 export interface PartialParty {
     id: Snowflake,
     name: string,
-    description?: string,
+    description: string | null,
 }
 
 export interface Party extends PartialParty {
     owner: Snowflake,
     security: number,
-    roles?: Role[],
+    roles: Role[],
     emotes?: Emote[],
-    avatar?: string,
+    avatar: string | null,
     position: number,
 }
 
@@ -446,6 +446,11 @@ export interface RoleDeleteEvent {
 export interface RoomDeleteEvent {
     id: Snowflake,
     party_id?: Snowflake,
+}
+
+export interface PartyPositionEvent extends Partial<Party> {
+    id: Snowflake,
+    position: number,
 }
 
 export interface MemberEvent extends PartyMember {

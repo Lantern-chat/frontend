@@ -159,12 +159,19 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
 
                             return produce(state, draft => {
                                 let existing = draft.parties.get(party.id);
+
+                                // PartyPositionUpdate only
+                                if(!party.name && existing) {
+                                    existing.party.position = party.position;
+                                    return;
+                                }
+
                                 if(existing) {
-                                    existing.party = party;
+                                    existing.party = party as Party;
                                 } else {
                                     // create party
                                     draft.parties.set(party.id, {
-                                        party,
+                                        party: party as Party,
                                         rooms: [],
                                         members: new Map(),
                                         needs_refresh: true,
@@ -360,6 +367,19 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
                                 if(!party) return;
 
                                 party.members.delete(user.id);
+                            });
+                        }
+                        case GatewayEventCode.UserUpdate: {
+                            let user = p.p.user;
+
+                            return produce(state, draft => {
+                                // TODO: Maybe more intelligent lookups by providing a party_id on the server?
+                                for(let party of draft.parties.values()) {
+                                    let member = party.members.get(user.id);
+                                    if(!member) continue;
+
+                                    member.user = user;
+                                }
                             });
                         }
                         default: break;

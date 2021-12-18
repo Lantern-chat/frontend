@@ -178,7 +178,7 @@ const PartyAvatar = React.memo((props: IPartyAvatarProps) => {
     let dispatch = useDispatch();
 
     let last = last_channel.get(party.id),
-        url = party.avatar && party_avatar_url(party.id, party.avatar),
+        url = party.avatar ? party_avatar_url(party.id, party.avatar) : undefined,
         do_navigate = can_navigate && party.id != active_party;
 
     let on_navigate = useCallback(() => { do_navigate && dispatch(activateParty(party.id, last)) }, [do_navigate, party.id, last]);

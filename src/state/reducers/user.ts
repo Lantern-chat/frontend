@@ -46,6 +46,17 @@ export function userReducer(state: IUserState = DEFAULT_STATE, action: Action) {
 
                             break;
                         }
+                        case GatewayEventCode.UserUpdate: {
+                            let user = p.p.user;
+
+                            // overwrite own user info if same user and has private fields present
+                            // indicating it's meant for us
+                            if(user.id == state.user!.id && user.email) {
+                                return { ...state, user };
+                            }
+
+                            break;
+                        }
                     }
 
                     break;
