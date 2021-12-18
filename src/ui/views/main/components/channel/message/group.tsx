@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import classNames from "classnames";
 
-import { User, user_is_bot, user_is_system } from "state/models";
+import { MessageFlags, User, user_is_bot, user_is_system } from "state/models";
 import { IMessageState } from "state/reducers/chat";
 
 import { user_avatar_url } from "config/urls";
@@ -79,6 +79,7 @@ const MessageUserAvatar = React.memo(({ name, user, is_light_theme }: Omit<IUser
 });
 
 import PencilIcon from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-13-pencil.svg";
+import PushPinIcon from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-201-push-pin.svg";
 
 interface IGroupMessageProps {
     msg: IMessageState,
@@ -107,11 +108,19 @@ const CozyGroupMessage = React.memo(({ msg, is_light_theme, first, attachments }
             bot = <BotLabel />;
         }
 
-        let edited;
+        let edited, pinned;
         if(msg.et) {
             edited = (
-                <span className="edited" title={"Edited " + edited_ts}>
+                <span className="flags" title={"Edited " + edited_ts}>
                     <Glyphicon src={PencilIcon} />
+                </span>
+            );
+        }
+
+        if(raw.flags & MessageFlags.Pinned) {
+            pinned = (
+                <span className="flags" title="Message Pinned">
+                    <Glyphicon src={PushPinIcon} />
                 </span>
             );
         }
@@ -125,6 +134,7 @@ const CozyGroupMessage = React.memo(({ msg, is_light_theme, first, attachments }
                 <span className="ln-msg__ts" title={ts}>
                     <span className="ui-text">{msg.ts.calendar()}</span>
                     {edited}
+                    {pinned}
                 </span>
 
                 {bot}
