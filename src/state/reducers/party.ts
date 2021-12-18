@@ -72,16 +72,21 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
 
             for(let member of action.members) {
                 let user = member.user;
-                if(!user) continue;
 
                 // set the member structure easily enough
                 party.members.set(user.id, member);
 
-                // TODO: Update role_members?
-
                 // if the member has any roles, process those
                 let member_roles = member.roles;
                 if(!member_roles || !member_roles.length) continue;
+
+                for(let role_id of member_roles) {
+                    let role_members = party.role_members.get(role_id);
+                    if(!role_members) {
+                        party.role_members.set(role_id, role_members = new Set());
+                    }
+                    role_members.add(user.id);
+                }
 
                 // start with the highest role, double-checking it exists
                 let highest_role = roles.get(member_roles[0]);
@@ -206,10 +211,80 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
                                 member.presence = presence;
                             });
                         }
+                        case GatewayEventCode.RoleDelete:
+                        case GatewayEventCode.RoleUpdate:
+                        case GatewayEventCode.RoleCreate: {
+                            let role = p.p;
+
+                            return produce(state, draft => {
+                                let party = draft.parties.get(role.party_id);
+                                if(!party) return;
+
+                                let party_model = party.party,
+                                    roles = draft.roles,
+                                    existing = roles.get(role.id),
+                                    members = party.role_members.get(role.id);
+
+                                // Ensure state.roles, role_members and party.roles are all updated accordingly
+                                switch(p.o) {
+                                    case GatewayEventCode.RoleCreate:
+                                    case GatewayEventCode.RoleUpdate: {
+                                        draft.roles.set(role.id, role as Role);
+
+                                        party_model.roles ??= [];
+                                        if(p.o != GatewayEventCode.RoleCreate) {
+                                            // attempt to find an existing role entry, update it, and break early
+                                            let idx = party_model.roles.findIndex(r => r.id == role.id);
+                                            if(idx != -1) { party_model.roles[idx] = role as Role; break; }
+                                        }
+
+                                        // if not found or created, push
+                                        party_model.roles.push(role as Role);
+                                        break;
+                                    }
+                                    case GatewayEventCode.RoleDelete: {
+                                        roles.delete(role.id);
+                                        party.role_members.delete(role.id);
+                                        party_model.roles = party_model.roles?.filter(r => r.id == role.id);
+                                    }
+                                }
+
+                                // early bail
+                                if(!existing || !members) return;
+
+                                // basically the same logic as MembersLoaded, but clears the existing color first
+                                for(let member_id of members.values()) {
+                                    // clear color before recomputing
+                                    party.member_colors.delete(member_id);
+
+                                    let member = party.members.get(member_id);
+                                    if(!member) continue;
+
+                                    let member_roles = member.roles;
+                                    if(!member_roles || !member_roles.length) continue;
+
+                                    let highest_role = roles.get(member_roles[0]);
+                                    if(!highest_role) continue;
+
+                                    for(let role_id of member_roles.slice(1)) {
+                                        let new_role = roles.get(role_id);
+                                        if(!new_role || new_role.color == null) continue;
+
+                                        if(new_role.position < highest_role.position || highest_role.color == null) {
+                                            highest_role = new_role;
+                                        }
+                                    }
+
+                                    if(highest_role.color != null) {
+                                        party.member_colors.set(member.user.id, computeRoleColor(highest_role)!);
+                                    }
+                                }
+                            });
+                        }
                         case GatewayEventCode.MemberUpdate:
                         case GatewayEventCode.MemberAdd: {
-                            let member = p.p;
-                            let { party_id, user } = member, id = user.id;
+                            let member = p.p,
+                                { party_id, user } = member, id = user.id;
 
                             return produce(state, draft => {
                                 let party = draft.parties.get(party_id), roles = draft.roles;

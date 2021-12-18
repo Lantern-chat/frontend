@@ -438,6 +438,16 @@ export interface MessageDeleteEvent {
     party_id?: Snowflake,
 }
 
+export interface RoleDeleteEvent {
+    id: Snowflake,
+    party_id: Snowflake,
+}
+
+export interface RoomDeleteEvent {
+    id: Snowflake,
+    party_id?: Snowflake,
+}
+
 export interface MemberEvent extends PartyMember {
     party_id: Snowflake,
 }

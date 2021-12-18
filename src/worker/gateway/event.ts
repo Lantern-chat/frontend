@@ -1,4 +1,7 @@
-import { HelloEvent, MemberEvent, Message, MessageDeleteEvent, ReadyEvent, TypingStartEvent, UserPresenceUpdateEvent, UserUpdateEvent, Party, Snowflake } from "state/models";
+import {
+    HelloEvent, MemberEvent, Message, MessageDeleteEvent, ReadyEvent, TypingStartEvent,
+    UserPresenceUpdateEvent, UserUpdateEvent, Party, Snowflake, Role, RoleDeleteEvent
+} from "state/models";
 
 export enum GatewayEventCode {
     Hello = 0,
@@ -49,6 +52,10 @@ export type GatewayEventMsgCreate = GenericEvent<GatewayEventCode.MessageCreate,
 export type GatewayEventMsgUpdate = GenericEvent<GatewayEventCode.MessageUpdate, Message>;
 export type GatewayEventMsgDelete = GenericEvent<GatewayEventCode.MessageDelete, MessageDeleteEvent>;
 
+export type GatewayEventRoleCreate = GenericEvent<GatewayEventCode.RoleCreate, Role>;
+export type GatewayEventRoleUpdate = GenericEvent<GatewayEventCode.RoleUpdate, Role>;
+export type GatewayEventRoleDelete = GenericEvent<GatewayEventCode.RoleDelete, RoleDeleteEvent>;
+
 export type GatewayEventMemberAdd = GenericEvent<GatewayEventCode.MemberAdd, MemberEvent>;
 export type GatewayEventMemberRemove = GenericEvent<GatewayEventCode.MemberRemove, MemberEvent>;
 export type GatewayEventMemberUpdate = GenericEvent<GatewayEventCode.MemberUpdate, MemberEvent>;
@@ -67,6 +74,9 @@ export type GatewayEvent =
     GatewayEventMsgCreate |
     GatewayEventMsgUpdate |
     GatewayEventMsgDelete |
+    GatewayEventRoleCreate |
+    GatewayEventRoleUpdate |
+    GatewayEventRoleDelete |
     GatewayEventTypingStart |
     GatewayEventPresenceUpdate |
     GatewayEventUserUpdate |

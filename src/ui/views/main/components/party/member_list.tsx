@@ -63,7 +63,7 @@ export const MemberList = React.memo(() => {
         let offline = [], online = [],
             hoisted: undefined | Array<{ role: Role, members: PartyMemberExtra[] }>;
 
-        if(roles) {
+        if(roles && roles.length) {
             // find all roles that should be hoisted and initialize them
             hoisted = roles.filter(role => ((role.flags & 1) == 1)).map(role => ({ role, members: [] }));
 
