@@ -27,6 +27,13 @@ if(session) {
     HISTORY.replace('/login');
 }
 
+//function updatePixelRatio() {
+//    let pr = window.devicePixelRatio;
+//    STORE.dispatch({ type: Type.UPDATE_PREFS, prefs: {} });
+//    matchMedia(`(resolution: ${pr}dppx)`).addEventListener('change', updatePixelRatio, { once: true });
+//}
+//updatePixelRatio();
+
 import Gateway from "worker-loader!worker/gateway";
 
 // this script may be run multiple times if unlucky,
