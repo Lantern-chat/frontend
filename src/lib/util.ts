@@ -1,3 +1,7 @@
+export function countLines(str: string): number {
+    return (str.match(/\n/g) || '').length + 1;
+}
+
 export interface Ok<T> {
     ok: T,
 }
@@ -28,12 +32,53 @@ export function binarySearch<T, L extends (value: T) => number>(values: T[], com
     return { idx: left, found: false };
 }
 
-export function countLines(str: string): number {
-    return (str.match(/\n/g) || '').length + 1;
+/*
+function swap<T>(arr: Array<T>, left: number, right: number) {
+    let tmp = arr[left];
+    arr[left] = arr[right];
+    arr[right] = tmp;
 }
 
-if(__TEST__) {
-    describe("test", () => {
+type CompareFunc<T> = (a: T, b: T) => number;
 
-    })
+function less_than<T>(a: T, b: T): number {
+    return a < b ? -1 : 1;
 }
+
+function quicksort_inner<T>(arr: Array<T>, first: number, last: number, cmp: CompareFunc<T>) {
+    if(first < last) {
+        let pivot = arr[first + ((last - first) >> 1)],
+            left = first, right = last;
+
+        do {
+            while(cmp(arr[left], pivot) < 0) {
+                left++;
+            }
+
+            while(cmp(pivot, arr[right]) < 0) {
+                right--;
+            }
+
+            if(left <= right) {
+                let t = arr[left];
+                arr[left++] = arr[right];
+                arr[right--] = t;
+            }
+        } while(left <= right);
+
+        quicksort_inner(arr, first, right, cmp);
+        quicksort_inner(arr, left, last, cmp);
+    }
+}
+
+export function quicksort<T>(arr: Array<T>, cmp: CompareFunc<T> = less_than) {
+    quicksort_inner(arr, 0, arr.length - 1, cmp);
+}
+
+export function shuffle(array: Array<any>) {
+    let m = array.length;
+    while(m) {
+        swap(array, Math.floor(Math.random() * m--), m);
+    }
+}
+*/
