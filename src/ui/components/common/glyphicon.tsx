@@ -4,6 +4,7 @@ import "./glyphicon.scss";
 
 interface IGeneralGlyphiconProps {
     absolute?: boolean,
+    extra?: any,
 }
 
 interface IStaticGlyphiconProps {
@@ -33,7 +34,7 @@ export const Glyphicon: React.FunctionComponent<IGlyphiconProps> = React.memo((p
     }
 
     return (
-        <div className="ln-glyphicon">
+        <div className="ln-glyphicon" {...props.extra}>
             <span className="ln-glyphicon__wrapper" dangerouslySetInnerHTML={{ __html: data }} style={style} />
         </div>
     );

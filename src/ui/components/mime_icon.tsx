@@ -1,8 +1,10 @@
 import React from "react";
 
+import { MimeCategory } from "lib/mime";
+
 import PlainTextIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-1-file-text.svg";
 import RichTextIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-2-file-rich-text.svg";
-import MusicIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-4-file-music.svg";
+import AudioIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-4-file-music.svg";
 import VideoIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-5-file-video.svg";
 import ImageIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-6-file-image.svg";
 import SpreadsheetIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-9-file-spreadsheet.svg";
@@ -17,86 +19,30 @@ import ShieldIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/indivi
 import KeyIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-85-file-key.svg";
 import ZipIcon from "icons/glyphicons-pro/glyphicons-filetypes-2-1/svg/individual-svg/glyphicons-filetypes-24-file-zip.svg";
 
-import { getType } from 'mime';
-
 import { Glyphicon } from "ui/components/common/glyphicon";
 
-const PREFIX_TYPEES = [
-    ['image', ImageIcon],
-    ['text/plain', PlainTextIcon],
-    ['text', RichTextIcon],
-    ['audio', MusicIcon],
-    ['video', VideoIcon],
-];
-
-const EXT_TYPES = [
-    {
-        ext: ['sh', 'bat'],
-        icon: TerminalIcon,
-    },
-    {
-        ext: [/^html?5?$/i, 'xml', 'xhtml'],
-        icon: ScriptIcon
-    },
-    {
-        ext: ['pl', 'rs', 'py', /^[ch](pp)?$/i, /^[jt]sx?$/i],
-        icon: CodeIcon,
-    },
-    {
-        ext: ['mdd', /^md[bt]x?/i, /^accd[tb]/i, /sql/i, /^db[r23sa]?/i, 'wbd', 'sl3', 'odb', 'ibz'],
-        icon: DatabaseIcon,
-    },
-    {
-        ext: [/^xls[x]?/i, 'ods', 'xlr'],
-        icon: SpreadsheetIcon,
-    },
-    {
-        ext: [/^ppt[xma]?/i, 'keynote', 'odp', 'sdd', 'shw', 'ppv', 'sxi', 'ppg', 'sdp'],
-        icon: PresentationIcon,
-    },
-    {
-        ext: [/crypt/i, 'rem', 'lok', 'spd', 'ezk', 'shy', 'hpg', 'rae', /^r?aes/i, 'bfa'],
-        icon: ShieldIcon,
-    },
-    {
-        ext: ['gpg', 'pgp', 'rsa', 'skr', 'sec', 'spk', 'asc', 'key', 'sign', 'kdb', 'ska', 'prvkr', 'ppk', /^pk[rf]/i, /^pv[rk]/i, /^pkcs/i, /^aex/i, /^p7/i],
-        icon: KeyIcon,
-    },
-    {
-        ext: [
-            /zip/i, /^[xr]ar/i, /^[g7xrbt]z/i, /s?7-?z(ip)?/i, /lz[4w]?/i,
-            /^g?tar(\-(x|gz))?/i, /^t[gxb]z/i, 'pea', 'tg', /^pac?k/i, /^[gb]za/i,
-            /lmza/i, /^(7?z)?\d+/i, 'compress', 'z'
-        ],
-        icon: ZipIcon,
-    }
-];
-
-export const MimeIcon = React.memo(({ name, hint }: { name: string, hint?: string }) => {
-    let ext = name.replace(/.*?\.(\w+)$/, '$1').toLowerCase(),
-        t = hint || getType(name) || ext;
-
-    let deduced_icon = UnknownIcon;
-
-    for(let [prefix, icon] of PREFIX_TYPEES) {
-        if(t.startsWith(prefix)) {
-            deduced_icon = icon;
-            break;
-        }
+export const MimeIcon = React.memo(({ category }: { category: MimeCategory }) => {
+    let icon: string;
+    switch(category) {
+        case MimeCategory.Unknown: icon = UnknownIcon; break;
+        case MimeCategory.PlainText: icon = PlainTextIcon; break;
+        case MimeCategory.RichText: icon = RichTextIcon; break;
+        case MimeCategory.Audio: icon = AudioIcon; break;
+        case MimeCategory.Video: icon = VideoIcon; break;
+        case MimeCategory.Image: icon = ImageIcon; break;
+        case MimeCategory.Spreadsheet: icon = SpreadsheetIcon; break;
+        case MimeCategory.Database: icon = DatabaseIcon; break;
+        case MimeCategory.Program: icon = ProgramIcon; break;
+        case MimeCategory.Terminal: icon = TerminalIcon; break;
+        case MimeCategory.Script: icon = ScriptIcon; break;
+        case MimeCategory.Presentation: icon = PresentationIcon; break;
+        case MimeCategory.Code: icon = CodeIcon; break;
+        case MimeCategory.Shield: icon = ShieldIcon; break;
+        case MimeCategory.Key: icon = KeyIcon; break;
+        case MimeCategory.Zip: icon = ZipIcon; break;
     }
 
-    if(ext && deduced_icon == UnknownIcon) {
-        for(let test of EXT_TYPES) {
-            for(let test_ext of test.ext) {
-                if((typeof test_ext === 'string' && ext.startsWith(test_ext)) ||
-                    (test_ext instanceof RegExp && test_ext.test(ext))) {
-                    deduced_icon = test.icon;
-                }
-            }
-        }
-    }
-
-    return (<Glyphicon src={deduced_icon} />);
+    return (<Glyphicon src={icon} extra={{ 'data-category': MimeCategory[category].toLowerCase() }} />);
 });
 
 if(__DEV__) {

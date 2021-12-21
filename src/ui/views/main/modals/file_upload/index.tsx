@@ -19,6 +19,7 @@ export interface FileUploadModalProps extends GenericModalProps {
 }
 
 import "./file_upload.scss";
+import { categorize_mime } from "lib/mime";
 export const FileUploadModal = React.memo((props: FileUploadModalProps) => {
     let files = useMemo(() => {
         let files = [];
@@ -127,7 +128,7 @@ const MediaPreview = ({ file }: { file: File }) => {
     }
 
     if(!media) {
-        media = <MimeIcon name={file.name} hint={file.type} />;
+        media = <MimeIcon category={categorize_mime(file.name, file.type)} />;
     }
 
     return (

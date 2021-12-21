@@ -1,9 +1,11 @@
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import classNames from "classnames";
+import React, { useCallback, useContext, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { createStructuredSelector } from "reselect";
 
 import { IS_MOBILE } from "lib/user_agent";
 import { format_bytes } from "lib/formatting";
+import { categorize_mime } from "lib/mime";
 
 import { RootState } from "state/root";
 import { Message, Attachment, UserPreferenceFlags, AttachmentFlags } from "state/models";
@@ -26,8 +28,10 @@ const attachment_selector = createStructuredSelector({
     hide_unknown: selectPrefsFlag(UserPreferenceFlags.HideUnknown),
 });
 
+const SVG_REGEX = /svg|xml/i;
+const TEXT_REGEX = /xml|text/i;
+
 import "./attachment.scss";
-import classNames from "classnames";
 export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, attachment: Attachment }) => {
     let [error, setError] = useState(false),
         eat = useClickEater();
@@ -41,18 +45,15 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
         title = attachment.filename;
 
 
-    //let [showTitle, setShowTitle] = useState(false);
-
     if(mime && !error) {
         let common = {
             id,
             // alt or title can't be used here since they affect the UI negatively in some cases
             "aria-label": attachment.filename,
+            "data-mime": attachment.mime,
             onContextMenu: eat,
             src: url,
             onError: () => setError(true),
-            //onMouseEnter: () => setShowTitle(true),
-            //onMouseLeave: () => setShowTitle(false),
         };
 
         switch(mime.slice(0, 5)) {
@@ -78,7 +79,7 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
             case 'image': {
                 if(hide_unknown && !(attachment.width && attachment.height)) break;
 
-                if(attachment.size < (1024 * 1024 * 30)) {
+                if(!SVG_REGEX.test(mime) && attachment.size < (1024 * 1024 * 30)) {
                     embed = <ImageAttachment
                         img={common}
                         attachment={attachment}
@@ -88,8 +89,6 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
                 break;
             }
             case 'audio': {
-                //embed = <audio title={title} onContextMenu={eat} src={url} controls onError={() => setError(true)} />
-
                 embed = <AudioAttachment
                     audio={common}
                     attachment={attachment}
@@ -101,13 +100,16 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
     }
 
     if(!embed) {
-        let size = format_bytes(attachment.size);
+        let category = categorize_mime(attachment.filename, mime),
+            size = format_bytes(attachment.size);
+
         title = title + ' (' + size + ')';
 
+        // TODO: Add a warning if the content type is a script or program.
         embed = (
             <div className="ln-msg-attachment__generic">
                 <div>
-                    <MimeIcon name={attachment.filename} hint={mime} />
+                    <MimeIcon category={category} />
                 </div>
                 <div className="ln-attachment-link ui-text">
                     <a target="__blank" title={title} href={url} onContextMenu={eat}>{attachment.filename}</a>
@@ -119,6 +121,7 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
             </div>
         );
     }
+
     //else {
     //    embed = (
     //        <>
@@ -162,7 +165,7 @@ function computeModifiedStyle(style: React.CSSProperties, atch: Attachment, use_
 
 const ImageAttachment = React.memo((props: IImageAttachmentProps) => {
     //embed = <img title={title} onContextMenu={eat} src={url} onError={() => setError(true)} />;
-    let atch = props.attachment,
+    let attachment = props.attachment,
         main = useContext(MainContext),
         [loaded, setLoaded] = useState(false),
         [show, setShow] = useState(false),
@@ -174,7 +177,7 @@ const ImageAttachment = React.memo((props: IImageAttachmentProps) => {
 
         // parse mime type to see if it's obviously animated
         // TODO: Actually scan the file for animated flags
-        animated_format = useMemo(() => { let m = atch.mime?.match(/gif|apng|webp|avif/i); return m && m[0]; }, [atch.mime]),
+        animated_format = useMemo(() => { let m = attachment.mime?.match(/gif|apng|webp|avif/i); return m && m[0]; }, [attachment.mime]),
 
         // on load, replace height placeholder
         onLoad = useCallback(() => setLoaded(true), []),
@@ -188,7 +191,7 @@ const ImageAttachment = React.memo((props: IImageAttachmentProps) => {
         }, style = img_props.style!;
 
     if(!loaded) {
-        computeModifiedStyle(style, atch, props.use_mobile_view);
+        computeModifiedStyle(style, attachment, props.use_mobile_view);
     }
 
     let embed;
