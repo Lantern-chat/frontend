@@ -31,3 +31,7 @@ export const Avatar = React.memo((props: IAvatarProps) => {
         </div>
     );
 });
+
+if(__DEV__) {
+    Avatar.displayName = "Avatar";
+}

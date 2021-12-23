@@ -137,7 +137,6 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
                     return;
                 }
 
-                // TODO: Test if this matters, because of immer
                 let old_msgs = room.msgs,
                     new_msgs = raw_msgs.map(msg => ({
                         msg,

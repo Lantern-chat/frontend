@@ -52,7 +52,7 @@ export interface Dispatch extends ReduxDispatch<Action> {
     (action: DispatchableAction): void;
 }
 
-export type DispatchableAction = Action | ThunkAction | Promise<Action>;
+export type DispatchableAction = Action | ThunkAction | Promise<DispatchableAction>;
 export type ThunkAction = (dispatch: <T extends DispatchableAction>(action: T) => T, getState: () => RootState) => void;
 
 export type Action =

@@ -144,6 +144,7 @@ export const MessageBoxOld = React.memo(() => {
             let room = store.getState().chat.rooms.get(active_room),
                 draft = room ? room.draft : "";
 
+            // FIXME: Avoid triggering a typing event when setting draft value
             ta.setValue(draft);
 
             return () => {
@@ -364,6 +365,7 @@ function format_users_typing(user: User, members: Map<Snowflake, PartyMember>, u
         // OneUser is typing...
         res = typing_nicks[0] + ' is typing...';
     } else if(remaining <= 0) {
+        // FIXME: Remove oxford comma in two-user case
         // Foo, Bar, and Cathy are typing...
         res = typing_nicks.slice(0, len - 1).join(', ') + `, and ${typing_nicks[len - 1]} are typing...`;
     } else {

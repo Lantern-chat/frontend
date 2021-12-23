@@ -198,3 +198,8 @@ const ListedMember = ({ member, owner, is_light_theme }: IListedMemberProps) => 
         </li>
     );
 };
+
+if(__DEV__) {
+    MemberList.displayName = "MemberList";
+    ListedMember.displayName = "ListedMember";
+}
