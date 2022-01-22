@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "Lantern Chat Frontend",
   "main": "index.js",
-  "author": "Nova <fpnova@pm.me>",
+  "author": "novacrazy <novacrazy@gmail.com>",
   "license": "MIT",
   "private": true,
   "scripts": {
