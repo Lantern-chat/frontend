@@ -87,7 +87,7 @@ class Gateway {
 
         let str = JSON.stringify(value);
         let encoded = this.encoder.encode(str);
-        let compressed = compress(encoded);
+        let compressed = compress(encoded, { level: 9 });
 
         this.ws.send(compressed);
     }
