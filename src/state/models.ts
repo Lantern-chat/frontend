@@ -260,7 +260,7 @@ export interface Message {
     thread_id?: Snowflake,
     created_at: string,
     edited_at?: string,
-    content: string,
+    content?: string,
     flags: number | MessageFlags,
     user_mentions?: Snowflake[],
     role_mentions?: Snowflake[],

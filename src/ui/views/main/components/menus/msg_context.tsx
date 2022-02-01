@@ -37,7 +37,7 @@ export const MsgContextMenu = React.memo(({ msg, pos, onConfirmChange }: IMsgCon
     useEffect(() => setShownConfirmation(false), [pos]);
     useEffect(() => onConfirmChange(shownConfirmation), [shownConfirmation]);
 
-    let copy_msg = useCallback(() => copyText(msg.msg.content), [msg.msg.content]);
+    let copy_msg = useCallback(() => msg.msg.content && copyText(msg.msg.content), [msg.msg.content]);
 
     // it's fine to memoize this since any attempts to select more would trigger a click event and close the context menu
     let selected = useMemo(() => {

@@ -175,7 +175,7 @@ const CompactGroupMessage = React.memo(({ msg, is_light_theme, first, attachment
         nickname = cached_member.nick || cached_member.user.username;
 
     let className = classNames("ln-msg--compact", {
-        'no-text': raw.content.length == 0,
+        'no-text': !raw.content,
     });
 
     return (
