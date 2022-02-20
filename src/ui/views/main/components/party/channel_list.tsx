@@ -173,7 +173,7 @@ const RoomIcon = React.memo(({ room }: IRoomIconProps) => {
 
     // TODO: Rooms with overwrites
     if((room.flags & 16) == 16) {
-        subicon = <VectorIcon src={TriangleAlert} />;
+        subicon = <VectorIcon src={TriangleAlertIcon} />;
     } else if((room.flags & 64) == 64) {
         subicon = <VectorIcon src={LockIcon} />
     }
@@ -191,7 +191,7 @@ const RoomIcon = React.memo(({ room }: IRoomIconProps) => {
     } else {
         icon = (
             <>
-                <VectorIcon src={Hash} />
+                <VectorIcon src={HashIcon} />
                 {subicon}
             </>
         )

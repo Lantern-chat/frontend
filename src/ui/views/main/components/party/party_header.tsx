@@ -27,7 +27,7 @@ export const PartyHeader = React.memo(() => {
             <div className="ln-party-header__name">
                 <span className="ui-text">{party.party.name}</span>
             </div>
-            <VectorIcon src={Balloons} />
+            <VectorIcon src={BalloonsIcon} />
         </header>
     );
 });

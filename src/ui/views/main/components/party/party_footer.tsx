@@ -86,7 +86,7 @@ export const PartyFooter = React.memo(() => {
                     <VectorIcon src={deaf ? SpeakerDeaf : Speaker} />
                 </div>
                 <Link href="/settings" title="Settings">
-                    <VectorIcon src={Cogwheel} />
+                    <VectorIcon src={CogwheelIcon} />
                 </Link>
             </div>
         </footer>

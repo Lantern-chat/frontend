@@ -207,7 +207,7 @@ const SystemMessage = React.memo((props: IGroupMessageProps) => {
     return (
         <>
             <div className="ln-msg__side ln-system-message">
-                <VectorIcon src={ArrowThinRight} />
+                <VectorIcon src={ArrowThinRightIcon} />
             </div>
             <div className="ln-msg__message ln-system-message">
                 <Message editing={false} msg={raw} extra={` <sub>${msg.ts.calendar()}</sub>`} />

@@ -42,12 +42,12 @@ export const ChannelHeader = React.memo(() => {
             <div className="ln-channel-header__wrapper">
                 <div className="ln-channel-header__hamburger">
                     <span onClick={() => dispatch({ type: Type.WINDOW_TOGGLE_ROOM_LIST_SIDEBAR })}>
-                        <VectorIcon src={Menu} />
+                        <VectorIcon src={MenuIcon} />
                     </span>
                 </div>
 
                 <div className="ln-channel-icon">
-                    <VectorIcon src={Hash} />
+                    <VectorIcon src={HashIcon} />
                 </div>
 
                 <div className="ln-channel-info__wrapper">
@@ -60,7 +60,7 @@ export const ChannelHeader = React.memo(() => {
                 <div className="ln-channel-header__users">
                     <span
                         onClick={() => dispatch({ type: Type.WINDOW_TOGGLE_USER_LIST_SIDEBAR })}>
-                        <VectorIcon src={Users} />
+                        <VectorIcon src={UsersIcon} />
                     </span>
                 </div>
             </div>

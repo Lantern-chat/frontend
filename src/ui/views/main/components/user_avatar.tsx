@@ -49,7 +49,7 @@ export const UserAvatar = React.memo(({ nickname, user, status, is_light_theme, 
         }
     }
 
-    let presence = (status == PresenceStatus.Online && is_mobile) ? <VectorIcon src={MobilePhone} /> : <span className={status_class} />;
+    let presence = (status == PresenceStatus.Online && is_mobile) ? <VectorIcon src={MobilePhoneIcon} /> : <span className={status_class} />;
 
     return (
         <div className="ln-user-avatar">

@@ -19,7 +19,7 @@ export const GenericModal = React.memo((props: GenericModalProps) => {
         <FullscreenModal onClick={props.onClose} className="ln-generic-modal">
             <div className="ln-generic-modal__inner" onClick={eat}>
                 <div className="ln-generic-modal__close" onClick={props.onClose}>
-                    <VectorIcon src={MenuClose} />
+                    <VectorIcon src={MenuCloseIcon} />
                 </div>
                 {props.children}
             </div>

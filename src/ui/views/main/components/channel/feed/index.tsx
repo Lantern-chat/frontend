@@ -244,7 +244,7 @@ const MsgTop = React.memo(({ room }: { room: Room }) => {
     return (
         <li className="ln-msg__top">
             <div className="ui-text">
-                <VectorIcon src={Balloon} /> You have reached the top of #{room.name}! <VectorIcon src={Balloon} />
+                <VectorIcon src={BalloonIcon} /> You have reached the top of #{room.name}! <VectorIcon src={BalloonIcon} />
                 <br />
                 Congrats on making it this far.
             </div>
@@ -263,7 +263,7 @@ const GotoBottomFooter = React.memo(({ onClick, use_mobile_view }: IGotoBottomFo
     if(use_mobile_view) {
         return (
             <span id="goto-now" onClick={() => onClick()}>
-                <VectorIcon src={ChevronDown} />
+                <VectorIcon src={ChevronDownIcon} />
             </span>
         )
     }
@@ -272,7 +272,7 @@ const GotoBottomFooter = React.memo(({ onClick, use_mobile_view }: IGotoBottomFo
         <div className="ln-feed-footer ui-text" onClick={() => onClick()}>
             <span>You're viewing older messages</span>
             <span id="goto-now">
-                Go to now <VectorIcon src={ChevronDown} />
+                Go to now <VectorIcon src={ChevronDownIcon} />
             </span>
         </div>
     );

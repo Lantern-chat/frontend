@@ -23,7 +23,7 @@ export const EmotePicker = React.memo(() => {
 
     return (
         <div title="Emoji" className={className} {...main_click_props}>
-            <VectorIcon src={SmileyHalf} />
+            <VectorIcon src={SmileyHalfIcon} />
 
             <AnchoredModal show={show} eat={["onClick"]}>
                 <EmotePickerModal />

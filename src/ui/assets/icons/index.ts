@@ -8,7 +8,7 @@ export { default as MenuIcon } from "icons/glyphicons-pro/glyphicons-basic-2-4/s
 export { default as UsersIcon } from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-321-users.svg";
 export { default as HashIcon } from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-740-hash.svg";
 
-export { default as SmileyHalf } from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-243-slightly-smiling.svg";
+export { default as SmileyHalfIcon } from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-243-slightly-smiling.svg";
 
 export { default as BalloonIcon } from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-882-balloon.svg";
 export { default as BalloonsIcon } from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-883-balloons.svg";
