@@ -1,9 +1,9 @@
 import React from "react";
 
 import { Link } from "ui/components/history";
-import { Glyphicon } from "ui/components/common/glyphicon";
+import { VectorIcon } from "ui/components/common/icon";
 
-import FamilyIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-532-user-family.svg";
+import { FamilyIcon } from "ui/assets/icons";
 
 import "./sidebar.scss";
 export const HomeSideBar = React.memo(() => {
@@ -12,7 +12,7 @@ export const HomeSideBar = React.memo(() => {
             <ul className="ln-home-tabs">
                 <li>
                     <Link href="/channels/@me/friends">
-                        <Glyphicon src={FamilyIcon} />
+                        <VectorIcon src={FamilyIcon} />
                         <span className="ui-text">Friends</span>
                     </Link>
                 </li>

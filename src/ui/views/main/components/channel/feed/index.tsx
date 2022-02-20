@@ -12,7 +12,7 @@ import { IMessageState, IRoomState } from "state/reducers/chat";
 import { Panel } from "state/reducers/window";
 import { selectPrefsFlag } from "state/selectors/prefs";
 
-import { Glyphicon } from "ui/components/common/glyphicon";
+import { VectorIcon } from "ui/components/common/icon";
 import { Timeline, ITimelineProps } from "./timeline";
 import { MessageGroup } from "../message/group";
 
@@ -238,13 +238,13 @@ const MsgList = React.memo(({ room, groups, is_light_theme, compact }: { room: P
     );
 });
 
-import Balloon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-882-balloon.svg";
+import { BalloonIcon } from "ui/assets/icons";
 
 const MsgTop = React.memo(({ room }: { room: Room }) => {
     return (
         <li className="ln-msg__top">
             <div className="ui-text">
-                <Glyphicon src={Balloon} /> You have reached the top of #{room.name}! <Glyphicon src={Balloon} />
+                <VectorIcon src={Balloon} /> You have reached the top of #{room.name}! <VectorIcon src={Balloon} />
                 <br />
                 Congrats on making it this far.
             </div>
@@ -257,13 +257,13 @@ interface IGotoBottomFooterProps {
     use_mobile_view: boolean,
 }
 
-import ChevronDown from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-128-chevron-down.svg";
+import { ChevronDownIcon } from "ui/assets/icons";
 
 const GotoBottomFooter = React.memo(({ onClick, use_mobile_view }: IGotoBottomFooterProps) => {
     if(use_mobile_view) {
         return (
             <span id="goto-now" onClick={() => onClick()}>
-                <Glyphicon src={ChevronDown} />
+                <VectorIcon src={ChevronDown} />
             </span>
         )
     }
@@ -272,7 +272,7 @@ const GotoBottomFooter = React.memo(({ onClick, use_mobile_view }: IGotoBottomFo
         <div className="ln-feed-footer ui-text" onClick={() => onClick()}>
             <span>You're viewing older messages</span>
             <span id="goto-now">
-                Go to now <Glyphicon src={ChevronDown} />
+                Go to now <VectorIcon src={ChevronDown} />
             </span>
         </div>
     );

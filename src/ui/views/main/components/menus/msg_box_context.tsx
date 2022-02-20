@@ -4,11 +4,11 @@ import { IMessageState } from "state/reducers/chat";
 import { useSelector } from "react-redux";
 import { RootState } from "state/root";
 
-import { Glyphicon } from "ui/components/common/glyphicon";
+import { VectorIcon } from "ui/components/common/icon";
 
 import { ContextMenu } from "./list";
 
-import PasteIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-613-paste.svg";
+import { PasteIcon } from "ui/assets/icons";
 
 export interface IMsgBoxContextMenuProps {
     on_paste: (text: string | null) => void,
@@ -47,7 +47,7 @@ export const MsgBoxContextMenu = React.memo((props: IMsgBoxContextMenuProps) => 
     return (
         <ContextMenu>
             <div onClick={on_paste}>
-                <Glyphicon src={PasteIcon} />
+                <VectorIcon src={PasteIcon} />
                 <span className="ui-text">Paste</span>
             </div>
         </ContextMenu>

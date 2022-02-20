@@ -6,7 +6,7 @@ import { UserPreferenceFlags } from "state/models";
 import { selectPrefsFlag } from "state/selectors/prefs";
 
 import { FullscreenModal } from "ui/components/modal";
-import { Glyphicon } from "ui/components/common/glyphicon";
+import { VectorIcon } from "ui/components/common/icon";
 
 import { Hotkey, useClickEater, useMainHotkey } from "ui/hooks/useMainClick";
 

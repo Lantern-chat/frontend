@@ -8,15 +8,15 @@ import { selectPrefsFlag } from "state/selectors/prefs";
 import { parse_presence, PresenceStatus, UserPreferenceFlags } from "state/models";
 
 import { UserAvatar } from "../user_avatar";
-import { Glyphicon } from "ui/components/common/glyphicon";
+import { VectorIcon } from "ui/components/common/icon";
 import { Link } from "ui/components/history";
 import { Spinner } from "ui/components/common/spinners/spinner";
 
-import Cogwheel from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-137-cogwheel.svg";
-import Speaker from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-186-volume-up.svg";
-import SpeakerDeaf from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-184-volume-off.svg";
-import Microphone from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-341-mic.svg";
-import MicrophoneMute from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-342-mic-off.svg";
+import { CogwheelIcon } from "ui/assets/icons";
+import { SpeakerIcon } from "ui/assets/icons";
+import { SpeakerDeafIcon } from "ui/assets/icons";
+import { MicrophoneIcon } from "ui/assets/icons";
+import { MicrophoneMuteIcon } from "ui/assets/icons";
 
 let status_selector = createSelector(
     (state: RootState) => state.user.user!,
@@ -80,13 +80,13 @@ export const PartyFooter = React.memo(() => {
 
             <div className="ln-party-footer__settings">
                 <div onClick={() => setMute(!mute)} title={mute ? 'Unmute' : 'Mute'}>
-                    <Glyphicon src={mute ? MicrophoneMute : Microphone} />
+                    <VectorIcon src={mute ? MicrophoneMute : Microphone} />
                 </div>
                 <div onClick={() => setDeaf(!deaf)} title={deaf ? 'Undeafen' : 'Deafen'}>
-                    <Glyphicon src={deaf ? SpeakerDeaf : Speaker} />
+                    <VectorIcon src={deaf ? SpeakerDeaf : Speaker} />
                 </div>
                 <Link href="/settings" title="Settings">
-                    <Glyphicon src={Cogwheel} />
+                    <VectorIcon src={Cogwheel} />
                 </Link>
             </div>
         </footer>

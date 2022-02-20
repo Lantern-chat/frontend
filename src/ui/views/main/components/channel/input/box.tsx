@@ -20,13 +20,13 @@ import { FileUploadModal } from "ui/views/main/modals/file_upload";
 import { useForceRender } from "ui/hooks/useForceRender";
 import { Hotkey, MainContext, useClickEater, useMainHotkey } from "ui/hooks/useMainClick";
 
-import { Glyphicon } from "ui/components/common/glyphicon";
+import { VectorIcon } from "ui/components/common/icon";
 import { MsgTextarea } from "ui/components/input/textarea";
 import { EmotePicker } from "../common/emote_picker";
 
-//import Smiley from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-901-slightly-smiling.svg";
-import Send from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-461-send.svg";
-import Plus from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-371-plus.svg";
+//import {SmileyIcon} from "ui/assets/icons";
+import { SendIcon } from "ui/assets/icons";
+import { PlusIcon } from "ui/assets/icons";
 
 const msg_box_selector = createStructuredSelector({
     active_room: activeRoom,
@@ -299,7 +299,7 @@ export const MessageBoxOld = React.memo(() => {
                     <input multiple type={is_empty ? "file" : "text"} name="file_upload" onChange={on_file_change}
                         style={is_empty ? undefined : { zIndex: -999, left: -999, pointerEvents: 'none', display: 'none' }}
                     />
-                    <Glyphicon src={is_empty ? Plus : Send} />
+                    <VectorIcon src={is_empty ? Plus : Send} />
                 </div>
             </div>
 

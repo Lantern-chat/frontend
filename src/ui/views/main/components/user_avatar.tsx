@@ -6,9 +6,9 @@ import { PresenceStatus, Snowflake, User } from 'state/models';
 import { user_avatar_url } from 'config/urls';
 
 import { Avatar } from 'ui/components/common/avatar';
-import { Glyphicon } from 'ui/components/common/glyphicon';
+import { VectorIcon } from 'ui/components/common/icon';
 
-import MobilePhone from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-91-mobile-phone.svg";
+import { MobilePhoneIcon } from "ui/assets/icons";
 
 export interface IUserAvatarProps {
     user: User,
@@ -49,7 +49,7 @@ export const UserAvatar = React.memo(({ nickname, user, status, is_light_theme, 
         }
     }
 
-    let presence = (status == PresenceStatus.Online && is_mobile) ? <Glyphicon src={MobilePhone} /> : <span className={status_class} />;
+    let presence = (status == PresenceStatus.Online && is_mobile) ? <VectorIcon src={MobilePhone} /> : <span className={status_class} />;
 
     return (
         <div className="ln-user-avatar">

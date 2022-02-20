@@ -12,7 +12,7 @@ import { Panel } from "state/reducers/window";
 import { room_avatar_url } from "config/urls";
 
 import { Bounce } from "ui/components/common/spinners/bounce";
-import { Glyphicon } from "ui/components/common/glyphicon";
+import { VectorIcon } from "ui/components/common/icon";
 import { Avatar } from "ui/components/common/avatar";
 import { Link } from "ui/components/history";
 import { useSimplePositionedContextMenu } from "ui/hooks/useMainClick";
@@ -160,9 +160,9 @@ const RoomListContextMenu = React.memo((props: IRoomListContextMenuProps) => {
     );
 });
 
-import Hash from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-740-hash.svg";
-import TriangleAlert from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-42-triangle-alert.svg";
-import LockIcon from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-125-lock.svg";
+import { HashIcon } from "ui/assets/icons";
+import { TriangleAlertIcon } from "ui/assets/icons";
+import { LockIcon } from "ui/assets/icons";
 
 interface IRoomIconProps {
     room: Room,
@@ -173,9 +173,9 @@ const RoomIcon = React.memo(({ room }: IRoomIconProps) => {
 
     // TODO: Rooms with overwrites
     if((room.flags & 16) == 16) {
-        subicon = <Glyphicon src={TriangleAlert} />;
+        subicon = <VectorIcon src={TriangleAlert} />;
     } else if((room.flags & 64) == 64) {
-        subicon = <Glyphicon src={LockIcon} />
+        subicon = <VectorIcon src={LockIcon} />
     }
 
     if(subicon) {
@@ -191,7 +191,7 @@ const RoomIcon = React.memo(({ room }: IRoomIconProps) => {
     } else {
         icon = (
             <>
-                <Glyphicon src={Hash} />
+                <VectorIcon src={Hash} />
                 {subicon}
             </>
         )

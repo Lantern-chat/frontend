@@ -78,8 +78,8 @@ const MessageUserAvatar = React.memo(({ name, user, is_light_theme }: Omit<IUser
     )
 });
 
-import PencilIcon from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-13-pencil.svg";
-import PushPinIcon from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-201-push-pin.svg";
+import { PencilIcon } from "ui/assets/icons";
+import { PushPinIcon } from "ui/assets/icons";
 
 interface IGroupMessageProps {
     msg: IMessageState,
@@ -112,7 +112,7 @@ const CozyGroupMessage = React.memo(({ msg, is_light_theme, first, attachments }
         if(msg.et) {
             edited = (
                 <span className="flags" title={"Edited " + edited_ts}>
-                    <Glyphicon src={PencilIcon} />
+                    <VectorIcon src={PencilIcon} />
                 </span>
             );
         }
@@ -120,7 +120,7 @@ const CozyGroupMessage = React.memo(({ msg, is_light_theme, first, attachments }
         if(raw.flags & MessageFlags.Pinned) {
             pinned = (
                 <span className="flags" title="Message Pinned">
-                    <Glyphicon src={PushPinIcon} />
+                    <VectorIcon src={PushPinIcon} />
                 </span>
             );
         }
@@ -197,8 +197,8 @@ const CompactGroupMessage = React.memo(({ msg, is_light_theme, first, attachment
     );
 });
 
-import ArrowThinRight from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-216-arrow-thin-right.svg";
-import { Glyphicon } from "ui/components/common/glyphicon";
+import { ArrowThinRightIcon } from "ui/assets/icons";
+import { VectorIcon } from "ui/components/common/icon";
 import { compareString } from "lib/compare";
 import { useSorted } from "ui/hooks/useSorted";
 
@@ -207,7 +207,7 @@ const SystemMessage = React.memo((props: IGroupMessageProps) => {
     return (
         <>
             <div className="ln-msg__side ln-system-message">
-                <Glyphicon src={ArrowThinRight} />
+                <VectorIcon src={ArrowThinRight} />
             </div>
             <div className="ln-msg__message ln-system-message">
                 <Message editing={false} msg={raw} extra={` <sub>${msg.ts.calendar()}</sub>`} />

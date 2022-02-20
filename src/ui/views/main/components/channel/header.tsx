@@ -6,11 +6,11 @@ import { Type } from "state/main";
 import { RootState } from "state/root";
 import { activeRoom } from "state/selectors/active";
 
-import { Glyphicon } from "ui/components/common/glyphicon";
+import { VectorIcon } from "ui/components/common/icon";
 
-import Menu from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-600-menu.svg";
-import Users from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-321-users.svg";
-import Hash from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-740-hash.svg";
+import { MenuIcon } from "ui/assets/icons";
+import { UsersIcon } from "ui/assets/icons";
+import { HashIcon } from "ui/assets/icons";
 
 const header_selector = createSelector(
     activeRoom,
@@ -42,12 +42,12 @@ export const ChannelHeader = React.memo(() => {
             <div className="ln-channel-header__wrapper">
                 <div className="ln-channel-header__hamburger">
                     <span onClick={() => dispatch({ type: Type.WINDOW_TOGGLE_ROOM_LIST_SIDEBAR })}>
-                        <Glyphicon src={Menu} />
+                        <VectorIcon src={Menu} />
                     </span>
                 </div>
 
                 <div className="ln-channel-icon">
-                    <Glyphicon src={Hash} />
+                    <VectorIcon src={Hash} />
                 </div>
 
                 <div className="ln-channel-info__wrapper">
@@ -60,7 +60,7 @@ export const ChannelHeader = React.memo(() => {
                 <div className="ln-channel-header__users">
                     <span
                         onClick={() => dispatch({ type: Type.WINDOW_TOGGLE_USER_LIST_SIDEBAR })}>
-                        <Glyphicon src={Users} />
+                        <VectorIcon src={Users} />
                     </span>
                 </div>
             </div>

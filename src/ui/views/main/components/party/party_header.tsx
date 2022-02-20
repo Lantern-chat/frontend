@@ -4,9 +4,9 @@ import { createSelector } from "reselect";
 import { RootState } from "state/root";
 import { activeParty } from "state/selectors/active";
 
-import { Glyphicon } from "ui/components/common/glyphicon";
+import { VectorIcon } from "ui/components/common/icon";
 
-import Balloons from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-883-balloons.svg";
+import { BalloonsIcon } from "ui/assets/icons";
 
 const party_selector = createSelector(
     activeParty,
@@ -27,7 +27,7 @@ export const PartyHeader = React.memo(() => {
             <div className="ln-party-header__name">
                 <span className="ui-text">{party.party.name}</span>
             </div>
-            <Glyphicon src={Balloons} />
+            <VectorIcon src={Balloons} />
         </header>
     );
 });

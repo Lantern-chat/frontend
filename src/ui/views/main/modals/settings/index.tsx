@@ -9,7 +9,7 @@ import { room_url } from "config/urls";
 
 import { Link } from "ui/components/history";
 import { Modal } from "ui/components/modal";
-import { Glyphicon } from "ui/components/common/glyphicon";
+import { VectorIcon } from "ui/components/common/icon";
 
 let return_path_selector = createSelector(
     activeParty,
@@ -55,7 +55,7 @@ import { AccessibilitySettingsTab } from "./tabs/accessibility";
 import { MediaSettingsTab } from "./tabs/media";
 import { LanguageSettingsTab } from "./tabs/language";
 
-import LogoutIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-432-log-out.svg";
+import { LogoutIcon } from "ui/assets/icons";
 
 const TABS = [
     { name: 'Account', path: 'account', comp: AccountSettingsTab },
@@ -122,7 +122,7 @@ const SettingsTabs = React.memo(({ do_return }: ISettingsTabsProps) => {
                         <div id="logout" onClick={do_logout} title="Logout">
                             <span>Logout</span>
                             <div>
-                                <Glyphicon src={LogoutIcon} />
+                                <VectorIcon src={LogoutIcon} />
                             </div>
                         </div>
                     </li>

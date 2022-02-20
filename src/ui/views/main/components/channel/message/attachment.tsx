@@ -17,10 +17,10 @@ import { useInfiniteScrollIntersectionTrigger } from "ui/components/infinite_scr
 
 import { LightBox } from "ui/views/main/modals/lightbox/index_img";
 import { AnimatedGif } from "ui/components/common/gif";
-import { Glyphicon } from "ui/components/common/glyphicon";
+import { VectorIcon } from "ui/components/common/icon";
 import { MimeIcon } from "ui/components/mime_icon";
 
-import SaveIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-199-save.svg";
+import { SaveIcon } from "ui/assets/icons";
 
 const attachment_selector = createStructuredSelector({
     use_mobile_view: (state: RootState) => state.window.use_mobile_view,
@@ -116,7 +116,7 @@ export const MsgAttachment = React.memo(({ msg, attachment }: { msg: Message, at
                     <span className="ln-attachment-size">{size}</span>
                 </div>
                 <a target="__blank" title={title} href={url + '?download'} className="ln-msg-attachment__download">
-                    <Glyphicon src={SaveIcon} />
+                    <VectorIcon src={SaveIcon} />
                 </a>
             </div>
         );

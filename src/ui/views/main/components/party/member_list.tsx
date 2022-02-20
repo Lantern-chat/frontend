@@ -8,12 +8,12 @@ import { RootState } from "state/root";
 import { activeParty } from "state/selectors/active";
 import { selectPrefsFlag } from "state/selectors/prefs";
 
-import { Glyphicon } from "ui/components/common/glyphicon";
+import { VectorIcon } from "ui/components/common/icon";
 
 import { UserAvatar } from "../user_avatar";
 import { BotLabel } from "../misc/bot_label";
 
-import CrownIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-425-crown.svg";
+import { CrownIcon } from "ui/assets/icons";
 
 let user_list_selector = createSelector(
     activeParty, // party_id
@@ -157,7 +157,7 @@ const ListedMember = ({ member, owner, is_light_theme }: IListedMemberProps) => 
             <>
                 <div className="ln-member__spacer" />
                 <div className="ln-member__crown" title="Owner">
-                    <Glyphicon src={CrownIcon} />
+                    <VectorIcon src={CrownIcon} />
                 </div>
             </>
         );

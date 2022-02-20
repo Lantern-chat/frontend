@@ -8,17 +8,17 @@ import { deleteMessage } from "state/commands/message/delete";
 import { IMessageState } from "state/reducers/chat";
 import { selectPrefsFlag } from "state/selectors/prefs";
 
-import { Glyphicon } from "ui/components/common/glyphicon";
+import { VectorIcon } from "ui/components/common/icon";
 
 import { ContextMenu } from "./list";
 
-import PencilIcon from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-13-pencil.svg";
-import TrashIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-17-bin.svg";
-import TrashOpenIcon from "icons/glyphicons-pro/custom/glyphicons-basic-17b-bin-open.svg";
-import ClipboardIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-30-clipboard.svg";
-import CopyIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-614-copy.svg";
-import ChatMessageIcon from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-135-chat-message.svg";
-import TriangleIcon from "icons/glyphicons-pro/glyphicons-halflings-2-3/svg/individual-svg/glyphicons-halflings-42-triangle-alert.svg";
+import { PencilIcon } from "ui/assets/icons";
+import { TrashIcon } from "ui/assets/icons";
+import { TrashOpenIcon } from "ui/assets/icons";
+import { ClipboardIcon } from "ui/assets/icons";
+import { CopyIcon } from "ui/assets/icons";
+import { ChatMessageIcon } from "ui/assets/icons";
+import { TriangleIcon } from "ui/assets/icons";
 
 export interface IMsgContextMenuProps {
     msg: IMessageState,
@@ -81,7 +81,7 @@ export const MsgContextMenu = React.memo(({ msg, pos, onConfirmChange }: IMsgCon
                 !selected ? null : (
                     <>
                         <div onClick={copy_selection}>
-                            <Glyphicon src={ClipboardIcon} />
+                            <VectorIcon src={ClipboardIcon} />
                             <span className="ui-text">Copy Selection</span>
                         </div>
 
@@ -91,24 +91,24 @@ export const MsgContextMenu = React.memo(({ msg, pos, onConfirmChange }: IMsgCon
             }
 
             <div>
-                <Glyphicon src={PencilIcon} />
+                <VectorIcon src={PencilIcon} />
                 <span className="ui-text">Edit Message</span>
             </div>
 
             <div onClick={copy_msg}>
-                <Glyphicon src={CopyIcon} />
+                <VectorIcon src={CopyIcon} />
                 <span className="ui-text">Copy Message</span>
             </div>
 
             <hr />
 
             <div>
-                <Glyphicon src={TriangleIcon} />
+                <VectorIcon src={TriangleIcon} />
                 <span className="ui-text">Report Message</span>
             </div>
 
             <div className={shownConfirmation ? 'ln-contextmenu-confirm' : 'ln-contextmenu-delete'} onClick={on_delete}>
-                {shownConfirmation ? <Glyphicon src={TrashOpenIcon} /> : <Glyphicon src={TrashIcon} />}
+                {shownConfirmation ? <VectorIcon src={TrashOpenIcon} /> : <VectorIcon src={TrashIcon} />}
                 <span className="ui-text">
                     {shownConfirmation ? "Are you sure?" : "Delete Message"}
                 </span>
@@ -120,7 +120,7 @@ export const MsgContextMenu = React.memo(({ msg, pos, onConfirmChange }: IMsgCon
                         <hr />
 
                         <div onClick={() => copyText(msg.msg.id)}>
-                            <Glyphicon src={ChatMessageIcon} />
+                            <VectorIcon src={ChatMessageIcon} />
                             <span className="ui-text">Copy ID</span>
                         </div>
                     </>

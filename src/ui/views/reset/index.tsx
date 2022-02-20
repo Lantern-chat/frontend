@@ -9,7 +9,7 @@ import { I18N, Translation } from "ui/i18n";
 import { fetch, XHRMethod } from "lib/fetch";
 import { useTitle } from "ui/hooks/useTitle";
 import { Spinner } from "ui/components/common/spinners/spinner";
-//import { Glyphicon } from "ui/components/common/glyphicon";
+//import { VectorIcon } from "ui/components/common/icon";
 import { FormGroup, FormLabel, FormInput } from "ui/components/form";
 import { Modal } from "ui/components/modal";
 

@@ -18,7 +18,7 @@ import { pickColorFromHash } from "lib/palette";
 
 import { Link } from "ui/components/history";
 import { Avatar } from "ui/components/common/avatar";
-import { Glyphicon } from "ui/components/common/glyphicon";
+import { VectorIcon } from "ui/components/common/icon";
 import { Spinner } from "ui/components/common/spinners/spinner";
 import { PositionedModal } from "ui/components/modal/positioned_modal";
 
@@ -28,7 +28,7 @@ import { ContextMenu } from "./menus/list";
 
 import { party_avatar_url, room_url } from "config/urls";
 
-import HomeIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-21-home.svg";
+import { HomeIcon } from "ui/assets/icons";
 
 let sorted_party_selector = createSelector((state: RootState) => state.party.parties, parties => {
     // this really just copies references into an array, so it should be fast
@@ -143,7 +143,7 @@ export const PartyList = React.memo(() => {
                 <li id="user-home" className={'@me' == active_party ? 'selected' : ''} ref={home_ref}>
                     <Link title="Home" href="/channels/@me" onNavigate={e => ('@me' != active_party && can_navigate) || e.preventDefault()} >
                         <Avatar rounded username="Home">
-                            <Glyphicon src={HomeIcon} />
+                            <VectorIcon src={HomeIcon} />
                         </Avatar>
                     </Link>
                 </li>

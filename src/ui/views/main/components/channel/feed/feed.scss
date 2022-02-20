@@ -94,7 +94,7 @@
         text-align: right;
         flex: 1;
 
-        .ln-glyphicon {
+        .ln-icon {
             vertical-align: middle;
         }
     }
@@ -118,7 +118,7 @@
 
         cursor: pointer;
 
-        .ln-glyphicon {
+        .ln-icon {
             margin: auto 0;
             font-size: 1.5em;
             display: inline-flex; // fix alignment issues
@@ -288,7 +288,7 @@
         .flags {
             margin-left: 0.5em;
 
-            .ln-glyphicon {
+            .ln-icon {
                 vertical-align: bottom;
                 display: inline;
                 font-size: 1.2em;
@@ -356,7 +356,7 @@
             line-height: 2;
         }
 
-        .ln-glyphicon {
+        .ln-icon {
             font-size: 2em;
             display: inline-flex;
         }
@@ -378,7 +378,7 @@
             }
         }
 
-        .ln-glyphicon {
+        .ln-icon {
             font-size: 1.75em;
 
             //&__wrapper {

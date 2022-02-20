@@ -7,9 +7,8 @@ import { setTheme } from "state/commands/theme";
 import { mix } from "lib/math";
 import { MIN_TEMP, MAX_TEMP } from "lib/theme";
 
-import { Glyphicon } from "ui/components/common/glyphicon";
-import SunIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-232-sun.svg";
-import MoonIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-231-moon.svg";
+import { VectorIcon } from "ui/components/common/icon";
+import { SunIcon, MoonIcon } from "ui/assets/icons";
 
 import throttle from 'lodash/throttle';
 
@@ -44,7 +43,7 @@ export const ThemeWidget: React.FunctionComponent = React.memo(() => {
     return (
         <div className="ln-theme-widget" title="Change Theme">
             <div className="ln-theme-widget__icon" onClick={() => doSetTheme(interactive.temperature, !interactive.is_light)}>
-                <Glyphicon src={interactive.is_light ? MoonIcon : SunIcon} />
+                <VectorIcon src={interactive.is_light ? MoonIcon : SunIcon} />
             </div>
 
             <div className="ln-theme-widget__options">

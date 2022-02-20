@@ -8,7 +8,7 @@ import { IS_IOS_SAFARI } from "lib/user_agent";
 import { UserPreferenceFlags } from "state/models";
 import { selectPrefsFlag } from "state/selectors/prefs";
 
-import { Glyphicon } from "ui/components/common/glyphicon";
+import { VectorIcon } from "ui/components/common/icon";
 import { FullscreenModal } from "ui/components/modal";
 import { Hotkey, useMainHotkeys } from "ui/hooks/useMainClick";
 
@@ -76,9 +76,9 @@ const LN0_05 = Math.log(0.05);
 
 type PartialTouch = Pick<React.Touch, 'pageX' | 'pageY' | 'identifier'>;
 
-import CloseIcon from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-599-menu-close.svg";
-import FullscreenOff from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-215-fullscreen-off.svg";
-import FullscreenOn from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-216-fullscreen.svg";
+import { CloseIcon } from "ui/assets/icons";
+import { FullscreenOffIcon } from "ui/assets/icons";
+import { FullscreenOnIcon } from "ui/assets/icons";
 
 import "./lightbox_img.scss";
 export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxState> {
@@ -672,10 +672,10 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
                 >
                     <div className="ln-lightbox__mobile-controls" {...eat_click}>
                         <div onClick={() => this.close()}>
-                            <Glyphicon src={CloseIcon} />
+                            <VectorIcon src={CloseIcon} />
                         </div>
                         <div onClick={() => this.do_toggle_zoom()} data-full={is_full}>
-                            <Glyphicon src={is_full ? FullscreenOff : FullscreenOn} />
+                            <VectorIcon src={is_full ? FullscreenOff : FullscreenOn} />
                         </div>
                     </div>
 

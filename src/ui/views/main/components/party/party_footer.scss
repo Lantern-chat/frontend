@@ -78,12 +78,12 @@
             border-radius: 20%;
         }
 
-        .ln-enable-motion & > div:hover .ln-glyphicon {
+        .ln-enable-motion & > div:hover .ln-icon {
             animation: 0.4s cubic-bezier(0.29, 1.06, 0.56, 1.35) ln-wobble;
         }
 
         a[href="/settings"]:hover {
-            .ln-enable-motion & .ln-glyphicon {
+            .ln-enable-motion & .ln-icon {
                 transition: transform cubic-bezier(0.29, 1.06, 0.56, 1.35) 0.3s;
                 transform: rotate(90deg);
             }

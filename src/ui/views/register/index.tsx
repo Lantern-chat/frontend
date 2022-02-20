@@ -17,7 +17,7 @@ import { fetch, XHRMethod } from "lib/fetch";
 
 import { Link } from "ui/components/history";
 
-import { Glyphicon } from "ui/components/common/glyphicon";
+import { VectorIcon } from "ui/components/common/icon";
 import { Tooltip } from "ui/components/common/tooltip";
 import { Spinner } from "ui/components/common/spinners/spinner";
 import { FormGroup, FormLabel, FormInput, FormText, FormSelect, FormSelectOption, FormSelectGroup } from "ui/components/form";
@@ -177,7 +177,7 @@ function register_state_reducer(state: RegisterState, { value, type }: RegisterA
     }
 }
 
-import CircleEmptyInfo from "icons/glyphicons-pro/glyphicons-basic-2-4/svg/individual-svg/glyphicons-basic-196-circle-empty-info.svg";
+import { CircleEmptyInfoIcon } from "ui/assets/icons";
 
 var SETUP_THEN = false;
 
@@ -317,7 +317,7 @@ export default function RegisterView() {
                 <FormLabel htmlFor="password">
                     <I18N t={Translation.PASSWORD} />
                     <span className="ln-tooltip" style={{ marginLeft: '0.2em' }}>
-                        <Glyphicon src={CircleEmptyInfo} />
+                        <VectorIcon src={CircleEmptyInfoIcon} />
                         <Tooltip x={1} y={0}>
                             <div style={{ width: 'min(100vw, 20em)', fontSize: '0.7em' }}>
                                 <p>Password strength is judged by length, complexity and resemblance to common English words.</p>
