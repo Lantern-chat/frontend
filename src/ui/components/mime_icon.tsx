@@ -19,7 +19,7 @@ import {
     ShieldFileIcon,
     KeyFileIcon,
     ZipFileIcon,
-} from "ui/assets/icons";
+} from "lantern-icons";
 
 import { VectorIcon } from "ui/components/common/icon";
 

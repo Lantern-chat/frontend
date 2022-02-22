@@ -177,7 +177,7 @@ function register_state_reducer(state: RegisterState, { value, type }: RegisterA
     }
 }
 
-import { CircleEmptyInfoIcon } from "ui/assets/icons";
+import { CircleEmptyInfoIcon } from "lantern-icons";
 
 var SETUP_THEN = false;
 

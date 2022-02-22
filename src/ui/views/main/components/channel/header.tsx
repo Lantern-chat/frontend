@@ -8,9 +8,9 @@ import { activeRoom } from "state/selectors/active";
 
 import { VectorIcon } from "ui/components/common/icon";
 
-import { MenuIcon } from "ui/assets/icons";
-import { UsersIcon } from "ui/assets/icons";
-import { HashIcon } from "ui/assets/icons";
+import { MenuIcon } from "lantern-icons";
+import { UsersIcon } from "lantern-icons";
+import { HashIcon } from "lantern-icons";
 
 const header_selector = createSelector(
     activeRoom,

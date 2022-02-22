@@ -238,7 +238,7 @@ const MsgList = React.memo(({ room, groups, is_light_theme, compact }: { room: P
     );
 });
 
-import { BalloonIcon } from "ui/assets/icons";
+import { BalloonIcon } from "lantern-icons";
 
 const MsgTop = React.memo(({ room }: { room: Room }) => {
     return (
@@ -257,7 +257,7 @@ interface IGotoBottomFooterProps {
     use_mobile_view: boolean,
 }
 
-import { ChevronDownIcon } from "ui/assets/icons";
+import { ChevronDownIcon } from "lantern-icons";
 
 const GotoBottomFooter = React.memo(({ onClick, use_mobile_view }: IGotoBottomFooterProps) => {
     if(use_mobile_view) {

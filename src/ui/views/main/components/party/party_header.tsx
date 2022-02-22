@@ -6,7 +6,7 @@ import { activeParty } from "state/selectors/active";
 
 import { VectorIcon } from "ui/components/common/icon";
 
-import { BalloonsIcon } from "ui/assets/icons";
+import { BalloonsIcon } from "lantern-icons";
 
 const party_selector = createSelector(
     activeParty,

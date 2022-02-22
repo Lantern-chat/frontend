@@ -12,11 +12,11 @@ import { VectorIcon } from "ui/components/common/icon";
 import { Link } from "ui/components/history";
 import { Spinner } from "ui/components/common/spinners/spinner";
 
-import { CogwheelIcon } from "ui/assets/icons";
-import { SpeakerIcon } from "ui/assets/icons";
-import { SpeakerDeafIcon } from "ui/assets/icons";
-import { MicrophoneIcon } from "ui/assets/icons";
-import { MicrophoneMuteIcon } from "ui/assets/icons";
+import { CogwheelIcon } from "lantern-icons";
+import { SpeakerIcon } from "lantern-icons";
+import { SpeakerDeafIcon } from "lantern-icons";
+import { MicrophoneIcon } from "lantern-icons";
+import { MicrophoneMuteIcon } from "lantern-icons";
 
 let status_selector = createSelector(
     (state: RootState) => state.user.user!,

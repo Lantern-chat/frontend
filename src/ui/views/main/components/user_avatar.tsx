@@ -8,7 +8,7 @@ import { user_avatar_url } from 'config/urls';
 import { Avatar } from 'ui/components/common/avatar';
 import { VectorIcon } from 'ui/components/common/icon';
 
-import { MobilePhoneIcon } from "ui/assets/icons";
+import { MobilePhoneIcon } from "lantern-icons";
 
 export interface IUserAvatarProps {
     user: User,

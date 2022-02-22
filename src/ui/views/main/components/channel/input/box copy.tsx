@@ -22,9 +22,9 @@ import { Hotkey, MainContext, parseHotkey, useMainHotkey } from "ui/hooks/useMai
 import { VectorIcon } from "ui/components/common/icon";
 import { EmotePicker } from "../common/emote_picker";
 
-//import {SmileyIcon} from "ui/assets/icons";
-import { SendIcon } from "ui/assets/icons";
-import { PlusIcon } from "ui/assets/icons";
+//import {SmileyIcon} from "lantern-icons";
+import { SendIcon } from "lantern-icons";
+import { PlusIcon } from "lantern-icons";
 
 export interface IMessageBoxProps {
     channel?: Snowflake,

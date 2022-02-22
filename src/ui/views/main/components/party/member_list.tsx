@@ -13,7 +13,7 @@ import { VectorIcon } from "ui/components/common/icon";
 import { UserAvatar } from "../user_avatar";
 import { BotLabel } from "../misc/bot_label";
 
-import { CrownIcon } from "ui/assets/icons";
+import { CrownIcon } from "lantern-icons";
 
 let user_list_selector = createSelector(
     activeParty, // party_id

@@ -55,7 +55,7 @@ import { AccessibilitySettingsTab } from "./tabs/accessibility";
 import { MediaSettingsTab } from "./tabs/media";
 import { LanguageSettingsTab } from "./tabs/language";
 
-import { LogoutIcon } from "ui/assets/icons";
+import { LogoutIcon } from "lantern-icons";
 
 const TABS = [
     { name: 'Account', path: 'account', comp: AccountSettingsTab },

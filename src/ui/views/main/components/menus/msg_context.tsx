@@ -12,13 +12,13 @@ import { VectorIcon } from "ui/components/common/icon";
 
 import { ContextMenu } from "./list";
 
-import { PencilIcon } from "ui/assets/icons";
-import { TrashIcon } from "ui/assets/icons";
-import { TrashOpenIcon } from "ui/assets/icons";
-import { ClipboardIcon } from "ui/assets/icons";
-import { CopyIcon } from "ui/assets/icons";
-import { ChatMessageIcon } from "ui/assets/icons";
-import { TriangleIcon } from "ui/assets/icons";
+import { PencilIcon } from "lantern-icons";
+import { TrashIcon } from "lantern-icons";
+import { TrashOpenIcon } from "lantern-icons";
+import { ClipboardIcon } from "lantern-icons";
+import { CopyIcon } from "lantern-icons";
+import { ChatMessageIcon } from "lantern-icons";
+import { TriangleIcon } from "lantern-icons";
 
 export interface IMsgContextMenuProps {
     msg: IMessageState,

@@ -160,9 +160,9 @@ const RoomListContextMenu = React.memo((props: IRoomListContextMenuProps) => {
     );
 });
 
-import { HashIcon } from "ui/assets/icons";
-import { TriangleAlertIcon } from "ui/assets/icons";
-import { LockIcon } from "ui/assets/icons";
+import { HashIcon } from "lantern-icons";
+import { TriangleAlertIcon } from "lantern-icons";
+import { LockIcon } from "lantern-icons";
 
 interface IRoomIconProps {
     room: Room,

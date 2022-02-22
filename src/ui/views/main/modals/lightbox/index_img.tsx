@@ -76,9 +76,9 @@ const LN0_05 = Math.log(0.05);
 
 type PartialTouch = Pick<React.Touch, 'pageX' | 'pageY' | 'identifier'>;
 
-import { CloseIcon } from "ui/assets/icons";
-import { FullscreenOffIcon } from "ui/assets/icons";
-import { FullscreenOnIcon } from "ui/assets/icons";
+import { CloseIcon } from "lantern-icons";
+import { FullscreenOffIcon } from "lantern-icons";
+import { FullscreenOnIcon } from "lantern-icons";
 
 import "./lightbox_img.scss";
 export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxState> {

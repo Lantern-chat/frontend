@@ -3,7 +3,7 @@ import React from "react";
 import { Link } from "ui/components/history";
 import { VectorIcon } from "ui/components/common/icon";
 
-import { FamilyIcon } from "ui/assets/icons";
+import { FamilyIcon } from "lantern-icons";
 
 import "./sidebar.scss";
 export const HomeSideBar = React.memo(() => {

@@ -8,7 +8,7 @@ import { mix } from "lib/math";
 import { MIN_TEMP, MAX_TEMP } from "lib/theme";
 
 import { VectorIcon } from "ui/components/common/icon";
-import { SunIcon, MoonIcon } from "ui/assets/icons";
+import { SunIcon, MoonIcon } from "lantern-icons";
 
 import throttle from 'lodash/throttle';
 

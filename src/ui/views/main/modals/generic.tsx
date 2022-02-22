@@ -9,7 +9,7 @@ export interface GenericModalProps {
     onClose?: () => void,
 }
 
-import { MenuCloseIcon } from "ui/assets/icons";
+import { MenuCloseIcon } from "lantern-icons";
 
 import "./modal.scss";
 export const GenericModal = React.memo((props: GenericModalProps) => {

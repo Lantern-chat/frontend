@@ -20,7 +20,7 @@ import { AnimatedGif } from "ui/components/common/gif";
 import { VectorIcon } from "ui/components/common/icon";
 import { MimeIcon } from "ui/components/mime_icon";
 
-import { SaveIcon } from "ui/assets/icons";
+import { SaveIcon } from "lantern-icons";
 
 const attachment_selector = createStructuredSelector({
     use_mobile_view: (state: RootState) => state.window.use_mobile_view,

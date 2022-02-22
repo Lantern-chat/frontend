@@ -4,7 +4,7 @@ import { VectorIcon } from "ui/components/common/icon";
 import { AnchoredModal } from "ui/components/modal/anchored_modal";
 import { useMainClick } from "ui/hooks/useMainClick";
 
-import { SmileyHalfIcon } from "ui/assets/icons";
+import { SmileyHalfIcon } from "lantern-icons";
 
 import "./emote_picker.scss";
 export const EmotePicker = React.memo(() => {

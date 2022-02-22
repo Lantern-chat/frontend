@@ -24,9 +24,9 @@ import { VectorIcon } from "ui/components/common/icon";
 import { MsgTextarea } from "ui/components/input/textarea";
 import { EmotePicker } from "../common/emote_picker";
 
-//import {SmileyIcon} from "ui/assets/icons";
-import { SendIcon } from "ui/assets/icons";
-import { PlusIcon } from "ui/assets/icons";
+//import {SmileyIcon} from "lantern-icons";
+import { SendIcon } from "lantern-icons";
+import { PlusIcon } from "lantern-icons";
 
 const msg_box_selector = createStructuredSelector({
     active_room: activeRoom,

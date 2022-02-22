@@ -28,7 +28,7 @@ import { ContextMenu } from "./menus/list";
 
 import { party_avatar_url, room_url } from "config/urls";
 
-import { HomeIcon } from "ui/assets/icons";
+import { HomeIcon } from "lantern-icons";
 
 let sorted_party_selector = createSelector((state: RootState) => state.party.parties, parties => {
     // this really just copies references into an array, so it should be fast

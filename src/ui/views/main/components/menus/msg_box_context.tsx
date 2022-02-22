@@ -8,7 +8,7 @@ import { VectorIcon } from "ui/components/common/icon";
 
 import { ContextMenu } from "./list";
 
-import { PasteIcon } from "ui/assets/icons";
+import { PasteIcon } from "lantern-icons";
 
 export interface IMsgBoxContextMenuProps {
     on_paste: (text: string | null) => void,

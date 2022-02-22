@@ -78,8 +78,8 @@ const MessageUserAvatar = React.memo(({ name, user, is_light_theme }: Omit<IUser
     )
 });
 
-import { PencilIcon } from "ui/assets/icons";
-import { PushPinIcon } from "ui/assets/icons";
+import { PencilIcon } from "lantern-icons";
+import { PushPinIcon } from "lantern-icons";
 
 interface IGroupMessageProps {
     msg: IMessageState,
@@ -197,7 +197,7 @@ const CompactGroupMessage = React.memo(({ msg, is_light_theme, first, attachment
     );
 });
 
-import { ArrowThinRightIcon } from "ui/assets/icons";
+import { ArrowThinRightIcon } from "lantern-icons";
 import { VectorIcon } from "ui/components/common/icon";
 import { compareString } from "lib/compare";
 import { useSorted } from "ui/hooks/useSorted";
