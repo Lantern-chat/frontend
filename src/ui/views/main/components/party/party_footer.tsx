@@ -80,10 +80,10 @@ export const PartyFooter = React.memo(() => {
 
             <div className="ln-party-footer__settings">
                 <div onClick={() => setMute(!mute)} title={mute ? 'Unmute' : 'Mute'}>
-                    <VectorIcon src={mute ? MicrophoneMute : Microphone} />
+                    <VectorIcon src={mute ? MicrophoneMuteIcon : MicrophoneIcon} />
                 </div>
                 <div onClick={() => setDeaf(!deaf)} title={deaf ? 'Undeafen' : 'Deafen'}>
-                    <VectorIcon src={deaf ? SpeakerDeaf : Speaker} />
+                    <VectorIcon src={deaf ? SpeakerDeafIcon : SpeakerIcon} />
                 </div>
                 <Link href="/settings" title="Settings">
                     <VectorIcon src={CogwheelIcon} />

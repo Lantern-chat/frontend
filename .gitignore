@@ -1,8 +1,9 @@
-target
-node_modules
-dist
-docs
-.vscode
+target/
+node_modules/
+dist/
+docs/
+.vscode/
 deps/**/*.jpg
 deps/**/*.png
-build
+build/
+glyphicons-pro/

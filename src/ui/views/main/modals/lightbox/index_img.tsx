@@ -675,7 +675,7 @@ export class LightBoxInner extends React.Component<ILightBoxProps, ILightBoxStat
                             <VectorIcon src={CloseIcon} />
                         </div>
                         <div onClick={() => this.do_toggle_zoom()} data-full={is_full}>
-                            <VectorIcon src={is_full ? FullscreenOff : FullscreenOn} />
+                            <VectorIcon src={is_full ? FullscreenOffIcon : FullscreenOnIcon} />
                         </div>
                     </div>
 

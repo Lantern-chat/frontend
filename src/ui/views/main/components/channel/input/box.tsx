@@ -299,7 +299,7 @@ export const MessageBoxOld = React.memo(() => {
                     <input multiple type={is_empty ? "file" : "text"} name="file_upload" onChange={on_file_change}
                         style={is_empty ? undefined : { zIndex: -999, left: -999, pointerEvents: 'none', display: 'none' }}
                     />
-                    <VectorIcon src={is_empty ? Plus : Send} />
+                    <VectorIcon src={is_empty ? PlusIcon : SendIcon} />
                 </div>
             </div>
 
