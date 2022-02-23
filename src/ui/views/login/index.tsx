@@ -9,7 +9,6 @@ import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
 
 //import { timeout } from "lib/util";
-import { fetch, XHRMethod } from "lib/fetch";
 import { useTitle } from "ui/hooks/useTitle";
 import { Spinner } from "ui/components/common/spinners/spinner";
 //import { VectorIcon } from "ui/components/common/icon";
@@ -19,6 +18,11 @@ import { Modal, FullscreenModal } from "ui/components/modal";
 import { Link } from "ui/components/history";
 
 import { validateEmail } from "lib/validation";
+
+import { ApiError, ApiErrorCode } from "client-sdk/src/api/error";
+import { CLIENT } from "state/global";
+import { UserLogin } from "client-sdk/src/api/commands/user";
+import { DriverError } from "client-sdk/src/driver";
 
 //var PRELOADED: boolean = false;
 //function preloadRegister() {
@@ -81,7 +85,7 @@ function login_state_reducer(state: LoginState, { value, type }: LoginAction): L
             return { ...state, is_logging_in: false };
         }
         case LoginActionType.TOTPRequired: {
-            return { ...state, totp_required: true };
+            return { ...state, totp_required: true, have_2fa: true };
         }
         case LoginActionType.IHave2FA: {
             return { ...state, have_2fa: !state.have_2fa };
@@ -91,7 +95,6 @@ function login_state_reducer(state: LoginState, { value, type }: LoginAction): L
 }
 
 import "./login.scss";
-import { ApiErrorCode } from "client-sdk/src/api/error";
 export default function LoginView() {
     useTitle("Login");
 
@@ -100,51 +103,38 @@ export default function LoginView() {
     let [state, form_dispatch] = useReducer(login_state_reducer, DEFAULT_LOGIN_STATE);
     let [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-    let on_submit = (e: React.FormEvent<HTMLFormElement>) => {
+    let on_submit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         if(state.is_logging_in) return;
 
         form_dispatch({ type: LoginActionType.Login, value: '' });
 
-        let on_error = (err: string) => {
-            setErrorMsg(err);
-            form_dispatch({ type: LoginActionType.NoLogin, value: '' });
-        };
-
-        fetch.submitFormUrlEncoded({
-            url: "/api/v1/user/@me",
-            method: XHRMethod.POST,
-            body: new FormData(e.currentTarget),
-        }).then((req) => {
-            if(req.status == 201 && req.response.auth != null) {
-                dispatch(setSession(req.response))
-            } else {
-                on_error("Unknown Error: " + req.status);
-
-                if(__DEV__) {
-                    console.error("Missing auth field in response: ", req);
+        try {
+            dispatch(setSession(await CLIENT.execute(UserLogin({
+                form: {
+                    email: state.email,
+                    password: state.pass,
+                    totp: state.totp,
                 }
-            }
-        }).catch((req: XMLHttpRequest) => {
-            try {
-                if(req.status == 401 && req.response.code == ApiErrorCode.TOTPRequired) {
-                    form_dispatch({ type: LoginActionType.TOTPRequired, value: '' });
+            }))));
+        } catch(e) {
+            let msg;
+            if(e instanceof ApiError) {
+                if(e.code == ApiErrorCode.TOTPRequired) {
+                    return form_dispatch({ type: LoginActionType.TOTPRequired, value: '' });
                 } else {
-                    let response = req.response;
-                    if(typeof response === 'string') {
-                        response = JSON.parse(response);
-                    }
-                    on_error(response.message);
+                    msg = e.message;
                 }
-            } catch(e) {
-                on_error("Unknown error: " + req.status);
-
-                if(__DEV__) {
-                    console.error("Missing JSON in error response?", e, req);
-                }
+            } else if(e instanceof DriverError) {
+                msg = "Network error: " + e.msg;
+            } else {
+                msg = "Unknown Error";
             }
-        })
+
+            setErrorMsg(msg);
+            form_dispatch({ type: LoginActionType.NoLogin, value: '' });
+        }
     };
 
     let totp_modal;

@@ -41,7 +41,7 @@ export const Link = React.memo(forwardRef((props: ILinkProps, ref: React.Mutable
     let { href, onClick, onTouchEnd, onNavigate, replace, state, target, useDiv, noAction } = props,
         ctx = useContext(HistoryContext),
         history = ctx.history,
-        method = (IS_MOBILE || replace) ? history.replace : history.pushMobile;
+        method = replace ? history.replace : history.pm;
 
     if(href) {
         var ran_onNavigate = false;

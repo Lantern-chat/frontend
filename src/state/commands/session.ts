@@ -4,11 +4,12 @@ import { DispatchableAction, Type } from "state/actions";
 import dayjs, { setLongTimeout } from "lib/time";
 import { storeSession } from "state/storage";
 
+import { Session } from "client-sdk/src/models";
 import { BearerToken } from "client-sdk/src/models/auth";
 
-export function setSession(session: ISession | null): DispatchableAction {
+export function setSession(new_session: ISession | Session | null): DispatchableAction {
     return (dispatch) => {
-        session = parseSession(session);
+        let session = parseSession(new_session);
 
         // stores or removes session based on if session is null
         storeSession(session);
@@ -24,12 +25,12 @@ export function setSession(session: ISession | null): DispatchableAction {
 
             CLIENT.set_auth(new BearerToken(session.auth));
             dispatch({ type: Type.SESSION_LOGIN, session });
-            HISTORY.pushMobile(DEFAULT_LOGGED_IN_CHANNEL);
+            HISTORY.pm(DEFAULT_LOGGED_IN_CHANNEL);
         } else {
             dispatch({ type: Type.SESSION_EXPIRED });
 
             CLIENT.set_auth(null);
-            HISTORY.pushMobile('/login');
+            HISTORY.pm('/login');
         }
     }
 };

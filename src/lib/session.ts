@@ -1,3 +1,4 @@
+import { Session } from "client-sdk/src/models";
 import { Dayjs } from "dayjs";
 import dayjs, { LongTimeout } from "lib/time";
 
@@ -7,7 +8,7 @@ export interface ISession {
     timeout?: LongTimeout,
 }
 
-export function parseSession(session: string | ISession | null): ISession | null {
+export function parseSession(session: string | Session | ISession | null): ISession | null {
     if(typeof session === 'string') {
         session = JSON.parse(session) as ISession;
     }
@@ -20,5 +21,5 @@ export function parseSession(session: string | ISession | null): ISession | null
         }
     }
 
-    return session;
+    return session as any;
 }

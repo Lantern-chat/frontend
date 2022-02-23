@@ -19,12 +19,23 @@ import { BearerToken } from "client-sdk/src/models/auth";
 
 export { DYNAMIC_MIDDLEWARE } from "./root";
 
+export const DEFAULT_LOGGED_IN_CHANNEL: string = "/channels/@me";
+
 export interface IGatewayWorker extends Worker {
     postCmd: (cmd: GatewayCommand) => void,
 }
 
 export interface IHistoryExt extends BrowserHistory {
-    pushMobile(to: To, state?: any): void;
+    /**
+     * pm: Short for "push mobile"
+     *
+     * Same as History.push, but replaced by History.replace on mobile to improve experience,
+     * because touch-swiping tends to accidentally navigate backwards and cause issues.
+     *
+     * @param to Path
+     * @param state any
+     */
+    pm(to: To, state?: any): void;
 }
 
 interface IGlobalState {
@@ -33,22 +44,17 @@ interface IGlobalState {
     history: IHistoryExt,
     store: Store<RootState, Action> & { dispatch: (action: DispatchableAction) => void },
     client: Client,
+    patched_main: boolean,
 }
 
 // use `window` to avoid duplicates in edge-cases
+// all this code should only run once
 export const GLOBAL: IGlobalState = window['LANTERN_GLOABL'] = window['LANTERN_GLOBAL'] || (function(): IGlobalState {
     let history = createBrowserHistory() as IHistoryExt;
+    history.pm = IS_MOBILE ? history.replace : history.push;
 
-    history.pushMobile = IS_MOBILE ? history.replace : history.push;
-    history.listen(update => STORE.dispatch({
-        type: Type.HISTORY_UPDATE,
-        update,
-        ctx: recomputeHistoryContext(history)
-    }));
-
-    let session = loadSession();
-
-    let client = new Client(new Driver(""));
+    let session = loadSession(),
+        client = new Client(new Driver("")); // initialize for the current domain
 
     if(session) {
         client.set_auth(new BearerToken(session.auth));
@@ -61,11 +67,18 @@ export const GLOBAL: IGlobalState = window['LANTERN_GLOABL'] = window['LANTERN_G
         window: {
             ...DEFAULT_WINDOW,
             show_user_list: (() => {
+                // TODO: Centralize storage of this
                 let show_user_list = localStorage.getItem(StorageKey.SHOW_USER_LIST);
                 return typeof show_user_list == 'string' ? JSON.parse(show_user_list) : DEFAULT_WINDOW.show_user_list;
             })()
         }
     }, enhancers);
+
+    history.listen(update => store.dispatch({
+        type: Type.HISTORY_UPDATE,
+        update,
+        ctx: recomputeHistoryContext(history)
+    }));
 
     window.addEventListener('resize', () => {
         store.dispatch({ type: Type.WINDOW_RESIZE });
@@ -76,12 +89,30 @@ export const GLOBAL: IGlobalState = window['LANTERN_GLOABL'] = window['LANTERN_G
         GLOBAL.gateway = undefined;
     });
 
+    const ACCEPTABLE_PATHS = ['login', 'register', 'channels', 'verify', 'reset', 'invite', 'settings'];
+    let first_part = history.location.pathname.slice(1).split('/', 1)[0];
+
+    if(!ACCEPTABLE_PATHS.includes(first_part)) {
+        __DEV__ && console.log("Redirecting to either main or login");
+
+        history.replace(session != null ? DEFAULT_LOGGED_IN_CHANNEL : '/login');
+
+    } else if(['login', 'register'].includes(first_part) && session != null) {
+        __DEV__ && console.log("Redirecting to main because login/register have no point here");
+
+        history.replace(DEFAULT_LOGGED_IN_CHANNEL);
+    }
+
+    setTheme(themeSelector(store.getState()), false);
+
     return {
+        // will be set to true when main view loads
+        patched_main: false,
         client,
         history,
         store,
         cleanup_timer: setInterval(() => {
-            let state = STORE.getState(), chat = state.chat, has_typing = false;
+            let state = store.getState(), chat = state.chat, has_typing = false;
 
             if(!chat) return;
 
@@ -93,30 +124,13 @@ export const GLOBAL: IGlobalState = window['LANTERN_GLOABL'] = window['LANTERN_G
             }
 
             if(has_typing) {
-                STORE.dispatch({ type: Type.CLEANUP_TYPING });
+                store.dispatch({ type: Type.CLEANUP_TYPING });
             }
         }, 2000) // every 2 seconds
     };
 }());
 
+// aliases
 export const HISTORY = GLOBAL.history;
 export const STORE = GLOBAL.store;
 export const CLIENT = GLOBAL.client;
-
-export const DEFAULT_LOGGED_IN_CHANNEL: string = "/channels/@me";
-
-const ACCEPTABLE_PATHS = ['login', 'register', 'channels', 'verify', 'reset', 'invite', 'settings'];
-let first_part = HISTORY.location.pathname.slice(1).split('/', 1)[0];
-
-let session = STORE.getState().user.session;
-if(!ACCEPTABLE_PATHS.includes(first_part)) {
-    __DEV__ && console.log("Redirecting to either main or login");
-
-    HISTORY.replace(session != null ? DEFAULT_LOGGED_IN_CHANNEL : '/login')
-} else if(['login', 'register'].includes(first_part) && session != null) {
-    __DEV__ && console.log("Redirecting to main because login/register have no point here");
-
-    HISTORY.replace(DEFAULT_LOGGED_IN_CHANNEL);
-}
-
-setTheme(themeSelector(STORE.getState()), false);

@@ -1,30 +1,34 @@
-import React, { createContext, useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { batch, useDispatch, useSelector } from "react-redux";
 
 import throttle from 'lodash/throttle';
-
-import { IS_MOBILE } from "lib/user_agent";
 
 import { DispatchableAction, RootState } from "state/root";
 import { mainReducer, Type } from "state/main";
 import { GLOBAL, STORE, DYNAMIC_MIDDLEWARE, HISTORY, IGatewayWorker } from "state/global";
 import { mainMiddleware } from "state/middleware/main";
 
-DYNAMIC_MIDDLEWARE.addMiddleware(mainMiddleware);
-STORE.replaceReducer(mainReducer);
+if(!GLOBAL.patched_main) {
+    DYNAMIC_MIDDLEWARE.addMiddleware(mainMiddleware);
+    STORE.replaceReducer(mainReducer);
 
-let state = STORE.getState(),
-    session = state.user.session;
+    batch(() => {
+        let state = STORE.getState(),
+            session = state.user.session;
 
-STORE.dispatch({ type: Type.REFRESH_ACTIVE, ctx: state.history });
-STORE.dispatch({ type: Type.UPDATE_PREFS, prefs: {} });
+        STORE.dispatch({ type: Type.REFRESH_ACTIVE, ctx: state.history });
+        STORE.dispatch({ type: Type.UPDATE_PREFS, prefs: {} });
 
-// if there is an existing session, fire off the login again to refresh parts of the state
-if(session) {
-    STORE.dispatch({ type: Type.SESSION_LOGIN, session });
-} else {
-    // otherwise, main view should never have been loaded so redirect to login
-    HISTORY.replace('/login');
+        // if there is an existing session, fire off the login again to refresh parts of the state
+        if(session) {
+            STORE.dispatch({ type: Type.SESSION_LOGIN, session });
+        } else {
+            // otherwise, main view should never have been loaded so redirect to login
+            HISTORY.replace('/login');
+        }
+    });
+
+    GLOBAL.patched_main = true;
 }
 
 //function updatePixelRatio() {

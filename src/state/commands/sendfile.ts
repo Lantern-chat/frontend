@@ -1,4 +1,4 @@
-import { fetch, XHRMethod } from "lib/fetch";
+import { GetFilesystemStatus } from "client-sdk/src/api/commands/file";
 import { CLIENT } from "state/global";
 import { Snowflake } from "state/models";
 import { DispatchableAction, Type } from "state/root";
@@ -32,25 +32,12 @@ export function sendFile(opts: IFileUploadOptions): Promise<Snowflake | undefine
 }
 
 export function fetch_quota(): DispatchableAction {
-    return async (dispatch, getState) => {
-        let session = getState().user.session;
-        if(!session) return;
+    return async (dispatch) => {
+        let fs_status = await CLIENT.execute(GetFilesystemStatus({}));
 
-        let res = await fetch({
-            url: '/api/v1/file',
-            method: XHRMethod.OPTIONS,
-            bearer: session.auth,
+        dispatch({
+            type: Type.UPDATE_QUOTA,
+            ...fs_status
         });
-
-        if(res.status == 204) {
-            let quota_used = parseInt(res.getResponseHeader('Upload-Quota-Used') || '0'),
-                quota_total = parseInt(res.getResponseHeader('Upload-Quota-Total') || '0');
-
-            dispatch({
-                type: Type.UPDATE_QUOTA,
-                quota_used,
-                quota_total,
-            });
-        }
     };
 }
