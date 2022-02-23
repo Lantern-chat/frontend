@@ -3,7 +3,6 @@ import { CLIENT, DEFAULT_LOGGED_IN_CHANNEL, HISTORY } from "state/global";
 import { DispatchableAction, Type } from "state/actions";
 import dayjs, { setLongTimeout } from "lib/time";
 import { storeSession } from "state/storage";
-import { fetch, XHRMethod } from "lib/fetch";
 
 import { BearerToken } from "client-sdk/src/models/auth";
 

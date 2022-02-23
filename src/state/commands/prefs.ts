@@ -1,8 +1,6 @@
-import { fetch, XHRMethod } from "lib/fetch";
 import { DispatchableAction, Type } from "state/actions";
 import { CLIENT } from "state/global";
 import { UserPreferenceFlags, UserPreferences } from "state/models";
-import { RootState } from "state/root";
 
 import { UpdateUserPrefs } from "client-sdk/src/api/commands/user";
 
@@ -10,24 +8,14 @@ var temp_prefs: Partial<UserPreferences> = {};
 var dispatch_timeout: number;
 
 export function savePrefs(prefs: Partial<UserPreferences>): DispatchableAction {
-    return async (dispatch, getState) => {
+    return async (dispatch) => {
         temp_prefs = { ...temp_prefs, ...prefs };
 
         dispatch({ type: Type.UPDATE_PREFS, prefs });
 
         clearTimeout(dispatch_timeout);
         dispatch_timeout = setTimeout(async () => {
-            //CLIENT.execute(UpdateUserPrefs({
-            //    prefs: temp_prefs,
-            //}))
-            let state = getState();
-
-            let res = await fetch({
-                url: '/api/v1/user/@me/prefs',
-                method: XHRMethod.PATCH,
-                bearer: state.user.session!.auth,
-                json: temp_prefs,
-            });
+            await CLIENT.execute(UpdateUserPrefs({ prefs: temp_prefs }));
 
             temp_prefs = {};
         }, 500);

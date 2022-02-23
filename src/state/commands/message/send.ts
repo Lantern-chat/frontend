@@ -1,4 +1,3 @@
-import { fetch, XHRMethod } from "lib/fetch";
 import dayjs from "lib/time";
 import { DispatchableAction, Type } from "state/actions";
 import { Room, Snowflake } from "state/models";

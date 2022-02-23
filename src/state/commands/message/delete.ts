@@ -1,4 +1,3 @@
-import { fetch, XHRMethod } from "lib/fetch";
 import { CLIENT } from "state/global";
 import { Snowflake } from "state/models";
 import { DispatchableAction } from "state/root";

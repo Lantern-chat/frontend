@@ -8,7 +8,6 @@ import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
 
 //import { timeout } from "lib/util";
-import { fetch, XHRMethod } from "lib/fetch";
 import { useTitle } from "ui/hooks/useTitle";
 import { Spinner } from "ui/components/common/spinners/spinner";
 //import { VectorIcon } from "ui/components/common/icon";

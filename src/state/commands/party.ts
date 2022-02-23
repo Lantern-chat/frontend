@@ -1,10 +1,10 @@
 import { NAV_TIMEOUT } from "config/base";
 import { room_url } from "config/urls";
-import { fetch, XHRMethod } from "lib/fetch";
 import { DispatchableAction, Type } from "state/actions";
-import { HISTORY } from "state/global";
+import { CLIENT, HISTORY } from "state/global";
 import { Room, Snowflake } from "state/models";
-import { RootState } from "state/root";
+
+import { GetPartyMembers, GetPartyRooms } from "client-sdk/src/api/commands/party";
 
 function get_default_room(rooms: Room[]): Snowflake | undefined {
     let default_room, any_room;
@@ -35,32 +35,23 @@ export function activateParty(party_id: Snowflake, room_id?: Snowflake): Dispatc
             }, NAV_TIMEOUT);
 
             // TODO: Handle errors
-            let res = await fetch({
-                url: `/api/v1/party/${party_id}/rooms`,
-                method: XHRMethod.GET,
-                bearer: state.user.session!.auth,
-            });
+            let rooms = await CLIENT.execute(GetPartyRooms({ party_id }));
 
-            // TODO: Handle errors
-            if(res.status == 200) {
-                let rooms: Room[] = res.response;
+            dispatch({ type: Type.PARTY_LOADED, party_id, rooms });
+            dispatch(loadMembers(party_id));
 
-                dispatch({ type: Type.PARTY_LOADED, party_id, rooms });
-                dispatch(loadMembers(party_id));
+            let new_room_id = room_id || get_default_room(rooms),
+                url = room_url(party_id, new_room_id);
 
-                let new_room_id = room_id || get_default_room(rooms),
-                    url = room_url(party_id, new_room_id);
+            if(HISTORY.location.pathname != url) {
+                __DEV__ && console.log("HERE: ", HISTORY.location.pathname, url);
 
-                if(HISTORY.location.pathname != url) {
-                    __DEV__ && console.log("HERE: ", HISTORY.location.pathname, url);
-
-                    // if the nav timeout hasn't run yet, just do a regular push
-                    if(!navigated) {
-                        HISTORY.pushMobile(url);
-                    } else if(!room_id || !rooms.find(room => room.id == room_id)) {
-                        // otherwise, if the room_id given was invalid, replace with a valid one
-                        HISTORY.replace(url);
-                    }
+                // if the nav timeout hasn't run yet, just do a regular push
+                if(!navigated) {
+                    HISTORY.pushMobile(url);
+                } else if(!room_id || !rooms.find(room => room.id == room_id)) {
+                    // otherwise, if the room_id given was invalid, replace with a valid one
+                    HISTORY.replace(url);
                 }
             }
 
@@ -77,15 +68,10 @@ export function loadMembers(party_id: Snowflake): DispatchableAction {
         let state = getState();
 
         try {
-            let res = await fetch({
-                url: `/api/v1/party/${party_id}/members`,
-                method: XHRMethod.GET,
-                bearer: state.user.session!.auth,
+            dispatch({
+                type: Type.MEMBERS_LOADED, party_id,
+                members: await CLIENT.execute(GetPartyMembers({ party_id }))
             });
-
-            if(res.status == 200) {
-                dispatch({ type: Type.MEMBERS_LOADED, party_id, members: res.response });
-            }
 
         } catch(e) {
             __DEV__ && alert("Error getting members");
