@@ -3,6 +3,10 @@ import dayjs from "lib/time";
 import { DispatchableAction, Type } from "state/actions";
 import { Room, Snowflake } from "state/models";
 
+import { CreateMessage } from "client-sdk/src/api/commands/room";
+import { Driver } from "client-sdk/src/driver";
+import { BearerToken } from "client-sdk/src/models/auth";
+
 var msg_counter = 1;
 
 export function sendMessage(room_id: Snowflake, content: string, attachments?: Snowflake[]): DispatchableAction {
@@ -14,25 +18,25 @@ export function sendMessage(room_id: Snowflake, content: string, attachments?: S
 
         let state = getState(), { user, session } = state.user;
 
-        let now = dayjs();
+        //let now = dayjs();
 
-        dispatch({
-            type: Type.MESSAGE_SEND, msg: {
-                id: (msg_counter += 1).toString(),
-                author: user!,
-                content,
-                created_at: now.toISOString(),
-                room_id,
-                flags: 0,
-            }
-        });
+        //dispatch({
+        //    type: Type.MESSAGE_SEND, msg: {
+        //        id: (msg_counter += 1).toString(),
+        //        author: user!,
+        //        content,
+        //        created_at: now.toISOString(),
+        //        room_id,
+        //        flags: 0,
+        //    }
+        //});
 
-        let res = await fetch({
-            url: `/api/v1/room/${room_id}/messages`,
-            method: XHRMethod.POST,
-            bearer: session!.auth,
-            json: { content, attachments },
-        });
+        let driver = new Driver('', new BearerToken(session!.auth));
+
+        let res = await driver.execute(CreateMessage({
+            room_id,
+            msg: { content, attachments }
+        }));
 
         // TODO: Handle errors
     };

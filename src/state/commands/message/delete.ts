@@ -1,16 +1,12 @@
 import { fetch, XHRMethod } from "lib/fetch";
+import { CLIENT } from "state/global";
 import { Snowflake } from "state/models";
 import { DispatchableAction } from "state/root";
 
+import { DeleteMessage } from "client-sdk/src/api/commands/room";
+
 export function deleteMessage(room_id: Snowflake, msg_id: Snowflake): DispatchableAction {
-    return async (dispatch, getState) => {
-        let state = getState(), { user, session } = state.user;
-
-        let res = await fetch({
-            url: `/api/v1/room/${room_id}/messages/${msg_id}`,
-            method: XHRMethod.DELETE,
-            bearer: session!.auth,
-        });
-
+    return async () => {
+        await CLIENT.execute(DeleteMessage({ room_id, msg_id }));
     };
 }

@@ -1,17 +1,11 @@
-import { fetch, XHRMethod } from "lib/fetch";
 import { DispatchableAction } from "state/actions";
+import { CLIENT } from "state/global";
 import { Snowflake } from "state/models";
 
-export function startTyping(room_id: Snowflake): DispatchableAction {
-    return async (dispatch, getState) => {
-        let res = await fetch({
-            url: `/api/v1/room/${room_id}/typing`,
-            method: XHRMethod.POST,
-            bearer: getState().user.session!.auth
-        });
+import { StartTyping } from "client-sdk/src/api/commands/room";
 
-        if(res.status != 204) {
-            console.error("Error sending typing start event");
-        }
+export function startTyping(room_id: Snowflake): DispatchableAction {
+    return async () => {
+        await CLIENT.execute(StartTyping({ room_id }));
     }
 }

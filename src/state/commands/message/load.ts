@@ -1,38 +1,23 @@
-import { fetch, XHRMethod } from "lib/fetch";
 import { DispatchableAction, Type } from "state/actions";
-import { Room, Snowflake } from "state/models";
+import { Snowflake } from "state/models";
+
+import { GetMessages } from "client-sdk/src/api/commands/room";
+import { CLIENT } from "state/global";
 
 export enum SearchMode {
     Before = "before",
     After = "after",
-    Around = "around",
 }
 
 export function loadMessages(room_id: Snowflake, search?: Snowflake, mode: SearchMode = SearchMode.After): DispatchableAction {
-    return async (dispatch, getState) => {
-        let state = getState();
-
-        let query = "?limit=100";
-
-        if(search) {
-            query += `&${mode}=` + search;
-        }
-
-        // TODO: Run this in a loop to fetch ALL messages since search, IF AND ONLY IF there is a search id
+    return async (dispatch) => {
         try {
-            let url = `/api/v1/room/${room_id}/messages${query}`;
+            let msgs = await CLIENT.execute(GetMessages({
+                room_id,
+                query: { [mode]: search, limit: 100 }
+            }));
 
-            __DEV__ && console.log("FETCHING:", url);
-
-            let res = await fetch({
-                url,
-                method: XHRMethod.GET,
-                bearer: state.user.session!.auth,
-            });
-
-            if(res.status == 200) {
-                dispatch({ type: Type.MESSAGES_LOADED, room_id, msgs: res.response, mode });
-            }
+            dispatch({ type: Type.MESSAGES_LOADED, room_id, msgs: msgs as any, mode });
         } catch(e) {
             if(__DEV__) {
                 alert("Error loading messages");

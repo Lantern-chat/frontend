@@ -54,12 +54,10 @@ export const FileUploadModal = React.memo((props: FileUploadModalProps) => {
         setUploading(true);
 
         dispatch((async (dispatch, getState) => {
-            let bearer = getState().user.session!.auth;
-
             let onError = () => console.error("Upload error");
             let onProgress = () => { };
 
-            let uploads = files.map(file => sendFile(bearer, { file: { file }, onError, onProgress }));
+            let uploads = files.map(file => sendFile({ file: { file }, onError, onProgress }));
 
             let ids = await Promise.all(uploads);
 

@@ -1,6 +1,7 @@
 import { encodeBase64, encodeUTF8toBase64 } from "lib/base64";
 import { crc32_buf as crc32 } from "lib/crc32";
 import { fetch, XHRMethod } from "lib/fetch";
+import { CLIENT } from "state/global";
 import { Snowflake } from "state/models";
 import { DispatchableAction, Type } from "state/root";
 
@@ -18,7 +19,21 @@ interface IFileUploadOptions {
     onError(xhr: XMLHttpRequest): void;
 }
 
-export async function sendFile(bearer: string, opts: IFileUploadOptions): Promise<Snowflake | undefined> {
+export function sendFile(opts: IFileUploadOptions): Promise<Snowflake | undefined> {
+    let { file, preview, width, height } = opts.file,
+        name = file.name,
+        mime = file.type;
+
+    return CLIENT.upload_stream({
+        filename: name,
+        mime,
+        width,
+        height,
+        preview,
+    }, file);
+}
+
+export async function sendFileOld(bearer: string, opts: IFileUploadOptions): Promise<Snowflake | undefined> {
     let { file, preview, width, height } = opts.file,
         size = file.size,
         name = file.name,
