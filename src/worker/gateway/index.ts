@@ -1,12 +1,10 @@
 const ctx: Worker = self as any;
 
-import { zlibSync as compress, unzlibSync as decompress } from 'fflate';
+import { GatewaySocket, GatewayError } from "client-sdk/src/gateway";
+import { ServerMsg, ClientMsg, ServerMsgOpcode, ClientMsgOpcode } from "client-sdk/src/models/gateway";
 
 import { GatewayMessage, GatewayMessageDiscriminator } from "./msg";
 import { GatewayCommand, GatewayCommandDiscriminator } from "./cmd";
-import { GatewayEvent, GatewayEventCode } from "./event";
-import { GatewayClientCommand, GatewayClientCommandDiscriminator } from "./client";
-import { IS_MOBILE } from 'lib/user_agent';
 
 __DEV__ && console.log("!!!!!GATEWAY LOADED!!!!!");
 
@@ -15,10 +13,7 @@ function postMsg(msg: GatewayMessage) {
 }
 
 class Gateway {
-    encoder: TextEncoder;
-    decoder: TextDecoder;
-
-    ws: WebSocket | null = null;
+    ws: GatewaySocket;
 
     // heartbeat interval
     heartbeat_interval: number = 45000;
@@ -36,8 +31,12 @@ class Gateway {
     connecting_timeout?: number;
 
     constructor() {
-        this.encoder = new TextEncoder();
-        this.decoder = new TextDecoder();
+        let ws = this.ws = new GatewaySocket();
+
+        ws.on('error', err => this.on_error(err));
+        ws.on('msg', msg => this.on_msg(msg));
+        ws.on('open', () => this.on_open());
+        ws.on('close', ev => this.on_close(ev));
     }
 
     connect() {
@@ -62,13 +61,7 @@ class Gateway {
     do_connect() {
         postMsg({ t: GatewayMessageDiscriminator.Connecting });
 
-        this.ws = new WebSocket(`wss://${self.location.host}/api/v1/gateway?compress=true&encoding=json`);
-        this.ws.binaryType = "arraybuffer";
-
-        this.ws.addEventListener('open', () => this.on_open());
-        this.ws.addEventListener('message', msg => this.on_msg(msg.data));
-        this.ws.addEventListener('close', msg => this.on_close(msg));
-        this.ws.addEventListener('error', err => this.on_error(err));
+        this.ws.connect(`wss://${self.location.host}/api/v1/gateway?compress=true&encoding=json`);
     }
 
     retry_now() {
@@ -78,38 +71,25 @@ class Gateway {
     }
 
     // TODO: Memoize?
-    send(value: GatewayClientCommand) {
-        if(!this.ws) {
-            return postMsg({ t: GatewayMessageDiscriminator.Error, p: { err: "WebSocket undefined" } });
-        }
-
-        __DEV__ && console.log("SENDING: ", value);
-
-        let str = JSON.stringify(value);
-        let encoded = this.encoder.encode(str);
-        let compressed = compress(encoded, { level: 9 });
-
-        this.ws.send(compressed);
+    send(value: ClientMsg) {
+        this.ws.send(value);
     }
 
     do_close() {
-        if(this.ws) {
-            this.ws = null;
-            clearTimeout(this.heartbeat_timeout);
-            clearInterval(this.heartbeat_timer); // clear heartbeat
-        }
+        clearTimeout(this.heartbeat_timeout);
+        clearInterval(this.heartbeat_timer);
     }
 
     on_close(msg: CloseEvent) {
         __DEV__ && console.log("GATEWAY CLOSED");
+
         this.do_close();
         postMsg({ t: GatewayMessageDiscriminator.Disconnected, p: msg.code });
     }
 
-    on_error(_err: Event) {
+    on_error(_err: GatewayError) {
         __DEV__ && console.log("GATEWAY ERROR: ", _err);
 
-        // TODO: Handle this as a close event?
         this.do_close();
         postMsg({ t: GatewayMessageDiscriminator.Error, p: { err: "WS Error" } });
     }
@@ -121,15 +101,11 @@ class Gateway {
         // NOTE: Nothing else to do on open except wait for the Hello event
     }
 
-    on_msg(raw: ArrayBuffer) {
-        let decompressed = decompress(new Uint8Array(raw));
-        let decoded = this.decoder.decode(decompressed);
-        let msg: GatewayEvent = JSON.parse(decoded);
-
+    on_msg(msg: ServerMsg) {
         __DEV__ && console.log("GATEWAY CODE: ", msg.o);
 
         switch(msg.o) {
-            case GatewayEventCode.Hello: {
+            case ServerMsgOpcode.Hello: {
                 __DEV__ && console.log("GATEWAY: HELLO", msg);
 
                 this.heartbeat_interval = msg.p.heartbeat_interval || 45000;
@@ -139,13 +115,13 @@ class Gateway {
 
                 break;
             }
-            case GatewayEventCode.HeartbeatACK: {
+            case ServerMsgOpcode.HeartbeatAck: {
                 __DEV__ && console.log("GATEWAY: ACK", msg);
 
                 clearTimeout(this.heartbeat_timeout);
                 break;
             }
-            case GatewayEventCode.Ready: {
+            case ServerMsgOpcode.Ready: {
                 __DEV__ && console.log("GATEWAY READY", msg);
 
                 return postMsg({
@@ -153,7 +129,7 @@ class Gateway {
                     p: msg.p,
                 });
             }
-            case GatewayEventCode.InvalidSession: {
+            case ServerMsgOpcode.InvalidSession: {
                 __DEV__ && console.log("GATEWAY INVALID SESSION");
                 return postMsg({
                     t: GatewayMessageDiscriminator.InvalidSession,
@@ -167,7 +143,7 @@ class Gateway {
     }
 
     heartbeat() {
-        this.send({ o: GatewayClientCommandDiscriminator.Heartbeat });
+        this.send({ o: ClientMsgOpcode.Heartbeat });
 
         // in `heartbeat_interval` milliseconds, check if an ACK has been received or disconnect/reconnect
         this.heartbeat_timeout = setTimeout(() => this.disconnect(), this.heartbeat_interval) as any;
@@ -185,13 +161,13 @@ class Gateway {
     identify() {
         __DEV__ && console.log("Identifying with intent: ", this.intent.toString(2));
 
-        this.send({ o: GatewayClientCommandDiscriminator.Identify, p: { auth: this.auth!, intent: this.intent } });
+        this.send({ o: ClientMsgOpcode.Identify, p: { auth: this.auth!, intent: this.intent } });
     }
 
-    set_presence(away: boolean) {
+    set_presence(away: boolean, mobile: boolean) {
         this.send({
-            o: GatewayClientCommandDiscriminator.SetPresence, p: {
-                flags: (away ? 2 : 1) | (IS_MOBILE ? 8 : 0),
+            o: ClientMsgOpcode.SetPresence, p: {
+                flags: (away ? 2 : 1) | (mobile ? 8 : 0),
             }
         });
     }
@@ -220,7 +196,7 @@ ctx.addEventListener('message', msg => {
             break;
         }
         case GatewayCommandDiscriminator.SetPresence: {
-            GATEWAY.set_presence(data.away);
+            GATEWAY.set_presence(data.away, data.mobile);
             break;
         }
         default: {

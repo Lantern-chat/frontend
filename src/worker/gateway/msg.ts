@@ -1,5 +1,4 @@
-import { ReadyEvent } from "state/models";
-import { GatewayEvent } from "./event";
+import { ReadyEvent, ServerMsg } from "client-sdk/src/models/gateway";
 
 export enum GatewayMessageDiscriminator {
     Initialized,
@@ -41,7 +40,7 @@ export interface GatewayMessageDisconnected {
 
 export interface GatewayMessageEvent {
     t: GatewayMessageDiscriminator.Event;
-    p: GatewayEvent
+    p: ServerMsg,
 }
 
 export interface GatewayMessageError {

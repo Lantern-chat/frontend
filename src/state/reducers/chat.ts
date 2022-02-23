@@ -5,9 +5,8 @@ import { binarySearch } from "lib/util";
 
 import { Action, Type } from "../actions";
 
-import { Message, Snowflake, Room, Attachment } from "../models";
+import { Message, Snowflake, Room, Attachment, ServerMsg, ServerMsgOpcode } from "../models";
 import { GatewayMessageDiscriminator } from "worker/gateway/msg";
-import { GatewayEventCode } from "worker/gateway/event";
 import { SearchMode } from "state/commands";
 
 /*
@@ -208,9 +207,9 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
         case Type.GATEWAY_EVENT: {
             switch(action.payload.t) {
                 case GatewayMessageDiscriminator.Event: {
-                    let event = action.payload.p;
+                    let event: ServerMsg = action.payload.p;
                     switch(event.o) {
-                        case GatewayEventCode.MessageDelete: {
+                        case ServerMsgOpcode.MessageDelete: {
                             let raw = event.p;
 
                             return produce(state, draft => {
@@ -223,7 +222,7 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
                                 room.msgs.splice(msg_idx, 1);
                             });
                         }
-                        case GatewayEventCode.MessageCreate: {
+                        case ServerMsgOpcode.MessageCreate: {
                             let raw_msg = event.p, msg = {
                                 msg: raw_msg,
                                 ts: dayjs(raw_msg.created_at),
@@ -260,7 +259,7 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
                                 }
                             });
                         }
-                        case GatewayEventCode.MessageUpdate: {
+                        case ServerMsgOpcode.MessageUpdate: {
                             let raw_msg = event.p, msg = {
                                 msg: raw_msg,
                                 ts: dayjs(raw_msg.created_at),
@@ -278,7 +277,7 @@ export function chatReducer(state: IChatState | null | undefined, action: Action
                                 }
                             });
                         }
-                        case GatewayEventCode.TypingStart: {
+                        case ServerMsgOpcode.TypingStart: {
                             let { user, room: room_id } = event.p;
 
                             return produce(state, draft => {

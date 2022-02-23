@@ -1,3 +1,7 @@
+/**
+ * Largely borrowed from https://github.com/waitingsong/base64
+ */
+
 const LOOKUP: string[] = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'.split('');
 
 function tripletToBase64(pos: number): string {

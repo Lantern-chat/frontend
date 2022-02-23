@@ -1,3 +1,4 @@
+import { IS_MOBILE } from "lib/user_agent";
 import { DispatchableAction } from "state/actions";
 import { GLOBAL } from "state/global";
 import { GatewayCommandDiscriminator } from "worker/gateway/cmd";
@@ -9,6 +10,6 @@ export function setPresence(away: boolean): DispatchableAction {
 
         if(presence && (presence.flags & 3) == (away ? 2 : 1)) return;
 
-        GLOBAL.gateway!.postCmd({ t: GatewayCommandDiscriminator.SetPresence, away });
+        GLOBAL.gateway!.postCmd({ t: GatewayCommandDiscriminator.SetPresence, away, mobile: IS_MOBILE });
     };
 }

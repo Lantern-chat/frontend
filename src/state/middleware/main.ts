@@ -231,7 +231,7 @@ export const mainMiddleware: Middleware<{}, RootState, Dispatch> = ({ dispatch, 
                         { active_party, active_room } = state.chat;
 
                     // Once the gateway is ready, we can signal our presence
-                    GLOBAL.gateway.postCmd({ t: GatewayCommandDiscriminator.SetPresence, away: false });
+                    GLOBAL.gateway.postCmd({ t: GatewayCommandDiscriminator.SetPresence, away: false, mobile: IS_MOBILE });
 
                     if(active_party && parties.has(active_party)) {
                         // gateway has connected, so fetch the currently selected party id

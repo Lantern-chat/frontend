@@ -4,7 +4,6 @@ import React, { useState, useMemo, useReducer, useEffect, useContext, useCallbac
 import { useDispatch } from "react-redux";
 import { Dispatch } from "state/actions";
 import { setSession } from "state/commands";
-import { ErrorCode } from "state/models";
 
 import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
@@ -92,6 +91,7 @@ function login_state_reducer(state: LoginState, { value, type }: LoginAction): L
 }
 
 import "./login.scss";
+import { ApiErrorCode } from "client-sdk/src/api/error";
 export default function LoginView() {
     useTitle("Login");
 
@@ -128,7 +128,7 @@ export default function LoginView() {
             }
         }).catch((req: XMLHttpRequest) => {
             try {
-                if(req.status == 401 && req.response.code == ErrorCode.TOTPRequired) {
+                if(req.status == 401 && req.response.code == ApiErrorCode.TOTPRequired) {
                     form_dispatch({ type: LoginActionType.TOTPRequired, value: '' });
                 } else {
                     let response = req.response;

@@ -12,12 +12,13 @@ export enum SearchMode {
 export function loadMessages(room_id: Snowflake, search?: Snowflake, mode: SearchMode = SearchMode.After): DispatchableAction {
     return async (dispatch) => {
         try {
-            let msgs = await CLIENT.execute(GetMessages({
-                room_id,
-                query: { [mode]: search, limit: 100 }
-            }));
-
-            dispatch({ type: Type.MESSAGES_LOADED, room_id, msgs: msgs as any, mode });
+            dispatch({
+                type: Type.MESSAGES_LOADED, room_id, mode,
+                msgs: await CLIENT.execute(GetMessages({
+                    room_id,
+                    query: { [mode]: search, limit: 100 }
+                }))
+            });
         } catch(e) {
             if(__DEV__) {
                 alert("Error loading messages");

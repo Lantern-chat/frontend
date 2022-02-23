@@ -1,9 +1,8 @@
 import { Action, Type } from "../actions";
 
-import { User, UserPresence } from "../models";
+import { ServerMsgOpcode, User, UserPresence } from "../models";
 import { ISession } from "lib/session";
 import { GatewayMessageDiscriminator } from "worker/gateway/msg";
-import { GatewayEventCode } from "worker/gateway/event";
 
 export interface IUserState {
     user?: User,
@@ -39,14 +38,14 @@ export function userReducer(state: IUserState = DEFAULT_STATE, action: Action) {
                     let p = action.payload.p;
 
                     switch(p.o) {
-                        case GatewayEventCode.PresenceUpdate: {
+                        case ServerMsgOpcode.PresenceUpdate: {
                             if(p.p.user.id == state.user.id) {
                                 return { ...state, presence: p.p.presence };
                             }
 
                             break;
                         }
-                        case GatewayEventCode.UserUpdate: {
+                        case ServerMsgOpcode.UserUpdate: {
                             let user = p.p.user;
 
                             // overwrite own user info if same user and has private fields present

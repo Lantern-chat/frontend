@@ -4,9 +4,9 @@ import { PartyMember, Role } from "state/models";
 import { Action, Type } from "../actions";
 
 import { Snowflake, Party, Room } from "../models";
-import { GatewayEventCode } from "worker/gateway/event";
 import { computeRoleColor } from "state/selectors/party";
 import { shallowEqualArrays } from "lib/compare";
+import { ServerMsgOpcode } from "client-sdk/src/models";
 
 export interface IParty {
     party: Party,
@@ -153,16 +153,18 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
                 case GatewayMessageDiscriminator.Event: {
                     let p = action.payload.p;
                     switch(p.o) {
-                        case GatewayEventCode.PartyCreate:
-                        case GatewayEventCode.PartyUpdate: {
+                        case ServerMsgOpcode.PartyCreate:
+                        case ServerMsgOpcode.PartyUpdate: {
                             let party = p.p;
 
                             return produce(state, draft => {
                                 let existing = draft.parties.get(party.id);
 
                                 // PartyPositionUpdate only
-                                if(!party.name && existing) {
-                                    existing.party.position = party.position;
+                                if(!party.name) {
+                                    if(existing) {
+                                        existing.party.position = party.position;
+                                    }
                                     return;
                                 }
 
@@ -187,7 +189,7 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
                                 }
                             });
                         }
-                        case GatewayEventCode.PartyDelete: {
+                        case ServerMsgOpcode.PartyDelete: {
                             let party_id = p.p.id;
 
                             return produce(state, draft => {
@@ -204,7 +206,7 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
                                 }
                             });
                         }
-                        case GatewayEventCode.PresenceUpdate: {
+                        case ServerMsgOpcode.PresenceUpdate: {
                             let { user, party: party_id, presence } = p.p;
                             if(!party_id) break;
 
@@ -218,9 +220,9 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
                                 member.presence = presence;
                             });
                         }
-                        case GatewayEventCode.RoleDelete:
-                        case GatewayEventCode.RoleUpdate:
-                        case GatewayEventCode.RoleCreate: {
+                        case ServerMsgOpcode.RoleDelete:
+                        case ServerMsgOpcode.RoleUpdate:
+                        case ServerMsgOpcode.RoleCreate: {
                             let role = p.p;
 
                             return produce(state, draft => {
@@ -234,12 +236,12 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
 
                                 // Ensure state.roles, role_members and party.roles are all updated accordingly
                                 switch(p.o) {
-                                    case GatewayEventCode.RoleCreate:
-                                    case GatewayEventCode.RoleUpdate: {
+                                    case ServerMsgOpcode.RoleCreate:
+                                    case ServerMsgOpcode.RoleUpdate: {
                                         draft.roles.set(role.id, role as Role);
 
                                         party_model.roles ??= [];
-                                        if(p.o != GatewayEventCode.RoleCreate) {
+                                        if(p.o != ServerMsgOpcode.RoleCreate) {
                                             // attempt to find an existing role entry, update it, and break early
                                             let idx = party_model.roles.findIndex(r => r.id == role.id);
                                             if(idx != -1) { party_model.roles[idx] = role as Role; break; }
@@ -249,7 +251,7 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
                                         party_model.roles.push(role as Role);
                                         break;
                                     }
-                                    case GatewayEventCode.RoleDelete: {
+                                    case ServerMsgOpcode.RoleDelete: {
                                         roles.delete(role.id);
                                         party.role_members.delete(role.id);
                                         party_model.roles = party_model.roles?.filter(r => r.id == role.id);
@@ -288,8 +290,8 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
                                 }
                             });
                         }
-                        case GatewayEventCode.MemberUpdate:
-                        case GatewayEventCode.MemberAdd: {
+                        case ServerMsgOpcode.MemberUpdate:
+                        case ServerMsgOpcode.MemberAdd: {
                             let member = p.p,
                                 { party_id, user } = member, id = user.id;
 
@@ -359,7 +361,7 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
                                 }
                             });
                         }
-                        case GatewayEventCode.MemberRemove: {
+                        case ServerMsgOpcode.MemberRemove: {
                             let member = p.p, { party_id, user } = member;
 
                             return produce(state, draft => {
@@ -369,7 +371,7 @@ export function partyReducer(state: IPartyState | null | undefined, action: Acti
                                 party.members.delete(user.id);
                             });
                         }
-                        case GatewayEventCode.UserUpdate: {
+                        case ServerMsgOpcode.UserUpdate: {
                             let user = p.p.user;
 
                             return produce(state, draft => {

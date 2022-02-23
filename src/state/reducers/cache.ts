@@ -2,7 +2,6 @@ import produce from "immer";
 import { Action, Type } from "state/actions";
 import { PartyMember, Snowflake, User, UserPresence } from "state/models";
 import { genCachedUserKey } from "state/selectors/selectCachedUser";
-import { GatewayEventCode } from "worker/gateway/event";
 import { GatewayMessageDiscriminator } from "worker/gateway/msg";
 
 export interface CachedUser {

@@ -1,7 +1,6 @@
 import { Dispatch as ReduxDispatch } from "redux";
-import { History } from "history";
 import { IHistoryState } from "./reducers";
-import { Snowflake, Room, Message, PartyMember, UserPreferences, ApiError as RawApiError } from "./models";
+import { Snowflake, Room, Message, PartyMember, UserPreferences } from "./models";
 import { RootState } from "state/root";
 import { ISession } from "lib/session";
 
@@ -56,7 +55,6 @@ export type DispatchableAction = Action | ThunkAction | Promise<DispatchableActi
 export type ThunkAction = (dispatch: <T extends DispatchableAction>(action: T) => T, getState: () => RootState) => void;
 
 export type Action =
-    ApiError |
     HistoryUpdate |
     SessionLogin |
     SessionExpired |
@@ -83,11 +81,6 @@ export type Action =
     MessageSendEdit |
     MessageDraft |
     UpdateQuota;
-
-export interface ApiError {
-    type: Type.API_ERROR,
-    error: RawApiError,
-}
 
 // HISTORY ACTIONS
 

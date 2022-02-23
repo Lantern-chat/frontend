@@ -15,6 +15,7 @@ export interface GatewayCommandDisconnect {
 export interface GatewayCommandSetPresence {
     t: GatewayCommandDiscriminator.SetPresence,
     away: boolean,
+    mobile: boolean,
 }
 
 export type GatewayCommand =
