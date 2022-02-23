@@ -4,8 +4,7 @@ import { DispatchableAction, Type } from "state/actions";
 import { Room, Snowflake } from "state/models";
 
 import { CreateMessage } from "client-sdk/src/api/commands/room";
-import { Driver } from "client-sdk/src/driver";
-import { BearerToken } from "client-sdk/src/models/auth";
+import { CLIENT } from "state/global";
 
 var msg_counter = 1;
 
@@ -15,8 +14,6 @@ export function sendMessage(room_id: Snowflake, content: string, attachments?: S
         let has_attachments = attachments && attachments.length > 0;
 
         if((!has_attachments && content.length == 0) || content.length > 5000) return;
-
-        let state = getState(), { user, session } = state.user;
 
         //let now = dayjs();
 
@@ -31,9 +28,7 @@ export function sendMessage(room_id: Snowflake, content: string, attachments?: S
         //    }
         //});
 
-        let driver = new Driver('', new BearerToken(session!.auth));
-
-        let res = await driver.execute(CreateMessage({
+        let res = await CLIENT.execute(CreateMessage({
             room_id,
             msg: { content, attachments }
         }));
