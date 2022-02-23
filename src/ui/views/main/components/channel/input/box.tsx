@@ -225,7 +225,7 @@ export const MessageBoxOld = React.memo(() => {
             __DEV__ && console.log("Swapping icons");
             forceRender();
         }
-    }, []);
+    }, [active_room]);
 
     let on_focus = useCallback(() => {
         dispatchBox({ t: MsgBoxActionType.SetFocus, v: true });

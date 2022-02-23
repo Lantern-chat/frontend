@@ -40,22 +40,23 @@ class Gateway {
     }
 
     connect() {
-        if(!this.ws) {
-            if(this.connecting_timeout !== undefined) {
-                return this.retry_now();
-            }
+        if(this.ws.readyState === 1) return;
 
-            let delay = this.attempt ? 1000 : 0;
-
-            __DEV__ && console.log("DELAY: ", delay);
-
-            if(delay > 0) {
-                postMsg({ t: GatewayMessageDiscriminator.Waiting, p: Date.now() + delay })
-            }
-
-            this.connecting_timeout = <any>setTimeout(() => this.do_connect(), delay);
-            this.attempt += 1;
+        if(this.connecting_timeout !== undefined) {
+            return this.retry_now();
         }
+
+        let delay = this.attempt ? 1000 : 0;
+
+        __DEV__ && console.log("DELAY: ", delay);
+
+        if(delay > 0) {
+            postMsg({ t: GatewayMessageDiscriminator.Waiting, p: Date.now() + delay })
+        }
+
+        this.connecting_timeout = <any>setTimeout(() => this.do_connect(), delay);
+        this.attempt += 1;
+
     }
 
     do_connect() {
@@ -102,7 +103,7 @@ class Gateway {
     }
 
     on_msg(msg: ServerMsg) {
-        __DEV__ && console.log("GATEWAY CODE: ", msg.o);
+        __DEV__ && console.log("GATEWAY MSG: ", msg);
 
         switch(msg.o) {
             case ServerMsgOpcode.Hello: {
