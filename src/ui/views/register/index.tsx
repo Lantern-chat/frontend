@@ -12,9 +12,6 @@ import dayjs from "lib/time";
 import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
 
-//import { timeout } from "lib/util";
-import { fetch, XHRMethod } from "lib/fetch";
-
 import { Link } from "ui/components/history";
 
 import { VectorIcon } from "ui/components/common/icon";
@@ -25,6 +22,11 @@ import { FormGroup, FormLabel, FormInput, FormText, FormSelect, FormSelectOption
 import HCaptcha from '@hcaptcha/react-hcaptcha';
 
 import { validateUsername, validatePass, validateEmail } from "lib/validation";
+
+import { ApiError, ApiErrorCode } from "client-sdk/src/api/error";
+import { CLIENT } from "state/global";
+import { UserRegister } from "client-sdk/src/api/commands/user";
+import { DriverError } from "client-sdk/src/driver";
 
 //import { calcPasswordStrength } from "./password";
 
@@ -248,43 +250,27 @@ export default function RegisterView() {
         }
 
         try {
-            let req = await fetch({
-                url: "/api/v1/user",
-                method: XHRMethod.POST,
-                json: {
+            dispatch(setSession(await CLIENT.execute(UserRegister({
+                form: {
                     email: state.email,
                     username: state.user,
                     password: state.pass,
-                    year: state.dob.y,
-                    month: state.dob.m,
-                    day: state.dob.d,
+                    year: state.dob.y!,
+                    month: state.dob.m!,
+                    day: state.dob.d!,
                     token: res.response,
-                },
-            });
-
-            if(req.status == 201 && req.response.auth != null) {
-                dispatch(setSession(req.response))
-            } else {
-                on_error("Unknown Error: " + req.status);
-
-                if(__DEV__) {
-                    console.error("Missing auth field in response: ", req);
                 }
-            }
+            }))));
         } catch(req) {
-            try {
-                let response = req.response;
-                if(typeof response === 'string') {
-                    response = JSON.parse(response);
-                }
-                on_error(response.message);
-            } catch(e) {
-                on_error("Unknown error: " + req.status);
-
-                if(__DEV__) {
-                    console.error("Missing JSON in error response?", e, req);
-                }
+            let msg;
+            if(e instanceof ApiError) {
+                msg = e.message;
+            } else if(e instanceof DriverError) {
+                msg = "Network error: " + e.msg;
+            } else {
+                msg = "Unknown Error";
             }
+            on_error(msg);
         }
     };
 
