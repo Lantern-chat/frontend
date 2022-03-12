@@ -1,4 +1,4 @@
-export enum GatewayCommandDiscriminator {
+export const enum GatewayCommandDiscriminator {
     Connect,
     Disconnect,
     SetPresence,
@@ -19,6 +19,6 @@ export interface GatewayCommandSetPresence {
 }
 
 export type GatewayCommand =
-    GatewayCommandConnect |
-    GatewayCommandDisconnect |
-    GatewayCommandSetPresence;
+    | GatewayCommandConnect
+    | GatewayCommandDisconnect
+    | GatewayCommandSetPresence;

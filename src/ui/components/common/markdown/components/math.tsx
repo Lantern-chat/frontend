@@ -1,4 +1,4 @@
-import React from "react";
+import { createMemo } from 'solid-js';
 
 import katex from 'katex';
 
@@ -18,29 +18,16 @@ export interface IMathProps {
 }
 
 import "./math.scss";
-const Math = React.memo((props: IMathProps) => {
-    let result: string = katex.renderToString(props.src, {
+import { Dynamic } from 'solid-js/web';
+export default function Math(props: IMathProps) {
+    let html = createMemo(() => katex.renderToString(props.src, {
         displayMode: !props.inline,
         strict: false,
         throwOnError: false,
         macros: katexMacros,
         output: 'htmlAndMathml',
         maxSize: 5,
-    });
+    }));
 
-    let inner_props = {
-        dangerouslySetInnerHTML: { __html: result }
-    };
-
-    if(props.inline) {
-        return <span className="ln-math" {...inner_props} />
-    } else {
-        return <div className="ln-math" {...inner_props} />
-    }
-});
-
-if(__DEV__) {
-    Math.displayName = "Math";
+    return <Dynamic component={props.inline ? 'span' : 'div'} innerHTML={html()} />;
 }
-
-export default Math;

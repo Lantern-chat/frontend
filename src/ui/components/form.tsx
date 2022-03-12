@@ -1,101 +1,84 @@
-import React, { InputHTMLAttributes, useMemo, useRef, useState } from "react";
-
-import classnames from "classnames";
+import { JSX } from "solid-js";
 
 import "./form.scss";
 
 interface IFormGroupProps {
-    children: React.ReactNode,
+    children: JSX.Element,
     id?: string,
 }
 
 interface IFormLabelProps {
-    children: React.ReactNode,
+    children: JSX.Element,
     htmlFor?: string,
 }
 
 interface IFormTextProps {
-    children: React.ReactNode
+    children: JSX.Element,
 }
 
-export const FormGroup: React.FunctionComponent<IFormGroupProps> = React.memo((props: IFormGroupProps) => {
+export function FormGroup(props: IFormGroupProps) {
     return <div className="ln-form-group" {...props} />
-});
-
-export const FormLabel: React.FunctionComponent<IFormLabelProps> = React.memo((props: IFormLabelProps) => {
-    return <label className="ln-form-label" {...props} />;
-});
-
-export const FormText: React.FunctionComponent<IFormTextProps> = React.memo((props: IFormTextProps) => {
-    return <p className="ln-form-text" {...props} />;
-});
-
-interface IFormInputProps extends InputHTMLAttributes<HTMLInputElement> {
-    isValid?: boolean | null,
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void,
 }
 
-export const FormInput: React.FunctionComponent<IFormInputProps> = React.memo((props: IFormInputProps) => {
-    let classes = classnames("ln-form-control-wrapper", props.className, {
-        'ln-success': props.isValid === true,
-        'ln-error': props.isValid === false,
-    });
+export function FormLabel(props: IFormLabelProps) {
+    return <label className="ln-form-label" {...props} />;
+}
 
-    if(__DEV__) {
-        props = { ...props };
-        delete props['isValid'];
-    }
+export function FormText(props: IFormTextProps) {
+    return <p className="ln-form-text" {...props} />;
+}
 
+interface IFormInputProps extends JSX.InputHTMLAttributes<HTMLInputElement> {
+    isValid?: boolean | null,
+    onChange?: (e: Event) => void,
+    onInput?: (e: InputEvent) => void,
+}
+
+export function FormInput(props: IFormInputProps) {
     return (
-        <span className={classes}>
+        <span className="ln-form-control-wrapper" classList={{
+            [props.className || '']: true,
+            'ln-success': props.isValid === true,
+            'ln-error': props.isValid === false,
+        }}>
             <input {...props} className="ln-form-control ui-text" />
         </span>
     );
-});
+}
 
 
 interface IFormSelectOptionProps {
-    children: React.ReactNode,
+    children: JSX.Element,
     value?: string | number,
     disabled?: boolean,
     selected?: boolean,
     hidden?: boolean,
 }
 
-export const FormSelectOption: React.FunctionComponent<IFormSelectOptionProps> = React.memo((props: IFormSelectOptionProps) => {
+export function FormSelectOption(props: IFormSelectOptionProps) {
     return (
         <option {...props} />
     );
-});
+}
 
 interface IFormSelectProps {
-    children: React.ReactNode,
+    children: JSX.Element,
     value?: string | number,
     name?: string,
     defaultValue?: string | number,
     required?: boolean,
-    onChange?: (opt: React.ChangeEvent<HTMLSelectElement>) => void,
+    onChange?: (opt: Event) => void,
 }
 
-export const FormSelect: React.FunctionComponent<IFormSelectProps> = React.memo((props: IFormSelectProps) => {
+export function FormSelect(props: IFormSelectProps) {
     return (
         <div className="ln-form-select-wrapper">
             <select className="ln-form-select" {...props} />
             <span className="ln-form-select-arrow" />
         </div>
     );
-});
+}
 
-export const FormSelectGroup: React.FunctionComponent = React.memo(({ children }: { children: React.ReactNode }) => (
-    <div className="ln-select-group">{children}</div>
-));
-
-if(__DEV__) {
-    FormGroup.displayName = "FormGroup";
-    FormLabel.displayName = "FormLabel";
-    FormText.displayName = "FormText";
-    FormSelect.displayName = "FormSelect";
-    FormSelectOption.displayName = "FormSelectOption";
-    FormInput.displayName = "FormInput";
-    FormSelectGroup.displayName = "FormSelectGroup";
+export function FormSelectGroup(props: { children: JSX.Element }) {
+    return <div className="ln-select-group">{props.children}</div>
 }

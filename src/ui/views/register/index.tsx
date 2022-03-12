@@ -1,8 +1,7 @@
-import classNames from "classnames";
-import React, { useState, useMemo, useReducer, useEffect, useContext, useCallback, useRef } from "react";
+import { createEffect, createMemo, createSignal, For, Index, Show } from "solid-js";
 
-import { useDispatch, useSelector } from "react-redux";
-import { Dispatch } from "state/actions";
+import { createController } from "ui/hooks/createController";
+
 import { setSession } from "state/commands";
 import { selectPrefsFlag } from "state/selectors/prefs";
 import { UserPreferenceFlags } from "state/models";
@@ -12,31 +11,34 @@ import dayjs from "lib/time";
 import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
 
+import { useDispatch } from "solid-mutant";
+import type { RootState, Action } from "state/root";
+import { useRootSelector } from "state/root";
+import { CLIENT } from "state/global";
+
+import { createReducer } from "ui/hooks/createReducer";
+
 import { Link } from "ui/components/history";
 
 import { VectorIcon } from "ui/components/common/icon";
-import { Tooltip } from "ui/components/common/tooltip";
+//import { Tooltip } from "ui/components/common/tooltip";
 import { Spinner } from "ui/components/common/spinners/spinner";
 import { FormGroup, FormLabel, FormInput, FormText, FormSelect, FormSelectOption, FormSelectGroup } from "ui/components/form";
-
-import HCaptcha from '@hcaptcha/react-hcaptcha';
+import { HCaptchaController, HCaptcha } from "ui/components/hcaptcha";
 
 import { validateUsername, validatePass, validateEmail } from "lib/validation";
 
 import { ApiError, ApiErrorCode } from "client-sdk/src/api/error";
-import { CLIENT } from "state/global";
 import { UserRegister } from "client-sdk/src/api/commands/user";
 import { DriverError } from "client-sdk/src/driver";
 
 //import { calcPasswordStrength } from "./password";
 
-import { ZXCVBNResult } from "zxcvbn";
+import type { ZXCVBNResult } from "zxcvbn";
 
 type zxcvbn_fn = (input: string) => ZXCVBNResult;
 
 var zxcvbn: { zxcvbn: zxcvbn_fn } | (() => Promise<{ default: zxcvbn_fn }>) = () => import('zxcvbn');
-
-import { useTitle } from "ui/hooks/useTitle";
 
 // var PRELOADED: boolean = false;
 // function preloadLogin() {
@@ -87,24 +89,7 @@ interface RegisterState {
     email: string,
     user: string,
     pass: string,
-    pass_strength: number,
-    valid_email: boolean | null,
-    valid_user: boolean | null,
-    valid_pass: boolean | null,
     is_registering: boolean,
-}
-
-const DEFAULT_REGISTER_STATE: RegisterState = {
-    email: "",
-    user: "",
-    pass: "",
-    dob: {},
-    days: 31,
-    pass_strength: 0,
-    valid_email: null,
-    valid_user: null,
-    valid_pass: null,
-    is_registering: false,
 }
 
 enum RegisterActionType {
@@ -121,7 +106,7 @@ enum RegisterActionType {
 }
 
 interface RegisterAction {
-    value: string | null,
+    value?: string,
     type: RegisterActionType,
 }
 
@@ -138,24 +123,14 @@ function calc_pass_strength(pwd: string): number {
 function register_state_reducer(state: RegisterState, { value, type }: RegisterAction): RegisterState {
     switch(type) {
         case RegisterActionType.UpdateEmail: {
-            return { ...state, email: value!, valid_email: validateEmail(value!) };
+            return { ...state, email: value! };
         }
         case RegisterActionType.UpdateUser: {
             value = value!.trimStart();
-            return { ...state, user: value, valid_user: validateUsername(value) };
+            return { ...state, user: value };
         }
         case RegisterActionType.UpdatePass: {
-            let valid_pass = validatePass(value!);
-
-            return {
-                ...state,
-                pass: value!,
-                valid_pass,
-                pass_strength: valid_pass ? calc_pass_strength(value!) : 0,
-            };
-        }
-        case RegisterActionType.UpdatePassStrength: {
-            return { ...state, pass_strength: state.pass && state.valid_pass ? calc_pass_strength(state.pass) : 0 };
+            return { ...state, pass: value! };
         }
         case RegisterActionType.UpdateYear: {
             let dob = { ...state.dob, y: parseInt(value!) };
@@ -198,14 +173,25 @@ const HCAPTCHA_ERRORS = {
 import "../login/login.scss";
 import "./register.scss";
 export default function RegisterView() {
-    useTitle("Register");
+    document.title = "Register";
 
-    let dispatch = useDispatch<Dispatch>();
-    let [state, form_dispatch] = useReducer(register_state_reducer, DEFAULT_REGISTER_STATE);
-    let [errorMsg, setErrorMsg] = useState<string | null>(null);
-    let is_light_theme = useSelector(selectPrefsFlag(UserPreferenceFlags.LightMode));
+    let dispatch = useDispatch<RootState, Action>();
 
-    useEffect(() => {
+    let [hcaptcha, setHCaptchaController] = createController<HCaptchaController>();
+
+    let [state, form_dispatch] = createReducer(register_state_reducer, {
+        email: "",
+        user: "",
+        pass: "",
+        dob: {},
+        days: 31,
+        is_registering: false,
+    });
+
+    let [errorMsg, setErrorMsg] = createSignal<string | null>(null);
+    let is_light_theme = useRootSelector(selectPrefsFlag(UserPreferenceFlags.LightMode));
+
+    createEffect(() => {
         if(!SETUP_THEN && typeof zxcvbn == 'function') {
             zxcvbn().then(mod => {
                 zxcvbn = { zxcvbn: mod.default };
@@ -213,11 +199,17 @@ export default function RegisterView() {
             });
             SETUP_THEN = true;
         }
-    }, []);
+    });
 
-    let passwordClass = useMemo(() => {
+    let valid_email = createMemo(() => state.email ? validateEmail(state.email) : null);
+    let valid_user = createMemo(() => state.user ? validateUsername(state.user) : null);
+    let valid_pass = createMemo(() => state.pass ? validatePass(state.pass) : null);
+
+    let passwordClass = createMemo(() => {
+        let pass_strength = state.pass && valid_pass() ? calc_pass_strength(state.pass) : 0;
+
         let passwordClass: string = 'ln-password-';
-        switch(state.pass_strength) {
+        switch(pass_strength) {
             case 1: { passwordClass += 'weak'; break; }
             case 2: { passwordClass += 'mid'; break; }
             case 3: { passwordClass += 'strong'; break; }
@@ -225,14 +217,13 @@ export default function RegisterView() {
             default: passwordClass += 'none';
         }
         return passwordClass;
-    }, [state.pass_strength]);
+    });
 
-    let hcaptcha = useRef<HCaptcha>(null);
-
-    let on_submit = async (e: React.FormEvent<HTMLFormElement>) => {
+    let on_submit = async (e: Event) => {
         e.preventDefault();
 
-        if(state.is_registering || !hcaptcha.current) return;
+        let h;
+        if(state.is_registering || !(h = hcaptcha())) return;
 
         form_dispatch({ type: RegisterActionType.Register, value: '' });
 
@@ -243,7 +234,7 @@ export default function RegisterView() {
 
         let res;
         try {
-            res = await hcaptcha.current.execute({ async: true });
+            res = await h.execute({ async: true });
         } catch(e) {
             on_error(HCAPTCHA_ERRORS[e] || "Unknown Error");
             return;
@@ -266,7 +257,7 @@ export default function RegisterView() {
             if(e instanceof ApiError) {
                 msg = e.message;
             } else if(e instanceof DriverError) {
-                msg = "Network error: " + e.msg;
+                msg = "Network error: " + e.msg();
             } else {
                 msg = "Unknown Error";
             }
@@ -274,12 +265,14 @@ export default function RegisterView() {
         }
     };
 
-    let on_email_change = useCallback(e => form_dispatch({ type: RegisterActionType.UpdateEmail, value: e.currentTarget.value }), []),
-        on_username_change = useCallback(e => form_dispatch({ type: RegisterActionType.UpdateUser, value: e.currentTarget.value }), []),
-        on_password_change = useCallback(e => form_dispatch({ type: RegisterActionType.UpdatePass, value: e.currentTarget.value }), []),
-        on_year_change = useCallback(e => form_dispatch({ type: RegisterActionType.UpdateYear, value: e.currentTarget.value }), []),
-        on_month_change = useCallback(e => form_dispatch({ type: RegisterActionType.UpdateMonth, value: e.currentTarget.value }), []),
-        on_day_change = useCallback(e => form_dispatch({ type: RegisterActionType.UpdateDay, value: e.currentTarget.value }), []);
+    let on_change = (e: Event, type: RegisterActionType) => form_dispatch({ type, value: (e.currentTarget as HTMLInputElement).value });
+
+    let on_email_change = (e: InputEvent) => on_change(e, RegisterActionType.UpdateEmail),
+        on_username_change = (e: InputEvent) => on_change(e, RegisterActionType.UpdateUser),
+        on_password_change = (e: InputEvent) => on_change(e, RegisterActionType.UpdatePass),
+        on_year_change = (e: Event) => on_change(e, RegisterActionType.UpdateYear),
+        on_month_change = (e: Event) => on_change(e, RegisterActionType.UpdateMonth),
+        on_day_change = (e: Event) => on_change(e, RegisterActionType.UpdateDay);
 
     return (
         <form className="ln-form ln-login-form ln-register-form ui-text" onSubmit={on_submit}>
@@ -289,14 +282,14 @@ export default function RegisterView() {
 
             <FormGroup>
                 <FormLabel htmlFor="email"><I18N t={Translation.EMAIL_ADDRESS} /></FormLabel>
-                <FormInput value={state.email} type="email" name="email" placeholder="example@example.com" required isValid={state.valid_email}
-                    onChange={on_email_change} />
+                <FormInput value={state.email} type="email" name="email" placeholder="example@example.com" required isValid={valid_email()}
+                    onInput={on_email_change} />
             </FormGroup>
 
             <FormGroup>
                 <FormLabel htmlFor="username"><I18N t={Translation.USERNAME} /></FormLabel>
-                <FormInput value={state.user} type="text" name="username" placeholder="username" required isValid={state.valid_user}
-                    onChange={on_username_change} />
+                <FormInput value={state.user} type="text" name="username" placeholder="username" required isValid={valid_user()}
+                    onInput={on_username_change} />
             </FormGroup>
 
             <FormGroup>
@@ -304,15 +297,10 @@ export default function RegisterView() {
                     <I18N t={Translation.PASSWORD} />
                     <span className="ln-tooltip" style={{ marginLeft: '0.2em' }}>
                         <VectorIcon src={CircleEmptyInfoIcon} />
-                        <Tooltip x={1} y={0}>
-                            <div style={{ width: 'min(100vw, 20em)', fontSize: '0.7em' }}>
-                                <p>Password strength is judged by length, complexity and resemblance to common English words.</p>
-                            </div>
-                        </Tooltip>
                     </span>
                 </FormLabel>
-                <FormInput type="password" name="password" placeholder="password" required isValid={state.valid_pass}
-                    className={passwordClass} onChange={on_password_change} />
+                <FormInput type="password" name="password" placeholder="password" required isValid={valid_pass()}
+                    className={passwordClass()} onInput={on_password_change} />
                 <FormText>
                     Password must be at least 8 characters long and contain at least one number or one special character.
                 </FormText>
@@ -323,49 +311,58 @@ export default function RegisterView() {
                 <FormSelectGroup>
                     <FormSelect name="year" required value={state.dob.y || ""} onChange={on_year_change}>
                         <I18N t={Translation.YEAR} render={(value: string) => <option disabled hidden value="">{value}</option>} />
-                        {useMemo(() => YEARS.map((year, i) => <option value={year} key={i}>{year}</option>), [])}
+                        <For each={YEARS}>
+                            {year => <option value={year}>{year}</option>}
+                        </For>
                     </FormSelect>
 
                     <FormSelect name="month" required value={state.dob.m != null ? state.dob.m : ""} onChange={on_month_change}>
                         <I18N t={Translation.MONTH} render={(value: string) => <option disabled hidden value="">{value}</option>} />
-                        {useMemo(() => dayjs.months().map((month: string, i: number) => <option value={i + 1} key={i}>{month}</option>), [dayjs.locale()])}
+                        <For each={dayjs.months()}>
+                            {(month, i) => <option value={i() + 1}>{month}</option>}
+                        </For>
                     </FormSelect>
 
                     <FormSelect name="day" required onChange={on_day_change}
                         value={state.dob.d == null ? "" : state.dob.d}>
                         <I18N t={Translation.DAY} render={(value: string) => <option disabled hidden value="">{value}</option>} />
-                        {useMemo(() => (new Array(state.days)).fill(undefined).map((_, i) => (
-                            <option value={i + 1} key={i}>{(i + 1).toString()}</option>
-                        )), [state.days])}
+
+                        <Index each={new Array(state.days)}>
+                            {(_, i) => <option value={i + 1}>{(i + 1).toString()}</option>}
+                        </Index>
                     </FormSelect>
                 </FormSelectGroup>
             </FormGroup>
 
-            {errorMsg && (
+            <Show when={errorMsg()}>
                 <FormGroup>
                     <div className="ln-login-error">
-                        Registration Error: {errorMsg}!
+                        Registration Error: {errorMsg()}!
                     </div>
                 </FormGroup>
-            )}
+            </Show>
 
             <hr />
 
             <FormGroup>
                 <div style={{ display: 'flex', padding: '0 1em' }}>
                     <button
-                        className={classNames('ln-btn ui-text', { 'ln-btn--loading-icon': state.is_registering })}
-                        style={{ marginRight: 'auto' }}
+                        className="ln-btn ui-text"
+                        classList={{ 'ln-btn--loading-icon': state.is_registering }}
+                        style={{ "margin-right": 'auto' }}
                         onClick={() => setErrorMsg(null)}
                     >
-                        {state.is_registering ? <Spinner size="2em" /> : "Register"}
+                        <Show when={state.is_registering} fallback="Register">
+                            <Spinner size="2em" />
+                        </Show>
 
                         <HCaptcha
-                            ref={hcaptcha}
-                            size="invisible"
-                            theme={is_light_theme ? "light" : "dark"}
-                            sitekey="7a2a9dd4-1fa3-44cf-aa98-147052e8ea25"
-                            reCaptchaCompat={false}
+                            setController={setHCaptchaController}
+                            params={{
+                                size: "invisible",
+                                theme: is_light_theme() ? "light" : "dark",
+                                sitekey: "7a2a9dd4-1fa3-44cf-aa98-147052e8ea25"
+                            }}
                         />
                     </button>
 

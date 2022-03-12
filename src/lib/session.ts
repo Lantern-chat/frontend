@@ -4,7 +4,7 @@ import dayjs, { LongTimeout } from "lib/time";
 
 export interface ISession {
     auth: string,
-    expires: Dayjs,
+    expires: number,
     timeout?: LongTimeout,
 }
 
@@ -14,9 +14,11 @@ export function parseSession(session: string | Session | ISession | null): ISess
     }
 
     if(session !== null) {
-        session.expires = dayjs(session.expires);
+        if(typeof session.expires === 'string') {
+            session.expires = Date.parse(session.expires);
+        }
 
-        if(dayjs().isAfter(session.expires)) {
+        if(Date.now() > session.expires) {
             return null;
         }
     }

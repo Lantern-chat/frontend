@@ -4,15 +4,16 @@
     "outDir": "build/dist",
     //"module": "commonjs",
     "module": "ESNext",
-    "target": "es6",
+    "target": "ESNext",
     "lib": [
-      "es6",
+      "es2019",
       "dom"
     ],
+    "noEmit": true,
     "sourceMap": true,
     "allowJs": true,
-    "jsx": "react-jsx",
-    //"jsxImportSource": "preact",
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
     "moduleResolution": "node",
     "incremental": true,
     "forceConsistentCasingInFileNames": true,
@@ -34,7 +35,6 @@
     "./src/**/*"
   ],
   "exclude": [
-    "node_modules",
     "build",
     "dist",
     "scripts",

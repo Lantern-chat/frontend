@@ -1,23 +1,22 @@
-import { createStore, Store } from "redux";
-import { enhancers, initialReducer, Type } from "./initial";
 
+import { CombinedState, createMutantStore, Store } from "solid-mutant";
 import { BrowserHistory, createBrowserHistory, To } from "history";
 
 import { Client } from "client-sdk/src/client";
 import { Driver } from "client-sdk/src/driver";
+import { BearerToken } from "client-sdk/src/models/auth";
 
 import { setTheme } from "lib/theme";
-import { recomputeHistoryContext } from "ui/components/history";
-import { DEFAULT_STATE as DEFAULT_WINDOW } from "./reducers/window";
-import { DEFAULT_STATE as DEFAULT_USER } from './reducers/user';
+
+import { recomputeHistoryContext } from "./mutators/history";
 import { StorageKey, loadSession, loadPrefs } from "./storage";
 import { GatewayCommand } from "worker/gateway/cmd";
 import { themeSelector } from "./selectors/theme";
 import { IS_MOBILE } from "lib/user_agent";
-import { RootState, Action, DispatchableAction } from "./root";
-import { BearerToken } from "client-sdk/src/models/auth";
+import { RootState, Action } from "./root";
+import { userMutator } from "./mutators/user";
+import { initialMutator, Type } from "./initial";
 
-export { DYNAMIC_MIDDLEWARE } from "./root";
 
 export const DEFAULT_LOGGED_IN_CHANNEL: string = "/channels/@me";
 
@@ -42,7 +41,7 @@ interface IGlobalState {
     gateway?: IGatewayWorker,
     cleanup_timer: ReturnType<typeof setInterval>,
     history: IHistoryExt,
-    store: Store<RootState, Action> & { dispatch: (action: DispatchableAction) => void },
+    store: Store<RootState, Action>,
     client: Client,
     patched_main: boolean,
 }
@@ -60,19 +59,11 @@ export const GLOBAL: IGlobalState = window['LANTERN_GLOABL'] = window['LANTERN_G
         client.set_auth(new BearerToken(session.auth));
     }
 
-    let store = createStore(initialReducer, {
+    let store = createMutantStore<CombinedState<RootState>, Action>(initialMutator, {
         history: recomputeHistoryContext(history),
-        user: { ...DEFAULT_USER, session },
+        user: { ...userMutator.default(), session },
         prefs: loadPrefs(),
-        window: {
-            ...DEFAULT_WINDOW,
-            show_user_list: (() => {
-                // TODO: Centralize storage of this
-                let show_user_list = localStorage.getItem(StorageKey.SHOW_USER_LIST);
-                return typeof show_user_list == 'string' ? JSON.parse(show_user_list) : DEFAULT_WINDOW.show_user_list;
-            })()
-        }
-    }, enhancers);
+    });
 
     history.listen(update => store.dispatch({
         type: Type.HISTORY_UPDATE,
@@ -103,7 +94,7 @@ export const GLOBAL: IGlobalState = window['LANTERN_GLOABL'] = window['LANTERN_G
         history.replace(DEFAULT_LOGGED_IN_CHANNEL);
     }
 
-    setTheme(themeSelector(store.getState()), false);
+    setTheme(themeSelector(store.state), false);
 
     return {
         // will be set to true when main view loads
@@ -112,11 +103,12 @@ export const GLOBAL: IGlobalState = window['LANTERN_GLOABL'] = window['LANTERN_G
         history,
         store,
         cleanup_timer: setInterval(() => {
-            let state = store.getState(), chat = state.chat, has_typing = false;
+            let state = store.state, chat = state.chat, has_typing = false;
 
             if(!chat) return;
 
-            for(let room of chat.rooms.values()) {
+            for(let room_id in chat.rooms) {
+                let room = chat.rooms[room_id];
                 if(room.typing.length > 0) {
                     has_typing = true;
                     break;

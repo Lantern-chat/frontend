@@ -1,4 +1,5 @@
-import React, { useRef, useEffect, useLayoutEffect } from "react";
+import { Ref, useRef } from "ui/hooks/useRef";
+import { onCleanup, onMount } from "solid-js";
 
 import "./fireflies.scss";
 
@@ -109,7 +110,7 @@ function desiredCount(w: number, h: number, density: number): number {
     return (w * h) / (density * density);
 }
 
-function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObject<HTMLCanvasElement | null>, time_ms: number) {
+function render_fireflies(state: IFireflyState, canvas_ref: Ref<HTMLCanvasElement | undefined>, time_ms: number) {
     if(!canvas_ref.current) { return; }
     let canvas = canvas_ref.current;
 
@@ -230,8 +231,6 @@ function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObje
         ctx.resetTransform();
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-
-
         let palette: CanvasGradient[] = (LIGHT_THEME ? LIGHT_PALETTE : DARK_PALETTE).map((p) => {
             let gradient = ctx!.createRadialGradient(0, 0, 0, 0, 0, FIREFLY_RADIUS);
             for(let g of p) { gradient.addColorStop(g.x, g.v); }
@@ -289,10 +288,10 @@ function render_fireflies(state: IFireflyState, canvas_ref: React.MutableRefObje
 const MOUSE_EVENTS = ['mousemove', 'movedown', 'mouseup'];
 
 // TODO: Check for reduce-motion
-export const Fireflies: React.FunctionComponent<IFireflyProps> = React.memo((props: IFireflyProps) => {
-    let canvas_ref = useRef(null);
+export function Fireflies(props: IFireflyProps) {
+    let canvas_ref = useRef<HTMLCanvasElement>();
 
-    useLayoutEffect(() => {
+    onMount(() => {
         let state: IFireflyState = { ff: [], paused: false, m: [1e9, 1e9, false], density: props.density || 175 },
             interval = setInterval(() => {
                 if(!state.paused) {
@@ -317,7 +316,7 @@ export const Fireflies: React.FunctionComponent<IFireflyProps> = React.memo((pro
 
         state.frame = requestAnimationFrame((time: number) => render_fireflies(state, canvas_ref, time));
 
-        return () => {
+        onCleanup(() => {
             // cancel animation first
             if(state.frame) cancelAnimationFrame(state.frame);
             clearInterval(interval);
@@ -325,12 +324,8 @@ export const Fireflies: React.FunctionComponent<IFireflyProps> = React.memo((pro
             for(let e of MOUSE_EVENTS) {
                 window.removeEventListener(e, mouse_listener);
             }
-        }
-    }, [props.density])
+        });
+    });
 
     return (<canvas id="ln-fireflies" ref={canvas_ref} />);
-});
-
-if(__DEV__) {
-    Fireflies.displayName = "Fireflies";
 }

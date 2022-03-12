@@ -118,6 +118,8 @@ export function setTheme({ temperature, is_light, oled }: ITheme, animate: boole
 }
 
 export function setThemeColors(colors: IThemeColors, animate: boolean, is_light: boolean, oled: boolean) {
+    let is_changing_light = LIGHT_THEME != is_light;
+
     LIGHT_THEME = is_light;
 
     let de = document.documentElement;
@@ -156,7 +158,9 @@ export function setThemeColors(colors: IThemeColors, animate: boolean, is_light:
         de.style.setProperty(varname, value);
     }
 
-    LIGHT_TIME = performance.now();
+    if(is_changing_light) {
+        LIGHT_TIME = performance.now();
+    }
 
     if(animate) {
         clearTimeout(currentTimer);

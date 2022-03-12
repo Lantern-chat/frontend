@@ -5,9 +5,8 @@ import { CLIENT, HISTORY } from "state/global";
 import { Room, Snowflake } from "state/models";
 
 import { GetPartyMembers, GetPartyRooms } from "client-sdk/src/api/commands/party";
-import { batch } from "react-redux";
 
-function get_default_room(rooms: Room[]): Snowflake | undefined {
+function get_default_room(rooms: DeepReadonly<Room[]>): Snowflake | undefined {
     let default_room, any_room;
     for(let room of rooms) {
         any_room = room.id;
@@ -21,8 +20,8 @@ function get_default_room(rooms: Room[]): Snowflake | undefined {
 }
 
 export function activateParty(party_id: Snowflake, room_id?: Snowflake): DispatchableAction {
-    return async (dispatch, getState) => {
-        let state = getState(), party = state.party.parties.get(party_id);
+    return async (dispatch, state) => {
+        let party = state.party.parties[party_id];
 
         if(party && !party.needs_refresh) {
             HISTORY.pm(room_url(party_id, room_id || get_default_room(party.rooms)));
@@ -38,10 +37,7 @@ export function activateParty(party_id: Snowflake, room_id?: Snowflake): Dispatc
             // TODO: Handle errors
             let rooms = await CLIENT.execute(GetPartyRooms({ party_id }));
 
-            batch(() => {
-                dispatch({ type: Type.PARTY_LOADED, party_id, rooms });
-                dispatch(loadMembers(party_id));
-            });
+            dispatch([{ type: Type.PARTY_LOADED, party_id, rooms }, loadMembers(party_id)]);
 
             let new_room_id = room_id || get_default_room(rooms),
                 url = room_url(party_id, new_room_id);

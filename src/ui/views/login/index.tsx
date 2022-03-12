@@ -1,15 +1,17 @@
-import classNames from "classnames";
-import React, { useState, useMemo, useReducer, useEffect, useContext, useCallback } from "react";
+import { createMemo, createSignal, Show } from "solid-js";
 
-import { useDispatch } from "react-redux";
-import { Dispatch } from "state/actions";
 import { setSession } from "state/commands";
 
 import * as i18n from "ui/i18n";
 import { I18N, Translation } from "ui/i18n";
 
+import { useDispatch } from "solid-mutant";
+import type { RootState, Action } from "state/root";
+import { CLIENT } from "state/global";
+
+import { createReducer } from "ui/hooks/createReducer";
+
 //import { timeout } from "lib/util";
-import { useTitle } from "ui/hooks/useTitle";
 import { Spinner } from "ui/components/common/spinners/spinner";
 //import { VectorIcon } from "ui/components/common/icon";
 import { FormGroup, FormLabel, FormInput } from "ui/components/form";
@@ -20,7 +22,6 @@ import { Link } from "ui/components/history";
 import { validateEmail } from "lib/validation";
 
 import { ApiError, ApiErrorCode } from "client-sdk/src/api/error";
-import { CLIENT } from "state/global";
 import { UserLogin } from "client-sdk/src/api/commands/user";
 import { DriverError } from "client-sdk/src/driver";
 
@@ -36,21 +37,10 @@ interface LoginState {
     email: string,
     pass: string,
     totp: string,
-    valid_email: boolean | null,
     is_logging_in: boolean,
     totp_required: boolean,
     have_2fa: boolean,
 }
-
-const DEFAULT_LOGIN_STATE: LoginState = {
-    email: "",
-    pass: "",
-    totp: "",
-    valid_email: null,
-    is_logging_in: false,
-    totp_required: false,
-    have_2fa: false,
-};
 
 enum LoginActionType {
     Login,
@@ -63,20 +53,20 @@ enum LoginActionType {
 }
 
 interface LoginAction {
-    value: string,
+    value?: string,
     type: LoginActionType,
 }
 
 function login_state_reducer(state: LoginState, { value, type }: LoginAction): LoginState {
     switch(type) {
         case LoginActionType.UpdateEmail: {
-            return { ...state, email: value, valid_email: validateEmail(value) };
+            return { ...state, email: value! };
         }
         case LoginActionType.UpdatePass: {
-            return { ...state, pass: value };
+            return { ...state, pass: value! };
         }
         case LoginActionType.UpdatedTOTP: {
-            return { ...state, totp: value };
+            return { ...state, totp: value! };
         }
         case LoginActionType.Login: {
             return { ...state, is_logging_in: true };
@@ -96,14 +86,23 @@ function login_state_reducer(state: LoginState, { value, type }: LoginAction): L
 
 import "./login.scss";
 export default function LoginView() {
-    useTitle("Login");
+    document.title = "Login";
 
-    let dispatch = useDispatch<Dispatch>();
+    let dispatch = useDispatch<RootState, Action>();
 
-    let [state, form_dispatch] = useReducer(login_state_reducer, DEFAULT_LOGIN_STATE);
-    let [errorMsg, setErrorMsg] = useState<string | null>(null);
+    // TODO: Don't bother with reducer?
+    let [state, form_dispatch] = createReducer(login_state_reducer, {
+        email: "",
+        pass: "",
+        totp: "",
+        is_logging_in: false,
+        totp_required: false,
+        have_2fa: false,
+    });
 
-    let on_submit = async (e: React.FormEvent<HTMLFormElement>) => {
+    let [errorMsg, setErrorMsg] = createSignal<string | null>(null);
+
+    let on_submit = async (e: Event) => {
         e.preventDefault();
 
         if(state.is_logging_in) return;
@@ -127,7 +126,7 @@ export default function LoginView() {
                     msg = e.message;
                 }
             } else if(e instanceof DriverError) {
-                msg = "Network error: " + e.msg;
+                msg = "Network error: " + e.msg();
             } else {
                 msg = "Unknown Error";
             }
@@ -137,25 +136,17 @@ export default function LoginView() {
         }
     };
 
-    let totp_modal;
+    let on_input = (e: InputEvent, type: LoginActionType) => form_dispatch({ type, value: (e.target as HTMLInputElement).value });
 
-    if(state.totp_required) {
-        totp_modal = (
-            <FullscreenModal style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
-                <div className="ln-center-standalone" style={{ color: 'white' }}>
-                    TOTP Required
-                </div>
-            </FullscreenModal>
-        );
-    }
+    let on_email_change = (e: InputEvent) => on_input(e, LoginActionType.UpdateEmail),
+        on_password_change = (e: InputEvent) => on_input(e, LoginActionType.UpdatePass),
+        on_totp_change = (e: InputEvent) => on_input(e, LoginActionType.UpdatedTOTP);
 
-    let on_email_change = useCallback(e => form_dispatch({ type: LoginActionType.UpdateEmail, value: e.currentTarget.value }), []),
-        on_password_change = useCallback(e => form_dispatch({ type: LoginActionType.UpdatePass, value: e.currentTarget.value }), []),
-        on_totp_change = useCallback(e => form_dispatch({ type: LoginActionType.UpdatedTOTP, value: e.currentTarget.value }), []);
+    let mfa_toggle = createMemo(() => {
+        let mfa_toggle_text = (state.have_2fa ? "Don't have" : "Have") + " a 2FA Code?",
+            mfa_toggle_flavor = (state.have_2fa ? "hide" : "show");
 
-    let mfa_toggle_text = (state.have_2fa ? "Don't have" : "Have") + " a 2FA Code?",
-        mfa_toggle_flavor = (state.have_2fa ? "hide" : "show"),
-        mfa_toggle = (
+        return (
             <div id="mfa_toggle"
                 title={`${mfa_toggle_text} Click here to ${mfa_toggle_flavor} the input.`}
                 onClick={() => form_dispatch({ type: LoginActionType.IHave2FA, value: '' })}
@@ -163,6 +154,9 @@ export default function LoginView() {
                 {mfa_toggle_text}
             </div>
         );
+    });
+
+    let valid_email = createMemo(() => validateEmail(state.email));
 
     return (
         <form className="ln-form ln-login-form ui-text" onSubmit={on_submit}>
@@ -170,12 +164,18 @@ export default function LoginView() {
                 <h2><I18N t={Translation.LOGIN} /></h2>
             </div>
 
-            {totp_modal}
+            <Show when={state.totp_required}>
+                <FullscreenModal style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
+                    <div className="ln-center-standalone" style={{ color: 'white' }}>
+                        TOTP Required
+                    </div>
+                </FullscreenModal>
+            </Show>
 
             <FormGroup>
                 <FormLabel htmlFor="email"><I18N t={Translation.EMAIL_ADDRESS} /></FormLabel>
-                <FormInput value={state.email} type="email" name="email" placeholder="example@example.com" required isValid={state.valid_email}
-                    onChange={on_email_change} />
+                <FormInput value={state.email} type="email" name="email" placeholder="example@example.com" required isValid={state.email ? valid_email() : null}
+                    onInput={on_email_change} />
             </FormGroup>
 
             <FormGroup>
@@ -183,51 +183,52 @@ export default function LoginView() {
                     <I18N t={Translation.PASSWORD} />
                 </FormLabel>
                 <FormInput value={state.pass} type="password" name="password" placeholder="password" required
-                    onChange={on_password_change} />
+                    onInput={on_password_change} />
 
-                {!state.have_2fa && mfa_toggle}
+                <Show when={!state.have_2fa}>
+                    {mfa_toggle()}
+                </Show>
             </FormGroup>
 
-            {state.have_2fa && (
+            <Show when={state.have_2fa}>
                 <FormGroup>
                     <FormLabel htmlFor="totp">
                         <span>2FA Code</span>
                     </FormLabel>
+
                     <FormInput id="totp_input" value={state.totp} type="number" name="totp" placeholder="2FA Code" min="0" pattern="[0-9]*" required
-                        onChange={on_totp_change} />
+                        onInput={on_totp_change} />
 
-                    {mfa_toggle}
+                    {mfa_toggle()}
                 </FormGroup>
-            )}
+            </Show>
 
-            {errorMsg && (
+            <Show when={errorMsg()}>
                 <FormGroup>
                     <div className="ln-login-error">
-                        Login Error: {errorMsg}
+                        Login Error: {errorMsg()}
                     </div>
                 </FormGroup>
-            )}
+            </Show>
 
             <hr />
 
             <FormGroup>
                 <div style={{ display: 'flex', padding: '0 1em' }}>
                     <button
-                        className={classNames('ln-btn ui-text', { 'ln-btn--loading-icon': state.is_logging_in })}
-                        style={{ marginRight: 'auto' }}
+                        className="ln-btn ui-text"
+                        classList={{ 'ln-btn--loading-icon': state.is_logging_in }}
+                        style={{ 'margin-right': 'auto' }}
                         onClick={() => setErrorMsg(null)}
                     >
-                        {state.is_logging_in ? <Spinner size="2em" /> : "Login"}
+                        <Show when={state.is_logging_in} fallback="Login">
+                            <Spinner size="2em" />
+                        </Show>
                     </button>
-
 
                     <Link className="ln-btn" href="/register">Register</Link>
                 </div>
             </FormGroup>
         </form>
     );
-}
-
-if(__DEV__) {
-    LoginView.displayName = "LoginView";
 }

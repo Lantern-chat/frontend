@@ -1,39 +1,22 @@
-import React from "react";
-import { createPortal } from "react-dom";
-
-import "./modal.scss";
-
-interface ModalProps {
-    children: React.ReactNode,
-}
+import { createMemo, JSX } from "solid-js";
+import { Portal } from "solid-js/web";
 
 const MODAL_ROOT = document.getElementById("ln-modal-root")!;
 
-export class Modal extends React.Component<ModalProps> {
-    e: HTMLDivElement;
-
-    constructor(props: ModalProps) {
-        super(props);
-        this.e = document.createElement('div');
-    }
-
-    componentDidMount() { MODAL_ROOT.appendChild(this.e); }
-    componentWillUnmount() { MODAL_ROOT.removeChild(this.e); }
-
-    render() {
-        return createPortal(this.props.children, this.e);
-    }
+interface ModalProps {
+    children?: JSX.Element,
 }
 
-export interface IFullscreenModalProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> { }
+export function Modal(props: ModalProps) {
+    return <Portal mount={MODAL_ROOT} children={props.children} />;
+}
 
-export const FullscreenModal = React.memo((props: IFullscreenModalProps) => {
-    let className = props.className;
-    className = (className ? className + " " : "") + "ln-fullscreen-modal";
+export function FullscreenModal(props: JSX.HTMLAttributes<HTMLDivElement>) {
+    let className = createMemo(() => [props.className, "ln-fullscreen-modal"].join(" "));
 
-    return (<Modal><div {...props} className={className} /></Modal>)
-});
-
-if(__DEV__) {
-    FullscreenModal.displayName = "FullscreenModal";
+    return (
+        <Modal>
+            <div {...props} className={className()} />
+        </Modal>
+    );
 }

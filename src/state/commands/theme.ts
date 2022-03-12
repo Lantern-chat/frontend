@@ -6,8 +6,8 @@ import { hasUserPrefFlag, UserPreferenceFlags, UserPreferences } from "state/mod
 var dispatch_timeout: number;
 
 export function setTheme(temperature: number, is_light: boolean, oled: boolean): DispatchableAction {
-    return (dispatch, getState) => {
-        let reduce_motion = hasUserPrefFlag(getState().prefs, UserPreferenceFlags.ReduceAnimations);
+    return (dispatch, state) => {
+        let reduce_motion = hasUserPrefFlag(state.prefs, UserPreferenceFlags.ReduceAnimations);
 
         let theme = { temperature, is_light, oled };
         setRealTheme(theme, !reduce_motion);
@@ -15,7 +15,7 @@ export function setTheme(temperature: number, is_light: boolean, oled: boolean):
         // effectively debounces the theme setting in redux, avoiding costly subscription updates
         clearTimeout(dispatch_timeout);
         dispatch_timeout = setTimeout(() => {
-            let prefs = getState().prefs,
+            let prefs = state.prefs,
                 flags = prefs.flags;
 
             if(is_light) {

@@ -1,7 +1,7 @@
 import { GetFilesystemStatus } from "client-sdk/src/api/commands/file";
 import { CLIENT } from "state/global";
 import { Snowflake } from "state/models";
-import { DispatchableAction, Type } from "state/root";
+import { DispatchableAction, Type } from "state/actions";
 
 interface IFileParameters {
     file: File,

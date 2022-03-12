@@ -1,5 +1,4 @@
 import { pickColorFromHash } from 'lib/palette';
-import React from 'react';
 
 import { PresenceStatus, Snowflake, User } from 'state/models';
 
@@ -19,47 +18,42 @@ export interface IUserAvatarProps {
 }
 
 import "./user_avatar.scss";
-export const UserAvatar = React.memo(({ nickname, user, status, is_light_theme, is_mobile }: IUserAvatarProps) => {
-    let url, backgroundColor, status_title, status_class;
-    if(user.avatar) {
-        url = user_avatar_url(user.id, user.avatar);
-    } else {
-        backgroundColor = pickColorFromHash(user.id, is_light_theme);
-    }
+import { createMemo, Show } from 'solid-js';
 
-    switch(status) {
-        case PresenceStatus.Online: {
-            status_title = "Online";
-            status_class = "online";
-            break;
-        }
-        case PresenceStatus.Busy: {
-            status_title = "Busy/Do Not Disturb";
-            status_class = "busy";
-            break;
-        }
-        case PresenceStatus.Away: {
-            status_title = "Away";
-            status_class = "away";
-            break;
-        }
-        default: {
-            status_title = "Offline";
-            status_class = "offline";
-        }
-    }
+export function UserAvatar(props: IUserAvatarProps) {
+    let url_or_color = createMemo(() => {
+        let url, backgroundColor, user = props.user;
 
-    let presence = (status == PresenceStatus.Online && is_mobile) ? <VectorIcon src={MobilePhoneIcon} /> : <span className={status_class} />;
+        if(user.avatar) {
+            url = user_avatar_url(user.id, user.avatar);
+        } else {
+            backgroundColor = pickColorFromHash(user.id, props.is_light_theme);
+        }
+
+        return { url, backgroundColor };
+    });
+
+    let status = createMemo(() => {
+        switch(props.status) {
+            case PresenceStatus.Online: return ["Online", "online"];
+            case PresenceStatus.Busy: return ["Busy/Do Not Disturb", "busy"];
+            case PresenceStatus.Away: return ["Away", "away"];
+            default: return ["Offline", "offline"];
+        }
+    });
 
     return (
         <div className="ln-user-avatar">
-            <Avatar username={nickname} text={nickname.charAt(0)} url={url}
-                backgroundColor={backgroundColor} />
-            <div className="ln-user-status" title={status_title}>{presence}</div>
+            <Avatar username={props.nickname} text={props.nickname.charAt(0)} {...url_or_color()} />
+
+            <div className="ln-user-status" title={status()[0]}>
+                <Show
+                    fallback={<span className={status()[1]} />}
+                    when={props.status == PresenceStatus.Online && props.is_mobile}
+                >
+                    <VectorIcon src={MobilePhoneIcon} />
+                </Show>
+            </div>
         </div>
     );
-});
-
-if(__DEV__) {
-    UserAvatar.displayName = "UserAvatar";
 }

@@ -3,16 +3,16 @@ const webpack = require("webpack");
 const packageJson = require("./package.json");
 
 const { LoaderOptionsPlugin, DllPlugin, DllReferencePlugin } = require('webpack');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-//const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
-//const svgToMiniDataURI = require('mini-svg-data-uri');
-//const { SubresourceIntegrityPlugin } = require('webpack-subresource-integrity');
-const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const CopyPlugin = require("copy-webpack-plugin");
 
 const distPath = path.join(__dirname, 'dist');
+
+const ENABLE_PRODUCTION = true;
 
 function makeMinimizer() {
     const TerserPlugin = require('terser-webpack-plugin');
@@ -25,35 +25,31 @@ function makeMinimizer() {
                 ecma: 2015,
                 passes: 3,
                 unsafe_math: true,
+            },
+            mangle: false,
+            format: {
+                beautify: false
             }
         }
     })];
 }
 
-// NODE_OPTIONS=--max-old-space-size=600 yarn build:dev
 module.exports = (env, argv) => {
     const MODE = argv.mode || 'development';
     const IS_PRODUCTION = MODE === "production";
-    const CHUNK_NAME = true ? "[id].[chunkhash]" : "[id]";
+    const CHUNK_NAME = (ENABLE_PRODUCTION && IS_PRODUCTION) ? "[id].[chunkhash]" : "[id]";
 
     let config = {
         cache: !IS_PRODUCTION,
         entry: {
             index: "./src/index.tsx",
-            //testbed: "./src/testbed.tsx",
         },
-        //stats: {
-        //    children: true,
-        //},
         target: "web",
+        devtool: 'source-map',
         mode: MODE,
         watch: !IS_PRODUCTION,
-        //watchOptions: {
-        //    aggregateTimeout: 600,
-        //    //ignored: ["./worker/", "./build/", "./dist/"],
-        //},
         output: {
-            filename: '[name].[fullhash].js',
+            filename: (ENABLE_PRODUCTION && IS_PRODUCTION) ? '[name].[fullhash].js' : '[name].js',
             chunkFilename: `${CHUNK_NAME}.js`,
             path: distPath,
             publicPath: '/static/',
@@ -67,9 +63,9 @@ module.exports = (env, argv) => {
         optimization: {
             //chunkIds: IS_PRODUCTION ? 'size' : 'natural',
             //moduleIds: IS_PRODUCTION ? 'size' : false,
-            mangleExports: IS_PRODUCTION ? 'size' : 'deterministic',
+            mangleExports: (ENABLE_PRODUCTION && IS_PRODUCTION) ? 'size' : 'deterministic',
             //runtimeChunk: 'single',
-            minimize: IS_PRODUCTION,
+            minimize: ENABLE_PRODUCTION && IS_PRODUCTION,
             minimizer: IS_PRODUCTION ? makeMinimizer() : undefined,
             splitChunks: {
                 chunks: 'async',
@@ -78,10 +74,6 @@ module.exports = (env, argv) => {
                 minSize: 1024 * 50,
             }
         },
-
-        // Enable sourcemaps for debugging webpack's output.
-        // devtool: "source-map",
-
         performance: {
             hints: false
         },
@@ -106,11 +98,12 @@ module.exports = (env, argv) => {
         },
         module: {
             rules: [
-                { test: /\.tsx?$/, loader: "ts-loader", options: { allowTsInNodeModules: true } },
-
-                // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
-                // { enforce: "pre", test: /\.js$/, loader: "source-map-loader" },
-
+                {
+                    test: /\.[tj]sx?$/,
+                    use: {
+                        loader: 'babel-loader',
+                    }
+                },
                 {
                     test: /\.(sa|sc|c)ss$/,
                     use: [
@@ -167,9 +160,10 @@ module.exports = (env, argv) => {
                     //    }
                     //]
                 },
-            ],
+            ]
         },
         plugins: [
+            new ForkTsCheckerWebpackPlugin(),
             // NOTE: The first two plugins here are reused in `webpack.vendors.config.js`
             new webpack.DefinePlugin({
                 "typeof window": '"object"',
@@ -182,6 +176,7 @@ module.exports = (env, argv) => {
                     'NODE_ENV': JSON.stringify(IS_PRODUCTION ? 'production' : 'development'),
                     'DEBUG': JSON.stringify(!IS_PRODUCTION),
                 },
+                "DO_NOT_EXPORT_CRC": "undefined"
             }),
             new webpack.ProvidePlugin({
                 Buffer: ['buffer', 'Buffer'],
@@ -211,22 +206,22 @@ module.exports = (env, argv) => {
                 template: path.resolve(__dirname, "src", "index.html"),
                 filename: 'index.html'
             }),
-            new PreloadWebpackPlugin({
-                rel: 'prefetch',
-                include: 'allAssets',
-                as: 'font',
-                fileWhitelist: [/Lato-(Regular|Bold|Black|Italic)\.woff2$/i],
-            }),
+            //new PreloadWebpackPlugin({
+            //    rel: 'prefetch',
+            //    include: 'allAssets',
+            //    as: 'font',
+            //    fileWhitelist: [/Lato-(Regular|Bold|Black|Italic)\.woff2$/i],
+            //}),
             //new HTMLInlineCSSWebpackPlugin(),
             //new WasmPackPlugin({
             //    crateDirectory: path.resolve(__dirname, "worker/gateway"),
             //    extraArgs: "--target web",
             //    outDir: path.resolve(__dirname, "build/worker/gateway"),
             //}),
-            //new BundleAnalyzerPlugin({
-            //    analyzerMode: 'server',
-            //    openAnalyzer: true,
-            //}),
+            new BundleAnalyzerPlugin({
+                analyzerMode: (IS_PRODUCTION && ENABLE_PRODUCTION) ? 'static' : 'server',
+                openAnalyzer: true,
+            }),
             new CopyPlugin({
                 patterns: [
                     { from: "./assets", to: "assets" },
@@ -235,20 +230,6 @@ module.exports = (env, argv) => {
             }),
         ],
     };
-
-
-    if(!IS_PRODUCTION) {
-        try {
-            let vendors = require("./build/vendors-manifest.json");
-
-            config.plugins.push(new DllReferencePlugin({
-                context: path.join(__dirname, "build"),
-                manifest: vendors,
-            }));
-        } catch(e) {
-            console.warn(e);
-        }
-    }
 
     return config;
 };

@@ -1,74 +1,81 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "state/root";
-import { useForceRender } from "ui/hooks/useForceRender";
-import { Modal } from "../modal";
+import { createEffect, createMemo, createUniqueId, JSX, onCleanup, Show } from "solid-js";
+import { Modal } from "ui/components/modal";
+import { useRef } from "ui/hooks/useRef";
+import { createTrigger } from "ui/hooks/createTrigger";
 
 export interface IContextMenuProps {
-    children: React.ReactChild,
+    children: JSX.Element,
     show: boolean,
 }
 
-export const ContextMenu = React.memo((props: IContextMenuProps) => {
-    let anchor_ref = useRef<HTMLSpanElement>(null);
+const REFRESH_EVENTS: string[] = ["resize", "scroll"];
 
-    let { height, width } = useSelector((state: RootState) => state.window);
-    let forceRender = useForceRender();
+import "./context_menu.scss";
+export function ContextMenu(props: IContextMenuProps) {
+    let anchor_ref = useRef<HTMLSpanElement>(),
+        [track, dirty] = createTrigger();
 
-    useLayoutEffect(() => forceRender(), []);
-
-    useEffect(() => {
-        let listener = () => forceRender();
-
-        document.addEventListener('scroll', listener);
-        return () => document.removeEventListener('scroll', listener);
-    }, [props]);
-
-    let anchor_span = <span ref={anchor_ref} className="ln-context-anchor" />, modal;
-
-    let rect = anchor_ref.current?.getBoundingClientRect();
-
-    if(props.show && rect) {
-        let { top, left, bottom } = rect;
-
-        let on_top = top < (height * 0.5);
-        let on_left = left < (width * 0.5);
-
-        let style: any = {
-            position: 'relative'
-        };
-
-        if(on_top) {
-            style.top = '0%';
-        } else {
-            style.bottom = '0%';
+    createEffect(() => {
+        if(props.show) {
+            let listener = () => dirty();
+            REFRESH_EVENTS.forEach(e => window.addEventListener(e, listener));
+            onCleanup(() => REFRESH_EVENTS.forEach(e => window.removeEventListener(e, listener)));
         }
+    });
 
-        if(on_left) {
-            style.left = '100%';
-        } else {
-            style.right = '100%';
+    let modal = createMemo(() => {
+        let rect = anchor_ref.current?.getBoundingClientRect();
+        if(props.show && rect) {
+            track();
+
+            let { top, left, bottom } = rect,
+                { innerHeight: height, innerWidth: width } = window;
+
+            let on_top = top < (height * 0.5);
+            let on_left = left < (width * 0.5);
+
+            let style: any = {
+                position: 'relative'
+            };
+
+            if(on_top) {
+                style.top = '0%';
+            } else {
+                style.bottom = '0%';
+            }
+
+            if(on_left) {
+                style.left = '100%';
+            } else {
+                style.right = '100%';
+            }
+
+            return { style, bottom, left } as ComputedModal;
         }
-
-        modal = (
-            <Modal>
-                <div style={{ position: 'absolute', top: bottom, left }}>
-                    <div style={style}>
-                        {props.children}
-                    </div>
-                </div>
-            </Modal>
-        );
-    }
+        return;
+    });
 
     return (
         <>
-            {anchor_span}
-            {modal}
-        </>
-    );
-});
+            <Show when={modal()}>
+                <ContextMenuInner {...modal()!} children={props.children} />
+            </Show>
 
-if(__DEV__) {
-    ContextMenu.displayName = "ContextMenu";
+            <span ref={anchor_ref} className="ln-context-anchor" />
+        </>
+    )
+}
+
+interface ComputedModal {
+    style: JSX.CSSProperties, bottom: number, left: number
+}
+
+function ContextMenuInner(props: ComputedModal & { children: any }) {
+    return (
+        <Modal>
+            <div style={{ position: 'absolute', top: props.bottom, left: props.left }}>
+                <div style={props.style}>{props.children}{createUniqueId()}</div>
+            </div>
+        </Modal>
+    );
 }

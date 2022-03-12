@@ -23,9 +23,9 @@ export function savePrefs(prefs: Partial<UserPreferences>): DispatchableAction {
 }
 
 export function savePrefsFlag(flag: UserPreferenceFlags, value: boolean): DispatchableAction {
-    return (dispatch, getState) => {
+    return (dispatch, state) => {
         // if possible, use the latest temp prefs flags, otherwise get the state ones
-        let flags = temp_prefs.flags ?? getState().prefs.flags;
+        let flags = temp_prefs.flags ?? state.prefs.flags;
 
         if(value) {
             flags |= flag;

@@ -1,13 +1,13 @@
 import { PartyMember, Snowflake, User } from "state/models";
-import { CachedUser } from "state/reducers/cache";
+import { CachedUser } from "state/mutators/cache";
 import { RootState } from "state/root";
 
 export function selectCachedUser(state: RootState, user_id: Snowflake, party_id?: Snowflake): PartyMember | undefined {
     if(party_id) {
-        let party = state.party.parties.get(party_id);
+        let party = state.party.parties[party_id];
         if(!party) return;
 
-        let member = party.members.get(user_id);
+        let member = party.members[user_id];
         if(!member) return;
 
         return member;

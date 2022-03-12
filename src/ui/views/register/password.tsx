@@ -1,5 +1,3 @@
-import React from "react";
-
 import { FormGroup, FormLabel, FormInput, FormText, FormSelect, FormSelectOption } from "ui/components/form";
 
 const SYMBOLS = /[^\d\w]+/g;

@@ -1,5 +1,7 @@
-import React, { useContext, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { createStore } from "solid-js/store";
+import { useRef } from "ui/hooks/useRef";
+import { useRootSelector } from "state/root";
+import { useDispatch } from "solid-mutant";
 
 import { themeSelector } from "state/selectors/theme";
 import { setTheme } from "state/commands/theme";
@@ -13,19 +15,20 @@ import { SunIcon, MoonIcon } from "lantern-icons";
 import throttle from 'lodash/throttle';
 
 import "./theme_widget.scss";
-export const ThemeWidget: React.FunctionComponent = React.memo(() => {
-    let input = useRef<HTMLInputElement>(null);
-    let theme = useSelector(themeSelector);
-    let dispatch = useDispatch();
+export function ThemeWidget() {
+    let input = useRef<HTMLInputElement>(),
+        theme = useRootSelector(themeSelector),
+        dispatch = useDispatch();
 
-    let [interactive, setInteractive] = useState(theme);
+    let [interactive, setInteractive] = createStore({ ...theme() });
 
     let doSetTheme = (temperature: number, is_light: boolean) => {
-        setInteractive({ temperature, is_light, oled: theme.oled });
-        dispatch(setTheme(temperature, is_light, theme.oled));
+        let oled = interactive.oled;
+        setInteractive({ temperature, is_light, oled });
+        dispatch(setTheme(temperature, is_light, oled));
     };
 
-    let onTempTouchMove = throttle((e: React.TouchEvent<HTMLInputElement>) => {
+    let onTempTouchMove = throttle((e: TouchEvent) => {
         if(input.current) {
             let { width, x } = input.current.getBoundingClientRect();
             let touch = e.touches[0].clientX - x;
@@ -57,7 +60,4 @@ export const ThemeWidget: React.FunctionComponent = React.memo(() => {
             </div>
         </div>
     );
-});
-if(__DEV__) {
-    ThemeWidget.displayName = "Theme Widget";
 }

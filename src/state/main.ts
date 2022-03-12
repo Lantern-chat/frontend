@@ -1,35 +1,33 @@
-import { enableMapSet } from "immer";
+import { combineMutators, Mutator } from "solid-mutant";
 
-enableMapSet();
+import { chatMutator } from "./mutators/chat";
+//import { cacheMutator } from "./mutators/cache";
+import { modalMutator } from "./mutators/modals";
+import { windowMutator } from "./mutators/window";
+import { gatewayMutator } from "./mutators/gateway";
+import { userMutator } from "./mutators/user";
+import { partyMutator } from "./mutators/party";
+import { prefsMutator } from "./mutators/prefs";
+import { historyMutator, IHistoryState } from "./mutators/history";
+import { toastMutator } from "./mutators/toasts";
 
-import { combineReducers } from "redux";
-
-import { chatReducer } from "./reducers/chat";
-import { cacheReducer } from "./reducers/cache";
-import { modalReducer } from "./reducers/modals";
-import { windowReducer } from "./reducers/window";
-import { gatewayReducer } from "./reducers/gateway";
-import { userReducer } from "./reducers/user";
-import { partyReducer } from "./reducers/party";
-import { prefsReducer } from "./reducers/prefs";
-import { historyReducer } from "./reducers/history";
-import { toastReducer } from "./reducers/toasts";
-
-import { Action } from "./actions";
+import type { Action } from "./actions";
 export { Type } from "./actions";
 
-import { RootState } from "./root";
-export { enhancers } from "./root";
+import type { RootState } from "./root";
 
-export const mainReducer = combineReducers<RootState, Action>({
-    chat: chatReducer,
-    cache: cacheReducer,
-    window: windowReducer,
-    modals: modalReducer,
-    gateway: gatewayReducer,
-    user: userReducer,
-    party: partyReducer,
-    prefs: prefsReducer,
-    history: historyReducer,
-    toasts: toastReducer,
+function dummyMutator(): any { }
+
+export const mainMutator = combineMutators<RootState, Action>({
+    chat: chatMutator,
+    cache: dummyMutator,
+    window: windowMutator,
+    modals: modalMutator,
+    gateway: gatewayMutator,
+    user: userMutator,
+    party: partyMutator,
+    prefs: prefsMutator,
+    // history mutator is initialized with a value when creating the store
+    history: historyMutator as Mutator<IHistoryState, Action>,
+    toasts: toastMutator,
 });

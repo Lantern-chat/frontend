@@ -1,8 +1,7 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import { createSelector } from "reselect";
+import { createMemo, Match, Show, Switch } from "solid-js";
+import { composeSelectors } from "solid-mutant";
 import { Snowflake } from "state/models";
-import { RootState } from "state/root";
+import { RootState, useRootSelector } from "state/root";
 import { Link } from "ui/components/history";
 
 export interface IMentionProps {
@@ -10,46 +9,32 @@ export interface IMentionProps {
     id: Snowflake,
 }
 
-const mention_selector = createSelector(
-    (state: RootState) => state.chat.active_party,
-    (state: RootState) => state.party.parties,
+const mention_selector = composeSelectors<RootState>()(
+    [state => state.chat.active_party, state => state.party.parties],
     (active_party, parties) => {
-        if(!active_party) return;
-
-        return parties.get(active_party)
+        let ap = active_party();
+        return ap ? parties()[ap] : void 0;
     }
 );
 
 import "./mention.scss";
-export const Mention = React.memo((props: IMentionProps) => {
-    let party = useSelector(mention_selector);
+export function Mention(props: IMentionProps) {
+    let party = useRootSelector(mention_selector),
+        room = createMemo(() => party()?.rooms.find(room => room.id == props.id)),
+        member = createMemo(() => party()?.members[props.id]);
 
-    switch(props.prefix) {
-        case '#': {
-            if(party) {
-                let room = party.rooms.find(room => room.id == props.id);
-
-                if(room) {
-                    return <Link className="ln-channel-mention" href={`/channels/${party.party.id}/${room.id}`}>#{room.name}</Link>
-                }
-            }
-
-            return <span>{`<#${props.id}>`}</span>;
-        }
-        case '@': {
-            if(party) {
-                let member = party.members.get(props.id);
-
-                if(member) {
-                    return <span className="ln-user-mention">@{member.nick || member.user.username}</span>;
-                }
-            }
-
-            return <span>{`<@${props.id}>`}</span>;
-        }
-    }
-});
-
-if(__DEV__) {
-    Mention.displayName = "Mention";
+    return (
+        <Switch>
+            <Match when={props.prefix == '#'}>
+                <Show when={room()} fallback={<span>{`<#${props.id}>`}</span>}>
+                    {room => <Link className="ln-channel-mention" href={`/channels/${room.party_id}/${room.id}`}>#{room.name}</Link>}
+                </Show>
+            </Match>
+            <Match when={props.prefix == '@'}>
+                <Show when={member()} fallback={<span>{`<@${props.id}>`}</span>}>
+                    {member => <span className="ln-user-mention">@{member.nick || member.user.username}</span>}
+                </Show>
+            </Match>
+        </Switch>
+    );
 }

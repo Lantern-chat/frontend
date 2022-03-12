@@ -1,7 +1,7 @@
 import { ISession, parseSession } from "lib/session";
 import { CLIENT, DEFAULT_LOGGED_IN_CHANNEL, HISTORY } from "state/global";
 import { DispatchableAction, Type } from "state/actions";
-import dayjs, { setLongTimeout } from "lib/time";
+import { setLongTimeout } from "lib/time";
 import { storeSession } from "state/storage";
 
 import { Session } from "client-sdk/src/models";
@@ -15,12 +15,12 @@ export function setSession(new_session: ISession | Session | null): Dispatchable
         storeSession(session);
 
         if(session != null) {
-            __DEV__ && console.log("Setting session expiry timer for: ", session.expires.toISOString());
+            __DEV__ && console.log("Setting session expiry timer for: ", new Date(session.expires).toISOString());
 
             // TODO: Double-check this gets cleared eventually
             session.timeout = setLongTimeout(
                 () => dispatch({ type: Type.SESSION_EXPIRED }),
-                Math.max(0, session.expires.diff(dayjs()))
+                Math.max(0, session.expires - Date.now()),
             );
 
             CLIENT.set_auth(new BearerToken(session.auth));
@@ -38,8 +38,8 @@ export function setSession(new_session: ISession | Session | null): Dispatchable
 import { UserLogout } from "client-sdk/src/api/commands/user";
 
 export function logout(): DispatchableAction {
-    return async (dispatch, getState) => {
-        if(getState().user.session) {
+    return async (dispatch, state) => {
+        if(state.user.session) {
             await CLIENT.execute(UserLogout({}));
             dispatch(setSession(null));
         }

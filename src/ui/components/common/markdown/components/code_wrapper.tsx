@@ -1,41 +1,38 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { createMemo, createSignal, Show } from "solid-js";
 
 import { countLines } from "lib/util";
 
-import { InfiniteScrollContext } from "ui/components/infinite_scroll2";
+// TODO: Reenable this
+//import { InfiniteScrollContext } from "ui/components/infinite_scroll2";
 
-import { ICodeProps } from "./code";
+import { Code, ICodeProps } from "../lazy";
+//import Code, { ICodeProps } from "./code";
 
-export interface ICodeWrapperprops extends ICodeProps {
-    code: any,
-}
 
 import "./code_wrapper.scss";
-export const CodeWrapper = React.memo((props: ICodeWrapperprops) => {
-    let Inner = props.code,
-        loc = countLines(props.src),
-        block = <Inner {...props} />, ifs = useContext(InfiniteScrollContext);
+export function CodeWrapper(props: ICodeProps) {
+    let loc = createMemo(() => countLines(props.src));
 
-    if(loc < 20) {
-        return block;
-    }
-
-    return <CollapsedCode {...props} loc={loc} block={block} />;
-});
+    return (
+        <Show when={loc() >= 20} fallback={<Code {...props} />}>
+            <CollapsedCode {...props} loc={loc()} />
+        </Show>
+    );
+}
 
 import { IS_IOS_SAFARI } from "lib/user_agent";
 
-const CollapsedCode = React.memo((props: ICodeWrapperprops & { loc: number, block: React.ReactNode }) => {
-    let ifs = useContext(InfiniteScrollContext),
-        [open, setOpen] = useState(false);
+function CollapsedCode(props: ICodeProps & { loc: number }) {
+    let //ifs = useContext(InfiniteScrollContext),
+        [open, setOpen] = createSignal(false);
 
-    let onClick = (e: React.SyntheticEvent) => {
-        ifs?.pause(true);
+    let onClick = (e: MouseEvent) => {
+        //ifs?.pause(true);
 
         // fucking Safari gets weird with `onToggle`, so just set a timeout instead
-        if(IS_IOS_SAFARI) {
-            setTimeout(() => ifs?.pause(false), 100);
-        }
+        //if(IS_IOS_SAFARI) {
+        //    setTimeout(() => ifs?.pause(false), 100);
+        //}
 
         __DEV__ && console.log("CLICKED");
         setOpen(!open);
@@ -45,25 +42,20 @@ const CollapsedCode = React.memo((props: ICodeWrapperprops & { loc: number, bloc
     let onToggle = () => {
         if(!IS_IOS_SAFARI) {
             __DEV__ && console.log("TOGGLED");
-            ifs?.pause(false);
+            //ifs?.pause(false);
         }
     };
 
     // encode "expand/collapse" switching in CSS using `details[open]`
     return (
-        <details className="ln-code-details" open={open} onToggle={onToggle}>
+        <details className="ln-code-details" open={open()} onToggle={onToggle}>
             <summary onClick={onClick}>
                 Click to&nbsp;
                 <span className="ln-code-details__closed">expand</span>
                 <span className="ln-code-details__open">collapse</span>
                 &nbsp;{props.loc} lines of code
             </summary>
-            {props.block}
+            <Code {...props} />
         </details>
     );
-});
-
-if(__DEV__) {
-    CodeWrapper.displayName = "CodeWrapper";
-    CollapsedCode.displayName = "CollapsedCode";
 }

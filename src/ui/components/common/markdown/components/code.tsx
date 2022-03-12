@@ -1,33 +1,48 @@
-import React from "react";
-
-import SyntaxHighlighter from 'react-syntax-highlighter'
+import { createMemo, Show } from 'solid-js';
 
 import "ui/fonts/hasklig";
 import "./code.scss";
+
+import hljs from "highlight.js";
 
 export interface ICodeProps {
     src: string,
     language?: string,
 }
 
-function ignoreTouch(e: React.TouchEvent) {
+function hasLang(lang?: string): string | undefined {
+    if(lang && hljs.getLanguage(lang)) {
+        return lang;
+    }
+    return;
+}
+
+export default function Code(props: ICodeProps) {
+    return (
+        <Show when={hasLang(props.language)} fallback={<Text src={props.src} />}>
+            {language => <Highlight src={props.src} language={language} />}
+        </Show>
+    )
+}
+
+function ignoreTouch(e: TouchEvent) {
     e.stopPropagation();
 }
 
-const Code = React.memo(({ language, src }: ICodeProps) => {
-    if(!language) {
-        return (
-            <pre className="hljs" onTouchStart={ignoreTouch}>
-                <code>{src.trim()}</code>
-            </pre>
-        );
-    }
-
-    return <SyntaxHighlighter useInlineStyles={false} language={language} children={src.trim()} onTouchStart={ignoreTouch} />;
-});
-
-if(__DEV__) {
-    Code.displayName = "Code";
+function Text(props: { src: string }) {
+    return (
+        <pre className="hljs" onTouchStart={ignoreTouch}>
+            <code>{props.src.trim()}</code>
+        </pre>
+    );
 }
 
-export default Code;
+function Highlight(props: Required<ICodeProps>) {
+    let html = createMemo(() => hljs.highlight(props.src, { language: props.language }).value);
+
+    return (
+        <pre className="hljs" onTouchStart={ignoreTouch}>
+            <code innerHTML={html()} />
+        </pre>
+    );
+}

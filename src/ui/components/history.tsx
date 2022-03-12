@@ -1,88 +1,91 @@
-import React, { AnchorHTMLAttributes, forwardRef, useContext, createContext, Context } from 'react';
+import { Accessor, Context, createContext, createMemo, createSignal, JSX, mergeProps, splitProps, useContext } from "solid-js";
 import { History, State, Location } from 'history';
 
-import { IHistoryState } from "state/reducers/history";
+import { IHistoryState, recomputeHistoryContext } from "state/mutators/history";
 import { HISTORY, IHistoryExt } from 'state/global';
-import { IS_MOBILE } from 'lib/user_agent';
-export { recomputeHistoryContext } from "state/reducers/history";
+import { Dynamic } from "solid-js/web";
 
 export const HistoryContext: Context<IHistoryState> = createContext<IHistoryState>(null!);
 
-export interface ILinkProps extends AnchorHTMLAttributes<HTMLElement> {
+export interface ILinkProps extends JSX.AnchorHTMLAttributes<HTMLElement> {
     noAction?: boolean,
     state?: State,
     replace?: boolean,
     useDiv?: boolean,
-    onNavigate?: (e: React.MouseEvent<HTMLElement> | React.TouchEvent<HTMLElement>) => void,
+    onNavigate?: JSX.EventHandler<HTMLElement, UIEvent>,
+    ref?: HTMLElement | ((el: HTMLElement) => void),
 }
 
-export function canNavigate(target: string | undefined, event: React.MouseEvent<HTMLElement> | React.TouchEvent<HTMLElement>): boolean {
+export function canNavigate(target: string | undefined, event: MouseEvent | TouchEvent): boolean {
     return !event.defaultPrevented && // onClick prevented default
         (!target || target === "_self") && // let browser handle "target=_blank" etc.
         !(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey); // ignore clicks with modifier keys
 }
 
-function callEventHandler<T extends React.SyntheticEvent>(event: T, handler?: (event: T) => void) {
+function callEventHandler<T extends UIEvent>(event: T, handler?: JSX.EventHandler<HTMLElement, T>) {
     if(handler) {
-        try { handler(event) } catch(ex) {
+        try { handler(event as any) } catch(ex) {
             event.preventDefault();
             throw ex;
         }
     }
 }
 
-function isSameHistory(a: Location) {
-    return a.pathname == HISTORY.location.pathname;
-}
+//function isSameHistory(a: Location) {
+//    return a.pathname == HISTORY.location.pathname;
+//}
 
-function noop() { }
+export function Link(props: ILinkProps) {
+    let method = createMemo(() => {
+        let ctx = useContext(HistoryContext);
 
-export const Link = React.memo(forwardRef((props: ILinkProps, ref: React.MutableRefObject<any>) => {
-    let { href, onClick, onTouchEnd, onNavigate, replace, state, target, useDiv, noAction } = props,
-        ctx = useContext(HistoryContext),
-        history = ctx.history,
-        method = replace ? history.replace : history.pm;
+        return props.replace ? ctx.history.replace : ctx.history.pm
+    });
 
-    if(href) {
-        var ran_onNavigate = false;
-        props = {
-            ...props,
-            onClick: (event: React.MouseEvent<HTMLElement>) => {
-                !ran_onNavigate && callEventHandler(event, onNavigate); ran_onNavigate = true;
-                callEventHandler(event, onClick);
+    let [ran_onNavigate, setRan] = createSignal(false);
 
-                if(noAction) { event.preventDefault(); }
-
-                // canNavigate + ignore everything but left clicks
-                else if(canNavigate(target, event) && event.button === 0) {
-                    event.preventDefault();
-                    method(href!, state);
-                }
-            },
-            onTouchEnd: (event: React.TouchEvent<HTMLElement>) => {
-                !ran_onNavigate && callEventHandler(event, onNavigate); ran_onNavigate = true;
-                callEventHandler(event, onTouchEnd);
-
-                if(noAction) { event.preventDefault(); }
-                else if(canNavigate(target, event)) {
-                    event.preventDefault();
-                    method(href!, state);
-                }
-            }
-        };
-
-        // silence warning about these
-        if(__DEV__) {
-            delete props['useDiv'];
-            delete props['replace'];
-            delete props['onNavigate'];
-            delete props['noAction'];
+    let onClick = (event: MouseEvent) => {
+        if(!props.href) {
+            return callEventHandler(event, props.onClick as any);
         }
-    }
 
-    return useDiv ? <div {...props} ref={ref} /> : <a {...props} ref={ref} />
-}));
+        if(!ran_onNavigate()) {
+            callEventHandler(event, props.onNavigate);
+            setRan(true);
+        }
 
-if(__DEV__) {
-    Link.displayName = "Link";
+        callEventHandler(event, props.onClick as any);
+
+        if(props.noAction) { event.preventDefault(); }
+
+        // canNavigate + ignore everything but left clicks
+        else if(canNavigate(props.target, event) && event.button === 0) {
+            event.preventDefault();
+            method()(props.href!, props.state);
+        }
+    };
+
+    let onTouchEnd = (event: MouseEvent) => {
+        if(!props.href) {
+            return callEventHandler(event, props.onTouchEnd as any);
+        }
+
+        if(!ran_onNavigate()) {
+            callEventHandler(event, props.onNavigate);
+            setRan(true);
+        }
+
+        callEventHandler(event, props.onTouchEnd as any);
+
+        if(props.noAction) { event.preventDefault(); }
+        else if(canNavigate(props.target, event)) {
+            event.preventDefault();
+            method()(props.href!, props.state);
+        }
+    };
+
+    let merged_props = mergeProps(props, { onClick, onTouchEnd });
+
+    // NOTE: useDiv is a permenant choice
+    return props.useDiv ? <div {...merged_props as any} /> : <a {...merged_props as any} />;
 }

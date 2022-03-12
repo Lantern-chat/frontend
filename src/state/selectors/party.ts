@@ -10,8 +10,7 @@ export function computeRoleColor(role: Role): string | undefined {
 
     let cached = COLOR_CACHE.get(color);
     if(!cached) {
-        cached = formatRgbBinary(color);
-        COLOR_CACHE.set(color, cached);
+        COLOR_CACHE.set(color, cached = formatRgbBinary(color));
     }
 
     return cached;
@@ -19,7 +18,7 @@ export function computeRoleColor(role: Role): string | undefined {
 
 export function selectRoleColor(role_id: Snowflake): (state: RootState) => (string | undefined) {
     return (state: RootState) => {
-        let role = state.party.roles.get(role_id);
+        let role = state.party.roles[role_id];
         if(!role) return;
 
         return computeRoleColor(role);

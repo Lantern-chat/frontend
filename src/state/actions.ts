@@ -1,5 +1,4 @@
-import { Dispatch as ReduxDispatch } from "redux";
-import { IHistoryState } from "./reducers";
+import { IHistoryState } from "./mutators";
 import { Snowflake, Room, Message, PartyMember, UserPreferences } from "./models";
 import { RootState } from "state/root";
 import { ISession } from "lib/session";
@@ -47,12 +46,9 @@ export enum Type {
     UPDATE_QUOTA = "UPDATE_QUOTA",
 }
 
-export interface Dispatch extends ReduxDispatch<Action> {
-    (action: DispatchableAction): void;
-}
+import { DispatchableAction as MutantDispatchableAction } from "solid-mutant";
 
-export type DispatchableAction = Action | ThunkAction | Promise<DispatchableAction>;
-export type ThunkAction = (dispatch: <T extends DispatchableAction>(action: T) => T, getState: () => RootState) => void;
+export type DispatchableAction = MutantDispatchableAction<Action, RootState>;
 
 export type Action =
     HistoryUpdate |

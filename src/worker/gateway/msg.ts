@@ -1,6 +1,6 @@
 import { ReadyEvent, ServerMsg } from "client-sdk/src/models/gateway";
 
-export enum GatewayMessageDiscriminator {
+export const enum GatewayMessageDiscriminator {
     Initialized,
     Connecting,
     Waiting,
@@ -53,12 +53,13 @@ export interface GatewayMessageInvalidSession {
 }
 
 export type GatewayMessage =
-    GatewayMessageInitiatized |
-    GatewayMessageConnecting |
-    GatewayMessageWaiting |
-    GatewayMessageConnected |
-    GatewayMessageIdentifying |
-    GatewayMessageReady |
-    GatewayMessageDisconnected |
-    GatewayMessageEvent |
-    GatewayMessageError | GatewayMessageInvalidSession;
+    | GatewayMessageInitiatized
+    | GatewayMessageConnecting
+    | GatewayMessageWaiting
+    | GatewayMessageConnected
+    | GatewayMessageIdentifying
+    | GatewayMessageReady
+    | GatewayMessageDisconnected
+    | GatewayMessageEvent
+    | GatewayMessageError
+    | GatewayMessageInvalidSession;

@@ -1,6 +1,6 @@
 import { CLIENT } from "state/global";
 import { Snowflake } from "state/models";
-import { DispatchableAction } from "state/root";
+import { DispatchableAction } from "state/actions";
 
 import { DeleteMessage } from "client-sdk/src/api/commands/room";
 

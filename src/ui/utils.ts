@@ -1,5 +1,4 @@
-
-enum Res {
+const enum Res {
     PENDING,
     SUCCESS,
     ERROR,

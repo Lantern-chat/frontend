@@ -160,6 +160,8 @@ class Gateway {
     }
 
     identify() {
+        console.log(this);
+
         __DEV__ && console.log("Identifying with intent: ", this.intent.toString(2));
 
         this.send({ o: ClientMsgOpcode.Identify, p: { auth: this.auth!, intent: this.intent } });
@@ -187,7 +189,7 @@ ctx.addEventListener('message', msg => {
     switch(data.t) {
         case GatewayCommandDiscriminator.Connect: {
             GATEWAY.auth = data.auth;
-            GATEWAY.intent = data.intent;
+            GATEWAY.intent = data.intent || 0;
             GATEWAY.connect();
             break;
         }

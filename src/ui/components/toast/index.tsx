@@ -1,19 +1,16 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-
-import { createStructuredSelector } from "reselect";
-
+import { createEffect, createMemo, createSignal, For, onCleanup, Show } from "solid-js";
+import { createStructuredSelector, useDispatch } from "solid-mutant";
 import { UserPreferenceFlags } from "state/models";
-import { RootState, Type } from "state/root";
+import { RootState, Type, useRootSelector } from "state/root";
 import { selectPrefsFlag } from "state/selectors/prefs";
 
 import { Modal } from "../modal";
 
-export enum ToastIcon {
+export const enum ToastIcon {
 
 }
 
-export enum ToastLevel {
+export const enum ToastLevel {
     Info = "info",
     Success = "success",
     Warning = "warning",
@@ -33,43 +30,36 @@ export interface IToastProps extends IToast {
     reduced_motion: boolean,
 }
 
-const toast_selector = createStructuredSelector({
-    toasts: (state: RootState) => state.toasts.toasts,
+const toast_selector = createStructuredSelector<RootState>()({
+    toasts: state => state.toasts.toasts,
     reduced_motion: selectPrefsFlag(UserPreferenceFlags.ReduceAnimations),
-})
-
-import "./toast.scss";
-export const Toasts = React.memo(() => {
-    let { toasts, reduced_motion } = useSelector(toast_selector);
-
-    if(toasts.length == 0) {
-        return null;
-    }
-
-    return (
-        <Modal>
-            <div className="ln-toast-container top right">
-                <ul>
-                    {toasts.map((toast, i) => (
-                        <Toast {...toast} reduced_motion={reduced_motion} key={toast.id} />
-                    ))}
-                </ul>
-            </div>
-        </Modal>
-    );
 });
 
+import "./toast.scss";
 
-const Toast = React.memo((props: IToastProps) => {
-    let cls = `ln-toast ${props.level}`;
+export function Toasts() {
+    let state = useRootSelector(toast_selector)();
 
-    let [cleared, setCleared] = useState(false), dispatch = useDispatch();
+    return (
+        <Show when={state.toasts.length}>
+            <Modal>
+                <div className="ln-toast-container top right">
+                    <ul>
+                        <For each={state.toasts}>
+                            {toast => <Toast {...toast} reduced_motion={state.reduced_motion} />}
+                        </For>
+                    </ul>
+                </div>
+            </Modal>
+        </Show>
+    );
+}
 
-    if(cleared) {
-        cls += ' cleared';
-    }
+function Toast(props: IToastProps) {
+    let [cleared, setCleared] = createSignal(false),
+        dispatch = useDispatch();
 
-    let clearToast = useCallback(() => {
+    let clearToast = () => {
         let cb = () => dispatch({ type: Type.CLEAR_TOAST, id: props.id });
 
         if(props.reduced_motion) {
@@ -78,26 +68,29 @@ const Toast = React.memo((props: IToastProps) => {
             setCleared(true);
             setTimeout(cb, 300);
         }
-    }, [props]);
+    };
 
-    useEffect(() => {
+    createEffect(() => {
         if(props.timeout) {
             let handle = setTimeout(() => clearToast(), props.timeout);
-            return () => clearTimeout(handle);
+            onCleanup(() => clearTimeout(handle));
         }
-        return;
-    }, [clearToast]);
+    });
+
+    let className = createMemo(() => {
+        let cls = `ln-toast ${props.level}`;
+
+        if(cleared()) {
+            cls += ' cleared';
+        }
+
+        return cls;
+    });
 
     return (
-        <li className={cls} onClick={clearToast}>
+        <li className={className()} onClick={clearToast}>
             {props.title && <h3>{props.title}</h3>}
-
             <span>{props.text}</span>
         </li>
     );
-});
-
-if(__DEV__) {
-    Toasts.displayName = "Toasts";
-    Toast.displayName = "Toast";
 }

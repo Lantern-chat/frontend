@@ -1,4 +1,4 @@
-import React, { useState, useEffect, CSSProperties } from "react";
+import { createResource, JSX } from "solid-js";
 
 import "./icon.scss";
 
@@ -17,29 +17,18 @@ interface IAsyncVectorIconProps {
 
 type IVectorIconProps = (IStaticVectorIconProps | IAsyncVectorIconProps) & IGeneralVectorIconProps;
 
-export const VectorIcon: React.FunctionComponent<IVectorIconProps> = React.memo((props: IVectorIconProps) => {
-    let style: CSSProperties | undefined, [data, setData] = useState<string>("");
+export function VectorIcon(props: IVectorIconProps) {
+    let [data] = createResource("", () => {
+        // fast-path for static (including empty string)
+        if("string" == typeof (props as IStaticVectorIconProps).src) return (props as IStaticVectorIconProps).src;
 
-    useEffect(() => {
-        let static_props = props as IStaticVectorIconProps;
-        if(static_props.src !== undefined) {
-            return setData(static_props.src);
-        }
-        let async_props = props as IAsyncVectorIconProps;
-        async_props.import().then(data => setData(data.default));
-    }, [props]);
-
-    if(props.absolute) {
-        style = { position: 'absolute' };
-    }
+        // import and get default
+        return (props as IAsyncVectorIconProps).import().then(d => d.default);
+    });
 
     return (
         <div className="ln-icon" {...props.extra}>
-            <span className="ln-icon__wrapper" dangerouslySetInnerHTML={{ __html: data }} style={style} />
+            <span className="ln-icon__wrapper" innerHTML={data()} style={props.absolute ? { position: 'absolute' } : void 0} />
         </div>
     );
-});
-
-if(__DEV__) {
-    VectorIcon.displayName = "VectorIcon";
 }
