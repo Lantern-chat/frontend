@@ -1,7 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
-
-import { IMessageState } from "state/reducers/chat";
-import { useSelector } from "react-redux";
+import { IMessageState } from "state/mutators/chat";
 import { RootState } from "state/root";
 
 import { VectorIcon } from "ui/components/common/icon";
@@ -38,11 +35,11 @@ function readClipboard(): Promise<string | null> {
     return Promise.resolve(text);
 }
 
-export const MsgBoxContextMenu = React.memo((props: IMsgBoxContextMenuProps) => {
-    let on_paste = useCallback((e: React.MouseEvent) => {
+export function MsgBoxContextMenu(props: IMsgBoxContextMenuProps) {
+    let on_paste = (e: MouseEvent) => {
         readClipboard().then((text: string) => props.on_paste(text));
         e.stopPropagation();
-    }, [props.on_paste])
+    }
 
     return (
         <ContextMenu>
@@ -52,4 +49,4 @@ export const MsgBoxContextMenu = React.memo((props: IMsgBoxContextMenuProps) => 
             </div>
         </ContextMenu>
     );
-});
+}

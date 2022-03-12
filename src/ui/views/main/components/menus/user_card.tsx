@@ -1,8 +1,6 @@
-import React, { useCallback } from "react";
-import { useSelector } from "react-redux";
-
+import { Show } from "solid-js";
 import { PartyMember, Snowflake, User } from "state/models";
-import { RootState } from "state/root";
+import { RootState, useRootSelector } from "state/root";
 import { selectCachedUser } from "state/selectors/selectCachedUser";
 
 export interface IUserCardProps {
@@ -13,27 +11,21 @@ export interface IUserCardProps {
 
 import "./list.scss";
 import "./user_card.scss";
-export const UserCard = React.memo((props: IUserCardProps) => {
+export function UserCard(props: IUserCardProps) {
     let nick = props.member?.nick;
 
-    let cached_user = useSelector((state: RootState) => {
+    let cached_user = useRootSelector((state: RootState) => {
         let active_party = state.chat.active_party;
         return selectCachedUser(state, props.user.id, active_party);
     });
 
-    if(!cached_user) {
-        return <span className="ui-text">User Not Found</span>
-    }
-
-    let { user, presence } = cached_user;
-
     return (
-        <div className="ln-user-card ln-contextmenu">
-            <span className="ui-text">User: {user.username}</span>
-        </div>
+        <Show when={cached_user()} fallback={<span className="ui-text">User Not Found</span>}>
+            {cached_user => (
+                <div className="ln-user-card ln-contextmenu">
+                    <span className="ui-text">User: {cached_user.user.username}</span>
+                </div>
+            )}
+        </Show>
     );
-});
-
-if(__DEV__) {
-    UserCard.displayName = "UserCard";
 }

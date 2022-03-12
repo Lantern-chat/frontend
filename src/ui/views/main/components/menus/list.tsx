@@ -1,31 +1,27 @@
-import React from "react";
-import classNames from "classnames";
+import { children, createMemo, For, JSX } from "solid-js";
 
 export interface IContextMenuProps {
-    children: React.ReactNodeArray | React.ReactNode,
+    children: JSX.Element,
     dark?: boolean,
 }
 
-function eat(e: React.MouseEvent) {
+function eat(e: MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
 }
 
 import "./list.scss";
-export const ContextMenu = React.memo(({ children, dark }: IContextMenuProps) => {
-    if(!Array.isArray(children)) {
-        children = [children];
-    }
+export function ContextMenu(props: IContextMenuProps) {
+    let maybe_items = children(() => props.children);
 
-    let className = classNames("ln-contextmenu", "ln-cm-pos", { dark });
+    let items = () => {
+        let mi = maybe_items();
+        return Array.isArray(mi) ? mi : [mi];
+    };
 
     return (
-        <ul className={className} onContextMenu={eat}>
-            {(children as React.ReactNode[]).map((child, i) => (<li key={i}>{child}</li>))}
+        <ul className="ln-contextmenu ln-cm-pos" classList={{ dark: props.dark }} onContextMenu={eat}>
+            <For each={items()}>{item => <li>{item}</li>}</For>
         </ul>
     );
-});
-
-if(__DEV__) {
-    ContextMenu.displayName = "ContextMenu";
 }

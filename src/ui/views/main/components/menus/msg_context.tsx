@@ -1,11 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { createEffect, createMemo, createSignal, Show } from "solid-js";
+import { useDispatch } from "solid-mutant";
 
 import { copyText } from "lib/clipboard";
 
+import { useRootSelector } from "state/root";
 import { UserPreferenceFlags } from "state/models";
 import { deleteMessage } from "state/commands/message/delete";
-import { IMessageState } from "state/reducers/chat";
+import { IMessageState } from "state/mutators/chat";
 import { selectPrefsFlag } from "state/selectors/prefs";
 
 import { VectorIcon } from "ui/components/common/icon";
@@ -28,108 +29,98 @@ export interface IMsgContextMenuProps {
 
 /// Menu shown when right-clicking on a message in chat
 import "./msg_context.scss";
-export const MsgContextMenu = React.memo(({ msg, pos, onConfirmChange }: IMsgContextMenuProps) => {
-    let dev_mode = useSelector(selectPrefsFlag(UserPreferenceFlags.DeveloperMode));
+export function MsgContextMenu(props: IMsgContextMenuProps) {
+    let dev_mode = useRootSelector(selectPrefsFlag(UserPreferenceFlags.DeveloperMode));
 
-    let [shownConfirmation, setShownConfirmation] = useState(false);
+    let [shownConfirmation, setShownConfirmation] = createSignal(false);
+
+    let confirm_text = createMemo(() => shownConfirmation() ? "Are you sure?" : "Delete Message");
 
     // if context menu changes position, remove the dialogue
-    useEffect(() => setShownConfirmation(false), [pos]);
-    useEffect(() => onConfirmChange(shownConfirmation), [shownConfirmation]);
+    createEffect(() => (props.pos, setShownConfirmation(false)));
+    createEffect(() => props.onConfirmChange(shownConfirmation()));
 
-    let copy_msg = useCallback(() => msg.msg.content && copyText(msg.msg.content), [msg.msg.content]);
+    let copy_msg = () => props.msg.msg.content && copyText(props.msg.msg.content);
 
     // it's fine to memoize this since any attempts to select more would trigger a click event and close the context menu
-    let selected = useMemo(() => {
-        let selection = window.getSelection(),
-            msg_list = document.getElementById("ln-msg-list");
+    let selected: string | undefined;
+    let selection = window.getSelection(),
+        msg_list = document.getElementById("ln-msg-list");
 
-        if(selection && msg_list && msg_list.contains(selection.anchorNode)) {
-            let selected = selection.toString();
-            if(selected.length > 0) return selected;
-        }
+    if(selection && msg_list && msg_list.contains(selection.anchorNode)) {
+        selected = selection.toString();
+    }
 
-        return;
-    }, []);
-
-    let copy_selection = useCallback(() => selected && copyText(selected), [selected]);
+    let copy_selection = () => selected && copyText(selected);
 
     let dispatch = useDispatch();
 
-    let on_delete = useMemo(() => {
-        var timer: number | null = null, delayed = false;
+    var timer: number | null = null, delayed = false;
 
-        return (e: React.MouseEvent) => {
-            if(timer === null) {
-                timer = setTimeout(() => { delayed = true; }, 120);
-                setShownConfirmation(true);
-                e.stopPropagation();
-            }
+    let on_delete = (e: MouseEvent) => {
+        if(timer === null) {
+            timer = setTimeout(() => { delayed = true; }, 120);
+            setShownConfirmation(true);
+            e.stopPropagation();
+        }
 
-            if(delayed) {
-                dispatch(deleteMessage(msg.msg.room_id, msg.msg.id));
-                // Do delete
-            } else {
-                e.stopPropagation();
-            }
-        };
-    }, [pos, msg]);
+        if(delayed) {
+            dispatch(deleteMessage(props.msg.msg.room_id, props.msg.msg.id));
+            // Do delete
+        } else {
+            e.stopPropagation();
+        }
+    };
 
     return (
         <ContextMenu>
-            {
-                !selected ? null : (
-                    <>
-                        <div onClick={copy_selection}>
-                            <VectorIcon src={ClipboardIcon} />
-                            <span className="ui-text">Copy Selection</span>
-                        </div>
+            <Show when={!!selected}>
+                <div onClick={copy_selection}>
+                    <VectorIcon src={ClipboardIcon} />
+                    <span className="ui-text">Copy Selection</span>
+                </div>
 
-                        <hr />
-                    </>
-                )
-            }
+                <hr />
+            </Show>
 
             <div>
-                <VectorIcon src={PencilIcon} />
-                <span className="ui-text">Edit Message</span>
+                <VectorIcon src={PencilIcon} /> <span className="ui-text">Edit Message</span>
             </div>
 
             <div onClick={copy_msg}>
-                <VectorIcon src={CopyIcon} />
-                <span className="ui-text">Copy Message</span>
+                <VectorIcon src={CopyIcon} /> <span className="ui-text">Copy Message</span>
             </div>
 
             <hr />
 
             <div>
-                <VectorIcon src={TriangleIcon} />
-                <span className="ui-text">Report Message</span>
+                <VectorIcon src={TriangleIcon} /> <span className="ui-text">Report Message</span>
             </div>
 
-            <div className={shownConfirmation ? 'ln-contextmenu-confirm' : 'ln-contextmenu-delete'} onClick={on_delete}>
-                {shownConfirmation ? <VectorIcon src={TrashOpenIcon} /> : <VectorIcon src={TrashIcon} />}
+            <div onClick={on_delete}
+                classList={{
+                    'ln-contextmenu-confirm': shownConfirmation(),
+                    'ln-contextmenu-delete': !shownConfirmation(),
+                }}
+            >
+                <Show when={shownConfirmation()} fallback={<VectorIcon src={TrashIcon} />}>
+                    <VectorIcon src={TrashOpenIcon} />
+                </Show>
+
                 <span className="ui-text">
-                    {shownConfirmation ? "Are you sure?" : "Delete Message"}
+                    {confirm_text()}
                 </span>
             </div>
 
-            {
-                dev_mode && (
-                    <>
-                        <hr />
+            <Show when={dev_mode()}>
+                <hr />
 
-                        <div onClick={() => copyText(msg.msg.id)}>
-                            <VectorIcon src={ChatMessageIcon} />
-                            <span className="ui-text">Copy ID</span>
-                        </div>
-                    </>
-                )
-            }
+                <div onClick={() => copyText(props.msg.msg.id)}>
+                    <VectorIcon src={ChatMessageIcon} />
+                    <span className="ui-text">Copy ID</span>
+                </div>
+            </Show>
+
         </ContextMenu>
     )
-});
-
-if(__DEV__) {
-    MsgContextMenu.displayName = "MsgContextMenu";
 }
