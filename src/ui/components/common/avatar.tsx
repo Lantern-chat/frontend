@@ -25,7 +25,7 @@ export function Avatar(props: IAvatarProps) {
             <div className="ln-avatar__wrapper" {...props.wrapper} title={props.username}>
                 {props.url != null ?
                     <img src={props.url} className={className()} alt={props.username} /> :
-                    <span className={className()} style={{ backgroundColor: props.backgroundColor }}>{props.children || props.text || '?'}</span>}
+                    <span className={className()} style={{ "background-color": props.backgroundColor }}>{props.children || props.text || '?'}</span>}
             </div>
 
             {props.anchor}

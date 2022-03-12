@@ -36,24 +36,14 @@ function callEventHandler<T extends UIEvent>(event: T, handler?: JSX.EventHandle
 //}
 
 export function Link(props: ILinkProps) {
-    let method = createMemo(() => {
-        let ctx = useContext(HistoryContext);
-
-        return props.replace ? ctx.history.replace : ctx.history.pm
-    });
-
-    let [ran_onNavigate, setRan] = createSignal(false);
+    let method = createMemo(() => props.replace ? HISTORY.replace : HISTORY.pm);
 
     let onClick = (event: MouseEvent) => {
         if(!props.href) {
             return callEventHandler(event, props.onClick as any);
         }
 
-        if(!ran_onNavigate()) {
-            callEventHandler(event, props.onNavigate);
-            setRan(true);
-        }
-
+        callEventHandler(event, props.onNavigate);
         callEventHandler(event, props.onClick as any);
 
         if(props.noAction) { event.preventDefault(); }
@@ -70,11 +60,7 @@ export function Link(props: ILinkProps) {
             return callEventHandler(event, props.onTouchEnd as any);
         }
 
-        if(!ran_onNavigate()) {
-            callEventHandler(event, props.onNavigate);
-            setRan(true);
-        }
-
+        callEventHandler(event, props.onNavigate);
         callEventHandler(event, props.onTouchEnd as any);
 
         if(props.noAction) { event.preventDefault(); }

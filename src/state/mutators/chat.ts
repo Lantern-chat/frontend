@@ -112,15 +112,13 @@ export const chatMutator = mutatorWithDefault(
                     break;
                 }
 
-                let old_msgs = room.msgs,
+                let final_msgs: Array<IMessageState> = [],
+                    old_msgs = room.msgs,
                     new_msgs = raw_msgs.map(msg => ({
                         msg,
                         ts: dayjs(msg.created_at).unix(),
                         et: msg.edited_at ? dayjs(msg.edited_at).unix() : null,
-                    })),
-                    final_msgs: Array<IMessageState> = [];
-
-                new_msgs.sort((a, b) => a.ts - b.ts);
+                    })).sort((a, b) => a.ts - b.ts);
 
                 // TODO: Get the msg_id query term and avoid full merging
                 while(new_msgs.length && old_msgs.length) {

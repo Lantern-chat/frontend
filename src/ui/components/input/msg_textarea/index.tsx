@@ -11,7 +11,6 @@ export interface IMsgTextareaProps {
     onChange(value: string): void;
     onBlur(): void;
     onFocus(): void;
-    onChange(value: string): void;
     onKeyDown(e: KeyboardEvent): void;
     onContextMenu(e: MouseEvent): void;
     onSelectionChange?(ta: HTMLTextAreaElement, in_code: boolean): void;
