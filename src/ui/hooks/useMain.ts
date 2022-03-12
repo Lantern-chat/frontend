@@ -1,4 +1,4 @@
-import { Accessor, createContext, createEffect, createMemo, onCleanup, useContext } from "solid-js";
+import { Accessor, createContext, createEffect, createMemo, createSignal, onCleanup, Setter, useContext } from "solid-js";
 
 export const enum Hotkey {
     __NONE = 1,// start at 1 to simplify logic
@@ -191,25 +191,21 @@ export interface IMainClickOptions extends ClickEventHandlers {
 export function useMainClick(opt: IMainClickOptions) {
     let main = useContext(MainContext);
 
-    let props = createMemo(() => {
-        let props: ClickEventHandlers = {};
+    let props: ClickEventHandlers = {};
 
-        for(let key of EVENTS) {
-            let cb: OnClickHandler | undefined;
-            if(cb = opt[key]) {
-                props[key] = (e: MouseEvent) => {
-                    main.clickAll(e);
-                    if(!main.consumeKey('Shift')) {
-                        cb!(e);
-                    } else {
-                        e.stopPropagation();
-                    }
-                };
-            }
+    for(let key of EVENTS) {
+        let cb: OnClickHandler | undefined;
+        if(cb = opt[key]) {
+            props[key] = (e: MouseEvent) => {
+                main.clickAll(e);
+                if(!main.consumeKey('Shift')) {
+                    cb!(e);
+                } else {
+                    e.stopPropagation();
+                }
+            };
         }
-
-        return props;
-    });
+    }
 
     createEffect(() => {
         if(opt.active()) {
@@ -253,4 +249,25 @@ export function useMainHotkeys(hotkeys: Hotkey[], cb: (hotkey: Hotkey, e: Keyboa
 export interface Position {
     left: number,
     top: number,
+}
+
+export interface ISimpleMainClickOptions {
+    onMainClick: OnClickHandler,
+}
+
+
+export function createSimplePositionedContextMenu(opts?: ISimpleMainClickOptions): [get: Accessor<Position | null>, props: ClickEventHandlers] {
+    let [pos, setPos] = createSignal<Position | null>(null);
+
+    let props = useMainClick({
+        active: createMemo(() => !!pos()),
+        onMainClick: e => { setPos(null); opts?.onMainClick(e); },
+        onContextMenu: e => {
+            setPos({ top: e.clientY, left: e.clientX });
+            e.stopPropagation();
+            e.preventDefault();
+        },
+    });
+
+    return [pos, props];
 }
