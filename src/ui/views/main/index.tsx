@@ -61,6 +61,7 @@ import { Hotkey, IMainContext, MainContext, OnClickHandler, OnKeyHandler, parseH
 
 import { useRef } from "ui/hooks/useRef";
 import { Panel } from "state/mutators/window";
+import { PartyList } from "./components/party_list";
 
 //import { themeSelector } from "state/selectors/theme";
 //import { setTheme } from "state/commands/theme";

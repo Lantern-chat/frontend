@@ -11,7 +11,7 @@ import { Link } from "ui/components/history";
 import { HomeIcon } from "lantern-icons";
 
 export interface IHomeProps {
-    active_party: string,
+    active_party: string | undefined,
     can_navigate: boolean,
 }
 
