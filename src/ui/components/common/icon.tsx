@@ -1,4 +1,4 @@
-import { createResource, JSX } from "solid-js";
+import { createEffect, createResource, JSX } from "solid-js";
 
 import "./icon.scss";
 
@@ -18,12 +18,21 @@ interface IAsyncVectorIconProps {
 type IVectorIconProps = (IStaticVectorIconProps | IAsyncVectorIconProps) & IGeneralVectorIconProps;
 
 export function VectorIcon(props: IVectorIconProps) {
-    let [data] = createResource("", () => {
-        // fast-path for static (including empty string)
-        if("string" == typeof (props as IStaticVectorIconProps).src) return (props as IStaticVectorIconProps).src;
+    let [data, { refetch }] = createResource(
+        // setup resource to track static prop
+        () => (props as IStaticVectorIconProps).src,
+        (initial: string | undefined) => {
+            // fast-path for static
+            if(initial) return initial;
 
-        // import and get default
-        return (props as IAsyncVectorIconProps).import().then(d => d.default);
+            // import and get default
+            return (props as IAsyncVectorIconProps).import().then(d => d.default);
+        });
+
+    // if async, setup effect to refresh
+    createEffect(() => {
+        (props as any).import;
+        refetch();
     });
 
     return (
