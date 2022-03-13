@@ -271,3 +271,11 @@ export function createSimplePositionedContextMenu(opts?: ISimpleMainClickOptions
 
     return [pos, props];
 }
+
+export function createClickEater(): (e: MouseEvent) => void {
+    let main = useContext(MainContext);
+    return e => {
+        main.clickAll(e);
+        e.stopPropagation();
+    };
+}
