@@ -1,6 +1,6 @@
 import { createEffect, on } from "solid-js";
 
-import { Ref, useRef } from "ui/hooks/useRef";
+import { Ref, createRef } from "ui/hooks/createRef";
 import { createResizeObserver } from "ui/hooks/createResizeObserver";
 
 export interface ITimelineProps {
@@ -51,8 +51,8 @@ function render_timeline(
 
 import "./timeline.scss";
 export function Timeline(props: ITimelineProps) {
-    let wrapper_ref = useRef<HTMLDivElement>(),
-        canvas_ref = useRef<HTMLCanvasElement>();
+    let wrapper_ref = createRef<HTMLDivElement>(),
+        canvas_ref = createRef<HTMLCanvasElement>();
 
     let rect = createResizeObserver(wrapper_ref);
 
@@ -69,7 +69,7 @@ export function Timeline(props: ITimelineProps) {
 
 /*
 
-import React, { useLayoutEffect, useEffect, useRef } from "react";
+import React, { useLayoutEffect, useEffect, createRef } from "react";
 
 import ReactResizeDetectorNative from 'react-resize-detector';
 
@@ -128,7 +128,7 @@ interface ITimelineInnerProps extends ITimelineProps {
 }
 
 const TimelineInner = React.memo((props: ITimelineInnerProps) => {
-    let canvas_ref = useRef<HTMLCanvasElement>(null);
+    let canvas_ref = createRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
         requestAnimationFrame(() => render_timeline(props, canvas_ref));

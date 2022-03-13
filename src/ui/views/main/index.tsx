@@ -59,7 +59,7 @@ import { setPresence } from "state/commands/presence";
 
 import { Hotkey, IMainContext, MainContext, OnClickHandler, OnKeyHandler, parseHotkey, useMainHotkey } from "ui/hooks/useMain";
 
-import { useRef } from "ui/hooks/useRef";
+import { createRef } from "ui/hooks/createRef";
 import { Panel } from "state/mutators/window";
 import { PartyList } from "./components/party_list";
 
@@ -181,7 +181,7 @@ export default function Main() {
         consumeKey,
     };
 
-    let main = useRef<HTMLDivElement>();
+    let main = createRef<HTMLDivElement>();
 
     createEffect(() => {
         let m = main.current;
@@ -210,7 +210,7 @@ export default function Main() {
         <div className="ln-main" ref={main} onClick={clickAll} onContextMenu={onContextMenu}>
             <MainContext.Provider value={main_value}>
                 <Show when={is_right_view()}>
-                    {/* PartyList*/}
+                    <PartyList />
                 </Show>
 
                 Main View

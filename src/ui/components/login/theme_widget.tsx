@@ -1,5 +1,5 @@
 import { createStore } from "solid-js/store";
-import { useRef } from "ui/hooks/useRef";
+import { createRef } from "ui/hooks/createRef";
 import { useRootSelector } from "state/root";
 import { useDispatch } from "solid-mutant";
 
@@ -16,7 +16,7 @@ import throttle from 'lodash/throttle';
 
 import "./theme_widget.scss";
 export function ThemeWidget() {
-    let input = useRef<HTMLInputElement>(),
+    let input = createRef<HTMLInputElement>(),
         theme = useRootSelector(themeSelector),
         dispatch = useDispatch();
 

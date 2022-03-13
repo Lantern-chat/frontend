@@ -17,9 +17,9 @@ export interface Ref<T extends Refable> {
  * The ref will also "clean up" after itself, resetting to the
  * initial value when no longer assigned anywhere.
  */
-export function useRef<T extends Refable>(): Ref<T | undefined>;
-export function useRef<T extends Refable>(initial: T, options?: SignalOptions<T>): Ref<T>;
-export function useRef<T extends Refable>(initial?: T, options?: SignalOptions<T>): Ref<T | undefined> {
+export function createRef<T extends Refable>(): Ref<T | undefined>;
+export function createRef<T extends Refable>(initial: T, options?: SignalOptions<T>): Ref<T>;
+export function createRef<T extends Refable>(initial?: T, options?: SignalOptions<T>): Ref<T | undefined> {
     let [get, set] = createSignal<T | undefined>(initial, options);
 
     let counter = 0, ref = function(value: T) {
@@ -50,7 +50,7 @@ export function composeRefs<T extends Refable>(any_own: AnyRef<T> | undefined | 
     let own: Ref<T | undefined>;
 
     if(typeof any_own === 'function' && 'current' in any_own) { own = any_own; }
-    else { own = useRef<T>(); maybe_refs.unshift(any_own); }
+    else { own = createRef<T>(); maybe_refs.unshift(any_own); }
 
     // preprocess refs
     let refs: Array<AnyRef<T>> = [];

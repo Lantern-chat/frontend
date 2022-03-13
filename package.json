@@ -46,7 +46,6 @@
     "worker-loader": "^3.0.8"
   },
   "dependencies": {
-    "@hcaptcha/react-hcaptcha": "^1.1.1",
     "@types/lodash": "^4.14.179",
     "assert": "^2.0.0",
     "buffer": "^6.0.3",

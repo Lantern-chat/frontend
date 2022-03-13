@@ -1,5 +1,5 @@
 import { createEffect, createMemo } from "solid-js";
-import { useRef } from "ui/hooks/useRef";
+import { createRef } from "ui/hooks/createRef";
 
 import { useRootSelector } from "state/root";
 import { themeSelector } from "state/selectors/theme";
@@ -18,7 +18,7 @@ export interface IHomeProps {
 export function Home(props: IHomeProps) {
     let theme = useRootSelector(themeSelector);
 
-    let ref = useRef<HTMLLIElement>();
+    let ref = createRef<HTMLLIElement>();
 
     createEffect(() => {
         let li = ref.current;

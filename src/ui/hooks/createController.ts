@@ -16,7 +16,7 @@ export function createController<T>(): [get: () => T | null, set: (c: T) => void
         storage.c = value;
         dirty();
 
-        // same trick as `useRef`, only trigger cleanup on last usage
+        // same trick as `createRef`, only trigger cleanup on last usage
         counter++; onCleanup(() => --counter || (storage.c = null, dirty()));
     };
 

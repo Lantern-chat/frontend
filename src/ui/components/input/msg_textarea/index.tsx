@@ -1,7 +1,7 @@
 import { TextareaAutosize, TextareaHeightChangeMeta } from 'ui/components/input/textarea';
 
 import { parseHotkey, Hotkey } from "ui/hooks/useMain";
-import { AnyRef, composeRefs } from 'ui/hooks/useRef';
+import { AnyRef, composeRefs } from 'ui/hooks/createRef';
 
 export interface IMsgTextareaProps {
     disabled?: boolean,

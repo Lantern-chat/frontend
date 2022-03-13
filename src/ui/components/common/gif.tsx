@@ -4,7 +4,7 @@ import Freezeframe from "freezeframe";
 import { IS_MOBILE } from "lib/user_agent";
 import { UserPreferenceFlags } from "state/models";
 import { selectPrefsFlag } from "state/selectors/prefs";
-import { useRef } from "ui/hooks/useRef";
+import { createRef } from "ui/hooks/createRef";
 import { useRootSelector } from "state/root";
 
 export interface IAnimatedGifProps {
@@ -14,7 +14,7 @@ export interface IAnimatedGifProps {
 
 import "./gif.scss";
 export function AnimatedGif(props: IAnimatedGifProps) {
-    let img = useRef<HTMLImageElement>(),
+    let img = createRef<HTMLImageElement>(),
         freeze: Freezeframe,
         do_freeze = useRootSelector(selectPrefsFlag(UserPreferenceFlags.UnfocusPause));
 

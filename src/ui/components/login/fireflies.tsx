@@ -1,4 +1,4 @@
-import { Ref, useRef } from "ui/hooks/useRef";
+import { Ref, createRef } from "ui/hooks/createRef";
 import { onCleanup, onMount } from "solid-js";
 
 import "./fireflies.scss";
@@ -289,7 +289,7 @@ const MOUSE_EVENTS = ['mousemove', 'movedown', 'mouseup'];
 
 // TODO: Check for reduce-motion
 export function Fireflies(props: IFireflyProps) {
-    let canvas_ref = useRef<HTMLCanvasElement>();
+    let canvas_ref = createRef<HTMLCanvasElement>();
 
     onMount(() => {
         let state: IFireflyState = { ff: [], paused: false, m: [1e9, 1e9, false], density: props.density || 175 },

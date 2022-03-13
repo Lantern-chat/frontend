@@ -1,7 +1,7 @@
 import { createEffect, createMemo, JSX, onCleanup, onMount, splitProps } from "solid-js";
 import { createMicrotask } from "ui/hooks/createMicrotask";
 
-import { AnyRef, composeRefs, Ref, useRef } from "ui/hooks/useRef";
+import { AnyRef, composeRefs } from "ui/hooks/createRef";
 import { calculateNodeHeight } from "./calc";
 
 import { getSizingData, SizingData } from "./sizing";

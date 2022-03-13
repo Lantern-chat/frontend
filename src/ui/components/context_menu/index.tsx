@@ -1,6 +1,6 @@
 import { createEffect, createMemo, createUniqueId, JSX, onCleanup, Show } from "solid-js";
 import { Modal } from "ui/components/modal";
-import { useRef } from "ui/hooks/useRef";
+import { createRef } from "ui/hooks/createRef";
 import { createTrigger } from "ui/hooks/createTrigger";
 
 export interface IContextMenuProps {
@@ -12,7 +12,7 @@ const REFRESH_EVENTS: string[] = ["resize", "scroll"];
 
 import "./context_menu.scss";
 export function ContextMenu(props: IContextMenuProps) {
-    let anchor_ref = useRef<HTMLSpanElement>(),
+    let anchor_ref = createRef<HTMLSpanElement>(),
         [track, dirty] = createTrigger();
 
     createEffect(() => {

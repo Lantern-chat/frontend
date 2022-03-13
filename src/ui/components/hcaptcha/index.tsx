@@ -1,6 +1,6 @@
 import { createEffect, createMemo, createSignal, onCleanup, onMount, splitProps } from "solid-js";
 import { SetController } from "ui/hooks/createController";
-import { useRef } from "ui/hooks/useRef";
+import { createRef } from "ui/hooks/createRef";
 
 export interface ExecuteResponse {
     response: string;
@@ -95,7 +95,7 @@ function mountCaptchaScript(params: HCaptchaParams) {
 
 export function HCaptcha(props: HCaptchaProps) {
 
-    let div = useRef<HTMLDivElement>();
+    let div = createRef<HTMLDivElement>();
 
     let [isApiReady, setIsApiReady] = createSignal(typeof hcaptcha !== 'undefined');
 

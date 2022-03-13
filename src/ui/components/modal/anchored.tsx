@@ -1,5 +1,5 @@
 import { createEffect, createMemo, createSignal, onCleanup, Show } from "solid-js";
-import { useRef } from "ui/hooks/useRef";
+import { createRef } from "ui/hooks/createRef";
 import { PositionedModal } from "./positioned";
 
 export interface IAnchoredModalProps {
@@ -10,7 +10,7 @@ export interface IAnchoredModalProps {
 }
 
 export function AnchoredModal(props: IAnchoredModalProps) {
-    let anchor = useRef<HTMLSpanElement>();
+    let anchor = createRef<HTMLSpanElement>();
 
     let [show, setShow] = createSignal(props.show);
     let [closing, setClosing] = createSignal(false);
