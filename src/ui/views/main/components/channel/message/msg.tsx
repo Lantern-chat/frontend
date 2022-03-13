@@ -1,7 +1,7 @@
-import React from "react";
+import { createMemo, Show } from "solid-js";
+import { ErrorBoundary } from "solid-js/web";
 
-import classnames from "classnames";
-
+import { DisplayError } from "ui/components/common/error";
 import { Markdown } from "ui/components/common/markdown";
 
 import { Message as MessageModel } from "state/models";
@@ -9,29 +9,27 @@ import { Message as MessageModel } from "state/models";
 export interface MessageProps {
     editing: boolean,
     msg: MessageModel,
-    className?: string,
+    //classList?: { [key: string]: boolean },
     extra?: string,
 }
 
 import "./msg.scss";
-import { ErrorBoundary } from "ui/components/error";
-export const Message = React.memo((props: MessageProps) => {
-    let content = props.msg.content;
-    if(!content) {
-        return null;
-    }
-
-    if(props.extra) {
-        content += props.extra;
-    }
-
-    let classes = classnames("ln-msg", {
-        'ln-msg--editing': props.editing
-    }, props.className);
+export function Message(props: MessageProps) {
+    let content = createMemo(() => {
+        let content = props.msg.content;
+        if(content && props.extra) {
+            content += props.extra;
+        }
+        return content;
+    });
 
     return (
-        <ErrorBoundary>
-            <Markdown body={content} className={classes} />
-        </ErrorBoundary>
+        <Show when={content()}>
+            <ErrorBoundary fallback={err => <DisplayError error={err} />}>
+                <Markdown body={content()!}
+                    className="ln-msg"
+                    classList={{ 'ln-msg--editing': props.editing }} />
+            </ErrorBoundary>
+        </Show>
     );
-});
+}
