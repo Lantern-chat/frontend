@@ -1,12 +1,10 @@
-import React from "react";
-
 import { Link } from "ui/components/history";
 import { VectorIcon } from "ui/components/common/icon";
 
 import { FamilyIcon } from "lantern-icons";
 
 import "./sidebar.scss";
-export const HomeSideBar = React.memo(() => {
+export function HomeSideBar() {
     return (
         <div className="ln-home-sidebar">
             <ul className="ln-home-tabs">
@@ -25,12 +23,6 @@ export const HomeSideBar = React.memo(() => {
             <ul>
                 <li>You have no friends :(</li>
             </ul>
-
-
         </div>
     );
-});
-
-if(__DEV__) {
-    HomeSideBar.displayName = "HomeSideBar";
 }

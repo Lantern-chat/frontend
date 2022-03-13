@@ -18,15 +18,13 @@ export function PartyHeader() {
 
     return (
         <Show when={party()}>
-            {party => (
-                <header className="ln-party-header">
-                    <div className="ln-party-header__name">
-                        <span className="ui-text">{party.party.name}</span>
-                    </div>
+            <header className="ln-party-header">
+                <div className="ln-party-header__name">
+                    <span className="ui-text">{party()!.party.name}</span>
+                </div>
 
-                    <VectorIcon src={BalloonsIcon} />
-                </header>
-            )}
+                <VectorIcon src={BalloonsIcon} />
+            </header>
         </Show>
     );
 }

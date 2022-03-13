@@ -62,6 +62,7 @@ import { Hotkey, IMainContext, MainContext, OnClickHandler, OnKeyHandler, parseH
 import { createRef } from "ui/hooks/createRef";
 import { Panel } from "state/mutators/window";
 import { PartyList } from "./components/party_list";
+import { Party } from "./components/party/party";
 
 //import { themeSelector } from "state/selectors/theme";
 //import { setTheme } from "state/commands/theme";
@@ -81,6 +82,7 @@ import { PartyList } from "./components/party_list";
 //    }));
 //}
 
+import "./main.scss";
 export default function Main() {
     let dispatch = useDispatch();
 
@@ -209,11 +211,11 @@ export default function Main() {
     return (
         <div className="ln-main" ref={main} onClick={clickAll} onContextMenu={onContextMenu}>
             <MainContext.Provider value={main_value}>
-                <Show when={is_right_view()}>
+                <Show when={!is_right_view()}>
                     <PartyList />
                 </Show>
 
-                Main View
+                <Party />
             </MainContext.Provider>
         </div>
     )

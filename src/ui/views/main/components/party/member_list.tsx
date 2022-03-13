@@ -76,7 +76,7 @@ export function MemberList() {
                     // if not in a hoistable role, default to regular list
                     online.push(member);
                 } else if(members.length < 1000) {
-                    // TODO: Set "Large" threshold in config
+                    // TODO: Set "Large" threshold in config and move this into server
                     offline.push(member);
                 }
             }
