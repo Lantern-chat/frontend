@@ -1,10 +1,8 @@
-import React, { useMemo } from "react";
-import { shallowEqual, useSelector } from "react-redux";
-import { createSelector, createStructuredSelector } from "reselect";
-import intersect from 'fast_array_intersect';
+import { createMemo, For, Show } from "solid-js";
+import { useStructuredSelector } from "solid-mutant";
 
 import { parse_presence, PartyMember, PresenceStatus, Role, Snowflake, UserPreferenceFlags, user_is_bot } from "state/models";
-import { RootState } from "state/root";
+import { RootState, useRootSelector } from "state/root";
 import { activeParty } from "state/selectors/active";
 import { selectPrefsFlag } from "state/selectors/prefs";
 
@@ -15,191 +13,178 @@ import { BotLabel } from "../misc/bot_label";
 
 import { CrownIcon } from "lantern-icons";
 
-let user_list_selector = createSelector(
-    activeParty, // party_id
-    (state: RootState) => state.party.parties,
-    selectPrefsFlag(UserPreferenceFlags.LightMode),
-    (party_id, parties, is_light_theme) => {
-        let party = party_id ? parties.get(party_id) : null;
-
-        if(!party) return { is_light_theme };
-
-        return {
-            members: party.members,
-            owner: party.party.owner,
-            is_light_theme,
-            roles: party.party.roles,
-        }
-    }
-)
-
-type PartyMemberExtra = PartyMember & ReturnType<typeof parse_presence>;
-
 import "./member_list.scss";
-export const MemberList = React.memo(() => {
-    let { members, owner, is_light_theme, roles } = useSelector(user_list_selector);
+import { ObjectMap } from "state/util/map_set";
+export function MemberList() {
+    let state = useStructuredSelector({
+        is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
+        party: (state: RootState) => {
+            let party_id = activeParty(state);
+            if(party_id) {
+                return state.party.parties[party_id];
+            }
+            return;
+        },
+    });
 
-    let sorted_members: undefined | Array<PartyMemberExtra> = useMemo(() => {
-        if(members) {
-            let collator = new Intl.Collator('en-US', { sensitivity: 'base' }),
-                sorted_members = Array.from(members.values(), member => ({
-                    ...member,
-                    ...parse_presence(member.presence)
-                }));
-
-            sorted_members.sort((a, b) => collator.compare(
-                a.nick || a.user.username,
-                b.nick || b.user.username,
-            ));
-
-            return sorted_members;
-        }
-        return;
-    }, [members]);
-
-    let grouped_members = useMemo(() => {
-        if(!sorted_members) return;
+    let grouped_members = createMemo(() => {
+        let members = ObjectMap(state.party?.members),
+            party = state.party?.party;
 
         let offline = [], online = [],
-            hoisted: undefined | Array<{ role: Role, members: PartyMemberExtra[] }>;
+            hoisted: Array<{ role: Role, members: Array<DeepReadonly<PartyMember>> }> = [];
 
-        if(roles && roles.length) {
-            // find all roles that should be hoisted and initialize them
-            hoisted = roles.filter(role => ((role.flags & 1) == 1)).map(role => ({ role, members: [] }));
+        if(members.size && party) {
+            let roles = party.roles;
 
-            // sort the hoistable roles
-            hoisted.sort((a, b) => a.role.position - b.role.position);
-        }
+            if(roles.length) {
+                hoisted = roles.filter(role => (role.flags & 1))
+                    .map(role => ({ role, members: [] }))
+                    .sort((a, b) => a.role.position - b.role.position);
+            }
 
-        outer: for(let member of sorted_members) {
-            // if online (not offline)
-            if(member.status != PresenceStatus.Offline) {
-                // if the member is in any roles AND if there are any roles to hoist
-                if(member.roles && hoisted) {
-                    // iterate through each hoisted role and check if this member is part of it
-                    // TODO: More efficient array intersection, probably using sets/maps
-                    for(let hr of hoisted) {
-                        if(member.roles.includes(hr.role.id)) {
-                            hr.members.push(member);
-                            continue outer; // don't include in other sections
+            outer: for(let member of members.values()) {
+                let presence = parse_presence(member.presence);
+
+                // TODO: Replace with member.flags != 0 ?
+                if(presence.status != PresenceStatus.Offline) {
+                    // if the member is in any roles AND if there are any roles to hoist
+                    if(hoisted && member.roles) {
+                        for(let hr of hoisted) {
+                            // iterate through each hoisted role and check if this member is part of it
+                            // TODO: More efficient array intersection, probably using sets/maps
+                            if(member.roles.includes(hr.role.id)) {
+                                hr.members.push(member);
+                                continue outer; // don't include in other sections
+                            }
                         }
                     }
-                }
 
-                // if not in a hoistable role, default to regular list
-                online.push(member);
-            } else {
-                offline.push(member);
+                    // if not in a hoistable role, default to regular list
+                    online.push(member);
+                } else if(members.size < 1000) {
+                    // TODO: Set "Large" threshold in config
+                    offline.push(member);
+                }
             }
         }
 
-        return { hoisted, offline, online };
-    }, [sorted_members, roles]);
-
-    type MaybeEmptyList = Array<React.ReactNode> | React.ReactNode;
-
-    let hoisted_list, online_list: MaybeEmptyList, offline_list: MaybeEmptyList;
-    if(grouped_members) {
-        let { hoisted, online, offline } = grouped_members;
-
-        let gen_list = (list: Array<PartyMemberExtra>, name: string, key: string = name) => (
-            list.length == 0 ? null : <div key={key}>
-                <h4 className="ui-text">{name} – {list.length}</h4>
-                <ul>
-                    {list.map((member, i) => (
-                        <ListedMember key={member.user.id || i} member={member} owner={owner!} is_light_theme={is_light_theme} />
-                    ))}
-                </ul>
-            </div>
-        );
-
-        if(hoisted) {
-            // NOTE: __role is appended for if someone makes a role named "Online" or "Offline" to avoid duplicate keys
-            hoisted_list = hoisted.map(({ role, members }) => gen_list(members, role.name, role.name + "__role"));
-        }
-
-        online_list = gen_list(online, "Online");
-        offline_list = gen_list(offline, "Offline");
-    }
+        return { offline, online, hoisted };
+    });
 
     return (
-        <div className="ln-member-list ln-scroll-y ln-scroll-fixed">
-            {hoisted_list}
-            {online_list}
-            {offline_list}
-        </div>
-    )
-});
+        <Show when={state.party}>
+            <div className="ln-member-list ln-scroll-y ln-scroll-fixed">
+                <For each={grouped_members().hoisted}>
+                    {hoisted => <RoleMemberList
+                        role={hoisted.role.name}
+                        members={hoisted.members}
+                        owner={state.party!.party.owner}
+                        is_light_theme={state.is_light_theme} />}
+                </For>
 
-interface IListedMemberProps {
+                <RoleMemberList
+                    role="Online"
+                    members={grouped_members().online}
+                    owner={state.party!.party.owner}
+                    is_light_theme={state.is_light_theme} />
+
+                <RoleMemberList
+                    role="Offline"
+                    members={grouped_members().offline}
+                    owner={state.party!.party.owner}
+                    is_light_theme={state.is_light_theme} />
+            </div>
+        </Show>
+    )
+}
+
+interface IRoleMemberListProps {
+    role: string,
+    members: Array<DeepReadonly<PartyMember>>,
     owner: Snowflake,
-    member: PartyMemberExtra,
     is_light_theme: boolean,
 }
 
-const ListedMember = ({ member, owner, is_light_theme }: IListedMemberProps) => {
-    let user = member.user,
-        nick = member.nick || user.username,
-        crown, status;
+function RoleMemberList(props: IRoleMemberListProps) {
+    let collator = new Intl.Collator('en-US', { sensitivity: 'base' });
 
-    let color = useSelector((state: RootState) => {
-        let party_id = activeParty(state);
-        if(!party_id) return;
+    let sorted = createMemo(() => props.members.slice().sort((a, b) => collator.compare(
+        a.nick || a.user.username,
+        b.nick || b.user.username,
+    )));
 
-        let party = state.party.parties.get(party_id);
-        if(!party) return;
+    return (
+        <Show when={props.members.length}>
+            <div>
+                <h4 className="ui-text">{props.role} – {props.members.length}</h4>
+                <ul>
+                    <For each={sorted()}>
+                        {member => <ListedMember member={member} owner={props.owner} is_light_theme={props.is_light_theme} />}
+                    </For>
+                </ul>
+            </div>
+        </Show>
+    )
+}
 
-        return party.member_colors.get(member.user.id);
+interface IListedMemberProps {
+    owner: Snowflake,
+    member: DeepReadonly<PartyMember>,
+    is_light_theme: boolean,
+}
+
+function ListedMember(props: IListedMemberProps) {
+    let color = useRootSelector(state => {
+        let party_id, party;
+
+        if(party_id = activeParty(state)) {
+            if(party = state.party.parties[party_id]) {
+                return party.member_colors[props.member.user.id];
+            }
+        }
+        return;
     });
 
-    if(user.id == owner) {
-        crown = (
-            <>
-                <div className="ln-member__spacer" />
-                <div className="ln-member__crown" title="Owner">
-                    <VectorIcon src={CrownIcon} />
-                </div>
-            </>
-        );
-    }
+    let display_name = createMemo(() => props.member.nick || props.member.user.username);
 
-    if(user.status && member.status != PresenceStatus.Offline) {
-        status = (
-            <div className="ln-member__status">
-                <span className="chat-text">{user.status}</span>
-            </div>
-        );
-    }
-
-    let bot;
-    if(user_is_bot(user)) {
-        bot = <BotLabel />
-    }
+    let presence = createMemo(() => parse_presence(props.member.presence));
 
     return (
         <li className="ln-member-list__item">
-            <UserAvatar nickname={nick} user={user} status={member.status}
-                is_light_theme={is_light_theme} is_mobile={member.is_mobile} />
+            <UserAvatar nickname={display_name()}
+                user={props.member.user}
+                status={presence().status}
+                is_light_theme={props.is_light_theme}
+                is_mobile={presence().is_mobile} />
 
             <div className="ln-member__meta">
                 <div className="ln-member__title">
 
                     <div className="ln-member__name">
-                        <span className="ui-text" style={{ color }}>{nick}</span>
+                        <span className="ui-text" style={{ color: color() }}>
+                            {display_name()}
+                        </span>
                     </div>
 
-                    {crown}
+                    <Show when={props.member.user.id == props.owner}>
+                        <div className="ln-member__spacer" />
+                        <div className="ln-member__crown" title="Owner">
+                            <VectorIcon src={CrownIcon} />
+                        </div>
+                    </Show>
 
-                    {bot}
+                    <Show when={user_is_bot(props.member.user)}>
+                        <BotLabel />
+                    </Show>
                 </div>
 
-                {status}
+                <Show when={props.member.user.status && presence().status != PresenceStatus.Offline}>
+                    <div className="ln-member__status">
+                        <span className="chat-text">{props.member.user.status}</span>
+                    </div>
+                </Show>
             </div>
         </li>
     );
-};
-
-if(__DEV__) {
-    MemberList.displayName = "MemberList";
-    ListedMember.displayName = "ListedMember";
 }
