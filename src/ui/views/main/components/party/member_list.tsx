@@ -14,7 +14,6 @@ import { BotLabel } from "../misc/bot_label";
 import { CrownIcon } from "lantern-icons";
 
 import "./member_list.scss";
-import { ObjectMap } from "state/util/map_set";
 export function MemberList() {
     let state = useStructuredSelector({
         is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
@@ -27,14 +26,28 @@ export function MemberList() {
         },
     });
 
+    let collator = new Intl.Collator('en-US', { sensitivity: 'base' });
+
+    // name changes are rare, so sort these first
+    let sorted_members = createMemo(() => {
+        let members = state.party?.members;
+        if(members) {
+            return Object.values(members).sort((a, b) => collator.compare(
+                a.nick || a.user.username,
+                b.nick || b.user.username,
+            ))
+        }
+        return;
+    });
+
     let grouped_members = createMemo(() => {
-        let members = ObjectMap(state.party?.members),
+        let members = sorted_members(),
             party = state.party?.party;
 
         let offline = [], online = [],
             hoisted: Array<{ role: Role, members: Array<DeepReadonly<PartyMember>> }> = [];
 
-        if(members.size && party) {
+        if(members && party) {
             let roles = party.roles;
 
             if(roles.length) {
@@ -43,7 +56,7 @@ export function MemberList() {
                     .sort((a, b) => a.role.position - b.role.position);
             }
 
-            outer: for(let member of members.values()) {
+            outer: for(let member of members) {
                 let presence = parse_presence(member.presence);
 
                 // TODO: Replace with member.flags != 0 ?
@@ -62,7 +75,7 @@ export function MemberList() {
 
                     // if not in a hoistable role, default to regular list
                     online.push(member);
-                } else if(members.size < 1000) {
+                } else if(members.length < 1000) {
                     // TODO: Set "Large" threshold in config
                     offline.push(member);
                 }
@@ -107,19 +120,12 @@ interface IRoleMemberListProps {
 }
 
 function RoleMemberList(props: IRoleMemberListProps) {
-    let collator = new Intl.Collator('en-US', { sensitivity: 'base' });
-
-    let sorted = createMemo(() => props.members.slice().sort((a, b) => collator.compare(
-        a.nick || a.user.username,
-        b.nick || b.user.username,
-    )));
-
     return (
         <Show when={props.members.length}>
             <div>
                 <h4 className="ui-text">{props.role} – {props.members.length}</h4>
                 <ul>
-                    <For each={sorted()}>
+                    <For each={props.members}>
                         {member => <ListedMember member={member} owner={props.owner} is_light_theme={props.is_light_theme} />}
                     </For>
                 </ul>
