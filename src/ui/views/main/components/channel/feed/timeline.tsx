@@ -1,13 +1,18 @@
-import React, { useLayoutEffect, useEffect, useRef } from "react";
+import { createEffect, on } from "solid-js";
 
-import { useResizeDetector } from "react-resize-detector/build/withPolyfill";
+import { Ref, useRef } from "ui/hooks/useRef";
+import { createResizeObserver } from "ui/hooks/createResizeObserver";
 
 export interface ITimelineProps {
     position: number,
     direction: -1 | 0 | 1,
 }
 
-function render_timeline(props: ITimelineProps, { width = 0, height = 0 }: { width?: number, height?: number }, canvas_ref: React.MutableRefObject<HTMLCanvasElement | null>) {
+function render_timeline(
+    props: ITimelineProps,
+    { width = 0, height = 0 }: { width?: number, height?: number },
+    canvas_ref: Ref<HTMLCanvasElement | undefined>) {
+
     if(!canvas_ref.current) { return; }
     let canvas = canvas_ref.current;
 
@@ -45,21 +50,22 @@ function render_timeline(props: ITimelineProps, { width = 0, height = 0 }: { wid
 }
 
 import "./timeline.scss";
-export const Timeline = React.memo((props: ITimelineProps) => {
-    const { width, height, ref } = useResizeDetector();
+export function Timeline(props: ITimelineProps) {
+    let wrapper_ref = useRef<HTMLDivElement>(),
+        canvas_ref = useRef<HTMLCanvasElement>();
 
-    let canvas_ref = useRef<HTMLCanvasElement>(null);
+    let rect = createResizeObserver(wrapper_ref);
 
-    useEffect(() => {
-        requestAnimationFrame(() => render_timeline(props, { width, height }, canvas_ref));
-    }, [props, width, height, canvas_ref]);
+    // as the requestAnimationFrame happens outside of reactive scope, track
+    // rect separately with `on`.
+    createEffect(on(rect, () => requestAnimationFrame(() => render_timeline(props, rect(), canvas_ref))));
 
     return (
-        <div className="ln-msg-list__timeline" ref={ref as any}>
+        <div className="ln-msg-list__timeline" ref={wrapper_ref}>
             <canvas ref={canvas_ref} />
         </div>
     );
-});
+}
 
 /*
 
