@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { createSignal, JSX } from "solid-js";
+import { useSelector, useDispatch } from "solid-mutant";
 
 import { savePrefsFlag } from "state/commands/prefs";
 import { UserPreferenceFlags } from "state/models";
@@ -9,48 +9,43 @@ import "./toggle.scss";
 
 export interface IToggleProps {
     htmlFor: string,
-    label: React.ReactNode,
+    label: JSX.Element,
     checked?: boolean,
     onChange: (checked: boolean) => void,
 }
 
-export const Toggle = React.memo((props: IToggleProps) => {
-    let [checked, setChecked] = useState<boolean>(!!props.checked),
-        onChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-            let checked = e.currentTarget.checked;
+export function Toggle(props: IToggleProps) {
+    let [checked, setChecked] = createSignal<boolean>(!!props.checked),
+        onChange = (e: Event) => {
+            let checked = (e.currentTarget as HTMLInputElement).checked;
 
             setChecked(checked);
             props.onChange(checked);
-        }, [props.onChange]);
+        };
 
     return (
         <div className="ln-settings-toggle">
             <label htmlFor={props.htmlFor}>{props.label}</label>
             <span className="spacer" />
-            <input type="checkbox" name={props.htmlFor} id={props.htmlFor} checked={checked} onChange={onChange} />
+            <input type="checkbox" name={props.htmlFor} id={props.htmlFor} checked={checked()} onChange={onChange} />
         </div>
     );
-});
+}
 
 export interface ITogglePrefsFlagProps {
     htmlFor: string,
-    label: React.ReactNode,
+    label: JSX.Element,
     flag: UserPreferenceFlags,
 }
 
-export const TogglePrefsFlag = React.memo((props: ITogglePrefsFlagProps) => {
+export function TogglePrefsFlag(props: ITogglePrefsFlagProps) {
     let current_flag = useSelector(selectPrefsFlag(props.flag)),
         dispatch = useDispatch(),
-        onChange = useCallback((checked: boolean) => {
+        onChange = (checked: boolean) => {
             dispatch(savePrefsFlag(props.flag, checked));
-        }, [props.flag]);
+        };
 
     return (
-        <Toggle htmlFor={props.htmlFor} label={props.label} checked={current_flag} onChange={onChange} />
+        <Toggle htmlFor={props.htmlFor} label={props.label} checked={current_flag()} onChange={onChange} />
     );
-});
-
-if(__DEV__) {
-    Toggle.displayName = "Toggle";
-    TogglePrefsFlag.displayName = "TogglePrefsFlag";
 }

@@ -1,5 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector, batch } from "react-redux";
+import { createEffect, createMemo, createSignal, For } from "solid-js";
+import { createStore } from "solid-js/store";
+import { useDispatch, useSelector, useStructuredSelector } from "solid-mutant";
+import { createRef } from "ui/hooks/createRef";
 
 import throttle from "lodash/throttle";
 import { mix } from "lib/math";
@@ -9,7 +11,7 @@ import { savePrefs, savePrefsFlag } from "state/commands/prefs";
 import { Font, FONT_NAMES, UserPreferenceFlags } from "state/models";
 import { themeSelector } from "state/selectors/theme";
 import { selectPrefsFlag, selectGroupPad } from "state/selectors/prefs";
-import { RootState } from "state/root";
+import { RootState, useRootSelector } from "state/root";
 
 import { FormGroup, FormInput, FormLabel, FormSelect } from "ui/components/form";
 
@@ -37,23 +39,23 @@ export const AppearanceSettingsTab = () => {
     );
 };
 
-const ThemeSetting = React.memo(() => {
-    let input = useRef<HTMLInputElement>(null),
+function ThemeSetting() {
+    let input = createRef<HTMLInputElement>(),
         theme = useSelector(themeSelector),
         dispatch = useDispatch(),
-        [interactive, setInteractive] = useState(theme),
+        [interactive, setInteractive] = createStore({ ...theme() }),
         doSetTheme = (temperature: number, is_light: boolean, oled: boolean) => {
             setInteractive({ temperature, is_light, oled });
 
-            batch(() => {
-                dispatch(setTheme(temperature, is_light, oled));
-                dispatch(savePrefs({ temp: temperature }));
-                dispatch(savePrefsFlag(UserPreferenceFlags.LightMode, is_light));
-                dispatch(savePrefsFlag(UserPreferenceFlags.OledMode, !!oled));
-            });
+            dispatch([
+                setTheme(temperature, is_light, oled),
+                savePrefs({ temp: temperature }),
+                savePrefsFlag(UserPreferenceFlags.LightMode, is_light),
+                savePrefsFlag(UserPreferenceFlags.OledMode, !!oled)
+            ]);
         };
 
-    let onTempTouchMove = throttle((e: React.TouchEvent<HTMLInputElement>) => {
+    let onTempTouchMove = throttle((e: TouchEvent) => {
         if(input.current) {
             let { width, x } = input.current.getBoundingClientRect();
             let touch = e.touches[0].clientX - x;
@@ -91,21 +93,20 @@ const ThemeSetting = React.memo(() => {
             />
         </>
     )
-});
+}
 
-const ViewSelector = React.memo(() => {
+function ViewSelector() {
     let current_compact = useSelector(selectPrefsFlag(UserPreferenceFlags.CompactView)),
         dispatch = useDispatch(),
-        [compact, setCompact] = useState(current_compact),
+        [compact, setCompact] = createSignal(current_compact()),
         onChange = (value: string) => {
             let compact = value == 'compact';
 
             setCompact(compact);
-
-            batch(() => {
-                dispatch(savePrefs({ pad: compact ? 0 : 16 }));
-                dispatch(savePrefsFlag(UserPreferenceFlags.CompactView, compact));
-            })
+            dispatch([
+                savePrefs({ pad: compact ? 0 : 16 }),
+                savePrefsFlag(UserPreferenceFlags.CompactView, compact),
+            ]);
         };
 
     return (
@@ -114,97 +115,97 @@ const ViewSelector = React.memo(() => {
             <RadioSelect
                 name="view"
                 options={[["cozy", "Cozy"], ["compact", "Compact"]]}
-                selected={compact ? 'compact' : 'cozy'}
+                selected={compact() ? 'compact' : 'cozy'}
                 onChange={onChange}
             />
         </div>
     );
-});
+}
 
 interface IFontSelectorProps {
     which: 'chat' | 'ui',
 }
 
-const FontSelector = React.memo(({ which }: IFontSelectorProps) => {
-    let select_name, select_label,
-        prefs_key = which == 'chat' ? 'chat_font' : 'ui_font',
-        size_prefs_key = which == 'ui' ? 'ui_font_size' : 'chat_font_size';
+function FontSelector(props: IFontSelectorProps) {
+    let select_name, select_label;
 
-    let current_font = useSelector((state: RootState) => state.prefs[prefs_key]),
-        current_size = useSelector((state: RootState) => state.prefs[size_prefs_key]),
-        dispatch = useDispatch();
+    let prefs_key = createMemo(() => props.which == 'chat' ? 'chat_font' : 'ui_font');
+    let size_prefs_key = createMemo(() => props.which == 'ui' ? 'ui_font_size' : 'chat_font_size');
 
-    let [font, setFont] = useState(Font[current_font]),
-        [size, setSize] = useState(current_size);
+    let state = useStructuredSelector({
+        current_font: (state: RootState) => state.prefs[prefs_key()],
+        current_size: (state: RootState) => state.prefs[size_prefs_key()],
+    });
 
-    useEffect(() => setFont(Font[current_font]), [current_font]);
-    useEffect(() => setSize(current_size), [current_size]);
+    let dispatch = useDispatch();
 
-    useEffect(() => {
-        switch(Font[font]) {
+    let [font, setFont] = createSignal(Font[state.current_font]),
+        [size, setSize] = createSignal(state.current_size);
+
+    // update local state when store values change
+    createEffect(() => setFont(Font[state.current_font]));
+    createEffect(() => setSize(state.current_size));
+
+    createEffect(() => {
+        switch(Font[font()]) {
             case Font.OpenDyslexic: { import("ui/fonts/opendyslexic"); break; }
             case Font.ComicSans: { import("ui/fonts/dramasans"); break; }
         }
-    }, [font]);
+    });
 
-    if(which == 'chat') {
-        select_name = "Chat Font";
-        select_label = 'chat_font';
-    } else {
-        select_name = "UI Font";
-        select_label = 'ui_font';
-    }
-
-    let font_class = "ln-font-" + font.toLowerCase(),
-        size_label = select_name + " Size";
-
-    let onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        let font_name: keyof typeof Font = e.currentTarget.value as any;
+    let onChange = (e: Event) => {
+        let font_name: keyof typeof Font = (e.currentTarget as HTMLSelectElement).value as any;
         if(!Font.hasOwnProperty(font_name)) return;
 
         setFont(font_name);
         dispatch(savePrefs({
-            [prefs_key]: Font[font_name]
+            [prefs_key()]: Font[font_name]
         }));
     };
 
     let onSizeInput = (value: number) => {
         value = Math.round(value);
-
         setSize(value);
-        dispatch(savePrefs({ [size_prefs_key]: value }));
+        dispatch(savePrefs({ [size_prefs_key()]: value }));
     };
 
     return (
         <>
             <div className="ln-settings-font">
-                <label htmlFor={select_label}>{select_name}</label>
+                <label htmlFor={props.which == 'chat' ? 'chat_font' : 'ui_font'}>
+                    {props.which == 'chat' ? 'Chat Font' : 'UI Font'}
+                </label>
+
                 <div className="ln-settings-font__wrapper">
                     <div className="ln-settings-font__selector">
-                        <FormSelect name={select_label} value={font} onChange={onChange}>
-                            {Object.keys(FONT_NAMES).map((font) => (
-                                <option value={font} key={font}
-                                    className={"ln-font-" + font.toLowerCase()}>
-                                    {FONT_NAMES[font]}
-                                </option>
-                            ))}
+                        <FormSelect name={select_label} value={font()} onChange={onChange}>
+                            <For each={Object.keys(FONT_NAMES)}>
+                                {font => (
+                                    <option value={font} className={"ln-font-" + font.toLowerCase()}>
+                                        {FONT_NAMES[font]}
+                                    </option>
+                                )}
+                            </For>
                         </FormSelect>
                     </div>
-                    <div className={"ln-settings-font__example " + font_class} style={{ fontSize: `${size / 16}em` }}>
+
+                    <div className={"ln-settings-font__example ln-font-" + font().toLowerCase()} style={{ 'font-size': `${size() / 16}em` }}>
                         "The wizard quickly jinxed the gnomes before they vaporized."
                     </div>
                 </div>
             </div>
 
-            <SizeSlider htmlFor={size_prefs_key} label={size_label} min={8} max={32} step={1} value={size} onInput={onSizeInput} steps={[8, 12, 16, 20, 24, 32]} />
+            <SizeSlider htmlFor={size_prefs_key()} value={size()} onInput={onSizeInput}
+                label={props.which == 'chat' ? "Chat Font Size" : "UI Font Size"}
+                min={8} max={32} step={1} steps={[8, 12, 16, 20, 24, 32]} />
         </>
     )
-});
+}
 
-const GroupPaddingSlider = React.memo(() => {
+function GroupPaddingSlider() {
     let current_padding = useSelector(selectGroupPad),
+        [pad, setPad] = createSignal(current_padding()),
         dispatch = useDispatch(),
-        [pad, setPad] = useState(current_padding),
         onInput = (value: number) => {
             value = Math.round(value);
 
@@ -212,36 +213,31 @@ const GroupPaddingSlider = React.memo(() => {
             dispatch(savePrefs({ pad: value }));
         };
 
-    useEffect(() => setPad(current_padding), [current_padding]);
+    // update local padding value when selected value changes
+    createEffect(() => setPad(current_padding()));
 
     return (
-        <SizeSlider htmlFor="group_padding" label="Group Padding" min={0} max={32} step={1} value={pad} onInput={onInput} steps={[0, 12, 16, 24, 32]} />
+        <SizeSlider htmlFor="group_padding" label="Group Padding" value={pad()} onInput={onInput}
+            min={0} max={32} step={1} steps={[0, 12, 16, 24, 32]} />
     )
-});
+}
 
-const FontSizeSlider = React.memo(({ which }: IFontSelectorProps) => {
-    let prefs_key = which == 'ui' ? 'ui_font_size' : 'chat_font_size',
-        current_size = useSelector((state: RootState) => state.prefs[prefs_key]),
-        dispatch = useDispatch(),
-        [size, setSize] = useState(current_size),
-        onInput = (value: number) => {
-            value = Math.round(value);
+function FontSizeSlider(props: IFontSelectorProps) {
+    let prefs_key = createMemo(() => props.which == 'ui' ? 'ui_font_size' : 'chat_font_size'),
+        current_size = useRootSelector(state => state.prefs[prefs_key()]),
+        [size, setSize] = createSignal(current_size()),
+        dispatch = useDispatch();
 
-            setSize(value);
-            dispatch(savePrefs({ [prefs_key]: value }));
-        },
-        label = (which == 'ui' ? 'UI' : 'Chat') + " Font Size";
+    let onInput = (value: number) => {
+        value = Math.round(value);
 
+        setSize(value);
+        dispatch(savePrefs({ [prefs_key()]: value }));
+    };
 
     return (
-        <SizeSlider htmlFor={prefs_key} label={label} min={8} max={32} step={1} value={size} onInput={onInput} steps={[8, 12, 16, 20, 24, 32]} />
+        <SizeSlider htmlFor={prefs_key()} value={size()} onInput={onInput}
+            label={(props.which == 'ui' ? 'UI' : 'Chat') + " Font Size"}
+            min={8} max={32} step={1} steps={[8, 12, 16, 20, 24, 32]} />
     );
-});
-
-if(__DEV__) {
-    ThemeSetting.displayName = "ThemeSetting";
-    ViewSelector.displayName = "ViewSelector";
-    FontSelector.displayName = "FontSelector";
-    GroupPaddingSlider.displayName = "GroupPaddingSlider";
-    FontSizeSlider.displayName = "FontSizeSlider";
 }

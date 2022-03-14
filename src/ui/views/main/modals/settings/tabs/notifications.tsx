@@ -1,3 +1,3 @@
-export const NotificationsSettingsTab = () => {
+export function NotificationsSettingsTab() {
     return <div >Notifications</div>;
-};
+}

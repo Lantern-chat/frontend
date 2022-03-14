@@ -63,6 +63,7 @@ import { createRef } from "ui/hooks/createRef";
 import { Panel } from "state/mutators/window";
 import { PartyList } from "./components/party_list";
 import { Party } from "./components/party/party";
+import MainModals from "./modals";
 
 //import { themeSelector } from "state/selectors/theme";
 //import { setTheme } from "state/commands/theme";
@@ -216,6 +217,8 @@ export default function Main() {
                 </Show>
 
                 <Party />
+
+                <MainModals />
             </MainContext.Provider>
         </div>
     )

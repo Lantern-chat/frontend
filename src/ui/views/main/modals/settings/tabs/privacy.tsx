@@ -1,3 +1,3 @@
-export const PrivacySettingsTab = () => {
+export function PrivacySettingsTab() {
     return <div >Privacy</div>;
-};
+}

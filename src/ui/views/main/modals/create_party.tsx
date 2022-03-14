@@ -1,10 +1,9 @@
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "solid-mutant";
 
 import { RootState, Type } from "state/root";
 import { GenericModal } from "./generic";
 
-export const CreatePartyModal = React.memo(() => {
+export function CreatePartyModal() {
     let dispatch = useDispatch();
 
     return (
@@ -16,4 +15,4 @@ export const CreatePartyModal = React.memo(() => {
             This modal is a WIP
         </GenericModal>
     );
-});
+}

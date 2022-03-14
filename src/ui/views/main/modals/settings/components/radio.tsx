@@ -1,35 +1,32 @@
-import React, { useCallback, useState } from "react";
+import { For, JSX } from "solid-js";
 
-export type IRadioOption = [string, React.ReactNode];
+export type IRadioOption = [string, JSX.Element];
 
 export interface IRadioProps {
-    options: IRadioOption[],
+    options: Array<IRadioOption>,
     name: string,
     selected: string,
     onChange: (label: string) => void,
 }
 
 import "./radio.scss";
-export const RadioSelect = React.memo((props: IRadioProps) => {
-    let name = props.name,
-        onChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-            props.onChange(e.currentTarget.value);
-        }, [props.onChange]);
+export function RadioSelect(props: IRadioProps) {
+    let onChange = (e: Event) => props.onChange((e.currentTarget as HTMLInputElement).value);
 
     return (
         <div className="ln-settings-radio">
-            {props.options.map(([value, label], i) => (
-                <div key={value}>
-                    <input type="radio" name={name} id={name + value} value={value}
-                        checked={props.selected == value}
-                        onChange={onChange} />
-                    <label htmlFor={name + value}>{label}</label>
-                </div>
-            ))}
+            <For each={props.options}>
+                {([value, label]) => (
+                    <div>
+                        <input type="radio"
+                            name={props.name} id={props.name + value} value={value}
+                            checked={props.selected == value}
+                            onChange={onChange} />
+
+                        <label htmlFor={props.name + value}>{label}</label>
+                    </div>
+                )}
+            </For>
         </div>
     );
-});
-
-if(__DEV__) {
-    RadioSelect.displayName = "RadioSelect";
 }

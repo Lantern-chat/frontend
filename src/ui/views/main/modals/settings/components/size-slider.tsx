@@ -1,4 +1,4 @@
-import React from "react";
+import { JSX } from "solid-js";
 
 export interface ISizeSliderProps {
     steps: number[],
@@ -6,7 +6,7 @@ export interface ISizeSliderProps {
     min?: number,
     max?: number,
     step?: number,
-    label: React.ReactNode,
+    label: JSX.Element,
     htmlFor: string,
 
     onInput: (value: number) => void,
@@ -15,44 +15,50 @@ export interface ISizeSliderProps {
 const B_ACTIVE = "#6666FF";
 const B_INACTIVE = "rgba(128, 128, 128, 0.4)";
 
+import { createMemo } from "solid-js";
 import "./size-slider.scss";
-export const SizeSlider = React.memo((props: ISizeSliderProps) => {
-    let onInput = (e: React.FormEvent<HTMLInputElement>) => {
-        props.onInput(parseFloat(e.currentTarget.value));
+export function SizeSlider(props: ISizeSliderProps) {
+    let onInput = (e: InputEvent) => {
+        props.onInput(parseFloat((e.currentTarget as HTMLInputElement).value));
     };
 
-    let min = props.min ?? props.steps[0],
-        max = props.max ?? props.steps[props.steps.length - 1],
-        vp = (props.value - min) / (max - min) * 100,
-        background = `linear-gradient(to right, ${B_ACTIVE} 0% ${vp}%, ${B_INACTIVE} ${vp}% 100%)`
+    let bounds = createMemo(() => {
+        let min = props.min ?? props.steps[0],
+            max = props.max ?? props.steps[props.steps.length - 1];
+
+        return { min, max };
+    });
+
+    let background = createMemo(() => {
+        let { min, max } = bounds(),
+            vp = (props.value - min) / (max - min) * 100;
+
+        return `linear-gradient(to right, ${B_ACTIVE} 0% ${vp}%, ${B_INACTIVE} ${vp}% 100%)`;
+    });
+
+    let steps = createMemo(() => {
+        let { min, max } = bounds();
+        return props.steps.map((step, i) => {
+            let style;
+            if(i > 0) { style = { left: `calc(${(step - min) / (max - min) * 100}% - 1.5em)` }; }
+
+            return (<span style={style}>{step}px</span>);
+        })
+    });
 
     return (
         <div className="ln-settings-size-slider">
             <label htmlFor={props.htmlFor}>{props.label}</label>
             <div>
-                <div className="ln-settings-size-slider__input" style={{ background }}>
-                    <input type="range" name={props.htmlFor} min={min} max={max} step={props.step} value={props.value} onInput={onInput}></input>
+                <div className="ln-settings-size-slider__input" style={{ background: background() }}>
+                    <input type="range" name={props.htmlFor} min={bounds().min} max={bounds().max}
+                        step={props.step} value={props.value} onInput={onInput} />
                 </div>
 
                 <div className="ln-settings-size-slider__steps">
-                    {
-                        props.steps.map((step, i) => {
-                            let style;
-                            if(i > 0) {
-                                style = { left: `calc(${(step - min) / (max - min) * 100}% - 1.5em)` };
-                            }
-
-                            return (
-                                <span key={i} style={style}>{step}px</span>
-                            );
-                        })
-                    }
+                    {steps()}
                 </div>
             </div>
         </div>
     );
-});
-
-if(__DEV__) {
-    SizeSlider.displayName = "SizeSlider";
 }

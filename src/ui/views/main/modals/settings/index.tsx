@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { createStructuredSelector, createSelector } from "reselect";
+import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { useDispatch, useStructuredSelector } from "solid-mutant";
 
-import { RootState } from "state/root";
+import { RootState, useRootSelector } from "state/root";
 import { HISTORY } from "state/global";
 import { activeParty, activeRoom } from "state/selectors/active";
 import { room_url } from "config/urls";
@@ -11,40 +10,35 @@ import { Link } from "ui/components/history";
 import { Modal } from "ui/components/modal";
 import { VectorIcon } from "ui/components/common/icon";
 
-let return_path_selector = createSelector(
-    activeParty,
-    activeRoom,
-    (active_party, active_room) => room_url(active_party || '@me', active_room),
-);
-
 import "../modal.scss";
 import "./settings.scss";
 import "./tabs/_tab.scss";
-export const SettingsModal = React.memo(() => {
-    let [closing, setClosing] = useState(false);
+export function SettingsModal() {
+    let [closing, setClosing] = createSignal(false);
 
-    let return_path = useSelector(return_path_selector),
-        do_return = useCallback(() => {
-            if(!closing) {
-                setClosing(true);
-                setTimeout(() => HISTORY.pm(return_path), 200);
-            }
-        }, [return_path, closing]);
+    let return_path = useRootSelector(state => room_url(activeParty(state) || '@me', activeRoom(state)));
 
-    useEffect(() => {
+    let do_return = () => {
+        if(!closing()) {
+            setClosing(true);
+            setTimeout(() => HISTORY.pm(return_path()), 200);
+        }
+    };
+
+    onMount(() => {
         let listener = (e: KeyboardEvent) => { if(e.key == 'Escape') { do_return(); } };
         window.addEventListener('keyup', listener);
-        return () => window.removeEventListener('keyup', listener);
-    }, []);
+        onCleanup(() => window.removeEventListener('keyup', listener));
+    });
 
     return (
         <Modal>
-            <div className={"ln-modal ln-settings ln-settings--" + (closing ? 'closing' : 'opened')}>
+            <div className={"ln-modal ln-settings ln-settings--" + (closing() ? 'closing' : 'opened')}>
                 <SettingsTabs do_return={do_return} />
             </div>
         </Modal>
     )
-});
+}
 
 import { ProfileSettingsTab } from "./tabs/profile";
 import { AppearanceSettingsTab } from "./tabs/appearance";
@@ -73,92 +67,79 @@ interface ISettingsTabsProps {
 }
 
 import { logout } from "state/commands/session";
+import { Dynamic } from "solid-js/web";
 
-const settings_selector = createStructuredSelector({
-    active_tab: (state: RootState) => state.history.parts[1],
-    use_mobile_view: (state: RootState) => state.window.use_mobile_view,
-});
+function SettingsTabs(props: ISettingsTabsProps) {
+    let state = useStructuredSelector({
+        active_tab: (state: RootState) => state.history.parts[1],
+        use_mobile_view: (state: RootState) => state.window.use_mobile_view,
+    });
 
-const SettingsTabs = React.memo(({ do_return }: ISettingsTabsProps) => {
-    let { active_tab, use_mobile_view } = useSelector(settings_selector),
-        tab = TABS.find(tab => tab.path == active_tab) || TABS[0],
-        TabComponent = tab.comp,
-        dispatch = useDispatch(),
+    let tab = createMemo(() => TABS.find(tab => tab.path == state.active_tab) || TABS[0]);
+
+    let dispatch = useDispatch(),
         do_logout = () => dispatch(logout());
-
-    let needs_categories = true, needs_page = true;
-
-    if(use_mobile_view) {
-        needs_categories = !active_tab;
-        needs_page = !needs_categories;
-    }
-
-    let categories, page;
-
-    if(needs_categories) {
-        categories = (
-            <div className="ln-settings__categories">
-                <h3>Settings</h3>
-
-                <ul>
-                    {TABS.map(({ name, path }) => {
-                        let selected = tab.path == path;
-                        if(use_mobile_view && !active_tab) {
-                            selected = false;
-                        }
-
-                        return (
-                            <li key={name} className={(selected ? 'selected' : '')}>
-                                <Link href={`/settings/${path}`} title={name}> <div><span>{name}</span></div> </Link>
-                            </li>
-                        );
-                    })}
-
-                    <div className="spacer" />
-
-                    <hr />
-
-                    <li>
-                        <div id="logout" onClick={do_logout} title="Logout">
-                            <span>Logout</span>
-                            <div>
-                                <VectorIcon src={LogoutIcon} />
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        );
-    }
-
-    if(needs_page) {
-        page = (
-            <div className="ln-settings__page">
-                <div className="ln-settings__header">
-                    {use_mobile_view && <div onClick={() => HISTORY.back()}><span>Settings</span></div>}
-                    <h3>{tab.name}</h3>
-                    <div onClick={do_return}><span>Return</span></div>
-                </div>
-
-                <div className="ln-settings__content">
-                    <TabComponent />
-                </div>
-            </div>
-        );
-    } else {
-        page = (
-            <div className="ln-settings__page">
-                <div className="ln-settings__content">
-                    Select any category to view settings
-                </div>
-            </div>
-        );
-    }
 
     return (
         <>
-            {categories}
-            {page}
+            <Show when={!state.use_mobile_view || !state.active_tab}>
+                <div className="ln-settings__categories">
+                    <h3>Settings</h3>
+
+                    <ul>
+                        <For each={TABS}>
+                            {({ name, path }) => (
+                                <li classList={{ 'selected': tab().path == path && !state.use_mobile_view && !!state.active_tab }}>
+                                    <Link href={`/settings/${path}`} title={name}> <div><span>{name}</span></div> </Link>
+                                </li>
+                            )}
+                        </For>
+
+                        <div className="spacer" />
+
+                        <hr />
+
+                        <li>
+                            <div id="logout" onClick={do_logout} title="Logout">
+                                <span>Logout</span>
+                                <div>
+                                    <VectorIcon src={LogoutIcon} />
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </Show>
+
+            <Show when={!state.use_mobile_view || !!state.use_mobile_view} fallback={<FallbackPage />}>
+                <div className="ln-settings__page">
+                    <div className="ln-settings__header">
+                        <Show when={state.use_mobile_view}>
+                            <div onClick={() => HISTORY.back()}>
+                                <span>Settings</span>
+                            </div>
+                        </Show>
+
+                        <h3>{tab().name}</h3>
+
+                        <div onClick={props.do_return}><span>Return</span></div>
+                    </div>
+
+                    <div className="ln-settings__content">
+                        <Dynamic component={tab().comp} />
+                    </div>
+                </div>
+            </Show>
         </>
     );
-});
+}
+
+function FallbackPage() {
+    return (
+        <div className="ln-settings__page">
+            <div className="ln-settings__content">
+                Select any category to view settings
+            </div>
+        </div>
+    );
+}
