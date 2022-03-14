@@ -111,13 +111,11 @@ function SettingsTabs(props: ISettingsTabsProps) {
                 </div>
             </Show>
 
-            <Show when={!state.use_mobile_view || !!state.use_mobile_view} fallback={<FallbackPage />}>
+            <Show when={!state.use_mobile_view || !!state.active_tab} fallback={<FallbackPage />}>
                 <div className="ln-settings__page">
                     <div className="ln-settings__header">
                         <Show when={state.use_mobile_view}>
-                            <div onClick={() => HISTORY.back()}>
-                                <span>Settings</span>
-                            </div>
+                            <Link href="/settings" useDiv><span>Settings</span></Link>
                         </Show>
 
                         <h3>{tab().name}</h3>
