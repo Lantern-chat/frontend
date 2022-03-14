@@ -1,4 +1,4 @@
-import { For, JSX } from "solid-js";
+import { createSelector, For, JSX } from "solid-js";
 
 export type IRadioOption = [string, JSX.Element];
 
@@ -13,6 +13,8 @@ import "./radio.scss";
 export function RadioSelect(props: IRadioProps) {
     let onChange = (e: Event) => props.onChange((e.currentTarget as HTMLInputElement).value);
 
+    let is_selected = createSelector(() => props.selected);
+
     return (
         <div className="ln-settings-radio">
             <For each={props.options}>
@@ -20,7 +22,7 @@ export function RadioSelect(props: IRadioProps) {
                     <div>
                         <input type="radio"
                             name={props.name} id={props.name + value} value={value}
-                            checked={props.selected == value}
+                            checked={is_selected(value)}
                             onChange={onChange} />
 
                         <label htmlFor={props.name + value}>{label}</label>
