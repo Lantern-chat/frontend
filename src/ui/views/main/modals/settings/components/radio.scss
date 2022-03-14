@@ -12,6 +12,8 @@ $inner: hsl(240, 100%, 70%);
     }
 
     label {
+        cursor: pointer;
+
         .ln-light-theme & {
             background-color: rgba(0, 0, 0, 0.05);
         }
@@ -62,6 +64,8 @@ $inner: hsl(240, 100%, 70%);
         display: none;
 
         &:checked ~ label {
+            cursor: default;
+
             .ln-light-theme & {
                 background-color: rgba(0, 0, 0, 0.2);
             }
