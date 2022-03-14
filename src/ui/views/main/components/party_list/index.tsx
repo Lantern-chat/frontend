@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, Show } from "solid-js";
+import { createMemo, createSelector, createSignal, For, Show } from "solid-js";
 import { useStructuredSelector, useDispatch } from "solid-mutant";
 
 import { RootState, Type, useRootSelector } from "state/root";
@@ -43,6 +43,8 @@ export function PartyList() {
     let on_scroll = () => state.use_mobile_view && setIsScrolling(isScrolling() + 1);
     let on_touchend = () => state.use_mobile_view && setIsScrolling(0);
 
+    let is_party_active = createSelector(() => state.active_party);
+
     return (
         <div className="ln-party-list__wrapper">
             <ol className="ln-party-list ln-scroll-y ln-scroll-y--invisible ln-scroll-fixed"
@@ -57,6 +59,7 @@ export function PartyList() {
                             can_navigate={can_navigate()}
                             active_party={state.active_party}
                             is_light_theme={state.is_light_theme}
+                            is_active={is_party_active(party.id)}
                         />}
                     </For>
 
@@ -83,7 +86,7 @@ function CreateParty(props: { can_navigate: boolean }) {
     let create_party_open = useRootSelector(state => state.modals.create_party_open);
 
     return (
-        <li id="create-party" className={create_party_open() ? 'selected' : ''}>
+        <li id="create-party" classList={{ 'selected': create_party_open() }}>
             <Avatar rounded text="+" username="Join/Create a Party"
                 wrapper={{
                     title: "Join/Create a Party",

@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { createMemo, createSelector, createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import { useDispatch, useStructuredSelector } from "solid-mutant";
 
 import { RootState, useRootSelector } from "state/root";
@@ -80,6 +80,8 @@ function SettingsTabs(props: ISettingsTabsProps) {
     let dispatch = useDispatch(),
         do_logout = () => dispatch(logout());
 
+    let is_tab_selected = createSelector(() => tab().path);
+
     return (
         <>
             <Show when={!state.use_mobile_view || !state.active_tab}>
@@ -89,7 +91,7 @@ function SettingsTabs(props: ISettingsTabsProps) {
                     <ul>
                         <For each={TABS}>
                             {({ name, path }) => (
-                                <li classList={{ 'selected': tab().path == path && !state.use_mobile_view && !!state.active_tab }}>
+                                <li classList={{ 'selected': is_tab_selected(path) && !state.use_mobile_view && !!state.active_tab }}>
                                     <Link href={`/settings/${path}`} title={name}> <div><span>{name}</span></div> </Link>
                                 </li>
                             )}

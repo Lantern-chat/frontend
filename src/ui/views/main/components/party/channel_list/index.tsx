@@ -1,4 +1,4 @@
-import { For, Show } from "solid-js";
+import { createSelector, For, Show } from "solid-js";
 import { useDispatch, useSelector, useStructuredSelector } from "solid-mutant";
 import { destructure } from "ui/hooks/destructure";
 
@@ -53,11 +53,13 @@ export function ChannelList() {
 
     let [pos, main_click_props] = createSimplePositionedContextMenu();
 
+    let is_room_selected = createSelector(selected);
+
     return (
         <ul className="ln-channel-list ln-scroll-y ln-scroll-fixed" {...main_click_props} >
             <Show when={state().rooms?.length} fallback={<div style={{ height: "100%", paddingTop: '1em' }}><Bounce size="auto" /></div>}>
                 <For each={state().rooms}>
-                    {room => <ListedChannel room={room} selected={selected() == room.id} onNavigate={on_navigate} />}
+                    {room => <ListedChannel room={room} selected={is_room_selected(room.id)} onNavigate={on_navigate} />}
                 </For>
             </Show>
 
