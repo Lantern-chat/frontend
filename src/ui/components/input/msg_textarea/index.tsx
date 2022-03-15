@@ -1,5 +1,6 @@
 import { TextareaAutosize, TextareaHeightChangeMeta } from 'ui/components/input/textarea';
 
+import { SetController } from 'ui/hooks/createController';
 import { parseHotkey, Hotkey } from "ui/hooks/useMain";
 import { AnyRef, composeRefs } from 'ui/hooks/createRef';
 
@@ -16,6 +17,12 @@ export interface IMsgTextareaProps {
     onSelectionChange?(ta: HTMLTextAreaElement, in_code: boolean): void;
 
     ta?: AnyRef<HTMLTextAreaElement>;
+    tac?: SetController<IMsgTextareaController>,
+}
+
+export interface IMsgTextareaController {
+    focus(): void;
+    setValue(value: string, change?: boolean): void;
 }
 
 import "./textarea.scss";
@@ -23,6 +30,18 @@ import { createMemo, createSignal, JSX, Show, splitProps } from 'solid-js';
 
 export function MsgTextarea(props: IMsgTextareaProps) {
     let ta = composeRefs(props.ta);
+
+    props.tac?.({
+        setValue(value: string, change: boolean = true) {
+            if(ta.current) {
+                ta.current.value = value
+                change && props.onChange(value);
+            }
+        },
+        focus() {
+            ta.current?.focus();
+        }
+    })
 
     let [local, taprops] = splitProps(props, ['mobile', 'spellcheck', 'onChange', 'onKeyDown', 'onSelectionChange', 'onContextMenu']);
 

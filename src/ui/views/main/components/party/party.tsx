@@ -5,7 +5,7 @@ import { ChannelList } from "./channel_list";
 import { MemberList } from "./member_list";
 import { PartyHeader } from "./party_header";
 import { PartyFooter } from "./party_footer";
-//import { Channel } from "../channel/channel";
+import { Channel } from "../channel/channel";
 import { HomeSideBar } from "../home/sidebar";
 
 import { Snowflake } from "state/models";
@@ -17,7 +17,6 @@ import "./party.scss";
 export function Party() {
     let state = useStructuredSelector({
         active_party: activeParty,
-        active_room: activeRoom,
         show_panel: (state: RootState) => state.window.show_panel,
         last_panel: (state: RootState) => state.window.last_panel,
         use_mobile_view: (state: RootState) => state.window.use_mobile_view,
@@ -125,11 +124,11 @@ export function Party() {
                 }}
             >
                 <Show when={state.active_party != '@me'} fallback="Test">
-                    {/*<Channel channel={state.active_room} />*/}
+                    <Channel />
                 </Show>
             </div>
 
-            <Show when={showRight()}>
+            <Show when={showRight() && state.use_mobile_view}>
                 <div
                     className="ln-party__user-list"
                     classList={{ "ln-party__user-list--closed": state.use_mobile_view && state.show_panel == Panel.Main }}

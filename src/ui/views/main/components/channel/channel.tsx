@@ -1,87 +1,69 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import { createStructuredSelector } from "reselect";
+import { ErrorBoundary, Show } from "solid-js/web";
+import { useStructuredSelector } from "solid-mutant";
 
-import { RootState } from "state/root";
+import { RootState, useRootSelector } from "state/root";
+import { activeRoom } from "state/selectors/active";
+import { Snowflake } from "state/models";
 
 import { ChannelHeader } from "./header";
-import { MessageFeed } from "./feed";
-import { MessageBoxOld } from "./input/box";
-import { Snowflake } from "state/models";
-import { ErrorBoundary } from "ui/components/error";
+//import { MessageFeed } from "./feed";
+import { MessageBox } from "./input/box";
+import { DisplayError } from "ui/components/common/error";
 import { MemberList } from "../party/member_list";
 
-export interface IChannelProps {
-    channel?: Snowflake,
-    //party: Snowflake,
-}
-
-let channel_selector = createStructuredSelector({
-    use_mobile_view: (state: RootState) => state.window.use_mobile_view,
-    show_user_list: (state: RootState) => state.window.show_user_list,
-});
 
 import "./channel.scss";
-export const Channel = React.memo((props: IChannelProps) => {
-    let { use_mobile_view, show_user_list } = useSelector(channel_selector);
+export function Channel() {
+    let state = useStructuredSelector({
+        use_mobile_view: (state: RootState) => state.window.use_mobile_view,
+        show_user_list: (state: RootState) => state.window.show_user_list,
+    });
 
-    let feed, feed_box, member_list, inner;
-    if(props.channel) {
-        feed_box = <MessageFeed channel={props.channel} />;
-    } else {
-        // TODO: Replace with fake CSS channel?
-        feed_box = <div className="ln-center-standalone">Loading...</div>;
-    }
+    return (
+        <div className="ln-channel">
+            <ErrorBoundary fallback={err => <DisplayError error={err} />}>
+                <ChannelHeader />
 
-    feed = (
+                {/*mobile doesn't need to wrap anything or show the user-list*/}
+                <Show when={!state.use_mobile_view} fallback={<Feed />}>
+                    <div className="ln-channel__wrapper">
+                        <Feed />
+
+                        <Show when={state.show_user_list}>
+                            <div className="ln-channel__members">
+                                <MemberList />
+                            </div>
+                        </Show>
+                    </div>
+                </Show>
+            </ErrorBoundary>
+        </div>
+    );
+}
+
+function Feed() {
+    let active_room = useRootSelector(activeRoom);
+
+    return (
         <div className="ln-channel__feed">
             <div className="ln-channel__banners">
                 {__DEV__ && <DevBanner />}
             </div>
-            {feed_box}
-            <MessageBoxOld />
+
+            <Show when={active_room()} fallback={<div className="ln-center-standalone">Loading...</div>}>
+                {/*<MessageFeed channel={state.active_room!} />*/}
+                MessageFeed
+            </Show>
+
+            <MessageBox />
         </div>
-    );
+    )
+}
 
-    if(use_mobile_view) {
-        // mobile doesn't need to wrap anything or show the user-list
-        inner = feed;
-    } else {
-        if(show_user_list) {
-            member_list = (
-                <div className="ln-channel__members">
-                    <MemberList />
-                </div>
-            );
-        }
-
-        inner = (
-            <div className="ln-channel__wrapper">
-                {feed}
-                {member_list}
-            </div>
-        );
-    }
-
-    return (
-        <div className="ln-channel">
-            <ErrorBoundary>
-                <ChannelHeader />
-                {inner}
-            </ErrorBoundary>
-        </div>
-    );
-});
-
-const DevBanner = React.memo(() => {
+function DevBanner() {
     return (
         <div className="ln-banner error ui-text">
             This is a development build.
         </div>
     );
-});
-
-if(__DEV__) {
-    DevBanner.displayName = "DevBanner";
-    Channel.displayName = "Channel";
 }

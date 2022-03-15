@@ -218,20 +218,21 @@ export const chatMutator = mutatorWithDefault(
                             }
                             case ServerMsgOpcode.TypingStart: {
                                 let { user, room: room_id } = event.p;
-                                let room = state.rooms[room_id], ts = Date.now();
-                                if(!room) return;
+                                let room = state.rooms[room_id];
+                                if(room) {
+                                    let ts = Date.now();
+                                    // search through typing entries for this room for any existing
+                                    // entries to refresh
+                                    for(let entry of room.typing) {
+                                        if(entry.user == user) {
+                                            entry.ts = ts; // refresh timestamp
+                                            return; // early exit
+                                        };
+                                    }
 
-                                // search through typing entries for this room for any existing
-                                // entries to refresh
-                                for(let entry of room.typing) {
-                                    if(entry.user == user) {
-                                        entry.ts = ts; // refresh timestamp
-                                        return; // early exit
-                                    };
+                                    // if not found above (and returned early), push new typing entry
+                                    room.typing.push({ user, ts });
                                 }
-
-                                // if not found above (and returned early), push new typing entry
-                                room.typing.push({ user, ts });
 
                                 break;
                             }
