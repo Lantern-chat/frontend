@@ -7,7 +7,11 @@ import { IS_IOS_SAFARI } from "lib/user_agent";
 import { createRef, Ref } from "ui/hooks/createRef";
 import { createController } from "ui/hooks/createController";
 
-export enum Anchor {
+import { useRootSelector } from "state/root";
+import { selectPrefsFlag } from "state/selectors/prefs";
+import { UserPreferenceFlags } from "state/models";
+
+export const enum Anchor {
     Top,
     Scrolling,
     Bottom,
@@ -91,11 +95,12 @@ export interface IInfiniteScrollProps {
     start: Anchor,
 
     onScroll?: (pos: number) => void,
-    reduce_motion: boolean,
 }
 
 import "./infinite_scroll.scss";
 export function InfiniteScroll(props: IInfiniteScrollProps) {
+    let reduce_motion = useRootSelector(selectPrefsFlag(UserPreferenceFlags.ReduceAnimations));
+
     let container_ref = createRef<HTMLDivElement>(),
         wrapper_ref = createRef<HTMLDivElement>();
 
@@ -280,7 +285,7 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
         let height = container.clientHeight;
 
         // TODO: Reduce motion
-        container.scrollBy({ top: height * top, behavior: props.reduce_motion ? 'auto' : 'smooth' });
+        container.scrollBy({ top: height * top, behavior: reduce_motion() ? 'auto' : 'smooth' });
     };
 
     /// MOUNTING
@@ -312,7 +317,7 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
 
             props.onScroll?.(page_end);
 
-            if(props.reduce_motion) {
+            if(reduce_motion()) {
                 container.scrollTo({ top: page_end });
                 return;
             }
@@ -325,7 +330,7 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
             container.scrollTo({ top: page_border });
             container.scrollTo({ top: page_end, behavior: 'smooth' });
         }
-    })
+    });
 
     let observer = new ResizeObserver(on_resize);
 
@@ -336,12 +341,12 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
         observer.observe(container, OBSERVER_OPTIONS);
         observer.observe(wrapper_ref.current!, OBSERVER_OPTIONS);
 
-        container.addEventListener('scroll', on_scroll, SUPPORTS_PASSIVE ? { passive: true } : false);
+        container.addEventListener('scroll', on_scroll, SUPPORTS_PASSIVE && { passive: true });
     });
 
     return (
-        <div ref={container_ref}>
-            <div ref={wrapper_ref}>
+        <div ref={container_ref} classList={props.containerClassList}>
+            <div ref={wrapper_ref} classList={props.wrapperClassList}>
                 <InfiniteScrollContext.Provider value={ifs()!}>
                     {props.children}
                 </InfiniteScrollContext.Provider>
