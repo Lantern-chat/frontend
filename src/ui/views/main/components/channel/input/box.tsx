@@ -159,11 +159,11 @@ export function MessageBox() {
                     'with-footers': state.showing_footers,
                 }}
             >
-                <Show when={state.use_mobile_view}>
-                    <div className="ln-typing ln-typing__top">
+                <div className="ln-typing ln-typing__top">
+                    <Show when={state.use_mobile_view}>
                         <UsersTyping />
-                    </div>
-                </Show>
+                    </Show>
+                </div>
 
                 <EmotePicker />
 
@@ -190,9 +190,11 @@ export function MessageBox() {
                 </Show>
             </div>
 
-            <Show when={!state.use_mobile_view}>
-                <UsersTyping />
-            </Show>
+            <div className="ln-typing ln-typing__bottom">
+                <Show when={!state.use_mobile_view}>
+                    <UsersTyping />
+                </Show>
+            </div>
         </>
     )
 }
