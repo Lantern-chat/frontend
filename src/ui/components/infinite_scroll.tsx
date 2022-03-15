@@ -1,7 +1,11 @@
-import React, { useContext, useRef, useMemo, useState, useEffect, useCallback, useReducer, useLayoutEffect } from "react";
-import { useResizeDetector } from "react-resize-detector/build/withPolyfill";
+import { JSX, createContext, useContext, createSignal, createRenderEffect, onCleanup, createEffect, onMount } from "solid-js";
 
-import once from "lodash/once";
+import ResizeObserverPolyfill from "resize-observer-polyfill";
+
+import { SUPPORTS_PASSIVE } from "lib/features";
+import { IS_IOS_SAFARI } from "lib/user_agent";
+import { createRef, Ref } from "ui/hooks/createRef";
+import { createController } from "ui/hooks/createController";
 
 export enum Anchor {
     Top,
@@ -9,243 +13,339 @@ export enum Anchor {
     Bottom,
 }
 
-function compute_at(e: HTMLElement, top_threshold: number, bottom_threshold: number): Anchor {
-    let scroll_height = e.scrollHeight - e.offsetHeight,
-        scroll_top = e.scrollTop;
+function compute_at(e: HTMLElement, top: number): Anchor {
+    let inner_height = e.scrollHeight - e.offsetHeight,
+        top_threshold = e.clientHeight * 0.7,
+        bottom_threshold = e.clientHeight * 0.3;
 
-    if((scroll_height - scroll_top) < bottom_threshold) {
+    if((inner_height - top) < bottom_threshold) {
         return Anchor.Bottom;
-    } else if(scroll_top < top_threshold) {
+    } else if(top < top_threshold) {
         return Anchor.Top;
     } else {
         return Anchor.Scrolling;
     }
 }
 
-interface IScrollState {
-    pos: number,
-    anchor: Anchor,
-    height: number,
-    frame: number,
-    frame_time: number,
-    velocity: number,
-    /// Signifies if we are currently polling for scroll position
-    active: boolean,
-    /// If false, skip exactly one `scroll` event, then re-enable
-    enabled: boolean,
+function ema(current: number, next: number, size: number = 0.5): number {
+    return (1.0 - size) * current + size * next;
 
-    resize(height?: number): void;
-    scroll(): void;
-    load_prev(): void;
-    load_next(): void;
-}
-
-var noop = () => { };
-
-const DEFAULT_SCROLL_STATE: IScrollState = {
-    anchor: Anchor.Bottom,
-    pos: 0,
-    height: 0,
-    frame: 0,
-    frame_time: 0.01666, // 1 / 60
-    velocity: 0,
-    active: false,
-    enabled: true,
-    resize: noop,
-    scroll: noop,
-    load_prev: noop,
-    load_next: noop,
-};
-
-function ema(current: number, next: number): number {
-    return current * 0.9 + next * 0.1; // 10%
-
+    //return current * 0.95 + next * 0.05; // 5%
     //return (current + next) * 0.5;
 }
 
+export interface InfiniteScrollController {
+    gotoStart(): void;
+    gotoStartSmooth(): void;
+    scrollPageUp(): void;
+    scrollPageDown(): void;
+    scrollArrowUp(): void;
+    scrollArrowDown(): void;
+    get at_start(): boolean;
+    get container(): HTMLDivElement;
+    get wrapper(): HTMLDivElement;
+}
+
+const OBSERVER_OPTIONS: ResizeObserverOptions = { box: "border-box" };
+
+export const InfiniteScrollContext = createContext<InfiniteScrollController>(null as any);
+
+export function createInfiniteScrollIntersection<T extends HTMLElement>(
+    ref: Ref<T>,
+    opts: Pick<IntersectionObserverInit, 'rootMargin' | 'threshold'> = {},
+) {
+    let [visible, setVisible] = createSignal(false);
+
+    createEffect(() => {
+        let ifs = useContext(InfiniteScrollContext);
+
+        if(ifs && ref.current) {
+            let observer = new IntersectionObserver(entries => {
+                entries.length && setVisible(entries[0].intersectionRatio > 0);
+            }, { ...opts, root: ifs.container });
+
+            observer.observe(ref.current);
+            onCleanup(() => observer.disconnect());
+        }
+    });
+
+    return visible;
+}
+
+const doTimeout = (cb: () => void) => setTimeout(cb, 100);
+const doNow = (cb: () => void) => cb();
+
+// Fucking Safari...
+const clearLater = IS_IOS_SAFARI ? clearTimeout : cancelAnimationFrame;
+const do_later = IS_IOS_SAFARI ? doTimeout : requestAnimationFrame;
+const do_nowish = IS_IOS_SAFARI ? doNow : requestAnimationFrame;
+const do_laterish = IS_IOS_SAFARI ? doTimeout : doNow;
+
 export interface IInfiniteScrollProps {
-    children: React.ReactNode,
-    // load content on top
-    load_prev: () => void,
-    // load content on bottom
-    load_next: () => void,
+    children: JSX.Element,
+    wrapperClassList?: { [key: string]: boolean },
+    containerClassList?: { [key: string]: boolean },
+
+    load_prev?: () => void,
+    load_next?: () => void,
     start: Anchor,
-    reset_on_changed?: any,
-    containerClassName?: string,
-    wrapperClassName?: string,
+
+    onScroll?: (pos: number) => void,
+    reduce_motion: boolean,
 }
 
 import "./infinite_scroll.scss";
-export const InfiniteScroll = React.memo((props: IInfiniteScrollProps) => {
-    let container_ref = useRef<HTMLDivElement>(null);
+export function InfiniteScroll(props: IInfiniteScrollProps) {
+    let container_ref = createRef<HTMLDivElement>(),
+        wrapper_ref = createRef<HTMLDivElement>();
 
-    let state = useMemo(() => {
-        __DEV__ && console.log("Initializing scroll state...");
+    let paused = false;
 
-        var state = { ...DEFAULT_SCROLL_STATE };
+    let polling = false;
+    let velocity = 0;
 
-        let container = container_ref.current!;
-        if(!container) return state;
+    let height = 0;
+    let pos = 0;
+    let anchor = props.start;
 
-        state.scroll = () => {
-            if(!state.enabled) return;
+    let do_resize = () => {
+        polling = false;
+        velocity = 0;
 
-            let anchor = compute_at(container, container.clientHeight, container.clientHeight * 0.3),
-                reached_top = anchor == Anchor.Top && state.anchor != Anchor.Top,
-                reached_bottom = anchor == Anchor.Bottom && state.anchor != Anchor.Bottom;
+        let container = container_ref.current!,
+            new_height = container.scrollHeight;
 
-            let new_pos = container.scrollTop;
+        if(new_height == height || paused) {
+            height = new_height;
+            pos = container.scrollTop;
+            return;
+        }
 
-            state.velocity = ema(state.velocity, (new_pos - state.pos) * state.frame_time);
-            state.pos = new_pos;
-            state.anchor = anchor;
+        let top = pos, diff = 0;
 
-            let predicted_pos = state.velocity + new_pos;
+        if(anchor == props.start) {
+            top = (props.start == Anchor.Bottom) ? height : 0;
+        } else {
+            diff = new_height - height;
+            top += diff;
+        }
 
-            if((reached_top || predicted_pos < 0) && anchor != Anchor.Bottom) {
-                __DEV__ && console.log("PREDICTED TO TOP", state.frame_time, state.velocity, new_pos, predicted_pos);
-                state.anchor = Anchor.Top;
-                state.load_prev();
-                state.velocity = 0;
-            } else if(reached_bottom || (predicted_pos > container.scrollHeight && state.velocity > 0)) {
-                __DEV__ && console.log("PREDICTED TO BOTTOM", state.frame_time, state.velocity, new_pos, predicted_pos);
-                state.anchor = Anchor.Bottom;
-                state.load_next();
-                state.velocity = 0;
-            }
+        pos = top;
 
-            let max_frame = 1000.0 / state.frame_time;
-
-            if(state.active && state.frame++ < max_frame) {
-                let prev = performance.now();
-                requestAnimationFrame(() => {
-                    state.frame_time = ema(state.frame_time, performance.now() - prev);
-                    state.scroll();
-                });
+        if(top != container.scrollTop || new_height != height) {
+            if(diff > 0) {
+                container.scrollBy({ top: diff, behavior: 'instant' as any });
             } else {
-                __DEV__ && console.log("FPS:", max_frame);
-                state.active = false;
-                //console.info("Stopped polling");
+                // shrunk
+                container.scrollTo({ top, behavior: 'instant' as any });
             }
-        };
 
-        state.resize = (height: number | undefined) => {
-            if(height !== undefined && height > 0) {
-                let top = state.pos;
+            anchor = compute_at(container, top);
 
-                if(state.anchor == props.start) {
-                    if(props.start == Anchor.Bottom) {
-                        top = container.scrollHeight;
-                    } else {
-                        top = 0;
-                    }
-
-                    __DEV__ && console.log("SCROLLING TO START: ", top);
-
-                } else {
-                    //console.log("HEIGHTS: ", container.scrollHeight, list.clientHeight, state.height, state.old_height);
-                    //console.log("HEIGHTS: ", container.scrollHeight, height, state.height, state.pos, container.scrollTop);
-
-                    let diff = height - state.height;
-                    top = top + diff;
-                }
-
-                if(top != container.scrollTop) {
-                    state.enabled = false;
-                    container.scrollTo({ top });
-                }
-
-                state.pos = top;
-                state.height = height;
-            }
-        };
-
-        return state;
-    }, [container_ref.current, props.reset_on_changed]);
-
-    // force resize check when we absolutely know the DOM just changed
-    useLayoutEffect(() => state.resize(container_ref.current?.scrollHeight), [props.children, state]);
-    useLayoutEffect(() => {
-        // force to start when changing rooms
-        state.anchor = props.start;
-        state.resize(container_ref.current?.scrollHeight)
-    }, [props.reset_on_changed, state]);
-
-    // only use the resize observer to stick to the bottom on tiny changes
-    const { ref: wrapper_ref } = useResizeDetector<HTMLDivElement>({
-        handleWidth: false,
-        onResize: useCallback((_width, height) => {
-            __DEV__ && console.log("INNER RESIZED!!!", state.anchor, props.start);
-
-            //if(state.anchor == props.start) {
-            state.active = false;
-            state.velocity = 0;
-            state.resize(height);
-            //}
-        }, [state]),
-        observerOptions: { box: 'border-box' },
-    });
-
-    // TODO: Improve the behavior of this when resizing very fast, as the `small_anchor` is... small.
-    useResizeDetector<HTMLDivElement>({
-        targetRef: container_ref,
-        handleWidth: false,
-        onResize: useCallback((_width, clientHeight) => {
-            __DEV__ && console.log("OUTER RESIZED!!!", state.anchor, props.start);
-
-            let container = container_ref.current;
-            if(!container || !clientHeight) return;
-
-            // TODO: Adaptive based on how much the container resized?
-            let small_anchor = compute_at(container, 50, 50);
-
-            if(small_anchor == props.start) {
-                state.active = false;
-                state.resize(container.scrollHeight);
-            }
-        }, [state]),
-    });
-
-    useEffect(() => {
-        // this is refreshed when active_room or groups change!
-        state.load_prev = once(() => props.load_prev());
-        state.load_next = once(() => props.load_next());
-
-        // if any of the below deps change, immediately record the current position in prep for resize
-        return () => {
-            let container = container_ref.current;
-            if(container) { state.pos = container.scrollTop; }
-        };
-    }, [props.load_prev, props.load_next, props.children, state]);
-
-    let on_scroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
-        state.frame = 0;
-
-        if(!state.active && state.enabled) {
-            state.active = true;
-            state.velocity = 0; // be conservative and always start from rest
-            state.scroll();
+            props.onScroll?.(top);
         }
 
-        state.enabled = true;
-    }, [state]);
+        height = new_height;
+    };
 
-    let on_wheel = useCallback((e: React.WheelEvent) => {
-        if(state.enabled) {
-            state.pos += e.deltaY;
+    let fixing = false;
+    let fix_frame: number | undefined;
+
+    let fix_position = () => {
+        let was_fixing = fixing;
+        if(!fixing) {
+            fixing = true;
+            do_resize();
         }
-    }, [state]);
 
-    let container_classes = "ln-inf-scroll__container ln-scroll-y ";
-    if(props.containerClassName) {
-        container_classes += props.containerClassName;
+        if(fix_frame != null) {
+            clearLater(fix_frame); // NOTE: Was created by do_later
+        }
+
+        fix_frame = do_later(() => {
+            fixing = false;
+
+            if(was_fixing) {
+                fix_position();
+            }
+        });
+    };
+
+    let reset_position = () => {
+        pos = height = 0;
+        anchor = props.start;
+
+        if(fix_frame != null) {
+            clearLater(fix_frame);
+        }
+
+        fix_position();
+    };
+
+    let load_pending = false;
+
+    let load_more = (prev: boolean) => {
+        if(!load_pending) {
+            let cb = prev ? props.load_prev : props.load_next;
+
+            if(cb) {
+                load_pending = true;
+                cb();
+            }
+
+            polling = false;
+        }
     }
 
+    let on_resize = (entries: ResizeObserverEntry[], observer: ResizeObserver) => {
+        fix_position();
+    };
+
+    let start_time: number = 0;
+    let frame_time: number = 1 / 60;
+
+    let do_scroll = (now: number) => {
+        if(load_pending) return;
+
+        let container = container_ref.current!,
+            new_pos = container.scrollTop,
+            new_anchor = compute_at(container, new_pos),
+            reached_top = new_anchor == Anchor.Top && anchor != Anchor.Top,
+            reached_bottom = new_anchor == Anchor.Bottom && anchor != Anchor.Bottom;
+
+        {
+            let predicted_velocity = (new_pos - pos) / frame_time,
+                sign = Math.sign(predicted_velocity);
+
+            // limit the absolute velocity to max(0.25, 1.5*existing)
+            // where max() helps if initial velocity is zero.
+            predicted_velocity = sign * Math.min(
+                Math.max(0.25, Math.abs(velocity) * 1.5),
+                Math.abs(predicted_velocity)
+            );
+
+            velocity = ema(velocity, predicted_velocity, 0.25);
+        }
+
+        pos = new_pos;
+        anchor = new_anchor;
+
+        let predicted_pos = 1000 * velocity + pos;
+        let predict_top = predicted_pos < 0 && anchor != Anchor.Top;
+        let predict_bottom = predicted_pos > container.scrollHeight && anchor != Anchor.Bottom;
+
+        if(reached_top || predict_top) {
+            anchor = Anchor.Top;
+            load_more(true);
+
+            __DEV__ && console.log("AT TOP: ", predict_top, velocity);
+
+        } else if(reached_bottom || predict_bottom) {
+            anchor = Anchor.Bottom;
+        }
+
+        // 1 second polling
+        if((now - start_time) < 1000) {
+            requestAnimationFrame(() => {
+                if(polling) {
+                    let new_frame = performance.now();
+                    frame_time = ema(frame_time, new_frame - now);
+                    do_scroll(new_frame);
+                }
+            });
+        } else {
+            polling = false;
+        }
+    };
+
+    let on_scroll = () => {
+        if(load_pending || fixing) return;
+
+        let new_pos = container_ref.current!.scrollTop;
+
+        if(new_pos != pos) {
+            start_time = performance.now();
+            if(!polling) {
+                polling = true;
+                velocity = 0;
+                do_scroll(start_time);
+            }
+
+            props.onScroll?.(new_pos);
+        }
+    };
+
+    let scroll_by = (top: number) => {
+        let container = container_ref.current!;
+        let height = container.clientHeight;
+
+        // TODO: Reduce motion
+        container.scrollBy({ top: height * top, behavior: props.reduce_motion ? 'auto' : 'smooth' });
+    };
+
+    /// MOUNTING
+
+    // fix position on child changes
+    createEffect(() => {
+        props.children, props.load_next, props.load_prev, fix_position();
+        do_laterish(() => load_pending = false);
+    });
+
+    let [ifs, setIFS] = createController<InfiniteScrollController>();
+
+    setIFS({
+        gotoStart() { reset_position(); },
+        scrollPageUp() { scroll_by(-0.9); }, // 9/10
+        scrollPageDown() { scroll_by(0.9); }, // 9/10
+        scrollArrowUp() { scroll_by(-0.2); }, // 1/5
+        scrollArrowDown() { scroll_by(0.2); }, // 1/5
+        get at_start() { return anchor == props.start; },
+        get container() { return container_ref.current!; },
+        get wrapper() { return wrapper_ref.current!; },
+        gotoStartSmooth() {
+            let container = container_ref.current!;
+
+            let clientHeight = container.clientHeight,
+                scrollHeight = container.scrollHeight,
+                page_border = clientHeight,
+                page_end = props.start == Anchor.Bottom ? scrollHeight : 0;
+
+            props.onScroll?.(page_end);
+
+            if(props.reduce_motion) {
+                container.scrollTo({ top: page_end });
+                return;
+            }
+
+            if(props.start == Anchor.Bottom) {
+                // scrollHeight - clientHeight is the scrollTop of the end, so clientHeight*2 to start one page above
+                page_border = scrollHeight - clientHeight * 2;
+            }
+
+            container.scrollTo({ top: page_border });
+            container.scrollTo({ top: page_end, behavior: 'smooth' });
+        }
+    })
+
+    let observer = new ResizeObserver(on_resize);
+
+    onCleanup(() => observer.disconnect());
+    onMount(() => {
+        let container = container_ref.current!;
+
+        observer.observe(container, OBSERVER_OPTIONS);
+        observer.observe(wrapper_ref.current!, OBSERVER_OPTIONS);
+
+        container.addEventListener('scroll', on_scroll, SUPPORTS_PASSIVE ? { passive: true } : false);
+    });
+
     return (
-        <div className={container_classes} ref={container_ref} onScroll={on_scroll} onWheel={on_wheel}>
-            <div className="ln-inf-scroll__wrapper" ref={wrapper_ref}>
-                {props.children}
+        <div ref={container_ref}>
+            <div ref={wrapper_ref}>
+                <InfiniteScrollContext.Provider value={ifs()!}>
+                    {props.children}
+                </InfiniteScrollContext.Provider>
             </div>
         </div>
-    );
-});
+    )
+}
