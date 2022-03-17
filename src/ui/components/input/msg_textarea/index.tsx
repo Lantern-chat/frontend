@@ -144,6 +144,7 @@ export function MsgTextarea(props: IMsgTextareaProps) {
             <TextareaAutosize
                 ta={ta}
                 {...taprops} // onBlur, onFocus, onContextMenu, disabled, etc.
+                placeholder="Message..."
                 onInput={onInput}
                 spellcheck={spellcheck()}
                 style={style()}

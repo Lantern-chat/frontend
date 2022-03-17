@@ -1,4 +1,5 @@
 import { createMemo } from 'solid-js';
+import { Dynamic } from 'solid-js/web';
 
 import katex from 'katex';
 
@@ -18,7 +19,6 @@ export interface IMathProps {
 }
 
 import "./math.scss";
-import { Dynamic } from 'solid-js/web';
 export default function Math(props: IMathProps) {
     let html = createMemo(() => katex.renderToString(props.src, {
         displayMode: !props.inline,
