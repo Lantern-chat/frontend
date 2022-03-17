@@ -31,6 +31,8 @@ export interface State {
     key?: string | number | undefined;
     inline?: boolean | undefined;
     pos?: number,
+    last?: boolean,
+    extra?: JSX.Element,
     [prop: string]: any,
 }
 export type OptionalState = State | null | undefined;
@@ -813,6 +815,7 @@ export const defaultRules: DefaultRules = {
             for(let i = 0; i < arr.length; i++) {
                 let node = arr[i];
 
+                // merge adjacent text nodes
                 if(node.type === 'text') {
                     node = { type: 'text', c: node.c };
                     for(; i + 1 < arr.length && arr[i + 1].type === 'text'; i++) {
@@ -820,6 +823,8 @@ export const defaultRules: DefaultRules = {
                     }
                 }
 
+                // if last node in array (used in paragraph)
+                state.last = i + 1 == arr.length;
                 result.push(output(node, state));
             }
 
@@ -947,7 +952,10 @@ export const defaultRules: DefaultRules = {
         o: currOrder++,
         m: blockRegex(/^((?:[^\n]|\n(?! *\n))+)(?:\n *)+\n/),
         p: parseCaptureInline,
-        h: (node, output, state) => <div className="p">{output(node.c, state)}</div>,
+        h: (node, output, state) => (
+            // if last and there is extra data, append that extra data within this node
+            <div className="p">{output(node.c, state)}{state.last ? state.extra : void 0}</div>
+        ),
     },
     escape: {
         o: currOrder++,
@@ -1295,14 +1303,15 @@ export function defaultImplicitParse(source: string, state?: State): Array<Singl
 
 export interface SolidMarkdownProps extends JSX.HTMLAttributes<HTMLDivElement> {
     source: string,
+    extra?: JSX.Element,
     inline?: boolean,
 }
 
 export function SolidMarkdown(props: SolidMarkdownProps): SolidElement {
-    let [local, div] = splitProps(props, ['source', 'inline']);
+    let [local, div] = splitProps(props, ['source', 'inline', 'extra']);
 
     let res = createMemo(() => {
-        let state = { inline: !!local.inline };
+        let state = { inline: !!local.inline, extra: local.extra };
         return defaultSolidOutput(defaultRawParse(local.source, state), state);
     });
 

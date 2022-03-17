@@ -26,10 +26,10 @@ const extraRawParse = parserFor(extraRules);
 const extraSolidOutput: SolidOutput = outputFor(extraRules as any);
 
 export function SolidMarkdownExtra(props: SolidMarkdownProps): SolidElement {
-    let [local, div] = splitProps(props, ['source', 'inline']);
+    let [local, div] = splitProps(props, ['source', 'inline', 'extra']);
 
     let res = createMemo(() => {
-        let state = { inline: !!local.inline };
+        let state = { inline: !!local.inline, extra: local.extra };
         return extraSolidOutput(extraRawParse(props.source, state), state);
     });
 

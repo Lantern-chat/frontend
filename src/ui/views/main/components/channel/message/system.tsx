@@ -13,7 +13,7 @@ export function SystemMessage(props: IMessageProps) {
             </div>
 
             <div className="ln-msg__message ln-system-message">
-                <MessageBody msg={props.msg.msg} extra={` <sub>${dayjs(props.msg.ts).calendar()}</sub>`} />
+                <MessageBody msg={props.msg.msg} extra={<sub>{dayjs(props.msg.ts).calendar()}</sub>} />
             </div>
         </>
     );

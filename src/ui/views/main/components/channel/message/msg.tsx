@@ -1,4 +1,4 @@
-import { createMemo, Show } from "solid-js";
+import { createMemo, JSX, Show } from "solid-js";
 import { ErrorBoundary } from "solid-js/web";
 
 import { DisplayError } from "ui/components/common/error";
@@ -10,25 +10,19 @@ export interface MessageProps {
     editing?: boolean,
     msg: DeepReadonly<MessageModel>,
     //classList?: { [key: string]: boolean },
-    extra?: string,
+    extra?: JSX.Element,
 }
 
 import "./msg.scss";
 export function Message(props: MessageProps) {
-    let content = createMemo(() => {
-        let content = props.msg.content;
-        if(content && props.extra) {
-            content += props.extra;
-        }
-        return content;
-    });
-
     return (
-        <Show when={content()}>
+        <Show when={props.msg.content}>
             <ErrorBoundary fallback={err => <DisplayError error={err} />}>
-                <Markdown body={content()!}
+                <Markdown source={props.msg.content!}
                     className="ln-msg"
-                    classList={{ 'ln-msg--editing': !!props.editing }} />
+                    classList={{ 'ln-msg--editing': !!props.editing }}
+                    extra={props.extra}
+                />
             </ErrorBoundary>
         </Show>
     );

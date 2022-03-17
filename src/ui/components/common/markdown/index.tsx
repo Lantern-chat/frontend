@@ -1,9 +1,13 @@
+import type { JSX } from "solid-js";
+
 import { SolidMarkdown } from "./markdown";
 import { SolidMarkdownExtra } from "./extra";
 
 export interface IMarkdownProps {
-    body: string,
+    source: string,
     className?: string,
+    classList?: { [key: string]: boolean },
+    extra?: JSX.Element,
 }
 
 import "./markdown.scss";
@@ -14,12 +18,12 @@ let classes = (cn?: string) => {
 
 export function Markdown(props: IMarkdownProps) {
     return (
-        <SolidMarkdownExtra source={props.body} className={classes(props.className)} />
+        <SolidMarkdownExtra {...props} className={classes(props.className)} />
     );
 }
 
 export function SimpleMarkdown(props: IMarkdownProps) {
     return (
-        <SolidMarkdown source={props.body} className={classes(props.className)} />
+        <SolidMarkdown {...props} className={classes(props.className)} />
     );
 }

@@ -21,9 +21,17 @@ export function CompactMessage(props: IMessageProps) {
         return cached.nick || cached.user.username;
     });
 
+    let extra = createMemo(() => {
+        if(props.msg.et) {
+            return <sub className="ui-text" title={ets() as string}>(Edited)</sub>;
+        }
+        return;
+    });
+
     return (
         <div className="ln-msg--compact" classList={{ 'no-text': !props.msg.msg.content }}>
             <div className="ln-msg__title">
+
                 <div className="ln-msg__side">
                     <div className="ln-msg__sidets" title={ts()}>
                         <span className="ui-text">{dayjs(props.msg.ts).format('h:mm A')}</span>
@@ -33,7 +41,7 @@ export function CompactMessage(props: IMessageProps) {
                 <MessageUserName name={nickname()} user={props.msg.msg.author} />
             </div>
 
-            <MessageBody msg={props.msg.msg} />
+            <MessageBody msg={props.msg.msg} extra={extra()} />
         </div>
     );
 }
