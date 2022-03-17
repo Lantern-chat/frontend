@@ -1,4 +1,4 @@
-import { createMemo, For, JSX, splitProps } from "solid-js";
+import { createMemo, JSX, splitProps } from "solid-js";
 
 import { Spoiler } from "./components/spoiler";
 import { Math } from "./lazy";
@@ -907,31 +907,31 @@ export const defaultRules: DefaultRules = {
         m: blockRegex(TABLES.TABLE_REGEX),
         p: TABLES.parseTable,
         h: (node, output, state) => {
-            var getStyle = function(colIndex: number): { [attr: string]: Attr } {
+            let getStyle = (colIndex: number): JSX.CSSProperties => {
                 return node.align[colIndex] == null ? {} : {
-                    textAlign: node.align[colIndex]
+                    'text-align': node.align[colIndex]
                 };
             };
+
+            // Since the entire AST is rebuilt for every render, don't bother with <For>
+
+            let headers = node.header.map((c: ASTNode, i: number) => (
+                <th scope="col" style={getStyle(i)}>{output(c, state)}</th>
+            ));
+
+            let rows = node.cells.map((row: ASTNode) => (
+                <tr>
+                    {row.map((c: ASTNode, i: number) => <td style={getStyle(i)}>{output(c, state)}</td>)}
+                </tr>
+            ));
 
             return (
                 <table>
                     <thead>
-                        <tr>
-                            <For each={node.header as Array<SingleASTNode[]>}>
-                                {(c: ASTNode, i) => <th scope="col" style={getStyle(i())}>{output(c, state)}</th>}
-                            </For>
-                        </tr>
+                        <tr>{headers}</tr>
                     </thead>
                     <tbody>
-                        <For each={node.cells as Array<ASTNode>}>
-                            {row => <tr>
-                                <For each={row as Array<ASTNode>}>
-                                    {(c, i) => (
-                                        <td style={getStyle(i())}>{output(c, state)}</td>
-                                    )}
-                                </For>
-                            </tr>}
-                        </For>
+                        {rows}
                     </tbody>
                 </table>
             );
