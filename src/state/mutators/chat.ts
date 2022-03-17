@@ -14,6 +14,9 @@ export interface IMessageState {
     ts: number,
     // unix timestamp for edit time
     et: number | null,
+
+    /// Starts Group?
+    sg?: boolean,
 }
 
 export interface ITypingState {
@@ -41,6 +44,26 @@ export interface IChatState {
     rooms: Record<Snowflake, IRoomState>, // ObjectMap
     active_party?: Snowflake,
     active_room?: Snowflake,
+}
+
+function starts_group(msg: IMessageState, prev: IMessageState | undefined) {
+    if(!prev) return true;
+
+    if(Math.abs(msg.ts - prev.ts) > (1000 * 60 * 5)) return true;
+    if(msg.msg.author.id != prev.msg.author.id) return true;
+
+    return false;
+}
+
+function set_starts_group(msgs: IMessageState[], idx: number) {
+    let msg = msgs[idx], prev = msgs[idx - 1];
+    if(msg) {
+        if(starts_group(msg, prev)) {
+            msg.sg = true;
+        } else {
+            delete msg.sg;
+        }
+    }
 }
 
 export const chatMutator = mutatorWithDefault(
@@ -116,8 +139,8 @@ export const chatMutator = mutatorWithDefault(
                     old_msgs = room.msgs,
                     new_msgs = raw_msgs.map(msg => ({
                         msg,
-                        ts: dayjs(msg.created_at).unix(),
-                        et: msg.edited_at ? dayjs(msg.edited_at).unix() : null,
+                        ts: +dayjs(msg.created_at),
+                        et: msg.edited_at ? +dayjs(msg.edited_at) : null,
                     })).sort((a, b) => a.ts - b.ts);
 
                 // TODO: Get the msg_id query term and avoid full merging
@@ -139,6 +162,12 @@ export const chatMutator = mutatorWithDefault(
 
                 room.msgs = [...final_msgs, ...new_msgs, ...old_msgs];
 
+                console.log(room.msgs);
+
+                for(let i = 0; i < room.msgs.length; i++) {
+                    set_starts_group(room.msgs, i);
+                }
+
                 break;
             }
 
@@ -159,13 +188,16 @@ export const chatMutator = mutatorWithDefault(
 
                                 room.msgs.splice(msg_idx, 1);
 
+                                // after message is removed, update the msg at the new index
+                                set_starts_group(room.msgs, msg_idx);
+
                                 break;
                             }
                             case ServerMsgOpcode.MessageCreate: {
                                 let raw_msg = event.p, msg = {
                                     msg: raw_msg,
-                                    ts: dayjs(raw_msg.created_at).unix(),
-                                    et: raw_msg.edited_at ? dayjs(raw_msg.edited_at).unix() : null,
+                                    ts: +dayjs(raw_msg.created_at),
+                                    et: raw_msg.edited_at ? +dayjs(raw_msg.edited_at) : null,
                                 };
 
                                 let room = state.rooms[raw_msg.room_id];
@@ -180,6 +212,11 @@ export const chatMutator = mutatorWithDefault(
 
                                 // insert message into the correct place to maintain sort order
                                 room.msgs.splice(idx, 0, msg);
+
+                                // after insertion, cascade check to start group
+                                for(let i = idx + 1; i < room.msgs.length; i++) {
+                                    set_starts_group(room.msgs, i);
+                                }
 
                                 __DEV__ && console.log("Splicing message '%s' at index %d", raw_msg.content, idx);
 
@@ -201,8 +238,8 @@ export const chatMutator = mutatorWithDefault(
                             case ServerMsgOpcode.MessageUpdate: {
                                 let raw_msg = event.p, msg = {
                                     msg: raw_msg,
-                                    ts: dayjs(raw_msg.created_at).unix(),
-                                    et: raw_msg.edited_at ? dayjs(raw_msg.edited_at).unix() : null,
+                                    ts: +dayjs(raw_msg.created_at),
+                                    et: raw_msg.edited_at ? +dayjs(raw_msg.edited_at) : null,
                                 };
 
                                 let room = state.rooms[raw_msg.room_id];

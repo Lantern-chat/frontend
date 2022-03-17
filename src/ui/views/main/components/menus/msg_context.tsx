@@ -22,7 +22,7 @@ import { ChatMessageIcon } from "lantern-icons";
 import { TriangleIcon } from "lantern-icons";
 
 export interface IMsgContextMenuProps {
-    msg: IMessageState,
+    msg: DeepReadonly<IMessageState>,
     pos: any,
     onConfirmChange: (pending: boolean) => void,
 }

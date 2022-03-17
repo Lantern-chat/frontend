@@ -7,8 +7,8 @@ import { Markdown } from "ui/components/common/markdown";
 import { Message as MessageModel } from "state/models";
 
 export interface MessageProps {
-    editing: boolean,
-    msg: MessageModel,
+    editing?: boolean,
+    msg: DeepReadonly<MessageModel>,
     //classList?: { [key: string]: boolean },
     extra?: string,
 }
@@ -28,7 +28,7 @@ export function Message(props: MessageProps) {
             <ErrorBoundary fallback={err => <DisplayError error={err} />}>
                 <Markdown body={content()!}
                     className="ln-msg"
-                    classList={{ 'ln-msg--editing': props.editing }} />
+                    classList={{ 'ln-msg--editing': !!props.editing }} />
             </ErrorBoundary>
         </Show>
     );

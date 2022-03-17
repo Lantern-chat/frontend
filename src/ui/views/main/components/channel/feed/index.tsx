@@ -1,288 +1,184 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { createStructuredSelector } from 'reselect';
-import classNames from "classnames";
+import { createEffect, createMemo, createRenderEffect, createSignal, For, JSX, Show, useContext } from "solid-js";
+import { Dynamic } from "solid-js/web";
+import { useDispatch, useSelector, useStructuredSelector } from "solid-mutant";
+import { activeParty, activeRoom } from "state/selectors/active";
 
-import { shallowEqualObjects } from "lib/compare";
+import dayjs from "lib/time";
+import { user_avatar_url } from "config/urls";
+import { pickColorFromHash } from "lib/palette";
 
-import { Room, Snowflake, User, UserPreferenceFlags } from "state/models";
-import { RootState, Type } from "state/root";
+import { MessageFlags, Room, Snowflake, User, UserPreferenceFlags, user_is_bot, user_is_system } from "state/models";
+import { RootState, Type, useRootSelector } from "state/root";
 import { loadMessages, SearchMode } from "state/commands";
-import { IMessageState, IRoomState } from "state/reducers/chat";
-import { Panel } from "state/reducers/window";
+import { IMessageState, IRoomState } from "state/mutators/chat";
+import { Panel } from "state/mutators/window";
 import { selectPrefsFlag } from "state/selectors/prefs";
 
+import { createController } from "ui/hooks/createController";
+import { AnchoredModal } from "ui/components/modal/anchored";
+import { PositionedModal } from "ui/components/modal/positioned";
+import { createSimplePositionedContextMenu, createSimpleToggleOnClick } from "ui/hooks/useMain";
+
+import { MsgContextMenu } from "../../menus/msg_context";
+import { Branch } from "ui/components/flow";
 import { VectorIcon } from "ui/components/common/icon";
-import { Timeline, ITimelineProps } from "./timeline";
-import { MessageGroup } from "../message/group";
+import { Message as MessageBody } from "../message/msg";
 
-export interface IMessageListProps {
-    channel: Snowflake
-}
+import { Anchor, InfiniteScroll, InfiniteScrollContext, InfiniteScrollController } from "ui/components/infinite_scroll";
 
-const feed_selector = createStructuredSelector({
-    use_mobile_view: (state: RootState) => state.window.use_mobile_view,
-    show_panel: (state: RootState) => state.window.show_panel,
-});
+import { ArrowThinRightIcon, BalloonIcon, ChevronDownIcon, PencilIcon, PushPinIcon } from "lantern-icons";
 
-// NOTE: Don't include fields that are updated often
 type PartialRoomState = Pick<IRoomState, 'room' | 'fully_loaded' | 'msgs'>;
 
 import "./feed.scss";
-export const MessageFeed = React.memo((props: IMessageListProps) => {
+export function MessageFeed() {
+    let state = useStructuredSelector({
+        use_mobile_view: (state: RootState) => state.window.use_mobile_view,
+        show_panel: (state: RootState) => state.window.show_panel,
+        compact: selectPrefsFlag(UserPreferenceFlags.CompactView),
+        gl: selectPrefsFlag(UserPreferenceFlags.GroupLines),
+        room: (state: RootState) => {
+            let active_room = activeRoom(state);
+            if(active_room) {
+                let room_state = state.chat.rooms[active_room];
+                if(room_state) {
+                    return {
+                        room: room_state.room,
+                        fully_loaded: room_state.fully_loaded,
+                        msgs: room_state.msgs,
+                    }
+                }
+            }
+            return;
+        }
+    });
+
     let dispatch = useDispatch();
 
-    let { use_mobile_view, show_panel } = useSelector(feed_selector);
-    let room = useSelector((state: RootState): PartialRoomState | undefined => {
-        let room_state = state.chat.rooms.get(props.channel);
-        if(room_state) {
-            return {
-                room: room_state.room,
-                fully_loaded: room_state.fully_loaded,
-                msgs: room_state.msgs
-            };
+    let on_cover_click = (e: MouseEvent) => {
+        switch(state.show_panel) {
+            case Panel.LeftRoomList: dispatch({ type: Type.WINDOW_TOGGLE_ROOM_LIST_SIDEBAR }); break;
+            case Panel.RightUserList: dispatch({ type: Type.WINDOW_TOGGLE_USER_LIST_SIDEBAR }); break;
         }
-        return;
-    }, shallowEqualObjects);
+    };
 
+    let [ifs, setIFS] = createController<InfiniteScrollController>();
 
-    //useTitle(room?.room.name);
-
-    let groups: Array<IMessageState[]> = useMemo(() => {
-        if(!room) return [];
-
-        __DEV__ && console.log("REBUILDING GROUPS");
-
-
-        let groups: IMessageState[][] = [];
-
-        for(let msg of room.msgs) {
-            let last_group = groups[groups.length - 1];
-
-            if(last_group) {
-                let last_msg = last_group[last_group.length - 1];
-
-                if(last_msg.msg.author.id == msg.msg.author.id && msg.ts.diff(last_msg.ts) < (1000 * 60 * 5)) {
-                    last_group.push(msg);
-                    continue;
-                }
-            }
-
-            groups.push([msg]);
-        }
-
-        return groups;
-
-    }, [room?.msgs]);
-
-    let cover;
-    if(use_mobile_view && show_panel != Panel.Main) {
-        let on_click = () => {
-            switch(show_panel) {
-                case Panel.LeftRoomList: {
-                    dispatch({ type: Type.WINDOW_TOGGLE_ROOM_LIST_SIDEBAR });
-                    break;
-                }
-                case Panel.RightUserList: {
-                    dispatch({ type: Type.WINDOW_TOGGLE_USER_LIST_SIDEBAR });
-                    break;
-                }
-            }
-        };
-
-        cover = (
-            <div className="ln-msg-list__cover" onClick={on_click} />
-        );
-    }
+    let on_goto_click = () => {
+        ifs()?.gotoStartSmooth();
+    };
 
     return (
         <div className="ln-msg-list__flex-container">
-            {cover}
-            <MessageFeedInner room={room} groups={groups} />
-        </div>
-    );
-});
+            <Show when={state.use_mobile_view && state.show_panel != Panel.Main}>
+                <div className="ln-msg-list__cover" onClick={on_cover_click} />
+            </Show>
 
-interface IMessageFeedInnerProps {
-    room: PartialRoomState | undefined,
-    groups: Array<IMessageState[]>,
-}
+            <InfiniteScroll start={Anchor.Bottom} setController={setIFS} wrapperClassList={{
+                'has-timeline': !state.use_mobile_view,
+                'compact': state.compact,
+                'group-lines': state.gl,
+            }}>
+                <InfiniteScrollContext.Provider value={ifs}>
+                    <ul className="ln-msg-list" id="ln-msg-list" >
+                        <Show when={state.room?.fully_loaded}>
+                            <li className="ln-msg__top">
+                                <div className="ui-text">
+                                    <VectorIcon src={BalloonIcon} /> You have reached the top of #{state.room!.room.name}! <VectorIcon src={BalloonIcon} />
+                                    <br />
+                                    Congrats on making it this far.
+                                </div>
+                            </li>
+                        </Show>
 
-const inner_feed_selector = createStructuredSelector({
-    use_mobile_view: (state: RootState) => state.window.use_mobile_view,
-    is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
-    compact: selectPrefsFlag(UserPreferenceFlags.CompactView),
-    gl: selectPrefsFlag(UserPreferenceFlags.GroupLines),
-    reduce_motion: selectPrefsFlag(UserPreferenceFlags.ReduceAnimations),
-});
-
-import { Anchor, InfiniteScroll } from "ui/components/infinite_scroll2";
-
-const NoTimeline = React.memo(() => <></>);
-
-import { Hotkey, useMainHotkeys } from "ui/hooks/useMainClick";
-const HOTKEYS = [Hotkey.FeedArrowDown, Hotkey.FeedArrowUp, Hotkey.FeedPageDown, Hotkey.FeedPageUp, Hotkey.FeedEnd];
-
-function compute_goto(ifs: InfiniteScroll, pos: number): boolean {
-    let container = ifs.containerRef.current;
-    if(!container) return false;
-
-    let clientHeight = container.clientHeight,
-        scrollHeight = container.scrollHeight - container.offsetHeight;
-
-    return pos < (scrollHeight - clientHeight * 5);
-}
-
-const MessageFeedInner = React.memo(({ room, groups }: IMessageFeedInnerProps) => {
-    let { use_mobile_view, is_light_theme, compact, gl, reduce_motion } = useSelector(inner_feed_selector),
-        dispatch = useDispatch(),
-        infinite_scroll = useRef<InfiniteScroll>(null),
-        [load_next, load_prev]: Array<undefined | (() => void)> = useMemo(() => {
-            if(!room || room.fully_loaded) return [];
-
-            __DEV__ && console.log("REBUILDING LOADING CALLBACKS");
-
-            return [
-                () => { }, // TODO: Virtualization
-                () => {
-                    if(groups[0]) {
-                        dispatch(loadMessages(room.room.id, groups[0][0].msg.id, SearchMode.Before));
-                    }
-                }
-            ]
-        }, [room, groups]);
-
-    useMainHotkeys(HOTKEYS, (hotkey: Hotkey, e: KeyboardEvent) => {
-        let ifs = infinite_scroll.current;
-        if(!ifs) return;
-
-        switch(hotkey) {
-            case Hotkey.FeedArrowDown: ifs.scrollArrowDown(); break;
-            case Hotkey.FeedArrowUp: ifs.scrollArrowUp(); break;
-            case Hotkey.FeedPageDown: ifs.scrollPageDown(); break;
-            case Hotkey.FeedPageUp: ifs.scrollPageUp(); break;
-            case Hotkey.FeedEnd: ifs.goToStart(); break;
-        }
-    }, [infinite_scroll.current]);
-
-    let initial_goto = useMemo(() => {
-        let ifs = infinite_scroll.current;
-        return !!ifs && compute_goto(ifs, ifs.pos);
-    }, [infinite_scroll.current, groups])
-
-    let [goto, setGoto] = useState(initial_goto);
-    let onScroll = useCallback((pos: number) => {
-        let ifs = infinite_scroll.current;
-        if(ifs) setGoto(compute_goto(ifs, pos));
-    }, [infinite_scroll.current]);
-
-    // Use effect to only dispatch on meaningful changes
-    useEffect(() => {
-        dispatch({ type: Type.TOGGLE_FOOTERS, show: goto });
-    }, [goto]);
-
-    let onGoto = useCallback(() => {
-        let ifs = infinite_scroll.current;
-        if(!ifs) return;
-
-        ifs.goToStartSmooth();
-    }, [infinite_scroll.current]);
-
-    if(!room) {
-        return <div className="ln-center-standalone">Channel does not exist</div>;
-    }
-
-    let MaybeTimeline: React.FunctionComponent<ITimelineProps> = use_mobile_view ? NoTimeline : Timeline,
-        wrapperClasses = classNames({
-            'has-timeline': !use_mobile_view,
-            'compact': compact,
-            'group-lines': gl,
-        }),
-        footerClasses = classNames("ln-feed-footers", {
-            'has-timeline': !use_mobile_view,
-        });
-
-    return (
-        <>
-            <MaybeTimeline direction={0} position={0} />
-
-            <InfiniteScroll ref={infinite_scroll} start={Anchor.Bottom}
-                load_next={load_next} load_prev={load_prev}
-                reset_on_changed={room.room.id}
-                containerClassName={wrapperClasses}
-                onScroll={onScroll}
-                reduce_motion={reduce_motion}
-            >
-
-                <MsgList room={room} groups={groups} is_light_theme={is_light_theme} compact={compact} />
+                        <For each={state.room?.msgs}>
+                            {msg => <Message msg={msg} />}
+                        </For>
+                    </ul>
+                </InfiniteScrollContext.Provider>
             </InfiniteScroll>
 
-            <div className={footerClasses}>
-                {goto && <GotoBottomFooter onClick={onGoto} use_mobile_view={use_mobile_view} />}
-            </div>
-        </>
-    )
-});
-
-const MsgList = React.memo(({ room, groups, is_light_theme, compact }: { room: PartialRoomState, groups: IMessageState[][], is_light_theme: boolean, compact: boolean }) => {
-    let header;
-    if(room.fully_loaded) {
-        header = (<MsgTop room={room.room} />);
-    }
-
-    return (
-        <ul className="ln-msg-list" id="ln-msg-list" >
-            {header}
-            {groups.map(group => <MessageGroup key={group[0].msg.id} group={group} is_light_theme={is_light_theme} compact={compact} />)}
-        </ul>
+            <Show when={false}>
+                <div className="ln-feed-footers" classList={{ 'has-timeline': !state.use_mobile_view }}>
+                    <GotoBottomFooter onClick={on_goto_click} use_mobile_view={state.use_mobile_view} />
+                </div>
+            </Show>
+        </div>
     );
-});
-
-import { BalloonIcon } from "lantern-icons";
-
-const MsgTop = React.memo(({ room }: { room: Room }) => {
-    return (
-        <li className="ln-msg__top">
-            <div className="ui-text">
-                <VectorIcon src={BalloonIcon} /> You have reached the top of #{room.name}! <VectorIcon src={BalloonIcon} />
-                <br />
-                Congrats on making it this far.
-            </div>
-        </li>
-    );
-});
+}
 
 interface IGotoBottomFooterProps {
     onClick(): void,
     use_mobile_view: boolean,
 }
 
-import { ChevronDownIcon } from "lantern-icons";
+function GotoBottomFooter(props: IGotoBottomFooterProps) {
+    return (
+        <Branch>
+            <Branch.If when={props.use_mobile_view}>
+                <span id="goto-now" onClick={() => props.onClick()}>
+                    <VectorIcon src={ChevronDownIcon} />
+                </span>
+            </Branch.If>
 
-const GotoBottomFooter = React.memo(({ onClick, use_mobile_view }: IGotoBottomFooterProps) => {
-    if(use_mobile_view) {
-        return (
-            <span id="goto-now" onClick={() => onClick()}>
-                <VectorIcon src={ChevronDownIcon} />
-            </span>
-        )
-    }
+            <Branch.Else>
+                <div className="ln-feed-footer ui-text" onClick={() => props.onClick()}>
+                    <span>You're viewing older messages</span>
+                    <span id="goto-now">
+                        Go to now <VectorIcon src={ChevronDownIcon} />
+                    </span>
+                </div>
+            </Branch.Else>
+        </Branch>
+    );
+}
+
+import { CompactMessage } from "../message/compact";
+import { CozyMessage } from "../message/cozy";
+import { SystemMessage } from "../message/system";
+
+function Message(props: { msg: DeepReadonly<IMessageState> }) {
+    let state = useStructuredSelector({
+        is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
+        compact: selectPrefsFlag(UserPreferenceFlags.CompactView),
+    });
+
+    let [warn, setWarn] = createSignal(false),
+        [pos, main_click_props] = createSimplePositionedContextMenu({
+            onMainClick: () => setWarn(false),
+        });
+
+    // select inner message component based on style.
+    // The identifier must be Proper-case to be used as a Component below.
+    let Inner = createMemo(() => {
+        if(user_is_system(props.msg.msg.author)) {
+            return SystemMessage;
+        } else {
+            return state.compact ? CompactMessage : CozyMessage;
+        }
+    });
 
     return (
-        <div className="ln-feed-footer ui-text" onClick={() => onClick()}>
-            <span>You're viewing older messages</span>
-            <span id="goto-now">
-                Go to now <VectorIcon src={ChevronDownIcon} />
-            </span>
+        <div
+            id={props.msg.msg.id}
+            className="ln-msg__outer"
+            classList={{
+                "highlighted": !!pos(),
+                "warning": !!pos() && warn(),
+            }}
+            {...main_click_props}
+        >
+            <div className="ln-msg__wrapper">
+                <Dynamic component={Inner()} {...props} is_light_theme={state.is_light_theme} compact={state.compact} />
+
+                <Show when={pos()}>
+                    <PositionedModal {...pos()!}>
+                        <MsgContextMenu msg={props.msg} pos={pos()} onConfirmChange={(pending: boolean) => setWarn(pending)} />
+                    </PositionedModal>
+                </Show>
+            </div>
         </div>
     );
-});
-
-if(__DEV__) {
-    MessageFeed.displayName = "MessageFeed";
-    NoTimeline.displayName = "NoTimeline";
-    MessageFeedInner.displayName = "MessageFeedInner";
-    MsgList.displayName = "MsgList";
-    MsgTop.displayName = "MsgTop";
-    GotoBottomFooter.displayName = "GotoBottomFooter";
 }
+
+

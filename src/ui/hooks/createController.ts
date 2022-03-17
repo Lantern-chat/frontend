@@ -1,9 +1,9 @@
-import { createMemo, onCleanup } from "solid-js";
+import { Accessor, createMemo, onCleanup } from "solid-js";
 import { createTrigger } from "./createTrigger";
 
 export type SetController<T> = (c: T | null) => void;
 
-export function createController<T>(): [get: () => T | null, set: (c: T) => void] {
+export function createController<T>(): [get: Accessor<T | null>, set: (c: T) => void] {
     let storage: { c: null | T } = { c: null };
     let [track, dirty] = createTrigger();
 
@@ -18,6 +18,8 @@ export function createController<T>(): [get: () => T | null, set: (c: T) => void
 
         // same trick as `createRef`, only trigger cleanup on last usage
         counter++; onCleanup(() => --counter || (storage.c = null, dirty()));
+
+        return value;
     };
 
     return [get, set];

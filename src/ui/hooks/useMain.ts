@@ -272,6 +272,18 @@ export function createSimplePositionedContextMenu(opts?: ISimpleMainClickOptions
     return [pos, props];
 }
 
+export function createSimpleToggleOnClick(opts?: ISimpleMainClickOptions): [Accessor<boolean>, ClickEventHandlers] {
+    let [show, setShow] = createSignal(false);
+
+    let props = useMainClick({
+        active: show,
+        onMainClick: (e: MouseEvent) => { setShow(false); opts?.onMainClick(e); },
+        onClick: (e: MouseEvent) => { setShow(true); e.stopPropagation(); }
+    });
+
+    return [show, props];
+}
+
 export function createClickEater(): (e: MouseEvent) => void {
     let main = useContext(MainContext);
     return e => {

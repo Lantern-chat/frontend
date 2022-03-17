@@ -1,11 +1,12 @@
-import { JSX, createContext, useContext, createSignal, createRenderEffect, onCleanup, createEffect, onMount } from "solid-js";
+import { JSX, createContext, useContext, createSignal, createRenderEffect, onCleanup, createEffect, onMount, children, untrack, Accessor } from "solid-js";
 
 import ResizeObserverPolyfill from "resize-observer-polyfill";
 
 import { SUPPORTS_PASSIVE } from "lib/features";
 import { IS_IOS_SAFARI } from "lib/user_agent";
 import { createRef, Ref } from "ui/hooks/createRef";
-import { createController } from "ui/hooks/createController";
+import { createController, SetController } from "ui/hooks/createController";
+import { createMicrotask } from "ui/hooks/createMicrotask";
 
 import { useRootSelector } from "state/root";
 import { selectPrefsFlag } from "state/selectors/prefs";
@@ -52,7 +53,7 @@ export interface InfiniteScrollController {
 
 const OBSERVER_OPTIONS: ResizeObserverOptions = { box: "border-box" };
 
-export const InfiniteScrollContext = createContext<InfiniteScrollController>(null as any);
+export const InfiniteScrollContext = createContext<Accessor<InfiniteScrollController | null>>();
 
 export function createInfiniteScrollIntersection<T extends HTMLElement>(
     ref: Ref<T>,
@@ -66,7 +67,7 @@ export function createInfiniteScrollIntersection<T extends HTMLElement>(
         if(ifs && ref.current) {
             let observer = new IntersectionObserver(entries => {
                 entries.length && setVisible(entries[0].intersectionRatio > 0);
-            }, { ...opts, root: ifs.container });
+            }, { ...opts, root: ifs()!.container });
 
             observer.observe(ref.current);
             onCleanup(() => observer.disconnect());
@@ -95,6 +96,8 @@ export interface IInfiniteScrollProps {
     start: Anchor,
 
     onScroll?: (pos: number) => void,
+
+    setController?: SetController<InfiniteScrollController>,
 }
 
 import "./infinite_scroll.scss";
@@ -203,7 +206,8 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
     }
 
     let on_resize = (entries: ResizeObserverEntry[], observer: ResizeObserver) => {
-        fix_position();
+        console.log("RESIZED");
+        fix_position()
     };
 
     let start_time: number = 0;
@@ -243,10 +247,12 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
             anchor = Anchor.Top;
             load_more(true);
 
-            __DEV__ && console.log("AT TOP: ", predict_top, velocity);
+            __DEV__ && console.log("AT TOP:", predict_top, velocity);
 
         } else if(reached_bottom || predict_bottom) {
             anchor = Anchor.Bottom;
+
+            __DEV__ && console.log("AT BOTTOM:", predict_bottom, velocity);
         }
 
         // 1 second polling
@@ -290,15 +296,13 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
 
     /// MOUNTING
 
-    // fix position on child changes
+    // fix position on prop changes
     createEffect(() => {
         props.children, props.load_next, props.load_prev, fix_position();
         do_laterish(() => load_pending = false);
     });
 
-    let [ifs, setIFS] = createController<InfiniteScrollController>();
-
-    setIFS({
+    props.setController?.({
         gotoStart() { reset_position(); },
         scrollPageUp() { scroll_by(-0.9); }, // 9/10
         scrollPageDown() { scroll_by(0.9); }, // 9/10
@@ -334,7 +338,6 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
 
     let observer = new ResizeObserver(on_resize);
 
-    onCleanup(() => observer.disconnect());
     onMount(() => {
         let container = container_ref.current!;
 
@@ -342,14 +345,22 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
         observer.observe(wrapper_ref.current!, OBSERVER_OPTIONS);
 
         container.addEventListener('scroll', on_scroll, SUPPORTS_PASSIVE && { passive: true });
+
+        onCleanup(() => observer.disconnect());
     });
 
     return (
-        <div ref={container_ref} classList={props.containerClassList}>
-            <div ref={wrapper_ref} classList={props.wrapperClassList}>
-                <InfiniteScrollContext.Provider value={ifs()!}>
-                    {props.children}
-                </InfiniteScrollContext.Provider>
+        <div
+            ref={container_ref}
+            className="ln-inf-scroll__container ln-scroll-y"
+            classList={props.containerClassList}
+        >
+            <div
+                ref={wrapper_ref}
+                className="ln-inf-scroll__wrapper"
+                classList={props.wrapperClassList}
+            >
+                {props.children}
             </div>
         </div>
     )

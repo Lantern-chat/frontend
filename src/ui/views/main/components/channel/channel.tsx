@@ -6,7 +6,7 @@ import { activeRoom } from "state/selectors/active";
 import { Snowflake } from "state/models";
 
 import { ChannelHeader } from "./header";
-//import { MessageFeed } from "./feed";
+import { MessageFeed } from "./feed";
 import { MessageBox } from "./input/box";
 import { DisplayError } from "ui/components/common/error";
 import { MemberList } from "../party/member_list";
@@ -51,8 +51,7 @@ function Feed() {
             </div>
 
             <Show when={active_room()} fallback={<div className="ln-center-standalone">Loading...</div>}>
-                {/*<MessageFeed channel={state.active_room!} />*/}
-                MessageFeed
+                <MessageFeed />
             </Show>
 
             <MessageBox />
