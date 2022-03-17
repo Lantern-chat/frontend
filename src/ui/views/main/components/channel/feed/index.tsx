@@ -141,6 +141,7 @@ function Message(props: { msg: DeepReadonly<IMessageState> }) {
     let state = useStructuredSelector({
         is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
         compact: selectPrefsFlag(UserPreferenceFlags.CompactView),
+        gl: selectPrefsFlag(UserPreferenceFlags.GroupLines),
     });
 
     let [warn, setWarn] = createSignal(false),
@@ -159,25 +160,32 @@ function Message(props: { msg: DeepReadonly<IMessageState> }) {
     });
 
     return (
-        <div
-            id={props.msg.msg.id}
-            className="ln-msg__outer"
-            classList={{
-                "highlighted": !!pos(),
-                "warning": !!pos() && warn(),
-            }}
-            {...main_click_props}
-        >
-            <div className="ln-msg__wrapper">
-                <Dynamic component={Inner()} {...props} is_light_theme={state.is_light_theme} compact={state.compact} />
+        <>
+            <Show when={props.msg.sg && state.gl}>
+                <hr />
+            </Show>
 
-                <Show when={pos()}>
-                    <PositionedModal {...pos()!}>
-                        <MsgContextMenu msg={props.msg} pos={pos()} onConfirmChange={(pending: boolean) => setWarn(pending)} />
-                    </PositionedModal>
-                </Show>
-            </div>
-        </div>
+            <li
+                id={props.msg.msg.id}
+                className="ln-msg__outer"
+                classList={{
+                    "highlighted": !!pos(),
+                    "warning": !!pos() && warn(),
+                    "sg": props.msg.sg,
+                }}
+                {...main_click_props}
+            >
+                <div className="ln-msg__wrapper">
+                    <Dynamic component={Inner()} {...props} is_light_theme={state.is_light_theme} compact={state.compact} />
+
+                    <Show when={pos()}>
+                        <PositionedModal {...pos()!}>
+                            <MsgContextMenu msg={props.msg} pos={pos()} onConfirmChange={(pending: boolean) => setWarn(pending)} />
+                        </PositionedModal>
+                    </Show>
+                </div>
+            </li>
+        </>
     );
 }
 
