@@ -35,7 +35,7 @@ function CollapsedCode(props: ICodeProps & { loc: number }) {
         //}
 
         __DEV__ && console.log("CLICKED");
-        setOpen(!open);
+        setOpen(v => !v);
         e.preventDefault();
     };
 
