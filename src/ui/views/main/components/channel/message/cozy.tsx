@@ -1,4 +1,4 @@
-import { MessageFlags, user_is_bot } from "client-sdk/src/models";
+import { MessageFlags, user_is_bot } from "state/models";
 import dayjs from "dayjs";
 import { PencilIcon, PushPinIcon } from "lantern-icons";
 import { createMemo, Show } from "solid-js";

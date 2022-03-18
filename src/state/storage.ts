@@ -7,6 +7,7 @@ export const enum StorageKey {
     SHOW_USER_LIST = "SHOW_USER_LIST",
     SESSION = "SESSION",
     PREFS = "PREFS",
+    NOTIFICATIONS = "NOTIFICATIONS",
 }
 
 export function loadSession(): ISession | null {

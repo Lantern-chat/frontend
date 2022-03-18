@@ -1,4 +1,4 @@
-import { createSignal, JSX } from "solid-js";
+import { createRenderEffect, createSignal, JSX } from "solid-js";
 import { useSelector, useDispatch } from "solid-mutant";
 
 import { savePrefsFlag } from "state/commands/prefs";
@@ -12,6 +12,7 @@ export interface IToggleProps {
     label: JSX.Element,
     checked?: boolean,
     onChange: (checked: boolean) => void,
+    disabled?: boolean,
 }
 
 export function Toggle(props: IToggleProps) {
@@ -23,11 +24,15 @@ export function Toggle(props: IToggleProps) {
             props.onChange(checked);
         };
 
+    // if props.checked changes (controlled), then update
+    createRenderEffect(() => setChecked(!!props.checked));
+
     return (
         <div className="ln-settings-toggle">
             <label htmlFor={props.htmlFor}>{props.label}</label>
             <span className="spacer" />
-            <input type="checkbox" name={props.htmlFor} id={props.htmlFor} checked={checked()} onChange={onChange} />
+            <input type="checkbox" name={props.htmlFor} id={props.htmlFor}
+                checked={checked() && !props.disabled} onChange={onChange} disabled={props.disabled} />
         </div>
     );
 }

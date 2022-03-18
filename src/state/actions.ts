@@ -46,7 +46,7 @@ export enum Type {
     UPDATE_QUOTA = "UPDATE_QUOTA",
 }
 
-import { DispatchableAction as MutantDispatchableAction } from "solid-mutant";
+import type { DispatchableAction as MutantDispatchableAction } from "solid-mutant";
 
 export type DispatchableAction = MutantDispatchableAction<Action, RootState>;
 

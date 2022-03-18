@@ -1,7 +1,7 @@
-import { User } from "client-sdk/src/models";
+import type { User } from "state/models";
 import { user_avatar_url } from "config/urls";
 import { pickColorFromHash } from "lib/palette";
-import { IMessageState } from "state/mutators/chat";
+import type { IMessageState } from "state/mutators/chat";
 import { useRootSelector } from "state/root";
 import { activeParty } from "state/selectors/active";
 import { Avatar } from "ui/components/common/avatar";

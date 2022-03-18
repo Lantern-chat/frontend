@@ -1,6 +1,6 @@
 import { createMemo, Show } from "solid-js";
 
-import { Room } from "client-sdk/src/models";
+import type { Room } from "state/models";
 
 import { room_avatar_url } from "config/urls";
 

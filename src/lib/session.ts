@@ -1,6 +1,5 @@
-import { Session } from "client-sdk/src/models";
-import { Dayjs } from "dayjs";
-import dayjs, { LongTimeout } from "lib/time";
+import { Session } from "state/models";
+import type { LongTimeout } from "lib/time";
 
 export interface ISession {
     auth: string,

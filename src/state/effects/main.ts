@@ -6,6 +6,7 @@ import { DEFAULT_LOGGED_IN_CHANNEL, GLOBAL, HISTORY } from "state/global";
 import { GatewayStatus } from "state/mutators/gateway";
 import { prefsMutator, getPad } from "state/mutators/prefs";
 import { Action, RootState, Type } from "state/root";
+import { ServerMsgOpcode } from "state/models";
 
 import { StorageKey } from "state/storage";
 
@@ -17,6 +18,7 @@ import { Font, hasUserPrefFlag, Intent, UserPreferenceFlags, UserPreferences } f
 import { activeParty, activeRoom } from "state/selectors/active";
 
 import { setTheme } from "lib/theme";
+import { displayNotification } from "lib/notification";
 
 const GATEWAY_ENABLED_ROUTES = ['channels', 'settings', 'invite'];
 
@@ -248,7 +250,18 @@ export function mainEffect(state: DeepReadonly<RootState>, action: Action, dispa
 
                     break;
                 }
+                case GatewayMessageDiscriminator.Event: {
+                    let ev = msg.p;
+                    switch(ev.o) {
+                        case ServerMsgOpcode.MessageCreate: {
+                            displayNotification(() => {
+                                let notification = new Notification("New Message!");
 
+                                return notification;
+                            })
+                        }
+                    }
+                }
             }
             break;
         }
