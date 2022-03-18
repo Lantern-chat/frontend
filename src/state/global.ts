@@ -48,7 +48,7 @@ interface IGlobalState {
 
 // use `window` to avoid duplicates in edge-cases
 // all this code should only run once
-export const GLOBAL: IGlobalState = window['LANTERN_GLOABL'] = window['LANTERN_GLOBAL'] || (function(): IGlobalState {
+export const GLOBAL: IGlobalState = window['LANTERN_GLOBAL'] = window['LANTERN_GLOBAL'] || (function(): IGlobalState {
     let history = createBrowserHistory() as IHistoryExt;
     history.pm = IS_MOBILE ? history.replace : history.push;
 
