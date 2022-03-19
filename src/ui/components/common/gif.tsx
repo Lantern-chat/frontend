@@ -1,4 +1,4 @@
-import { createEffect, JSX, onCleanup, Show } from "solid-js"
+import { createEffect, createRenderEffect, JSX, onCleanup, Show } from "solid-js"
 
 import Freezeframe from "freezeframe";
 import { IS_MOBILE } from "lib/user_agent";
@@ -18,10 +18,10 @@ export function AnimatedGif(props: IAnimatedGifProps) {
         freeze: Freezeframe,
         do_freeze = useRootSelector(selectPrefsFlag(UserPreferenceFlags.UnfocusPause));
 
-    createEffect(() => {
+    createRenderEffect(() => {
         let i = img.current;
 
-        if(do_freeze() && i) {
+        if(i && do_freeze()) {
             freeze = new Freezeframe(i, { responsive: false, overlay: IS_MOBILE });
 
             onCleanup(() => freeze.destroy());
