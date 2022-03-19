@@ -150,7 +150,7 @@ export function MsgTextarea(props: IMsgTextareaProps) {
                 cacheMeasurements={false}
                 rows={1} maxRows={max_rows()}
                 onHeightChange={onHeightChange}
-                oninput={onInput}
+                onInput={onInput}
                 onKeyDown={onKeyDown}
                 onKeyUp={onKeyUp}
             />
