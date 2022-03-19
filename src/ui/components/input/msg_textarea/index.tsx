@@ -34,8 +34,10 @@ export function MsgTextarea(props: IMsgTextareaProps) {
     props.tac?.({
         setValue(value: string, change: boolean = true) {
             if(ta.current) {
-                ta.current.value = value
-                change && props.onChange(value);
+                ta.current.value = value;
+
+                // triggers a 'change' event that in-turn triggers a resize
+                change && (ta.current.dispatchEvent(new Event('change', { bubbles: false })), props.onChange(value));
             }
         },
         focus() {

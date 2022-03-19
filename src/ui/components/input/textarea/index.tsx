@@ -28,7 +28,7 @@ export interface TextareaAutosizeProps extends Omit<TextareaProps, 'style'> {
 }
 
 export function TextareaAutosize(props: TextareaAutosizeProps) {
-    let [local, taprops] = splitProps(props, ['maxRows', 'minRows', 'onHeightChange', 'cacheMeasurements', 'ta', 'ref', 'onInput'])
+    let [local, taprops] = splitProps(props, ['maxRows', 'minRows', 'onHeightChange', 'cacheMeasurements', 'ta', 'ref', 'onInput', 'onChange'])
 
     let ref = composeRefs(local.ta, local.ref), height = 0, measurements: SizingData;
 
@@ -56,12 +56,20 @@ export function TextareaAutosize(props: TextareaAutosizeProps) {
         }
     };
 
-    let onInput = (event: InputEvent) => {
+    let uncontrolled_resize = () => {
         // not controlled
         if(taprops.value === undefined) {
             resizeTextarea();
         }
+    };
 
+    let onChange = (event: Event) => {
+        uncontrolled_resize();
+        (local.onChange as any)?.(event);
+    };
+
+    let onInput = (event: InputEvent) => {
+        uncontrolled_resize();
         (local.onInput as any)?.(event);
     };
 
@@ -82,9 +90,7 @@ export function TextareaAutosize(props: TextareaAutosizeProps) {
     // queue off resize before paint
     createMicrotask(resizeTextarea);
 
-    let final_props = mergeProps(taprops, { onInput });
-
     return (
-        <textarea {...final_props} ref={ref} />
+        <textarea {...taprops} onInput={onInput} onChange={onChange} ref={ref} />
     );
 }
