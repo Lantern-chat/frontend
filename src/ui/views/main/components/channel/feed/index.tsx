@@ -37,6 +37,7 @@ export function MessageFeed() {
         show_panel: (state: RootState) => state.window.show_panel,
         compact: selectPrefsFlag(UserPreferenceFlags.CompactView),
         gl: selectPrefsFlag(UserPreferenceFlags.GroupLines),
+        active_room: activeRoom,
         room: (state: RootState) => {
             let active_room = activeRoom(state);
             if(active_room) {
@@ -63,6 +64,9 @@ export function MessageFeed() {
     };
 
     let [ifs, setIFS] = createController<InfiniteScrollController>();
+
+    // on room change, go to start of ifs
+    createEffect(() => { state.active_room, ifs()?.gotoStart() });
 
     let on_goto_click = () => {
         ifs()?.gotoStartSmooth();

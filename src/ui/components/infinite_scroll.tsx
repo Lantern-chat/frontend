@@ -140,7 +140,7 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
         let top = pos, diff = 0;
 
         if(anchor == props.start) {
-            top = (props.start == Anchor.Bottom) ? height : 0;
+            top = (props.start == Anchor.Bottom) ? new_height : 0;
         } else {
             diff = new_height - height;
             top += diff;
@@ -150,9 +150,10 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
 
         if(top != container.scrollTop || new_height != height) {
             if(diff > 0) {
+                // relative positioning
                 container.scrollBy({ top: diff, behavior: 'instant' as any });
             } else {
-                // shrunk
+                // absolute positioning
                 container.scrollTo({ top, behavior: 'instant' as any });
             }
 
@@ -214,7 +215,7 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
     }
 
     let on_resize = (entries: ResizeObserverEntry[], observer: ResizeObserver) => {
-        console.log("RESIZED");
+        __DEV__ && console.log("RESIZED");
         fix_position()
     };
 
@@ -310,6 +311,8 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
         do_laterish(() => load_pending = false);
     });
 
+    // NOTE: See feed.tsx for the controlled being used to reset the ifs on active room change
+
     props.setController?.({
         gotoStart() { reset_position(); },
         scrollPageUp() { scroll_by(-0.9); }, // 9/10
@@ -360,6 +363,9 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
             polling = false;
         });
     });
+
+    // very first fix before paint
+    createMicrotask(() => fix_position());
 
     return (
         <div
