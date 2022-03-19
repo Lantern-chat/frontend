@@ -1,4 +1,4 @@
-import { createEffect, createMemo, JSX, onCleanup, onMount, splitProps } from "solid-js";
+import { createEffect, createMemo, createRenderEffect, JSX, mergeProps, onCleanup, onMount, splitProps } from "solid-js";
 import { createMicrotask } from "ui/hooks/createMicrotask";
 
 import { AnyRef, composeRefs } from "ui/hooks/createRef";
@@ -74,7 +74,7 @@ export function TextareaAutosize(props: TextareaAutosizeProps) {
     // https://stackoverflow.com/questions/3219758/detect-changes-in-the-dom
 
     // access text-area props to make this effect dependent on them
-    createEffect(() => {
+    createRenderEffect(() => {
         ({ ...taprops });
         resizeTextarea();
     });
@@ -82,7 +82,9 @@ export function TextareaAutosize(props: TextareaAutosizeProps) {
     // queue off resize before paint
     createMicrotask(resizeTextarea);
 
+    let final_props = mergeProps(taprops, { onInput });
+
     return (
-        <textarea {...taprops} onInput={onInput} ref={ref} />
+        <textarea {...final_props} ref={ref} />
     );
 }

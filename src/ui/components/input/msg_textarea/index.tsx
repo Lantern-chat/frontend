@@ -145,7 +145,6 @@ export function MsgTextarea(props: IMsgTextareaProps) {
                 ta={ta}
                 {...taprops} // onBlur, onFocus, onContextMenu, disabled, etc.
                 placeholder="Message..."
-                onInput={onInput}
                 spellcheck={spellcheck()}
                 style={style()}
                 cacheMeasurements={false}
