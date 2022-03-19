@@ -1,3 +1,66 @@
+export function px(value: string | number | undefined): string | undefined {
+    if(typeof value === 'number') {
+        value = value + 'px';
+    }
+    return value;
+}
+
+import type { JSX } from "solid-js";
+
+// This list is incomplete, see https://developer.mozilla.org/en-US/docs/Web/CSS/Reference for full list
+const DIMENSIONAL: Set<keyof JSX.CSSProperties> = /*#__PURE__*/ new Set([
+    'border-left-width',
+    'border-right-width',
+    'border-top-width',
+    'border-bottom-width',
+    'border-width',
+    'border-top-left-radius',
+    'border-top-right-radius',
+    'border-bottom-left-radius',
+    'border-bottom-right-radius',
+    'border-radius',
+    'font-size',
+    'letter-spacing',
+    'line-height',
+    'margin',
+    'margin-left',
+    'margin-right',
+    'margin-top',
+    'margin-bottom',
+    'padding',
+    'padding-left',
+    'padding-right',
+    'padding-top',
+    'padding-bottom',
+    'top', 'bottom', 'left', 'right',
+    'width', 'height',
+    'max-width',
+    'max-height',
+    'min-width',
+    'min-height',
+    'text-indent',
+    'tab-size',
+    'outline-width',
+]);
+
+/**
+ * Modifies style to change numeric values to pixels for fields with pixel values.
+ *
+ * @param style
+ * @returns
+ */
+export function pxs(style?: JSX.CSSProperties | undefined): JSX.CSSProperties | undefined {
+    if(style) {
+        for(let key in style) {
+            if(DIMENSIONAL.has(key)) {
+                style[key] = px(style[key]);
+            }
+        }
+    }
+    return style;
+}
+
+/*
 const enum Res {
     PENDING,
     SUCCESS,
@@ -28,6 +91,7 @@ export function wrapPromise<T>(promise: Promise<T>) {
         }
     };
 }
+*/
 
 export function isDescendant(parent: HTMLElement, child: HTMLElement): boolean {
     var node = child.parentNode;
