@@ -1,4 +1,5 @@
 import { createEffect, createMemo, createSignal, JSX, onCleanup } from "solid-js";
+import { px } from "ui/utils";
 import { Modal } from "./";
 
 export interface IPositionedModalProps {
@@ -75,7 +76,7 @@ export function PositionedModal(props: IPositionedModalProps) {
         }
 
         let wrapper_props = {
-            style: { position: 'absolute' as const, left: left + 'px', top: top + 'px' } as JSX.CSSProperties,
+            style: { position: 'absolute' as const, left: px(left), top: px(top) } as JSX.CSSProperties,
             className: cns.join(' '),
         };
 
