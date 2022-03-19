@@ -189,6 +189,7 @@ export interface DefaultRules extends DefaultRulesIndexer {
     readonly u: DefaultInOutRule,
     readonly spoiler: DefaultInOutRule,
     readonly del: DefaultInOutRule,
+    readonly font: DefaultInOutRule,
     readonly tags: DefaultInOutRule,
     readonly inlineCode: DefaultInOutRule,
     readonly br: DefaultInOutRule,
@@ -990,20 +991,11 @@ export const defaultRules: DefaultRules = {
         o: currOrder++,
         m: inlineRegex(/^<([^: >]+:\/[^ >]+)>/),
         p: (capture, parse, state) => {
-            // NOTE: This disables links and embeds
+            // NOTE: This syntax disables links and embeds
             return {
                 type: "text",
                 c: capture[1],
             };
-
-            //return {
-            //    type: "link",
-            //    c: [{
-            //        type: "text",
-            //        c: capture[1]
-            //    }],
-            //    target: capture[1]
-            //};
         },
         h: null
     },
@@ -1172,6 +1164,14 @@ export const defaultRules: DefaultRules = {
         m: inlineRegex(/^~~(?=\S)((?:\\[^]|~(?!~)|[^\s~\\]|\s(?!~~))+?)~~/),
         p: parseCaptureInline,
         h: (node, output, state) => <del>{output(node.c, state)}</del>,
+    },
+    font: {
+        o: currOrder++,
+        m: inlineRegex(/^<(arial|serif)>([^\n]+)<\/\1>/),
+        p: (capture, parse, state) => {
+            return { f: capture[1], c: parse(capture[2], state) };
+        },
+        h: (node, output, state) => <span className={"font-" + node.f}>{output(node.c, state)}</span>,
     },
     tags: {
         o: currOrder++,
