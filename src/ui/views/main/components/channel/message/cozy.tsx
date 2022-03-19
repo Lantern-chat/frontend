@@ -1,7 +1,7 @@
 import { MessageFlags, user_is_bot } from "state/models";
 import dayjs from "dayjs";
 import { PencilIcon, PushPinIcon } from "lantern-icons";
-import { createMemo, Show } from "solid-js";
+import { createMemo, For, Show } from "solid-js";
 import { useSelector } from "solid-mutant";
 import { RootState } from "state/root";
 import { selectCachedUser } from "state/selectors/selectCachedUser";
@@ -11,6 +11,7 @@ import { BotLabel } from "../../misc/bot_label";
 import { IMessageProps, MessageUserAvatar, MessageUserName } from "./common";
 
 import { Message as MessageBody } from "./msg";
+import { MsgAttachment } from "./attachment";
 
 export function CozyMessage(props: IMessageProps) {
     let cached_member = useSelector((state: RootState) => {
@@ -74,9 +75,9 @@ export function CozyMessage(props: IMessageProps) {
 
                 <MessageBody msg={props.msg.msg} />
 
-                {/*<For each={props.msg.msg.attachments}>
-                    {attachment => <MsgAttachment key={attachment.id} msg={props.msg.msg} attachment={attachment} />}
-                </For>*/}
+                <For each={props.msg.msg.attachments}>
+                    {attachment => <MsgAttachment msg={props.msg.msg} attachment={attachment} />}
+                </For>
             </div>
         </>
     );

@@ -1,8 +1,9 @@
 import dayjs from "dayjs";
-import { createMemo } from "solid-js";
+import { createMemo, For } from "solid-js";
 import { useSelector } from "solid-mutant";
 import { RootState } from "state/root";
 import { selectCachedUser } from "state/selectors/selectCachedUser";
+import { MsgAttachment } from "./attachment";
 import { IMessageProps, MessageUserName } from "./common";
 
 import { Message as MessageBody } from "./msg";
@@ -22,9 +23,7 @@ export function CompactMessage(props: IMessageProps) {
     });
 
     let extra = createMemo(() => {
-        if(props.msg.et) {
-            return <sub className="ui-text" title={ets() as string}>(Edited)</sub>;
-        }
+        if(props.msg.et) { return <sub className="ui-text" title={ets() as string}>(Edited)</sub>; }
         return;
     });
 
@@ -42,6 +41,10 @@ export function CompactMessage(props: IMessageProps) {
             </div>
 
             <MessageBody msg={props.msg.msg} extra={extra()} />
+
+            <For each={props.msg.msg.attachments}>
+                {attachment => <MsgAttachment msg={props.msg.msg} attachment={attachment} />}
+            </For>
         </div>
     );
 }

@@ -7,6 +7,7 @@ import { IS_IOS_SAFARI } from "lib/user_agent";
 import { createRef, Ref } from "ui/hooks/createRef";
 import { createController, SetController } from "ui/hooks/createController";
 import { createMicrotask } from "ui/hooks/createMicrotask";
+import { createLatch } from "ui/hooks/createLatch";
 
 import { useRootSelector } from "state/root";
 import { selectPrefsFlag } from "state/selectors/prefs";
@@ -56,12 +57,12 @@ const OBSERVER_OPTIONS: ResizeObserverOptions = { box: "border-box" };
 export const InfiniteScrollContext = createContext<Accessor<InfiniteScrollController | null>>();
 
 export function createInfiniteScrollIntersection<T extends HTMLElement>(
-    ref: Ref<T>,
+    ref: Ref<T | undefined>,
     opts: Pick<IntersectionObserverInit, 'rootMargin' | 'threshold'> = {},
 ) {
     let [visible, setVisible] = createSignal(false);
 
-    createEffect(() => {
+    createRenderEffect(() => {
         let ifs = useContext(InfiniteScrollContext);
 
         if(ifs && ref.current) {
@@ -75,6 +76,13 @@ export function createInfiniteScrollIntersection<T extends HTMLElement>(
     });
 
     return visible;
+}
+
+export function createInfiniteScrollIntersectionTrigger<T extends HTMLElement>(
+    ref: Ref<T | undefined>,
+    opts: Pick<IntersectionObserverInit, 'rootMargin' | 'threshold'> = {},
+) {
+    return createLatch(createInfiniteScrollIntersection(ref, opts));
 }
 
 const doTimeout = (cb: () => void) => setTimeout(cb, 100);
@@ -346,7 +354,11 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
 
         container.addEventListener('scroll', on_scroll, SUPPORTS_PASSIVE && { passive: true });
 
-        onCleanup(() => observer.disconnect());
+        onCleanup(() => {
+            observer.disconnect();
+            container?.removeEventListener('scroll', on_scroll);
+            polling = false;
+        });
     });
 
     return (
