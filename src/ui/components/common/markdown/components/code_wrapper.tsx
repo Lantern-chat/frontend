@@ -1,13 +1,10 @@
-import { createMemo, createSignal, Show } from "solid-js";
+import { createMemo, createSignal, Show, useContext } from "solid-js";
 
 import { countLines } from "lib/util";
 
-// TODO: Reenable this
-//import { InfiniteScrollContext } from "ui/components/infinite_scroll2";
+import { InfiniteScrollContext } from "ui/components/infinite_scroll";
 
 import { Code, ICodeProps } from "../lazy";
-//import Code, { ICodeProps } from "./code";
-
 
 import "./code_wrapper.scss";
 export function CodeWrapper(props: ICodeProps) {
@@ -20,19 +17,16 @@ export function CodeWrapper(props: ICodeProps) {
     );
 }
 
-import { IS_IOS_SAFARI } from "lib/user_agent";
-
 function CollapsedCode(props: ICodeProps & { loc: number }) {
-    let //ifs = useContext(InfiniteScrollContext),
+    let ifs = useContext(InfiniteScrollContext),
         [open, setOpen] = createSignal(false);
 
-    let onClick = (e: MouseEvent) => {
-        //ifs?.pause(true);
+    let t: number;
 
-        // fucking Safari gets weird with `onToggle`, so just set a timeout instead
-        //if(IS_IOS_SAFARI) {
-        //    setTimeout(() => ifs?.pause(false), 100);
-        //}
+    let onClick = (e: MouseEvent) => {
+        clearTimeout(t);
+
+        ifs?.()?.pause(true);
 
         __DEV__ && console.log("CLICKED");
         setOpen(v => !v);
@@ -40,10 +34,10 @@ function CollapsedCode(props: ICodeProps & { loc: number }) {
     };
 
     let onToggle = () => {
-        if(!IS_IOS_SAFARI) {
-            __DEV__ && console.log("TOGGLED");
-            //ifs?.pause(false);
-        }
+        __DEV__ && console.log("TOGGLED");
+
+        // resize events may lag behind a bit, so give it a frame or two to catch up.
+        t = setTimeout(() => ifs?.()?.pause(false), 100);
     };
 
     // encode "expand/collapse" switching in CSS using `details[open]`

@@ -41,6 +41,7 @@ function ema(current: number, next: number, size: number = 0.5): number {
 }
 
 export interface InfiniteScrollController {
+    pause(paused: boolean): void;
     gotoStart(): void;
     gotoStartSmooth(): void;
     scrollPageUp(): void;
@@ -248,6 +249,7 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
         pos = new_pos;
         anchor = new_anchor;
 
+        // velocity is in pixels/ms, so get that to pixels/second
         let predicted_pos = 1000 * velocity + pos;
         let predict_top = predicted_pos < 0 && anchor != Anchor.Top;
         let predict_bottom = predicted_pos > container.scrollHeight && anchor != Anchor.Bottom;
@@ -314,6 +316,10 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
     // NOTE: See feed.tsx for the controlled being used to reset the ifs on active room change
 
     props.setController?.({
+        pause(p: boolean) {
+            __DEV__ && console.log("Paused IFS:", p);
+            paused = p;
+        },
         gotoStart() { reset_position(); },
         scrollPageUp() { scroll_by(-0.9); }, // 9/10
         scrollPageDown() { scroll_by(0.9); }, // 9/10
