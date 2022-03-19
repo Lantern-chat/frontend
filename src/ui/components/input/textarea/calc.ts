@@ -1,4 +1,5 @@
-import { SizingData } from "./sizing";
+
+import type { SizingData } from "./sizing";
 
 export type CalculatedNodeHeights = number[];
 

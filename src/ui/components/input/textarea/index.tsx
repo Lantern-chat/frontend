@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createRenderEffect, createSignal, JSX, mergeProps, onCleanup, onMount, splitProps } from "solid-js";
+import { createRenderEffect, createSignal, JSX, onCleanup, onMount, splitProps } from "solid-js";
 import { createMicrotask } from "ui/hooks/createMicrotask";
 
 import { AnyRef, composeRefs } from "ui/hooks/createRef";
@@ -87,9 +87,8 @@ export function TextareaAutosize(props: TextareaAutosizeProps) {
     createMicrotask(resizeTextarea);
 
     return (
-        <textarea {...taprops} onInput={onInput} onChange={onChange} ref={ref} style={{
-            ...(local.style || {}),
-            height: px(height()),
-        }} />
+        <textarea {...taprops} ref={ref}
+            onInput={onInput} onChange={onChange}
+            style={{ ...local.style, height: px(height()) }} />
     );
 }

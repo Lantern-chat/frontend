@@ -1,6 +1,8 @@
+import { createMemo, createSignal, JSX, Show, splitProps } from 'solid-js';
+
 import { TextareaAutosize, TextareaHeightChangeMeta } from 'ui/components/input/textarea';
 
-import { SetController } from 'ui/hooks/createController';
+import type { SetController } from 'ui/hooks/createController';
 import { parseHotkey, Hotkey } from "ui/hooks/useMain";
 import { AnyRef, composeRefs } from 'ui/hooks/createRef';
 
@@ -26,8 +28,6 @@ export interface IMsgTextareaController {
 }
 
 import "./textarea.scss";
-import { createMemo, createSignal, JSX, Show, splitProps } from 'solid-js';
-
 export function MsgTextarea(props: IMsgTextareaProps) {
     let ta = composeRefs(props.ta);
 
@@ -45,7 +45,7 @@ export function MsgTextarea(props: IMsgTextareaProps) {
         focus() {
             ta.current?.focus();
         }
-    })
+    });
 
     let [spellcheck, setSpellcheck] = createSignal(!!local.spellcheck),
         [rows, setRows] = createSignal(1);
@@ -163,7 +163,7 @@ export function MsgTextarea(props: IMsgTextareaProps) {
                 <span className="ln-msg-textarea__disable" />
             </Show>
         </div>
-    )
+    );
 }
 
 function isInsideCodeBlock(ta: HTMLTextAreaElement): boolean {
