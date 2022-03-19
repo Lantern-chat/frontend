@@ -37,7 +37,7 @@ export type SizingData = {
     borderSize: number;
 };
 
-const isIE = false; //typeof document !== 'undefined' ? !!(document.documentElement as any).currentStyle : false;
+const isIE = typeof document !== 'undefined' ? !!(document.documentElement as any).currentStyle : false;
 
 export const pick = <Obj extends { [key: string]: any }, Key extends keyof Obj>(
     props: Key[],

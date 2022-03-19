@@ -1,7 +1,8 @@
-import { createEffect, createMemo, createRenderEffect, JSX, mergeProps, onCleanup, onMount, splitProps } from "solid-js";
+import { createEffect, createMemo, createRenderEffect, createSignal, JSX, mergeProps, onCleanup, onMount, splitProps } from "solid-js";
 import { createMicrotask } from "ui/hooks/createMicrotask";
 
 import { AnyRef, composeRefs } from "ui/hooks/createRef";
+import { px } from "ui/utils";
 import { calculateNodeHeight } from "./calc";
 
 import { getSizingData, SizingData } from "./sizing";
@@ -28,9 +29,11 @@ export interface TextareaAutosizeProps extends Omit<TextareaProps, 'style'> {
 }
 
 export function TextareaAutosize(props: TextareaAutosizeProps) {
-    let [local, taprops] = splitProps(props, ['maxRows', 'minRows', 'onHeightChange', 'cacheMeasurements', 'ta', 'ref', 'onInput', 'onChange'])
+    let [local, taprops] = splitProps(props, ['maxRows', 'minRows', 'onHeightChange', 'cacheMeasurements', 'ta', 'ref', 'onInput', 'onChange', 'style'])
 
-    let ref = composeRefs(local.ta, local.ref), height = 0, measurements: SizingData;
+    let ref = composeRefs(local.ta, local.ref), measurements: SizingData;
+
+    let [height, setHeight] = createSignal(0);
 
     let resizeTextarea = () => {
         let node = ref.current;
@@ -39,18 +42,20 @@ export function TextareaAutosize(props: TextareaAutosizeProps) {
 
             if(nodeSizingData) {
                 measurements = nodeSizingData;
+                let value = node.value || node.placeholder || 'x';
+
+                console.log("VALUE %s", value, value.length);
 
                 let [new_height, rowHeight] = calculateNodeHeight(
                     nodeSizingData,
-                    node.value || node.placeholder || 'x',
+                    value,
                     local.minRows,
                     local.maxRows
                 );
 
-                if(height !== new_height) {
-                    height = new_height;
-                    node.style.setProperty('height', `${height}px`, 'important');
-                    local.onHeightChange?.(height, { rowHeight });
+                if(height() !== new_height) {
+                    setHeight(new_height);
+                    local.onHeightChange?.(height(), { rowHeight });
                 }
             }
         }
@@ -63,15 +68,8 @@ export function TextareaAutosize(props: TextareaAutosizeProps) {
         }
     };
 
-    let onChange = (event: Event) => {
-        uncontrolled_resize();
-        (local.onChange as any)?.(event);
-    };
-
-    let onInput = (event: InputEvent) => {
-        uncontrolled_resize();
-        (local.onInput as any)?.(event);
-    };
+    let onChange = (event: Event) => { (local.onChange as any)?.(event); uncontrolled_resize(); };
+    let onInput = (event: InputEvent) => { (local.onInput as any)?.(event); uncontrolled_resize(); };
 
     onMount(() => {
         window.addEventListener('resize', resizeTextarea);
@@ -91,6 +89,9 @@ export function TextareaAutosize(props: TextareaAutosizeProps) {
     createMicrotask(resizeTextarea);
 
     return (
-        <textarea {...taprops} onInput={onInput} onChange={onChange} ref={ref} />
+        <textarea {...taprops} onInput={onInput} onChange={onChange} ref={ref} style={{
+            ...(local.style || {}),
+            height: px(height()),
+        }} />
     );
 }

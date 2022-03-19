@@ -31,7 +31,9 @@ import { createMemo, createSignal, JSX, Show, splitProps } from 'solid-js';
 export function MsgTextarea(props: IMsgTextareaProps) {
     let ta = composeRefs(props.ta);
 
-    props.tac?.({
+    let [local, taprops] = splitProps(props, ['mobile', 'spellcheck', 'onChange', 'onKeyDown', 'onSelectionChange', 'onContextMenu', 'tac']);
+
+    local.tac?.({
         setValue(value: string, change: boolean = true) {
             if(ta.current) {
                 ta.current.value = value;
@@ -44,8 +46,6 @@ export function MsgTextarea(props: IMsgTextareaProps) {
             ta.current?.focus();
         }
     })
-
-    let [local, taprops] = splitProps(props, ['mobile', 'spellcheck', 'onChange', 'onKeyDown', 'onSelectionChange', 'onContextMenu']);
 
     let [spellcheck, setSpellcheck] = createSignal(!!local.spellcheck),
         [rows, setRows] = createSignal(1);
@@ -62,6 +62,7 @@ export function MsgTextarea(props: IMsgTextareaProps) {
 
     let onInput = (e: InputEvent) => {
         let ta = e.target as HTMLTextAreaElement;
+
         local.onChange(ta.value = ta.value.replace(/^\n+/, '')); // remove leading whitespace and trigger change
         onSelectionChange(e);
     };
@@ -155,6 +156,7 @@ export function MsgTextarea(props: IMsgTextareaProps) {
                 onInput={onInput}
                 onKeyDown={onKeyDown}
                 onKeyUp={onKeyUp}
+                maxlength={5000}
             />
 
             <Show when={taprops.disabled}>
