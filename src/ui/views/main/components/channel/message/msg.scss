@@ -309,6 +309,7 @@
 
         .ln-icon {
             font-size: 1.75em;
+            vertical-align: sub;
 
             //&__wrapper {
             //    vertical-align: middle;
@@ -328,4 +329,12 @@
     opacity: 0;
     display: inline-block;
     font-style: normal;
+}
+
+.ln-system-sub {
+    font-size: 0.6em;
+    margin-left: 0.5em;
+    vertical-align: middle;
+    cursor: default;
+    color: $lnx-secondary-text-color;
 }

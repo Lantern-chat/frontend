@@ -13,18 +13,25 @@ import { IMessageProps, MessageUserAvatar, MessageUserName } from "./common";
 import { Message as MessageBody } from "./msg";
 import { MsgAttachment } from "./attachment";
 
+export const FULL_FORMAT = "dddd, MMMM DD, h:mm A";
+
 export function CozyMessage(props: IMessageProps) {
     let cached_member = useSelector((state: RootState) => {
         return selectCachedUser(state, props.msg.msg.author.id, props.msg.msg.party_id)
             || { user: props.msg.msg.author, nick: props.msg.msg.member?.nick };
     });
 
-    let ts = createMemo(() => dayjs(props.msg.ts).format("dddd, MMMM DD, h:mm A"));
-    let ets = createMemo(() => props.msg.et && dayjs(props.msg.et).format("dddd, MMMM DD, h:mm A"));
+    let ts = createMemo(() => dayjs(props.msg.ts).format(FULL_FORMAT));
+    let ets = createMemo(() => props.msg.et && dayjs(props.msg.et).format(FULL_FORMAT));
 
     let nickname = createMemo(() => {
         let cached = cached_member();
         return cached.nick || cached.user.username;
+    });
+
+    let extra = createMemo(() => {
+        if(!props.msg.sg && props.msg.et) { return <span className="ui-text ln-system-sub" title={ets() as string}>(edited)</span>; }
+        return;
     });
 
     return (
@@ -73,7 +80,7 @@ export function CozyMessage(props: IMessageProps) {
                     </div>
                 </Show>
 
-                <MessageBody msg={props.msg.msg} />
+                <MessageBody msg={props.msg.msg} extra={extra()} />
 
                 <For each={props.msg.msg.attachments}>
                     {attachment => <MsgAttachment msg={props.msg.msg} attachment={attachment} />}

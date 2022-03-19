@@ -23,7 +23,7 @@ export function CompactMessage(props: IMessageProps) {
     });
 
     let extra = createMemo(() => {
-        if(props.msg.et) { return <sub className="ui-text" title={ets() as string}>(Edited)</sub>; }
+        if(props.msg.et) { return <span className="ui-text ln-system-sub" title={ets() as string}>(edited)</span>; }
         return;
     });
 
