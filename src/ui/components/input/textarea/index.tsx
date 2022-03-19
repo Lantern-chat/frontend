@@ -44,8 +44,6 @@ export function TextareaAutosize(props: TextareaAutosizeProps) {
                 measurements = nodeSizingData;
                 let value = node.value || node.placeholder || 'x';
 
-                console.log("VALUE %s", value, value.length);
-
                 let [new_height, rowHeight] = calculateNodeHeight(
                     nodeSizingData,
                     value,
