@@ -355,7 +355,7 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
         }
     });
 
-    let observer = new ResizeObserver(on_resize);
+    let observer: ResizeObserver = new ResizeObserverPolyfill(on_resize);
 
     onMount(() => {
         let container = container_ref.current!;
