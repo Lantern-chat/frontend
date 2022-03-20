@@ -106,10 +106,9 @@ export function MessageBox() {
     let eat = createClickEater();
 
     let on_send_click = (e: MouseEvent) => {
-        eat(e);
+        eat(e); if(value()) {
+            let f = focused;
 
-        let f = focused;
-        if(value()) {
             do_send();
 
             // refocus if lost
@@ -187,7 +186,7 @@ export function MessageBox() {
 
                 {debug_node}
 
-                <div className="ln-msg-box__send" onClick={value().length == 0 ? undefined : on_send_click}>
+                <div className="ln-msg-box__send" onClick={on_send_click}>
                     <VectorIcon src={value().length == 0 ? PlusIcon : SendIcon} />
                 </div>
 
