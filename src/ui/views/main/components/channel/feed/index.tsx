@@ -59,6 +59,7 @@ export function MessageFeed() {
                         room: room_state.room,
                         fully_loaded: room_state.fully_loaded,
                         msgs: room_state.msgs,
+                        is_loading: room_state.is_loading
                     }
                 }
             }
@@ -93,7 +94,7 @@ export function MessageFeed() {
     let on_goto_click = () => ifs()?.gotoStartSmooth();
     let [goto, setGoto] = createSignal(false);
     let on_scroll = () => setGoto(compute_goto(ifs()));
-    createRenderEffect(() => setGoto(compute_goto(ifs())));
+    createEffect(() => setGoto(compute_goto(ifs())));
     createEffect(() => dispatch({ type: Type.TOGGLE_FOOTERS, show: goto() }));
 
     return (
@@ -104,6 +105,10 @@ export function MessageFeed() {
 
             <Show when={!state.use_mobile_view}>
                 <Timeline direction={0} position={0} />
+            </Show>
+
+            <Show when={__DEV__ && state.room?.is_loading}>
+                Room is Loading
             </Show>
 
             <InfiniteScroll

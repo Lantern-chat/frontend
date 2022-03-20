@@ -36,6 +36,7 @@ export interface IRoomState {
     pending: IMessageState[],
     current_edit: null | Snowflake,
     typing: ITypingState[],
+    is_loading: boolean,
     fully_loaded: boolean,
     draft: string,
 }
@@ -96,6 +97,7 @@ export const chatMutator = mutatorWithDefault(
                             pending: [],
                             current_edit: null,
                             typing: [],
+                            is_loading: false,
                             fully_loaded: false,
                             draft: "",
                         };
@@ -121,11 +123,18 @@ export const chatMutator = mutatorWithDefault(
                 if(room) { room.draft = action.draft; }
                 break;
             }
+            case Type.MESSAGES_LOADING: {
+                let room = state.rooms[action.room_id];
+                if(room) room.is_loading = true;
+                break;
+            }
             case Type.MESSAGES_LOADED: {
                 let raw_msgs = action.msgs;
 
                 let room = state.rooms[action.room_id];
                 if(!room) break;
+
+                room.is_loading = false;
 
                 if(raw_msgs.length == 0) {
                     // only mark as fully loaded if search came up empty for messages before an ID
@@ -161,8 +170,6 @@ export const chatMutator = mutatorWithDefault(
                 }
 
                 room.msgs = [...final_msgs, ...new_msgs, ...old_msgs];
-
-                console.log(room.msgs);
 
                 for(let i = 0; i < room.msgs.length; i++) {
                     set_starts_group(room.msgs, i);

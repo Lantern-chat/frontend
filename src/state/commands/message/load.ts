@@ -9,9 +9,13 @@ export enum SearchMode {
     After = "after",
 }
 
-export function loadMessages(room_id: Snowflake, search?: Snowflake, mode: SearchMode = SearchMode.After): DispatchableAction {
-    return async (dispatch) => {
+export function loadMessages(room_id: Snowflake, search?: Snowflake, mode: SearchMode = SearchMode.After, cb?: () => void): DispatchableAction {
+    return async (dispatch, state) => {
         try {
+            if(false !== state.chat.rooms[room_id]?.is_loading) return;
+
+            dispatch({ type: Type.MESSAGES_LOADING, room_id });
+
             dispatch({
                 type: Type.MESSAGES_LOADED, room_id, mode,
                 msgs: await CLIENT.execute(GetMessages({
@@ -19,6 +23,9 @@ export function loadMessages(room_id: Snowflake, search?: Snowflake, mode: Searc
                     query: { [mode]: search, limit: 100 }
                 }))
             });
+
+            cb?.();
+
         } catch(e) {
             if(__DEV__) {
                 alert("Error loading messages");

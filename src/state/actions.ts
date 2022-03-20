@@ -32,6 +32,7 @@ export enum Type {
     GATEWAY_RETRY = "GATEWAY_RETRY",
 
     PARTY_LOADED = "PARTY_LOADED",
+    MESSAGES_LOADING = "MESSAGES_LOADING",
     MESSAGES_LOADED = "MESSAGES_LOADED",
     MEMBERS_LOADED = "MEMBERS_LOADED",
 
@@ -66,6 +67,7 @@ export type Action =
     GatewayEvent |
     GatewayRetry |
     PartyLoaded |
+    MessagesLoading |
     MessagesLoaded |
     MembersLoaded |
     RefreshActive |
@@ -162,6 +164,11 @@ export interface PartyLoaded {
     type: Type.PARTY_LOADED,
     party_id: Snowflake,
     rooms: Room[],
+}
+
+export interface MessagesLoading {
+    type: Type.MESSAGES_LOADING,
+    room_id: Snowflake,
 }
 
 import { SearchMode } from "./commands";
