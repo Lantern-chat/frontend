@@ -51,6 +51,7 @@ export interface InfiniteScrollController {
     get at_start(): boolean;
     get container(): HTMLDivElement;
     get wrapper(): HTMLDivElement;
+    get pos(): number;
 }
 
 const OBSERVER_OPTIONS: ResizeObserverOptions = { box: "border-box" };
@@ -328,6 +329,7 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
         get at_start() { return anchor == props.start; },
         get container() { return container_ref.current!; },
         get wrapper() { return wrapper_ref.current!; },
+        get pos() { return pos; },
         gotoStartSmooth() {
             let container = container_ref.current!;
 

@@ -17,18 +17,30 @@ import { selectPrefsFlag } from "state/selectors/prefs";
 import { createController } from "ui/hooks/createController";
 import { AnchoredModal } from "ui/components/modal/anchored";
 import { PositionedModal } from "ui/components/modal/positioned";
-import { createSimplePositionedContextMenu, createSimpleToggleOnClick } from "ui/hooks/useMain";
+import { createSimplePositionedContextMenu, createSimpleToggleOnClick, Hotkey, useMainHotkeys } from "ui/hooks/useMain";
 
+import { Timeline } from "./timeline";
 import { MsgContextMenu } from "../../menus/msg_context";
 import { Branch } from "ui/components/flow";
 import { VectorIcon } from "ui/components/common/icon";
-import { Message as MessageBody } from "../message/msg";
 
 import { Anchor, InfiniteScroll, InfiniteScrollContext, InfiniteScrollController } from "ui/components/infinite_scroll";
 
-import { ArrowThinRightIcon, BalloonIcon, ChevronDownIcon, PencilIcon, PushPinIcon } from "lantern-icons";
+import { BalloonIcon, ChevronDownIcon } from "lantern-icons";
 
-type PartialRoomState = Pick<IRoomState, 'room' | 'fully_loaded' | 'msgs'>;
+function compute_goto(ifs: InfiniteScrollController | null): boolean {
+    if(ifs) {
+        let container = ifs.container;
+        if(container) {
+            let clientHeight = container.clientHeight,
+                scrollHeight = container.scrollHeight - container.offsetHeight;
+
+            return ifs.pos < (scrollHeight - clientHeight * 5);
+        }
+    }
+
+    return false;
+}
 
 import "./feed.scss";
 export function MessageFeed() {
@@ -64,13 +76,25 @@ export function MessageFeed() {
     };
 
     let [ifs, setIFS] = createController<InfiniteScrollController>();
-
     // on room change, go to start of ifs
     createEffect(() => { state.active_room, ifs()?.gotoStart() });
 
-    let on_goto_click = () => {
-        ifs()?.gotoStartSmooth();
-    };
+    useMainHotkeys([Hotkey.FeedArrowDown, Hotkey.FeedArrowUp, Hotkey.FeedPageDown, Hotkey.FeedPageUp, Hotkey.FeedEnd], (hotkey) => {
+        let i = ifs();
+        if(i) switch(hotkey) {
+            case Hotkey.FeedArrowDown: i.scrollArrowDown(); break;
+            case Hotkey.FeedArrowUp: i.scrollArrowUp(); break;
+            case Hotkey.FeedPageDown: i.scrollPageDown(); break;
+            case Hotkey.FeedPageUp: i.scrollPageUp(); break;
+            case Hotkey.FeedEnd: i.gotoStart(); break;
+        }
+    });
+
+    let on_goto_click = () => ifs()?.gotoStartSmooth();
+    let [goto, setGoto] = createSignal(false);
+    let on_scroll = () => setGoto(compute_goto(ifs()));
+    createRenderEffect(() => setGoto(compute_goto(ifs())));
+    createEffect(() => dispatch({ type: Type.TOGGLE_FOOTERS, show: goto() }));
 
     return (
         <div className="ln-msg-list__flex-container">
@@ -78,11 +102,20 @@ export function MessageFeed() {
                 <div className="ln-msg-list__cover" onClick={on_cover_click} />
             </Show>
 
-            <InfiniteScroll start={Anchor.Bottom} setController={setIFS} wrapperClassList={{
-                'has-timeline': !state.use_mobile_view,
-                'compact': state.compact,
-                'group-lines': state.gl,
-            }}>
+            <Show when={!state.use_mobile_view}>
+                <Timeline direction={0} position={0} />
+            </Show>
+
+            <InfiniteScroll
+                start={Anchor.Bottom}
+                setController={setIFS}
+                onScroll={on_scroll}
+                containerClassList={{
+                    'has-timeline': !state.use_mobile_view,
+                    'compact': state.compact,
+                    'group-lines': state.gl,
+                }}
+            >
                 <InfiniteScrollContext.Provider value={ifs}>
                     <ul className="ln-msg-list" id="ln-msg-list" >
                         <Show when={state.room?.fully_loaded}>
@@ -102,11 +135,11 @@ export function MessageFeed() {
                 </InfiniteScrollContext.Provider>
             </InfiniteScroll>
 
-            <Show when={false}>
-                <div className="ln-feed-footers" classList={{ 'has-timeline': !state.use_mobile_view }}>
+            <div className="ln-feed-footers" classList={{ 'has-timeline': !state.use_mobile_view }}>
+                <Show when={goto()}>
                     <GotoBottomFooter onClick={on_goto_click} use_mobile_view={state.use_mobile_view} />
-                </div>
-            </Show>
+                </Show>
+            </div>
         </div>
     );
 }
