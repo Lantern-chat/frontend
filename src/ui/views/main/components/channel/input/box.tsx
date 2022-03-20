@@ -49,7 +49,7 @@ export function MessageBox() {
     let [tac, setTAC] = createController<IMsgTextareaController>();
 
     let [value, setValue] = createSignal("");
-    let ts = 0;
+    let ts = 0, skip = false;
 
     let [show_focus_border, setShowFocusBorder] = createSignal(false);
 
@@ -62,12 +62,17 @@ export function MessageBox() {
     // then setup a callback to store the new draft when navigating away
     createEffect(() => {
         if(ta.current && state.active_room) {
-            // this effect should not re-run when the draft changes, only when the above conditions change
-            untrack(() => {
-                let draft = useStore<RootState, Action>().state.chat.rooms[state.active_room!]?.draft || "";
-                tac()!.setValue(draft);
+            __DEV__ && console.log("Loading Draft");
+
+            let room = state.active_room;
+
+            onCleanup(() => {
+                __DEV__ && console.log("Storing Draft");
+                ta.current && dispatch({ type: Type.MESSAGE_DRAFT, room, draft: untrack(value) });
             });
-            onCleanup(() => ta.current && dispatch({ type: Type.MESSAGE_DRAFT, room: state.active_room, draft: ta.current.value }));
+
+            skip = true; // skip the change event this will emit
+            untrack(() => tac()!.setValue(useStore<RootState, Action>().state.chat.rooms[state.active_room!]?.draft || ""));
         }
     });
 
@@ -131,17 +136,18 @@ export function MessageBox() {
         let old_value = value();
         let new_ts = Date.now();
 
-        if(state.active_room && new_value.length > old_value.length && (new_ts - ts) > 3500) {
+        if(!skip && state.active_room && new_value.length > old_value.length && (new_ts - ts) > 3500) {
             dispatch(startTyping(state.active_room));
             ts = new_ts;
         }
+
+        skip = false;
 
         setValue(new_value);
     };
 
     let on_click_focus = (e: MouseEvent) => {
-        eat(e);
-        if(state.active_room) { tac()!.focus(); }
+        eat(e); if(state.active_room) { tac()!.focus(); }
     };
 
     let debug_node; if(__DEV__) {
