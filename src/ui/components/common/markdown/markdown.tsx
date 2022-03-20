@@ -168,6 +168,7 @@ export interface DefaultRules extends DefaultRulesIndexer {
     readonly blockMath: DefaultInOutRule,
     //readonly fence: DefaultInRule,
     readonly blockQuote: DefaultInOutRule,
+    readonly font: DefaultInOutRule,
     //readonly list: DefaultInOutRule,
     //readonly def: LenientInOutRule,
     readonly table: DefaultInOutRule,
@@ -189,7 +190,6 @@ export interface DefaultRules extends DefaultRulesIndexer {
     readonly u: DefaultInOutRule,
     readonly spoiler: DefaultInOutRule,
     readonly del: DefaultInOutRule,
-    readonly font: DefaultInOutRule,
     readonly tags: DefaultInOutRule,
     readonly inlineCode: DefaultInOutRule,
     readonly br: DefaultInOutRule,
@@ -908,6 +908,14 @@ export const defaultRules: DefaultRules = {
         },
         h: (node, output, state) => <blockquote children={output(node.c, state)} />,
     },
+    font: {
+        o: currOrder++,
+        m: anyScopeRegex(/^<(arial|serif)>([^]+)<\/\1>/),
+        p: (capture, parse, state) => {
+            return { f: capture[1], c: parse(capture[2], state) };
+        },
+        h: (node, output, state) => <span className={"font-" + node.f}>{output(node.c, state)}</span>,
+    },
     table: {
         o: currOrder++,
         m: blockRegex(TABLES.TABLE_REGEX),
@@ -1164,14 +1172,6 @@ export const defaultRules: DefaultRules = {
         m: inlineRegex(/^~~(?=\S)((?:\\[^]|~(?!~)|[^\s~\\]|\s(?!~~))+?)~~/),
         p: parseCaptureInline,
         h: (node, output, state) => <del>{output(node.c, state)}</del>,
-    },
-    font: {
-        o: currOrder++,
-        m: inlineRegex(/^<(arial|serif)>([^\n]+)<\/\1>/),
-        p: (capture, parse, state) => {
-            return { f: capture[1], c: parse(capture[2], state) };
-        },
-        h: (node, output, state) => <span className={"font-" + node.f}>{output(node.c, state)}</span>,
     },
     tags: {
         o: currOrder++,
