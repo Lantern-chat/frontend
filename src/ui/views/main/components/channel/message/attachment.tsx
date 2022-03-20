@@ -129,10 +129,6 @@ function ImageAttachment(props: IImageAttachmentProps) {
     let [loaded, setLoaded] = createSignal(false);
     let visible = createInfiniteScrollIntersectionTrigger(ref, TRIGGER_OPTS);
 
-    createEffect(() => {
-        console.log("VISIBILITY CHANGED:", visible());
-    })
-
     let animated_format = createMemo(() => props.attachment.mime?.match(/gif|apng|webp|avif/i)?.[0]);
 
     let img_props = createMemo(() => {

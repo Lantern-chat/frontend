@@ -160,8 +160,6 @@ class Gateway {
     }
 
     identify() {
-        console.log(this);
-
         __DEV__ && console.log("Identifying with intent: ", this.intent.toString(2));
 
         this.send({ o: ClientMsgOpcode.Identify, p: { auth: this.auth!, intent: this.intent } });
