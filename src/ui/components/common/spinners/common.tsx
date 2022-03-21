@@ -1,6 +1,6 @@
-import { Component, For, JSX } from "solid-js";
+import type { JSX } from "solid-js";
 
-import { template } from "solid-js/web";
+import { px } from "ui/utils";
 
 export interface SpinnerProps {
     size?: number | string,
@@ -11,5 +11,5 @@ export function makeSpinnerStyle(props: SpinnerProps): JSX.CSSProperties {
     if(typeof size === 'string' && size.includes('em')) {
         return { width: '1em', height: '1em', "font-size": size };
     }
-    return { width: size, height: size };
+    return { width: px(size), height: px(size) };
 }
