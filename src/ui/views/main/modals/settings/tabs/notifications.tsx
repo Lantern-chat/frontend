@@ -1,5 +1,5 @@
 import { HAS_NOTIFICATIONS } from "lib/notification";
-import { createEffect, createMemo, createRenderEffect, createResource, createSignal, onMount } from "solid-js";
+import { createEffect, createMemo, createSignal, onMount } from "solid-js";
 import { StorageKey } from "state/storage";
 import { Toggle } from "../components/toggle";
 
