@@ -1,6 +1,5 @@
 import { createMemo, Show } from 'solid-js';
 
-import "ui/fonts/hasklig";
 import "./code.scss";
 
 import hljs from "highlight.js";

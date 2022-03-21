@@ -204,14 +204,14 @@ module.exports = (env, argv) => {
             new HtmlWebpackPlugin({
                 //excludeChunks: ['testbed', 'status'],
                 template: path.resolve(__dirname, "src", "index.html"),
-                filename: 'index.html'
+                filename: 'index.html',
             }),
-            //new PreloadWebpackPlugin({
-            //    rel: 'prefetch',
-            //    include: 'allAssets',
-            //    as: 'font',
-            //    fileWhitelist: [/Lato-(Regular|Bold|Black|Italic)\.woff2$/i],
-            //}),
+            new PreloadWebpackPlugin({
+                rel: 'preload',
+                include: 'allAssets',
+                as: 'font',
+                fileWhitelist: [/Lato-(Regular|Bold|Black|Italic)\.woff2$/i],
+            }),
             //new HTMLInlineCSSWebpackPlugin(),
             //new WasmPackPlugin({
             //    crateDirectory: path.resolve(__dirname, "worker/gateway"),

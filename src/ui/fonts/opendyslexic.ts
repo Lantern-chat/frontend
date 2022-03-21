@@ -1,1 +1,0 @@
-import "ui/styles/lib/fonts/opendyslexic.css";

@@ -146,13 +146,6 @@ function FontSelector(props: IFontSelectorProps) {
     createEffect(() => setFont(Font[state.current_font]));
     createEffect(() => setSize(state.current_size));
 
-    createEffect(() => {
-        switch(Font[font()]) {
-            case Font.OpenDyslexic: { import("ui/fonts/opendyslexic"); break; }
-            case Font.ComicSans: { import("ui/fonts/dramasans"); break; }
-        }
-    });
-
     let onChange = (e: Event) => {
         let font_name: keyof typeof Font = (e.currentTarget as HTMLSelectElement).value as any;
         if(!Font.hasOwnProperty(font_name)) return;

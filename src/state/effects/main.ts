@@ -90,11 +90,6 @@ export function mainEffect(state: DeepReadonly<RootState>, action: Action, dispa
                 }
             }
 
-            if(font_changed) {
-                if([chat_font, ui_font].includes(Font.OpenDyslexic)) import("ui/fonts/opendyslexic");
-                if([chat_font, ui_font].includes(Font.ComicSans)) import("ui/fonts/dramasans");
-            }
-
             let reduce_motion = hasUserPrefFlag(prefs, UserPreferenceFlags.ReduceAnimations);
             if(!reduce_motion) {
                 de.classList.add('ln-enable-motion');
