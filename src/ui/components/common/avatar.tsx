@@ -1,7 +1,6 @@
-import { batch, createEffect, createMemo, createRenderEffect, createSignal, JSX, Show } from "solid-js";
+import { createRenderEffect, createSignal, JSX, Show } from "solid-js";
+import { runBatched } from "ui/hooks/runBatched";
 import { Branch } from "../flow";
-
-import "./avatar.scss";
 
 export interface IAvatarProps {
     rounded?: boolean,
@@ -19,35 +18,23 @@ export interface IAvatarProps {
 // Once images are loaded, they are batched together in 5ms increments
 // to avoid thrashing the UI
 
-let pending: Array<() => void> = [];
-
-function run_pending() {
-    if(pending.length) {
-        __DEV__ && console.log("Batching", pending.length);
-
-        batch(() => pending.forEach(cb => cb()));
-        pending = [];
-    }
-}
-
+import "./avatar.scss";
 export function Avatar(props: IAvatarProps) {
     let [loading, setLoading] = createSignal(false);
 
-    let will_set_loading: number | undefined;
+    let will_set_loading: undefined | number;
 
-    // when hundreds of avatars load at once, it thrashes the DOM to change the classList for all of them
-    // so slowly mark them as loaded as everything else loads in
     let on_load = () => {
         clearTimeout(will_set_loading);
 
         if(loading()) {
-            pending.push(() => setLoading(false));
-            setTimeout(() => run_pending(), 5);
+            runBatched(() => setLoading(false));
         }
     };
 
     createRenderEffect(() => {
         if(props.url != null && will_set_loading != null) {
+            // TODO: Figure out a way to batch this intelligently?
             will_set_loading = setTimeout(() => setLoading(true), 100);
         }
     });
