@@ -39,13 +39,13 @@ export function activateParty(party_id: Snowflake, room_id?: Snowflake): Dispatc
         }, NAV_TIMEOUT);
 
         try {
-            // TODO: Handle errors
-            let [rooms, members] = await Promise.all([
-                CLIENT.execute(GetPartyRooms({ party_id })),
-                CLIENT.execute(GetPartyMembers({ party_id }))
-            ]);
+            // fire this off first so it can be loading, as it's unrelated to below
+            dispatch(CLIENT.execute(GetPartyMembers({ party_id }))
+                .then(members => ({ type: Type.MEMBERS_LOADED, party_id, members })));
 
-            dispatch([{ type: Type.PARTY_LOADED, party_id, rooms }, { type: Type.MEMBERS_LOADED, party_id, members }]);
+            let rooms = await CLIENT.execute(GetPartyRooms({ party_id }));
+
+            dispatch({ type: Type.PARTY_LOADED, party_id, rooms });
 
             let new_room_id = room_id || get_default_room(rooms),
                 url = room_url(party_id, new_room_id);
