@@ -6,9 +6,9 @@ export function DisplayError(props: { error: any }) {
         if(error instanceof Error) {
             return (
                 <>
-                    <div>{error.name}</div>
-                    <div>{error.message}</div>
-                    <pre>{error.stack}</pre>
+                    <div textContent={error.name} />
+                    <div textContent={error.message} />
+                    <pre textContent={error.stack} />
                 </>
             )
         } else {

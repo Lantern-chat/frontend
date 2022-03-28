@@ -20,7 +20,7 @@ export function PartyHeader() {
         <Show when={party()}>
             <header className="ln-party-header">
                 <div className="ln-party-header__name">
-                    <span className="ui-text">{party()!.party.name}</span>
+                    <span className="ui-text" textContent={party()!.party.name} />
                 </div>
 
                 <VectorIcon src={BalloonsIcon} />

@@ -1222,7 +1222,7 @@ export const defaultRules: DefaultRules = {
                 c: capture[2].replace(INLINE_CODE_ESCAPE_BACKTICKS_R, "$1")
             };
         },
-        h: (node, output, state) => <code>{node.c}</code>,
+        h: (node, output, state) => <code textContent={node.c} />,
     },
     br: {
         o: currOrder++,

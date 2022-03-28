@@ -40,11 +40,11 @@ export function ChannelHeader() {
 
                 <div className="ln-channel-info__wrapper">
                     <div className="ln-channel-info">
-                        <span className="ln-channel-info__name ui-text">{room().name}</span>
+                        <span className="ln-channel-info__name ui-text" textContent={room().name} />
 
                         <Show when={room().topic}>
                             <span className="ln-vert">&nbsp;</span>
-                            <span className="ln-channel-info__topic ui-text">{room().topic}</span>
+                            <span className="ln-channel-info__topic ui-text" textContent={room().topic} />
                         </Show>
                     </div>
                 </div>

@@ -6,9 +6,13 @@ import { IMessageProps } from "./common";
 import { FULL_FORMAT } from "./cozy";
 
 import { Message as MessageBody } from "./msg";
+import { createCalendar, createTimestamp } from "ui/hooks/createTimestamp";
 
 export function SystemMessage(props: IMessageProps) {
-    let ts = createMemo(() => dayjs(props.msg.ts));
+    let ts = createMemo(() => dayjs(props.msg.ts)),
+        title = createTimestamp(ts, FULL_FORMAT),
+        calendar = createCalendar(ts);
+
     return (
         <>
             <div className="ln-msg__side ln-system-message">
@@ -17,7 +21,7 @@ export function SystemMessage(props: IMessageProps) {
 
             <div className="ln-msg__message ln-system-message">
                 <MessageBody msg={props.msg.msg} extra={
-                    <span className="ui-text ln-system-sub" title={ts().format(FULL_FORMAT)}>{ts().calendar()}</span>
+                    <span className="ui-text ln-system-sub" title={title()} textContent={calendar()} />
                 } />
             </div>
         </>

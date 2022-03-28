@@ -89,7 +89,7 @@ function Toast(props: IToastProps) {
 
     return (
         <li className={className()} onClick={clearToast}>
-            {props.title && <h3>{props.title}</h3>}
+            {props.title && <h3 textContent={props.title} />}
             <span>{props.text}</span>
         </li>
     );

@@ -1,5 +1,4 @@
 import { MessageFlags, user_is_bot } from "state/models";
-import dayjs from "dayjs";
 import { PencilIcon, PushPinIcon } from "lantern-icons";
 import { createMemo, For, Show } from "solid-js";
 import { useSelector } from "solid-mutant";
@@ -12,6 +11,8 @@ import { IMessageProps, MessageUserAvatar, MessageUserName } from "./common";
 
 import { Message as MessageBody } from "./msg";
 import { MsgAttachment } from "./attachment";
+import { createTimestamp } from "ui/hooks/createTimestamp";
+import { UICalendar, UITimestamp } from "ui/components/common/timestamp";
 
 export const FULL_FORMAT = "dddd, MMMM DD, h:mm A";
 
@@ -21,8 +22,8 @@ export function CozyMessage(props: IMessageProps) {
             || { user: props.msg.msg.author, nick: props.msg.msg.member?.nick };
     });
 
-    let ts = createMemo(() => dayjs(props.msg.ts).format(FULL_FORMAT));
-    let ets = createMemo(() => props.msg.et && dayjs(props.msg.et).format(FULL_FORMAT));
+    let ts = createTimestamp(() => props.msg.ts, FULL_FORMAT);
+    let ets = createTimestamp(() => props.msg.et, FULL_FORMAT);
 
     let nickname = createMemo(() => {
         let cached = cached_member();
@@ -30,7 +31,9 @@ export function CozyMessage(props: IMessageProps) {
     });
 
     let extra = createMemo(() => {
-        if(!props.msg.sg && props.msg.et) { return <span className="ui-text ln-system-sub" title={ets() as string}>(edited)</span>; }
+        if(!props.msg.sg && props.msg.et) {
+            return <span className="ui-text ln-system-sub" title={ets() as string}>(edited)</span>;
+        }
         return;
     });
 
@@ -45,7 +48,7 @@ export function CozyMessage(props: IMessageProps) {
 
                     <Branch.Else>
                         <div className="ln-msg__sidets" title={ts()}>
-                            <span className="ui-text">{dayjs(props.msg.ts).format('h:mm A')}</span>
+                            <UITimestamp time={props.msg.ts} format="h:mm A" />
                         </div>
                     </Branch.Else>
                 </Branch>
@@ -59,7 +62,7 @@ export function CozyMessage(props: IMessageProps) {
                         <span className="ln-separator"> - </span>
 
                         <span className="ln-msg__ts" title={ts()}>
-                            <span className="ui-text">{dayjs(props.msg.ts).calendar()}</span>
+                            <UICalendar time={props.msg.ts} />
 
                             <Show when={props.msg.et}>
                                 <span className="flags" title={"Edited " + ets()}>

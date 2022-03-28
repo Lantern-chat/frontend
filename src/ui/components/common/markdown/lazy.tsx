@@ -9,12 +9,13 @@ const LazyMath = lazy(() => import(/* webpackChunkName: 'MarkdownMath' */"./comp
 const LazyCode = lazy(() => import(/* webpackChunkName: 'MarkdownCode' */"./components/code"));
 
 function MathFallback(props: IMathProps) {
-    let inner = <code>{props.src}</code>;
-    return props.inline ? inner : <pre>{inner}</pre>;
+    return props.inline ?
+        <code textContent={props.src} /> :
+        <pre><code textContent={props.src} /></pre>;
 }
 
 function CodeFallback(props: ICodeProps) {
-    return <pre className="hljs"><code style={{ whiteSpace: 'pre' }}>{props.src}</code></pre>
+    return <pre className="hljs"><code style={{ whiteSpace: 'pre' }} textContent={props.src} /></pre>
 }
 
 export const Math = (props: IMathProps) => (

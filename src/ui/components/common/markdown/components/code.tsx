@@ -31,7 +31,7 @@ function ignoreTouch(e: TouchEvent) {
 function Text(props: { src: string }) {
     return (
         <pre className="hljs" onTouchStart={ignoreTouch}>
-            <code>{props.src.trim()}</code>
+            <code textContent={props.src.trim()} />
         </pre>
     );
 }

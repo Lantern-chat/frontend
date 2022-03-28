@@ -150,7 +150,7 @@ export function MessageBox() {
     };
 
     let debug_node; if(__DEV__) {
-        debug_node = (<div className="ln-msg-box__debug"><span>{debug()}</span></div>);
+        debug_node = (<div className="ln-msg-box__debug"><span textContent={debug()} /></div>);
     }
 
     return (
@@ -224,7 +224,7 @@ function UsersTyping() {
 
     return (
         <Show when={formatted()}>
-            {formatted => <span className="ui-text">{formatted}</span>}
+            <span className="ui-text" textContent={formatted()} />
         </Show>
     )
 }

@@ -92,8 +92,8 @@ function GenericAttachment(props: DeepReadonly<IMsgAttachmentProps>) {
             </div>
 
             <div className="ln-attachment-link ui-text">
-                <a target="__blank" title={title()} href={url()} onContextMenu={eat}>{props.attachment.filename}</a>
-                <span className="ln-attachment-size">{props.attachment.size}</span>
+                <a target="__blank" title={title()} href={url()} onContextMenu={eat} textContent={props.attachment.filename} />
+                <span className="ln-attachment-size" textContent={format_bytes(props.attachment.size)} />
             </div>
 
             <a target="__blank" title={title()} href={url() + '?download'} className="ln-msg-attachment__download">

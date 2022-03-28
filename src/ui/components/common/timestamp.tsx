@@ -1,19 +1,21 @@
-import dayjs from "lib/time";
-import React, { useContext } from "react";
-import { LocaleContext } from "ui/i18n";
+import type { JSX } from "solid-js";
+import type dayjs from "lib/time";
 
-export interface TimestampProps {
-    time: dayjs.ConfigType,
+import { createCalendar, createTimestamp, DEFAULT_FORMAT } from "ui/hooks/createTimestamp";
+
+export interface ITimestampProps {
+    time: NonNullable<dayjs.ConfigType>,
     format?: string,
 }
 
-export const DEFAULT_FORMAT = "dddd, MMM Do YYYY, h:mm A";
+export type ICalendarProps = Omit<ITimestampProps, 'format'>;
 
-export const Timestamp: React.FunctionComponent<TimestampProps> = React.memo((props: TimestampProps) => (
-    <>{dayjs(props.time).locale(useContext(LocaleContext).lang)
-        .format(props.format || DEFAULT_FORMAT)}</>
-));
+export function UITimestamp(props: ITimestampProps & { span?: JSX.HTMLAttributes<HTMLSpanElement> }): JSX.Element {
+    let ts = createTimestamp(() => props.time, () => props.format || DEFAULT_FORMAT);
+    return <span className="ui-text" textContent={ts()} {...props.span || {}} />;
+}
 
-if(__DEV__) {
-    Timestamp.displayName = "Timestamp";
+export function UICalendar(props: ICalendarProps & { span?: JSX.HTMLAttributes<HTMLSpanElement> }): JSX.Element {
+    let ts = createCalendar(() => props.time);
+    return <span className="ui-text" textContent={ts()} {...props.span || {}} />;
 }

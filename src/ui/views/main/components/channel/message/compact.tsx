@@ -1,10 +1,12 @@
-import dayjs from "dayjs";
 import { createMemo, For } from "solid-js";
 import { useSelector } from "solid-mutant";
 import { RootState } from "state/root";
 import { selectCachedUser } from "state/selectors/selectCachedUser";
+import { UITimestamp } from "ui/components/common/timestamp";
+import { createTimestamp } from "ui/hooks/createTimestamp";
 import { MsgAttachment } from "./attachment";
 import { IMessageProps, MessageUserName } from "./common";
+import { FULL_FORMAT } from "./cozy";
 
 import { Message as MessageBody } from "./msg";
 
@@ -14,8 +16,8 @@ export function CompactMessage(props: IMessageProps) {
             || { user: props.msg.msg.author, nick: props.msg.msg.member?.nick };
     });
 
-    let ts = createMemo(() => dayjs(props.msg.ts).format("dddd, MMMM DD, h:mm A"));
-    let ets = createMemo(() => props.msg.et && dayjs(props.msg.et).format("dddd, MMMM DD, h:mm A"));
+    let ts = createTimestamp(() => props.msg.ts, FULL_FORMAT);
+    let ets = createTimestamp(() => props.msg.et, FULL_FORMAT);
 
     let nickname = createMemo(() => {
         let cached = cached_member();
@@ -23,7 +25,7 @@ export function CompactMessage(props: IMessageProps) {
     });
 
     let extra = createMemo(() => {
-        if(props.msg.et) { return <span className="ui-text ln-system-sub" title={ets() as string}>(edited)</span>; }
+        if(props.msg.et) { return <span className="ui-text ln-system-sub" title={ets()!}>(edited)</span>; }
         return;
     });
 
@@ -33,7 +35,7 @@ export function CompactMessage(props: IMessageProps) {
 
                 <div className="ln-msg__side">
                     <div className="ln-msg__sidets" title={ts()}>
-                        <span className="ui-text">{dayjs(props.msg.ts).format('h:mm A')}</span>
+                        <UITimestamp time={props.msg.ts} format="h:mm A" />
                     </div>
                 </div>
 

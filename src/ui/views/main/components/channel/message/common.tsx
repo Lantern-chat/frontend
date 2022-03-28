@@ -42,7 +42,7 @@ export function MessageUserName(props: IUserNameProps) {
                 <UserCard user={user} />
             </AnchoredModal>
 
-            <span className="ui-text">{props.name}</span>
+            <span className="ui-text" textContent={props.name} />
         </h2>
     );
 }

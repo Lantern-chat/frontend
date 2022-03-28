@@ -187,7 +187,7 @@ function ListedMember(props: IListedMemberProps) {
 
                 <Show when={props.member.user.status && presence().status != PresenceStatus.Offline}>
                     <div className="ln-member__status">
-                        <span className="chat-text">{props.member.user.status}</span>
+                        <span className="chat-text" textContent={props.member.user.status} />
                     </div>
                 </Show>
             </div>
