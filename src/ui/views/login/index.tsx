@@ -150,9 +150,8 @@ export default function LoginView() {
             <div id="mfa_toggle"
                 title={`${mfa_toggle_text} Click here to ${mfa_toggle_flavor} the input.`}
                 onClick={() => form_dispatch({ type: LoginActionType.IHave2FA, value: '' })}
-            >
-                {mfa_toggle_text}
-            </div>
+                textContent={mfa_toggle_text}
+            />
         );
     });
 

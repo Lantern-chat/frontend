@@ -92,7 +92,7 @@ function ListedChannel(props: IListedChannelProps) {
                 <RoomIcon room={props.room} />
 
                 <div className="ln-channel-list__name">
-                    <span className="ui-text">{props.room.name}</span>
+                    <span className="ui-text" textContent={props.room.name} />
                 </div>
             </Link>
 

@@ -107,9 +107,7 @@ export function MsgContextMenu(props: IMsgContextMenuProps) {
                     <VectorIcon src={TrashOpenIcon} />
                 </Show>
 
-                <span className="ui-text">
-                    {confirm_text()}
-                </span>
+                <span className="ui-text" textContent={confirm_text()} />
             </div>
 
             <Show when={dev_mode()}>

@@ -168,9 +168,7 @@ function ListedMember(props: IListedMemberProps) {
                 <div className="ln-member__title">
 
                     <div className="ln-member__name">
-                        <span className="ui-text" style={{ color: color() }}>
-                            {display_name()}
-                        </span>
+                        <span className="ui-text" style={{ color: color() }} textContent={display_name()} />
                     </div>
 
                     <Show when={props.member.user.id == props.owner}>

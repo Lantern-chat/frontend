@@ -6,7 +6,6 @@ import { Translation } from "./translation";
 export { Translation } from "./translation";
 
 type LangItem = Component<LangItemProps>;
-type Loader = () => Promise<{ default: LangItem }>;
 const __LAZY_TYPE = () => lazy<LangItem>(null as any);
 type LazyLoader = ReturnType<typeof __LAZY_TYPE>;
 
@@ -58,10 +57,5 @@ export function i18n(
  * and the props to select which translation string to render.
  * */
 export function I18N(props: LangItemProps) {
-    let Lang = createMemo(() => {
-        let ctx = useContext(LocaleContext);
-        return preload(ctx.lang) as LangItem;
-    });
-
-    return <Dynamic component={Lang()} {...props} />
+    return <Dynamic component={preload(useContext(LocaleContext).lang) as LangItem} {...props} />
 }

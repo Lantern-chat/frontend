@@ -1,4 +1,5 @@
-import { JSX } from "solid-js";
+import { createMemo, JSX } from "solid-js";
+import { px } from "ui/utils";
 
 export interface ISizeSliderProps {
     steps: number[],
@@ -15,7 +16,6 @@ export interface ISizeSliderProps {
 const B_ACTIVE = "#6666FF";
 const B_INACTIVE = "rgba(128, 128, 128, 0.4)";
 
-import { createMemo } from "solid-js";
 import "./size-slider.scss";
 export function SizeSlider(props: ISizeSliderProps) {
     let onInput = (e: InputEvent) => {
@@ -38,12 +38,13 @@ export function SizeSlider(props: ISizeSliderProps) {
 
     let steps = createMemo(() => {
         let { min, max } = bounds();
+
         return props.steps.map((step, i) => {
             let style;
             if(i > 0) { style = { left: `calc(${(step - min) / (max - min) * 100}% - 1.5em)` }; }
 
-            return (<span style={style}>{step}px</span>);
-        })
+            return (<span style={style} textContent={px(step)} />);
+        });
     });
 
     return (
