@@ -5,19 +5,19 @@ export interface BranchProps {
 }
 
 export function Branch(props: BranchProps) {
-    let tail = props.children, cur: any = tail.shift();
+    let tail = props.children, branch: any = tail.shift();
 
-    if(cur) {
-        if(cur._if) {
+    if(branch) {
+        if(branch._if) {
             let fallback = tail.length ? () => <Branch>{tail}</Branch> : undefined;
 
             return (
-                <Show when={cur.props.when} fallback={fallback}>
-                    {cur.props.children}
+                <Show when={branch.props.when} fallback={fallback}>
+                    {branch.props.children}
                 </Show>
             );
-        } else if(cur._else) {
-            return cur.props.children;
+        } else if(branch._else) {
+            return branch.props.children;
         } else if(__DEV__) {
             throw new Error("Child of Branch not an If/ElseIf/Else!");
         }
