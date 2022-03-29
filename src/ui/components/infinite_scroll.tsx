@@ -8,6 +8,7 @@ import { createRef, Ref } from "ui/hooks/createRef";
 import { createController, SetController } from "ui/hooks/createController";
 import { createMicrotask } from "ui/hooks/createMicrotask";
 import { createLatch } from "ui/hooks/createLatch";
+import { runBatched } from "ui/hooks/runBatched";
 
 import { useRootSelector } from "state/root";
 import { selectPrefsFlag } from "state/selectors/prefs";
@@ -56,20 +57,21 @@ export interface InfiniteScrollController {
 
 const OBSERVER_OPTIONS: ResizeObserverOptions = { box: "border-box" };
 
-export const InfiniteScrollContext = createContext<Accessor<InfiniteScrollController | null>>();
+export const InfiniteScrollContext = /*#__PURE__*/ createContext<Accessor<InfiniteScrollController | null>>();
 
 export function createInfiniteScrollIntersection<T extends HTMLElement>(
     ref: Ref<T | undefined>,
     opts: Pick<IntersectionObserverInit, 'rootMargin' | 'threshold'> = {},
+    enable: Accessor<boolean> = () => true,
 ) {
     let [visible, setVisible] = createSignal(false);
 
-    createRenderEffect(() => {
-        let ifs = useContext(InfiniteScrollContext);
-
-        if(ifs && ref.current) {
+    // using createEffect will re-run (and cleanup) when enable(), ifs or ref.current change
+    createEffect(() => {
+        let ifs;
+        if(enable() && (ifs = useContext(InfiniteScrollContext)) && ref.current) {
             let observer = new IntersectionObserver(entries => {
-                entries.length && setVisible(entries[0].intersectionRatio > 0);
+                entries.length && runBatched(() => setVisible(entries[0].intersectionRatio > 0), 0);
             }, { ...opts, root: ifs()!.container });
 
             observer.observe(ref.current);
@@ -84,7 +86,9 @@ export function createInfiniteScrollIntersectionTrigger<T extends HTMLElement>(
     ref: Ref<T | undefined>,
     opts: Pick<IntersectionObserverInit, 'rootMargin' | 'threshold'> = {},
 ) {
-    return createLatch(createInfiniteScrollIntersection(ref, opts));
+    let latch: Accessor<boolean>;
+    latch = createLatch(createInfiniteScrollIntersection(ref, opts, () => !latch()));
+    return latch;
 }
 
 const doTimeout = (cb: () => void) => setTimeout(cb, 100);
