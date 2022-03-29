@@ -25,12 +25,21 @@ export const extraRules: ExtraRules = {
 const extraRawParse = parserFor(extraRules);
 const extraSolidOutput: SolidOutput = outputFor(extraRules as any);
 
+var ASTCache = window['AST_CACHE'] = new Map();
+
 export function SolidMarkdownExtra(props: SolidMarkdownProps): SolidElement {
     let [local, div] = splitProps(props, ['source', 'inline', 'extra']);
 
     let res = createMemo(() => {
         let state = { inline: !!local.inline, extra: local.extra };
-        return extraSolidOutput(extraRawParse(props.source, state), state);
+        let ast = ASTCache.get(local.source);
+        if(!ast) {
+            ASTCache.set(local.source, ast = extraRawParse(props.source, state));
+        }
+
+        if(ASTCache.size > 500) ASTCache.clear();
+
+        return extraSolidOutput(ast, state);
     });
 
     return <div {...div} children={res()} />
