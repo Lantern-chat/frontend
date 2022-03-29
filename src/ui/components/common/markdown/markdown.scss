@@ -88,13 +88,48 @@ summary {
         vertical-align: bottom;
     }
 
-    span.font-arial {
-        font-family: Arial, Helvetica, sans-serif;
-    }
+    span {
+        &.font-arial {
+            font-family: Arial, Helvetica, sans-serif;
+        }
 
-    span.font-serif {
-        font-family: "Times New Roman", Times, serif;
-        font-size: 1.075em;
+        &.font-serif {
+            font-family: "Times New Roman", Times, serif;
+            font-size: 1.075em;
+        }
+
+        // TODO: Setup light-theme variants
+        $dark_theme_colors: (
+            "red": hsl(0, 100%, 65%),
+            "orange": hsl(35, 100%, 50%),
+            "yellow": hsl(54, 97%, 60%),
+            "green": hsl(120, 100%, 60%),
+            "blue": hsl(240, 90%, 75%),
+            "purple": hsl(300, 100%, 70%),
+        );
+
+        $light_theme_colors: (
+            "red": hsl(0, 90%, 50%),
+            "orange": hsl(39, 100%, 30%),
+            "yellow": hsl(60, 97%, 30%),
+            "green": hsl(120, 100%, 30%),
+            "blue": hsl(240, 90%, 50%),
+            "purple": hsl(300, 100%, 50%),
+        );
+
+        @each $name, $color in $dark_theme_colors {
+            &.color-#{$name} {
+                color: $color;
+            }
+        }
+
+        .ln-light-theme & {
+            @each $name, $color in $light_theme_colors {
+                &.color-#{$name} {
+                    color: $color;
+                }
+            }
+        }
     }
 
     strong {

@@ -169,6 +169,7 @@ export interface DefaultRules extends DefaultRulesIndexer {
     //readonly fence: DefaultInRule,
     readonly blockQuote: DefaultInOutRule,
     readonly font: DefaultInOutRule,
+    readonly color: DefaultInOutRule,
     //readonly list: DefaultInOutRule,
     //readonly def: LenientInOutRule,
     readonly table: DefaultInOutRule,
@@ -915,6 +916,14 @@ export const defaultRules: DefaultRules = {
             return { f: capture[1], c: parse(capture[2], state) };
         },
         h: (node, output, state) => <span className={"font-" + node.f}>{output(node.c, state)}</span>,
+    },
+    color: {
+        o: currOrder++,
+        m: anyScopeRegex(/^<(red|yellow|orange|green|blue|purple)>([^]+)<\/\1>/),
+        p: (capture, parse, state) => {
+            return { f: capture[1], c: parse(capture[2], state) };
+        },
+        h: (node, output, state) => <span className={"color-" + node.f}>{output(node.c, state)}</span>,
     },
     table: {
         o: currOrder++,
