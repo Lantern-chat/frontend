@@ -221,7 +221,7 @@ export const chatMutator = mutatorWithDefault(
                                 room.msgs.splice(idx, 0, msg);
 
                                 // after insertion, cascade check to start group
-                                for(let i = idx + 1; i < room.msgs.length; i++) {
+                                for(let i = idx; i < room.msgs.length; i++) {
                                     set_starts_group(room.msgs, i);
                                 }
 
