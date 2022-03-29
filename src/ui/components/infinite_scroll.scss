@@ -1,5 +1,6 @@
 .ln-inf-scroll {
     &__container {
+        height: 100%;
         position: absolute;
         top: 0;
         left: 0;
@@ -15,6 +16,8 @@
 
         // try optimize scrolling animations
         will-change: scroll-position;
+
+        -webkit-overflow-scrolling: touch;
 
         //scrollbar-width: none;
         //&::-webkit-scrollbar {

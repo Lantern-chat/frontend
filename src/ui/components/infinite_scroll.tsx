@@ -91,14 +91,16 @@ export function createInfiniteScrollIntersectionTrigger<T extends HTMLElement>(
     return latch;
 }
 
-const doTimeout = (cb: () => void) => setTimeout(cb, 100);
+const doTimeout = (cb: () => void) => setTimeout(cb, 50);
 const doNow = (cb: () => void) => cb();
 
+const DO_SAFARI_HACKS = true && IS_IOS_SAFARI;
+
 // Fucking Safari...
-const clearLater = IS_IOS_SAFARI ? clearTimeout : cancelAnimationFrame;
-const do_later = IS_IOS_SAFARI ? doTimeout : requestAnimationFrame;
-const do_nowish = IS_IOS_SAFARI ? doNow : requestAnimationFrame;
-const do_laterish = IS_IOS_SAFARI ? doTimeout : doNow;
+const clearLater = DO_SAFARI_HACKS ? clearTimeout : cancelAnimationFrame;
+const do_later = DO_SAFARI_HACKS ? doTimeout : requestAnimationFrame;
+const do_nowish = DO_SAFARI_HACKS ? doNow : requestAnimationFrame;
+const do_laterish = DO_SAFARI_HACKS ? doTimeout : doNow;
 
 export interface IInfiniteScrollProps {
     children: JSX.Element,
@@ -138,7 +140,6 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
             new_height = container.scrollHeight;
 
         if(new_height == height || paused) {
-            height = new_height;
             pos = container.scrollTop;
             return;
         }
@@ -153,13 +154,14 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
         }
 
         pos = top;
+        height = new_height;
 
-        if(top != container.scrollTop || new_height != height) {
-            if(diff > 0) {
+        if(top != container.scrollTop) {
+            if(diff != 0) {
                 // relative positioning
                 container.scrollBy({ top: diff, behavior: 'instant' as any });
             } else {
-                // absolute positioning
+                // absolute positioning to start
                 container.scrollTo({ top, behavior: 'instant' as any });
             }
 
@@ -167,8 +169,6 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
 
             props.onScroll?.(top);
         }
-
-        height = new_height;
     };
 
     let fixing = false;
@@ -181,9 +181,7 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
             do_resize();
         }
 
-        if(fix_frame != null) {
-            clearLater(fix_frame); // NOTE: Was created by do_later
-        }
+        clearLater(fix_frame as any); // NOTE: Was created by do_later
 
         fix_frame = do_later(() => {
             fixing = false;
@@ -198,9 +196,7 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
         pos = height = 0;
         anchor = props.start;
 
-        if(fix_frame != null) {
-            clearLater(fix_frame);
-        }
+        clearLater(fix_frame);
 
         fix_position();
     };
@@ -304,10 +300,10 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
 
     let scroll_by = (top: number) => {
         let container = container_ref.current!;
-        let height = container.clientHeight;
-
-        // TODO: Reduce motion
-        container.scrollBy({ top: height * top, behavior: reduce_motion() ? 'auto' : 'smooth' });
+        container.scrollBy({
+            top: container.clientHeight * top,
+            behavior: reduce_motion() ? 'auto' : 'smooth'
+        });
     };
 
     /// MOUNTING
@@ -354,20 +350,22 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
                 page_border = scrollHeight - clientHeight * 2;
             }
 
-            container.scrollTo({ top: page_border });
-            container.scrollTo({ top: page_end, behavior: 'smooth' });
+            container.scrollTo({ top: page_border, behavior: 'instant' as any });
+            do_laterish(() => container.scrollTo({ top: page_end, behavior: 'smooth' }));
         }
     });
 
-    let observer: ResizeObserver = new ResizeObserverPolyfill(on_resize);
+    let observer: ResizeObserver;
 
     onMount(() => {
         let container = container_ref.current!;
 
+        observer = new ResizeObserverPolyfill(on_resize);
+
         observer.observe(container, OBSERVER_OPTIONS);
         observer.observe(wrapper_ref.current!, OBSERVER_OPTIONS);
 
-        container.addEventListener('scroll', on_scroll, SUPPORTS_PASSIVE && { passive: true });
+        container.addEventListener('scroll', on_scroll, SUPPORTS_PASSIVE ? { passive: true } : false);
 
         onCleanup(() => {
             observer.disconnect();
