@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal, JSX, Match, Show, Switch } from "solid-js";
+import { createMemo, createSignal, JSX, Match, Show, Switch } from "solid-js";
 import { useStructuredSelector } from "solid-mutant";
 
 import { IS_MOBILE } from "lib/user_agent";
@@ -43,6 +43,8 @@ export function MsgAttachment(props: DeepReadonly<IMsgAttachmentProps>) {
 
     let eat = createClickEater();
 
+    let src = createMemo(() => message_attachment_url(props.msg.room_id, props.attachment.id, props.attachment.filename));
+
     let common = createMemo(() => {
         let a = props.attachment;
         return {
@@ -50,7 +52,6 @@ export function MsgAttachment(props: DeepReadonly<IMsgAttachmentProps>) {
             "aria-label": a.filename,
             "data-mime": a.mime,
             onContextMenu: eat,
-            src: message_attachment_url(props.msg.room_id, a.id, a.filename),
             onError: () => setErrored(true),
         };
     });
@@ -62,15 +63,15 @@ export function MsgAttachment(props: DeepReadonly<IMsgAttachmentProps>) {
             <Show when={!errored()} fallback={<GenericAttachment {...props} />}>
                 <Switch>
                     <Match when={mime_prefix() === 'image'}>
-                        <ImageAttachment img={common()} attachment={props.attachment} use_mobile_view={state.use_mobile_view} />
+                        <ImageAttachment img={common()} src={src()} attachment={props.attachment} use_mobile_view={state.use_mobile_view} />
                     </Match>
 
                     <Match when={mime_prefix() === 'video'}>
-                        <VideoAttachment vid={common()} attachment={props.attachment} use_mobile_view={state.use_mobile_view} mute_media={state.mute_media} />
+                        <VideoAttachment vid={common()} src={src()} attachment={props.attachment} use_mobile_view={state.use_mobile_view} mute_media={state.mute_media} />
                     </Match>
 
                     <Match when={mime_prefix() === 'audio'}>
-                        <AudioAttachment audio={common()} attachment={props.attachment} mute_media={state.mute_media} />
+                        <AudioAttachment audio={common()} src={src()} attachment={props.attachment} mute_media={state.mute_media} />
                     </Match>
                 </Switch>
             </Show>
@@ -105,12 +106,14 @@ function GenericAttachment(props: DeepReadonly<IMsgAttachmentProps>) {
 
 interface IImageAttachmentProps {
     img: JSX.ImgHTMLAttributes<HTMLImageElement>,
+    src: string,
     attachment: Attachment,
     use_mobile_view: boolean,
 }
 
 interface IVideoAttachmentProps {
     vid: JSX.VideoHTMLAttributes<HTMLVideoElement>,
+    src: string,
     attachment: DeepReadonly<Attachment>,
     use_mobile_view: boolean,
     mute_media: boolean,
@@ -118,6 +121,7 @@ interface IVideoAttachmentProps {
 
 interface IAudioAttachmentProps {
     audio: JSX.AudioHTMLAttributes<HTMLAudioElement>,
+    src: string,
     attachment: DeepReadonly<Attachment>,
     mute_media: boolean,
 }
@@ -125,39 +129,42 @@ interface IAudioAttachmentProps {
 const TRIGGER_OPTS = { rootMargin: '150%' };
 
 function ImageAttachment(props: IImageAttachmentProps) {
-    let ref = createRef<HTMLImageElement>();
+    let img = createRef<HTMLImageElement>();
     let [loaded, setLoaded] = createSignal(false);
-    let visible = createInfiniteScrollIntersectionTrigger(ref, TRIGGER_OPTS);
+    let visible = createInfiniteScrollIntersectionTrigger(img, TRIGGER_OPTS);
+
+    let src = createMemo(() => visible() ? props.src : undefined);
+    let style = createMemo(() => loaded() ? {} : computeModifiedStyle(props.img.style as JSX.CSSProperties || {}, props.attachment, props.use_mobile_view));
+
+    let on_load = () => visible() && setLoaded(true);
 
     let animated_format = createMemo(() => props.attachment.mime?.match(/gif|apng|webp|avif/i)?.[0]);
 
-    let img_props = createMemo(() => {
-        return {
-            ...props.img,
-            style: loaded() ? props.img.style :
-                computeModifiedStyle(props.img.style as JSX.CSSProperties || {}, props.attachment, props.use_mobile_view),
-            onLoad: () => visible() && setLoaded(true),
-        }
-    });
+    // Future work
+    //createEffect(() => img.current?.classList.toggle('loading', !loaded()));
 
     return (
         <Branch>
-            <Branch.If when={visible()}>
-                <Branch>
-                    <Branch.If when={animated_format()}>
-                        <AnimatedGif img={img_props()} which={animated_format() as any} />
-                    </Branch.If>
-                    <Branch.Else>
-                        <img {...img_props()} />
-                    </Branch.Else>
-                </Branch>
+            <Branch.If when={animated_format()}>
+                {which => <AnimatedGif {...props.img}
+                    src={src()}
+                    which={which as any}
+                    img={img}
+                    onLoad={on_load}
+                    style={style()} />
+                }
             </Branch.If>
 
             <Branch.Else>
-                <img {...img_props()} ref={ref} src={undefined} />
+                <img {...props.img}
+                    ref={img}
+                    src={src()}
+                    onLoad={on_load}
+                    style={style()}
+                />
             </Branch.Else>
         </Branch>
-    );
+    )
 }
 
 function VideoAttachment(props: IVideoAttachmentProps) {
@@ -166,17 +173,17 @@ function VideoAttachment(props: IVideoAttachmentProps) {
     let visible = createInfiniteScrollIntersectionTrigger(ref, TRIGGER_OPTS);
 
     // use modified style if not loaded
-    let style = createMemo(() => loaded() ? props.vid.style :
+    let style = createMemo(() => loaded() ? undefined :
         computeModifiedStyle(props.vid.style as JSX.CSSProperties || {}, props.attachment, props.use_mobile_view)
     );
 
     // the #t=0.0001 forces iOS Safari to preload the first frame and display that as a preview
-    let src = createMemo(() => visible() ? (IS_MOBILE ? props.vid.src + '#t=0.0001' : props.vid.src) : undefined);
+    let src = createMemo(() => visible() ? (IS_MOBILE ? props.src + '#t=0.0001' : props.src) : undefined);
 
     let on_load = () => setLoaded(true);
 
     return (
-        <video {...props.vid} src={src()}
+        <video {...props.vid} src={src()} ref={ref}
             style={style()} muted={props.mute_media}
             onLoadedMetadata={on_load} onLoad={on_load}
             preload="metadata" controls
@@ -187,7 +194,7 @@ function VideoAttachment(props: IVideoAttachmentProps) {
 function AudioAttachment(props: IAudioAttachmentProps) {
     return (
         <div className="ln-audio">
-            <audio {...props.audio} controls muted={props.mute_media} preload="none" />
+            <audio {...props.audio} src={props.src} controls muted={props.mute_media} preload="none" />
         </div>
     );
 }
@@ -198,15 +205,14 @@ function computeModifiedStyle(style: JSX.CSSProperties, attachment: Attachment, 
     if(use_mobile_view) {
         if(attachment.width && attachment.height) {
             return {
-                ...style,
-                'aspect-ratio': (attachment.width / attachment.height),
-                width: 'auto',
+                'aspect-ratio': attachment.width / attachment.height,
+                width: `min(100%, ${attachment.width}px)`,
             };
         } else {
             // TODO: ?
-            return { ...style, height: '100em' };
+            return { height: '100em' };
         }
     } else {
-        return { ...style, height: px(attachment.height) || '100em' };
+        return { height: px(attachment.height) || '100em' };
     }
 }
