@@ -27,5 +27,5 @@ export function runBatched(cb: () => void, timeout: number = 5): CancelBatched {
         alert("runBatched: This shouldn't happen");
     }
 
-    return () => { return pending.delete(cb); };
+    return () => pending.delete(cb);
 }
