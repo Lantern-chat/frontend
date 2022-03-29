@@ -1,4 +1,4 @@
-import { createEffect, createRenderEffect, createSignal, Show } from "solid-js";
+import { batch, createEffect, createRenderEffect, createSignal, Show } from "solid-js";
 import { useDispatch, useStructuredSelector } from "solid-mutant";
 
 import { ChannelList } from "./channel_list";
@@ -78,7 +78,7 @@ export function Party() {
     let [showLeft, setShowLeft] = createSignal(true);
     let [showRight, setShowRight] = createSignal(!state.use_mobile_view);
 
-    createRenderEffect(() => {
+    createRenderEffect(() => batch(() => {
         if(state.use_mobile_view) {
             switch(state.show_panel) {
                 case Panel.RightUserList: setShowLeft(false); setShowRight(true); break;
@@ -92,7 +92,7 @@ export function Party() {
             setShowLeft(true);
             setShowRight(true);
         }
-    });
+    }));
 
     return (
         <div className="ln-party"

@@ -1,4 +1,4 @@
-import { Accessor, onMount, onCleanup, createEffect, createSignal } from "solid-js";
+import { Accessor, onMount, onCleanup, createRenderEffect, createSignal } from "solid-js";
 import { Ref, Refable } from "ui/hooks/createRef";
 
 import ResizeObserver from "resize-observer-polyfill";
@@ -19,7 +19,7 @@ export function createResizeObserver<H extends Refable>(ref: Ref<H>): Accessor<D
             }
         });
 
-        createEffect(() => {
+        createRenderEffect(() => {
             ref.current && observer.observe(ref.current);
         });
 
