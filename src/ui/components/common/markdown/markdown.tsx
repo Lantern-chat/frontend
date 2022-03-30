@@ -919,7 +919,7 @@ export const defaultRules: DefaultRules = {
     },
     color: {
         o: currOrder++,
-        m: anyScopeRegex(/^<(red|yellow|orange|green|blue|purple)>([^]+)<\/\1>/),
+        m: anyScopeRegex(/^<(red|yellow|orange|green|cyan|blue|purple)>([^]+)<\/\1>/),
         p: (capture, parse, state) => {
             return { f: capture[1], c: parse(capture[2], state) };
         },

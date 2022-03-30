@@ -100,19 +100,21 @@ summary {
 
         // TODO: Setup light-theme variants
         $dark_theme_colors: (
-            "red": hsl(0, 100%, 65%),
+            "red": hsl(0, 100%, 70%),
             "orange": hsl(35, 100%, 50%),
             "yellow": hsl(54, 97%, 60%),
             "green": hsl(120, 100%, 60%),
+            "cyan": hsl(180, 100%, 45%),
             "blue": hsl(240, 90%, 75%),
             "purple": hsl(300, 100%, 70%),
         );
 
         $light_theme_colors: (
             "red": hsl(0, 90%, 50%),
-            "orange": hsl(39, 100%, 30%),
-            "yellow": hsl(60, 97%, 30%),
-            "green": hsl(120, 100%, 30%),
+            "orange": hsl(39, 100%, 27%),
+            "yellow": hsl(60, 97%, 27%),
+            "green": hsl(120, 100%, 27%),
+            "cyan": hsl(180, 100%, 30%),
             "blue": hsl(240, 90%, 50%),
             "purple": hsl(300, 100%, 50%),
         );
