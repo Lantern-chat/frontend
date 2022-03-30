@@ -120,14 +120,16 @@ summary {
         );
 
         @each $name, $color in $dark_theme_colors {
-            &.color-#{$name} {
+            &.color-#{$name},
+            &.color-#{str-slice($name, 1, 1)} {
                 color: $color;
             }
         }
 
         .ln-light-theme & {
             @each $name, $color in $light_theme_colors {
-                &.color-#{$name} {
+                &.color-#{$name},
+                &.color-#{str-slice($name, 1, 1)} {
                     color: $color;
                 }
             }

@@ -909,22 +909,6 @@ export const defaultRules: DefaultRules = {
         },
         h: (node, output, state) => <blockquote children={output(node.c, state)} />,
     },
-    font: {
-        o: currOrder++,
-        m: anyScopeRegex(/^<(arial|serif)>([^]+)<\/\1>/),
-        p: (capture, parse, state) => {
-            return { f: capture[1], c: parse(capture[2], state) };
-        },
-        h: (node, output, state) => <span className={"font-" + node.f}>{output(node.c, state)}</span>,
-    },
-    color: {
-        o: currOrder++,
-        m: anyScopeRegex(/^<(red|yellow|orange|green|cyan|blue|purple)>([^]+)<\/\1>/),
-        p: (capture, parse, state) => {
-            return { f: capture[1], c: parse(capture[2], state) };
-        },
-        h: (node, output, state) => <span className={"color-" + node.f}>{output(node.c, state)}</span>,
-    },
     table: {
         o: currOrder++,
         m: blockRegex(TABLES.TABLE_REGEX),
@@ -974,6 +958,22 @@ export const defaultRules: DefaultRules = {
             // if last and there is extra data, append that extra data within this node
             <div className="p">{output(node.c, state)}{state.last ? state.extra : void 0}</div>
         ),
+    },
+    font: {
+        o: currOrder++,
+        m: anyScopeRegex(/^<(arial|serif)>([^]+?)<\/\1>/),
+        p: (capture, parse, state) => {
+            return { f: capture[1], c: parse(capture[2], state) };
+        },
+        h: (node, output, state) => <span className={"font-" + node.f}>{output(node.c, state)}</span>,
+    },
+    color: {
+        o: currOrder++,
+        m: anyScopeRegex(/^<(r|y|o|g|c|b|p|red|yellow|orange|green|cyan|blue|purple)>([^]+?)<\/\1>/),
+        p: (capture, parse, state) => {
+            return { f: capture[1], c: parse(capture[2], state) };
+        },
+        h: (node, output, state) => <span className={"color-" + node.f}>{output(node.c, state)}</span>,
     },
     escape: {
         o: currOrder++,
@@ -1184,7 +1184,7 @@ export const defaultRules: DefaultRules = {
     },
     tags: {
         o: currOrder++,
-        m: inlineRegex(/^<(sup|sub)>([^\n]+)<\/\1>/),
+        m: inlineRegex(/^<(sup|sub)>([^\n]+?)<\/\1>/),
         p: (capture, parse, state) => {
             let tag = capture[1], c = capture[2], tagDepth = state.tagDepth || 0;
 
