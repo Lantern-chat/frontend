@@ -243,19 +243,18 @@ export const chatMutator = mutatorWithDefault(
                                 break;
                             }
                             case ServerMsgOpcode.MessageUpdate: {
-                                let raw_msg = event.p, msg = {
-                                    msg: raw_msg,
-                                    ts: +dayjs(raw_msg.created_at),
-                                    et: raw_msg.edited_at ? +dayjs(raw_msg.edited_at) : null,
-                                };
+                                let raw_msg = event.p, room = state.rooms[raw_msg.room_id];
+                                if(room) {
+                                    let msg: IMessageState = {
+                                        msg: raw_msg,
+                                        ts: +dayjs(raw_msg.created_at),
+                                        et: raw_msg.edited_at ? +dayjs(raw_msg.edited_at) : null,
+                                    }, { idx, found } = binarySearch(room.msgs, m => m.ts - msg.ts);
 
-                                let room = state.rooms[raw_msg.room_id];
-                                if(!room) return;
-
-                                let { idx, found } = binarySearch(room.msgs, m => m.ts - msg.ts);
-
-                                if(found && room.msgs[idx].msg.id == raw_msg.id) {
-                                    room.msgs[idx] = msg;
+                                    if(found && room.msgs[idx].msg.id == raw_msg.id) {
+                                        // NOTE: overwrite with msg except for sg
+                                        Object.assign(room.msgs[idx], msg);
+                                    }
                                 }
 
                                 break;
