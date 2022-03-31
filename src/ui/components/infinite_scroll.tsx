@@ -6,7 +6,6 @@ import { SUPPORTS_PASSIVE } from "lib/features";
 import { IS_IOS_SAFARI } from "lib/user_agent";
 import { createRef, Ref } from "ui/hooks/createRef";
 import { createController, SetController } from "ui/hooks/createController";
-import { createMicrotask } from "ui/hooks/createMicrotask";
 import { createLatch } from "ui/hooks/createLatch";
 import { runBatched } from "ui/hooks/runBatched";
 
@@ -375,7 +374,7 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
     });
 
     // very first fix before paint
-    createMicrotask(() => fix_position());
+    queueMicrotask(() => fix_position());
 
     return (
         <div

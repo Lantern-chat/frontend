@@ -1,5 +1,4 @@
 import { createRenderEffect, createSignal, JSX, onCleanup, onMount, splitProps } from "solid-js";
-import { createMicrotask } from "ui/hooks/createMicrotask";
 
 import { AnyRef, composeRefs } from "ui/hooks/createRef";
 import { px } from "ui/utils";
@@ -84,7 +83,7 @@ export function TextareaAutosize(props: TextareaAutosizeProps) {
     });
 
     // queue off resize before paint
-    createMicrotask(resizeTextarea);
+    queueMicrotask(resizeTextarea);
 
     return (
         <textarea {...taprops} ref={ref}
