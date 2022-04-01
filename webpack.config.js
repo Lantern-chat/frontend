@@ -9,6 +9,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const CopyPlugin = require("copy-webpack-plugin");
+const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin');
 
 const distPath = path.join(__dirname, 'dist');
 
@@ -26,7 +27,7 @@ function makeMinimizer() {
                 passes: 3,
                 unsafe_math: true,
             },
-            mangle: false,
+            mangle: true,
             format: {
                 beautify: false
             }

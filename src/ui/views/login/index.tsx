@@ -2,9 +2,6 @@ import { createMemo, createSignal, Show } from "solid-js";
 
 import { setSession } from "state/commands";
 
-import * as i18n from "ui/i18n";
-import { I18N, Translation } from "ui/i18n";
-
 import { useDispatch } from "solid-mutant";
 import type { RootState, Action } from "state/root";
 import { CLIENT } from "state/global";
@@ -84,9 +81,13 @@ function login_state_reducer(state: LoginState, { value, type }: LoginAction): L
     }
 }
 
+import { useI18nContext } from 'ui/i18n/i18n-solid';
+
 import "./login.scss";
 export default function LoginView() {
-    document.title = "Login";
+    const { LL, locale } = useI18nContext();
+
+    document.title = LL().LOGIN();
 
     let dispatch = useDispatch<RootState, Action>();
 
@@ -126,9 +127,9 @@ export default function LoginView() {
                     msg = e.message;
                 }
             } else if(e instanceof DriverError) {
-                msg = "Network error: " + e.msg();
+                msg = LL().NETWORK_ERROR() + ": " + e.msg();
             } else {
-                msg = "Unknown Error";
+                msg = LL().UNKNOWN_ERROR();
             }
 
             setErrorMsg(msg);
@@ -143,12 +144,12 @@ export default function LoginView() {
         on_totp_change = (e: InputEvent) => on_input(e, LoginActionType.UpdatedTOTP);
 
     let mfa_toggle = createMemo(() => {
-        let mfa_toggle_text = (state.have_2fa ? "Don't have" : "Have") + " a 2FA Code?",
-            mfa_toggle_flavor = (state.have_2fa ? "hide" : "show");
+        let mfa_toggle_text = LL().MFA_TOGGLE_TEXT({ h: state.have_2fa as any }),
+            mfa_toggle_flavor = LL().MFA_TOGGLE_FLAVOR({ h: state.have_2fa as any });
 
         return (
             <div id="mfa_toggle"
-                title={`${mfa_toggle_text} Click here to ${mfa_toggle_flavor} the input.`}
+                title={mfa_toggle_text + ' ' + mfa_toggle_flavor}
                 onClick={() => form_dispatch({ type: LoginActionType.IHave2FA, value: '' })}
                 textContent={mfa_toggle_text}
             />
@@ -160,7 +161,7 @@ export default function LoginView() {
     return (
         <form className="ln-form ln-login-form ui-text" onSubmit={on_submit}>
             <div id="title">
-                <h2><I18N t={Translation.LOGIN} /></h2>
+                <h2>{LL().LOGIN()}</h2>
             </div>
 
             <Show when={state.totp_required}>
@@ -172,16 +173,14 @@ export default function LoginView() {
             </Show>
 
             <FormGroup>
-                <FormLabel htmlFor="email"><I18N t={Translation.EMAIL_ADDRESS} /></FormLabel>
+                <FormLabel htmlFor="email">{LL().EMAIL_ADDRESS()}</FormLabel>
                 <FormInput value={state.email} type="email" name="email" placeholder="example@example.com" required isValid={state.email ? valid_email() : null}
                     onInput={on_email_change} />
             </FormGroup>
 
             <FormGroup>
-                <FormLabel htmlFor="password">
-                    <I18N t={Translation.PASSWORD} />
-                </FormLabel>
-                <FormInput value={state.pass} type="password" name="password" placeholder="password" required
+                <FormLabel htmlFor="password">{LL().PASSWORD()}</FormLabel>
+                <FormInput value={state.pass} type="password" name="password" placeholder={LL().PASSWORD().toLocaleLowerCase(locale())} required
                     onInput={on_password_change} />
 
                 <Show when={!state.have_2fa}>
@@ -192,11 +191,13 @@ export default function LoginView() {
             <Show when={state.have_2fa}>
                 <FormGroup>
                     <FormLabel htmlFor="totp">
-                        <span>2FA Code</span>
+                        <span>{LL().MFA_CODE()}</span>
                     </FormLabel>
 
-                    <FormInput id="totp_input" value={state.totp} type="number" name="totp" placeholder="2FA Code" min="0" pattern="[0-9]*" required
-                        onInput={on_totp_change} />
+                    <FormInput id="totp_input" value={state.totp} type="number" name="totp"
+                        placeholder={LL().MFA_CODE()} min="0" pattern="[0-9]*" required
+                        onInput={on_totp_change}
+                    />
 
                     {mfa_toggle()}
                 </FormGroup>
@@ -220,12 +221,12 @@ export default function LoginView() {
                         style={{ 'margin-right': 'auto' }}
                         onClick={() => setErrorMsg(null)}
                     >
-                        <Show when={state.is_logging_in} fallback="Login">
+                        <Show when={state.is_logging_in} fallback={LL().LOGIN()}>
                             <Spinner size="2em" />
                         </Show>
                     </button>
 
-                    <Link className="ln-btn" href="/register">Register</Link>
+                    <Link className="ln-btn" href="/register">{LL().REGISTER()}</Link>
                 </div>
             </FormGroup>
         </form>

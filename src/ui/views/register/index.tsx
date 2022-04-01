@@ -8,9 +8,6 @@ import { UserPreferenceFlags } from "state/models";
 
 import dayjs from "lib/time";
 
-import * as i18n from "ui/i18n";
-import { I18N, Translation } from "ui/i18n";
-
 import { useDispatch } from "solid-mutant";
 import type { RootState, Action } from "state/root";
 import { useRootSelector } from "state/root";
@@ -170,10 +167,14 @@ const HCAPTCHA_ERRORS = {
     "internal-error": "Internal hCaptcha Error",
 };
 
+import { useI18nContext } from 'ui/i18n/i18n-solid';
+
 import "../login/login.scss";
 import "./register.scss";
 export default function RegisterView() {
-    document.title = "Register";
+    const { LL } = useI18nContext();
+
+    document.title = LL().REGISTER();
 
     let dispatch = useDispatch<RootState, Action>();
 
@@ -236,7 +237,7 @@ export default function RegisterView() {
         try {
             res = await h.execute({ async: true });
         } catch(e) {
-            on_error(HCAPTCHA_ERRORS[e] || "Unknown Error");
+            on_error(HCAPTCHA_ERRORS[e] || LL().UNKNOWN_ERROR());
             return;
         }
 
@@ -257,9 +258,9 @@ export default function RegisterView() {
             if(e instanceof ApiError) {
                 msg = e.message;
             } else if(e instanceof DriverError) {
-                msg = "Network error: " + e.msg();
+                msg = LL().NETWORK_ERROR() + ': ' + e.msg();
             } else {
-                msg = "Unknown Error";
+                msg = LL().UNKNOWN_ERROR();
             }
             on_error(msg);
         }
@@ -277,24 +278,24 @@ export default function RegisterView() {
     return (
         <form className="ln-form ln-login-form ln-register-form ui-text" onSubmit={on_submit}>
             <div id="title">
-                <h2><I18N t={Translation.REGISTER} /></h2>
+                <h2>{LL().REGISTER()}</h2>
             </div>
 
             <FormGroup>
-                <FormLabel htmlFor="email"><I18N t={Translation.EMAIL_ADDRESS} /></FormLabel>
+                <FormLabel htmlFor="email">{LL().EMAIL_ADDRESS()}</FormLabel>
                 <FormInput value={state.email} type="email" name="email" placeholder="example@example.com" required isValid={valid_email()}
                     onInput={on_email_change} />
             </FormGroup>
 
             <FormGroup>
-                <FormLabel htmlFor="username"><I18N t={Translation.USERNAME} /></FormLabel>
+                <FormLabel htmlFor="username">{LL().USERNAME()}</FormLabel>
                 <FormInput value={state.user} type="text" name="username" placeholder="username" required isValid={valid_user()}
                     onInput={on_username_change} />
             </FormGroup>
 
             <FormGroup>
                 <FormLabel htmlFor="password">
-                    <I18N t={Translation.PASSWORD} />
+                    {LL().PASSWORD()}
                     <span className="ln-tooltip" style={{ marginLeft: '0.2em' }}>
                         <VectorIcon src={CircleEmptyInfoIcon} />
                     </span>
@@ -307,25 +308,26 @@ export default function RegisterView() {
             </FormGroup>
 
             <FormGroup>
-                <FormLabel><I18N t={Translation.DATE_OF_BIRTH} /></FormLabel>
+                <FormLabel>{LL().DATE_OF_BIRTH()}</FormLabel>
                 <FormSelectGroup>
                     <FormSelect name="year" required value={state.dob.y || ""} onChange={on_year_change}>
-                        <I18N t={Translation.YEAR} render={(value: string) => <option disabled hidden value="">{value}</option>} />
+                        <option disabled hidden value="">{LL().YEAR()}</option>
+
                         <For each={YEARS}>
                             {year => <option value={year}>{year}</option>}
                         </For>
                     </FormSelect>
 
                     <FormSelect name="month" required value={state.dob.m != null ? state.dob.m : ""} onChange={on_month_change}>
-                        <I18N t={Translation.MONTH} render={(value: string) => <option disabled hidden value="">{value}</option>} />
+                        <option disabled hidden value="">{LL().MONTH()}</option>
+
                         <For each={dayjs.months()}>
                             {(month, i) => <option value={i() + 1}>{month}</option>}
                         </For>
                     </FormSelect>
 
-                    <FormSelect name="day" required onChange={on_day_change}
-                        value={state.dob.d == null ? "" : state.dob.d}>
-                        <I18N t={Translation.DAY} render={(value: string) => <option disabled hidden value="">{value}</option>} />
+                    <FormSelect name="day" required onChange={on_day_change} value={state.dob.d == null ? "" : state.dob.d}>
+                        <option disabled hidden value="">{LL().DAY()}</option>
 
                         <Index each={new Array(state.days)}>
                             {(_, i) => <option value={i + 1}>{(i + 1).toString()}</option>}

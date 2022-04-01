@@ -1,7 +1,7 @@
 
 import { Dynamic, Suspense } from "solid-js/web";
-import { createMemo, lazy, Match, Switch, useContext } from "solid-js";
-import { Provider } from "solid-mutant";
+import { createMemo, createRenderEffect, createResource, createSignal, lazy, Match, Switch, useContext } from "solid-js";
+import { Provider as MutantProvider } from "solid-mutant";
 import { IHistoryState } from "state/mutators";
 
 import { HISTORY, STORE } from "state/global";
@@ -72,14 +72,45 @@ function AppRouter() {
     );
 };
 
-export default function App() {
-    return (
-        <Provider store={STORE}>
-            <Toasts />
+import { StorageKey } from "state/storage";
+import TypesafeI18n, { useI18nContext } from "ui/i18n/i18n-solid";
+import { loadLocaleAsync } from "ui/i18n/i18n-util.async";
+import { Locales } from "ui/i18n/i18n-types";
 
-            <HistoryContext.Provider value={STORE.state.history as IHistoryState}>
-                <AppRouter />
-            </HistoryContext.Provider>
-        </Provider>
-    )
+// manually include english, always
+import "ui/i18n/en";
+
+// start pre-loading locale immediately upon script execution, not rendering
+let initial_locale = localStorage.getItem(StorageKey.LOCALE) as Locales || 'en';
+let loading_locale = loadLocaleAsync(initial_locale);
+
+// pretend component that uses `lazy` to defer rendering the real UI until locales are loaded.
+const I18NLoader = lazy(async () => {
+    await loading_locale;
+
+    return {
+        default: () => {
+            useI18nContext().setLocale(initial_locale);
+            return null;
+        }
+    }
+});
+
+export default function App() {
+    // top-level suspense for locale loading, don't show UI until it's loaded.
+    return (
+        <Suspense fallback={Fallback}>
+            <TypesafeI18n locale="en">
+                <I18NLoader />
+
+                <MutantProvider store={STORE}>
+                    <Toasts />
+
+                    <HistoryContext.Provider value={STORE.state.history as IHistoryState}>
+                        <AppRouter />
+                    </HistoryContext.Provider>
+                </MutantProvider>
+            </TypesafeI18n>
+        </Suspense >
+    );
 }
