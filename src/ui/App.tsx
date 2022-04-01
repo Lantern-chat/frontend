@@ -73,15 +73,17 @@ function AppRouter() {
 };
 
 import { StorageKey } from "state/storage";
+import type { Locales } from "ui/i18n/i18n-types";
 import TypesafeI18n, { useI18nContext } from "ui/i18n/i18n-solid";
 import { loadLocaleAsync } from "ui/i18n/i18n-util.async";
-import { Locales } from "ui/i18n/i18n-types";
+import { detectLocale } from "ui/i18n/i18n-util";
+import { DETECTORS } from "ui/i18n";
 
 // manually include english, always
 import "ui/i18n/en";
 
 // start pre-loading locale immediately upon script execution, not rendering
-let initial_locale = localStorage.getItem(StorageKey.LOCALE) as Locales || 'en';
+let initial_locale = localStorage.getItem(StorageKey.LOCALE) as Locales || /*#__INLINE__*/ detectLocale(...DETECTORS);
 let loading_locale = loadLocaleAsync(initial_locale);
 
 // pretend component that uses `lazy` to defer rendering the real UI until locales are loaded.

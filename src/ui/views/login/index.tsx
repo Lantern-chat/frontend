@@ -7,6 +7,7 @@ import type { RootState, Action } from "state/root";
 import { CLIENT } from "state/global";
 
 import { createReducer } from "ui/hooks/createReducer";
+import { setTitle } from "ui/hooks/setTitle";
 
 //import { timeout } from "lib/util";
 import { Spinner } from "ui/components/common/spinners/spinner";
@@ -87,7 +88,7 @@ import "./login.scss";
 export default function LoginView() {
     const { LL, locale } = useI18nContext();
 
-    document.title = LL().LOGIN();
+    setTitle(() => LL().LOGIN());
 
     let dispatch = useDispatch<RootState, Action>();
 

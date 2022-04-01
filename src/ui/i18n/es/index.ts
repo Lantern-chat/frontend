@@ -25,4 +25,7 @@ export default {
     MFA_TOGGLE_TEXT: "¿{h|{true: No tienes, false: Tiene}} un código 2FA?",
     MFA_TOGGLE_FLAVOR: "Haga clic aquí para {h|{true: ocultar, false: mostrar}} a entrada.",
     MFA_CODE: "Código 2FA",
+    GOTO_LOGIN: "Ir a Iniciar sesión",
+    REGISTER_AGREE: "Al registrarse, acepta nuestros... esto se completará más adelante.",
+    PASSWORD_REQS: "La contraseña debe tener al menos 8 caracteres y contener al menos un número o un carácter especial."
 } as BaseTranslation;

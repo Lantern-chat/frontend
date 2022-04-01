@@ -14,6 +14,7 @@ import { useRootSelector } from "state/root";
 import { CLIENT } from "state/global";
 
 import { createReducer } from "ui/hooks/createReducer";
+import { setTitle } from "ui/hooks/setTitle";
 
 import { Link } from "ui/components/history";
 
@@ -155,6 +156,7 @@ import { CircleEmptyInfoIcon } from "lantern-icons";
 
 var SETUP_THEN = false;
 
+// TODO: i18n these
 const HCAPTCHA_ERRORS = {
     "rate-limited": "Too Many hCaptcha Requests",
     "network-error": "hCaptcha Network Error",
@@ -172,9 +174,9 @@ import { useI18nContext } from 'ui/i18n/i18n-solid';
 import "../login/login.scss";
 import "./register.scss";
 export default function RegisterView() {
-    const { LL } = useI18nContext();
+    const { LL, locale } = useI18nContext();
 
-    document.title = LL().REGISTER();
+    setTitle(() => LL().REGISTER());
 
     let dispatch = useDispatch<RootState, Action>();
 
@@ -289,7 +291,8 @@ export default function RegisterView() {
 
             <FormGroup>
                 <FormLabel htmlFor="username">{LL().USERNAME()}</FormLabel>
-                <FormInput value={state.user} type="text" name="username" placeholder="username" required isValid={valid_user()}
+                <FormInput value={state.user} type="text" name="username"
+                    placeholder={LL().USERNAME().toLocaleLowerCase(locale())} required isValid={valid_user()}
                     onInput={on_username_change} />
             </FormGroup>
 
@@ -300,11 +303,9 @@ export default function RegisterView() {
                         <VectorIcon src={CircleEmptyInfoIcon} />
                     </span>
                 </FormLabel>
-                <FormInput type="password" name="password" placeholder="password" required isValid={valid_pass()}
+                <FormInput type="password" name="password" placeholder={LL().PASSWORD().toLocaleLowerCase(locale())} required isValid={valid_pass()}
                     className={passwordClass()} onInput={on_password_change} />
-                <FormText>
-                    Password must be at least 8 characters long and contain at least one number or one special character.
-                </FormText>
+                <FormText>{LL().PASSWORD_REQS()}</FormText>
             </FormGroup>
 
             <FormGroup>
@@ -354,7 +355,7 @@ export default function RegisterView() {
                         style={{ "margin-right": 'auto' }}
                         onClick={() => setErrorMsg(null)}
                     >
-                        <Show when={state.is_registering} fallback="Register">
+                        <Show when={state.is_registering} fallback={LL().REGISTER()}>
                             <Spinner size="2em" />
                         </Show>
 
@@ -369,17 +370,17 @@ export default function RegisterView() {
                     </button>
 
 
-                    <Link href="/login" className="ln-btn">Go to Login</Link>
+                    <Link href="/login" className="ln-btn">{LL().GOTO_LOGIN()}</Link>
                 </div>
             </FormGroup>
 
             <FormGroup>
-                <FormText>
-                    By registering, you agree to our... this will be filled in later.
-                </FormText>
+                <FormText>{LL().REGISTER_AGREE()}</FormText>
 
                 <FormText>
-                    This site is protected by hCaptcha and its <a target="_blank" href="https://hcaptcha.com/privacy">Privacy Policy</a> and <a target="_blank" href="https://hcaptcha.com/terms">Terms of Service</a> apply.
+                    This site is protected by hCaptcha and its&nbsp;
+                    <a target="_blank" href="https://hcaptcha.com/privacy">Privacy Policy</a> and&nbsp;
+                    <a target="_blank" href="https://hcaptcha.com/terms">Terms of Service</a> apply.
                 </FormText>
             </FormGroup>
         </form>

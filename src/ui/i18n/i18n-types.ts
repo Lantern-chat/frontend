@@ -104,6 +104,18 @@ type RootTranslation = {
 	 * 2FA Code
 	 */
 	MFA_CODE: string
+	/**
+	 * Go to Login
+	 */
+	GOTO_LOGIN: string
+	/**
+	 * By registering, you agree to our... this will be filled in later.
+	 */
+	REGISTER_AGREE: string
+	/**
+	 * Password must be at least 8 characters long and contain at least one number or one special character.
+	 */
+	PASSWORD_REQS: string
 }
 
 export type TranslationFunctions = {
@@ -195,6 +207,18 @@ export type TranslationFunctions = {
 	 * 2FA Code
 	 */
 	MFA_CODE: () => LocalizedString
+	/**
+	 * Go to Login
+	 */
+	GOTO_LOGIN: () => LocalizedString
+	/**
+	 * By registering, you agree to our... this will be filled in later.
+	 */
+	REGISTER_AGREE: () => LocalizedString
+	/**
+	 * Password must be at least 8 characters long and contain at least one number or one special character.
+	 */
+	PASSWORD_REQS: () => LocalizedString
 }
 
 export type Formatters = {}
