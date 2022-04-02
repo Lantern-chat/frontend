@@ -2,10 +2,10 @@
 
 .ln-typing {
     height: 1em;
-    padding-left: 2rem;
+    padding-inline-start: 2rem;
 
     @media (max-width: $ln-max-channel-width) {
-        padding-left: 1rem;
+        padding-inline-start: 1rem;
 
         &__bottom {
             display: none;
@@ -28,7 +28,7 @@
         z-index: 1;
         left: 0;
         right: 0;
-        text-align: left;
+        text-align: start;
         background-color: $lnx-tertiary-surface-color;
     }
 

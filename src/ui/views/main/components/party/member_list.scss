@@ -86,7 +86,7 @@
 
     &__meta {
         overflow: hidden;
-        margin-left: 0.5em;
+        margin-inline-start: 0.5em; // margin-left
         flex-direction: column;
         justify-content: center;
     }

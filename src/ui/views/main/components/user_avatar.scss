@@ -7,7 +7,13 @@
 .ln-user-status {
     position: absolute;
     bottom: -0.2em;
-    right: -0.2em;
+
+    .ln-ltr & {
+        right: -0.2em;
+    }
+    .ln-rtl & {
+        left: -0.2em;
+    }
 
     display: inline-flex;
     flex-direction: column;

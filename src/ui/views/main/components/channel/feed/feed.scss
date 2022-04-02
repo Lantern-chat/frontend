@@ -2,7 +2,7 @@
 
 .ln-inf-scroll__container.has-timeline,
 .ln-feed-footers.has-timeline {
-    margin-right: 2rem;
+    margin-inline-end: 2rem;
 }
 
 .ln-msg-list {
@@ -55,8 +55,14 @@
         position: absolute;
         top: 0;
         width: 2rem;
-        right: 0;
         bottom: 0;
+
+        .ln-ltr & {
+            right: 0;
+        }
+        .ln-rtl & {
+            left: 0;
+        }
     }
 
     li:last-child {
@@ -87,7 +93,7 @@
     right: 0;
 
     z-index: 2;
-    margin-left: calc(1rem - 2.5px); // same as margin for input box, which is offset by 2.5px for the border
+    margin-inline-start: calc(1rem - 2.5px); // same as margin for input box, which is offset by 2.5px for the border
 }
 
 .ln-feed-footer {
@@ -101,7 +107,7 @@
     }
 
     #goto-now {
-        text-align: right;
+        text-align: end;
         flex: 1;
 
         .ln-icon {

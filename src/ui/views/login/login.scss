@@ -25,10 +25,17 @@
 
     div#mfa_toggle {
         font-size: 0.75em;
-        text-align: right;
+        text-align: end;
         color: $lnx-secondary-text-color;
         cursor: pointer;
-        float: right;
+
+        .ln-ltr & {
+            float: right;
+        }
+
+        .ln-rtl & {
+            float: left;
+        }
 
         &:hover {
             text-decoration: underline;

@@ -36,16 +36,16 @@
 
     @media (max-width: $ln-max-channel-width) {
         //padding-left: 1rem;
-        padding-right: 1rem;
+        padding-inline-end: 1rem;
         text-align: center;
     }
 
     &__download {
-        margin-left: 1em;
+        margin-inline-start: 1em;
     }
 
     &__generic {
-        text-align: left;
+        text-align: start;
         padding: 0.5em;
         background-color: $lnx-primary-surface-color;
 

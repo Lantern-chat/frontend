@@ -68,7 +68,7 @@
         height: 100%;
         display: flex;
         padding: 0.35em 0;
-        padding-left: 5%;
+        padding-inline-start: 5%;
         //line-height: normal;
     }
 
@@ -84,7 +84,7 @@
 
     &__icon {
         width: 1.5em;
-        text-align: right;
+        text-align: end;
         //margin-right: 0.4em;
         flex-shrink: 0;
         //display: inline-block;
@@ -112,9 +112,14 @@
     &__subicon {
         font-size: 0.5em;
         position: absolute;
-        right: 0;
         top: 0;
         bottom: 0;
+        right: 0;
+
+        .ln-rtl & {
+            right: 1em;
+        }
+
         filter: drop-shadow(1px 0.5px var(--channel-list-background-color))
             drop-shadow(-1px 0.5px var(--channel-list-background-color))
             drop-shadow(0px -1px var(--channel-list-background-color));

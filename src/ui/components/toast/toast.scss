@@ -22,12 +22,12 @@ $duration: 0.3s;
 
     &.left {
         left: 0;
-        text-align: left;
+        text-align: start;
     }
 
     &.right {
         right: 0;
-        text-align: right;
+        text-align: end;
 
         .ln-enable-motion & .ln-toast {
             animation: enter-right $duration ease-in-out forwards;

@@ -1,5 +1,5 @@
 .katex-display {
-    text-align: left;
+    text-align: start;
 
     // TODO: Revisit this, make it look nicer, handle touch events
     overflow: auto hidden;
@@ -9,6 +9,6 @@
     }
 
     > .katex {
-        text-align: left;
+        text-align: start;
     }
 }

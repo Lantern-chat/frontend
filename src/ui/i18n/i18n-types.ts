@@ -19,6 +19,10 @@ export type Translations = RootTranslation &
 
 type RootTranslation = {
 	/**
+	 * ltr
+	 */
+	direction: string
+	/**
 	 * This is a development build.
 	 */
 	DEV_BANNER: string
@@ -289,6 +293,10 @@ type DisallowNamespaces = {
 }
 
 export type TranslationFunctions = {
+	/**
+	 * ltr
+	 */
+	direction: () => LocalizedString
 	/**
 	 * This is a development build.
 	 */

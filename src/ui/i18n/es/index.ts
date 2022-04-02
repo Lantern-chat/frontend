@@ -4,6 +4,7 @@ import 'dayjs/locale/es';
 
 // @stringify
 const es: Translation = {
+    direction: "ltr",
     DEV_BANNER: "Esta es una compilación de desarrollo.",
     YEAR: "Año",
     MONTH: "Mes",

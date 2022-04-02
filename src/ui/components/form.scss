@@ -67,13 +67,22 @@
         position: absolute;
         font-size: 3em;
         line-height: 26%;
-        left: -0.5em;
         bottom: 50%;
         transform: scale(1.3, 1);
         font-weight: 300;
 
-        @media (max-width: 49em) {
-            left: -5.5%;
+        .ln-ltr & {
+            left: -0.5em;
+            @media (max-width: 49em) {
+                left: -5.5%;
+            }
+        }
+
+        .ln-rtl & {
+            right: -0.5em;
+            @media (max-width: 49em) {
+                right: -5.5%;
+            }
         }
     }
 
@@ -149,8 +158,8 @@ $btn-scale: 1.1;
 
     &--loading-icon {
         padding: golden_ratio(math.div(0.5, $btn-scale), em);
-        padding-left: golden_ratio_other(math.div(1, $btn-scale), em);
-        padding-right: golden_ratio_other(math.div(1, $btn-scale), em);
+        padding-inline-start: golden_ratio_other(math.div(1, $btn-scale), em);
+        padding-inline-end: golden_ratio_other(math.div(1, $btn-scale), em);
     }
 
     .ln-light-theme & {
@@ -193,10 +202,10 @@ $btn-scale: 1.1;
     position: relative;
 
     .ln-form-group & {
-        margin-right: 1em;
+        margin-inline-end: 1em;
 
         &:last-child {
-            margin-right: 0;
+            margin-inline-end: 0;
         }
     }
 }
@@ -210,9 +219,9 @@ select.ln-form-select {
     width: 100%;
     //height: 100%;
     padding: golden_ratio(0.8, em);
-    padding-left: 0.6em;
+    padding-inline-start: 0.6em;
     text-align: center;
-    padding-right: 3em;
+    padding-inline-end: 3em;
     background: $lnx-tertiary-surface-color;
     color: $lnx-primary-text-color;
     outline: none;

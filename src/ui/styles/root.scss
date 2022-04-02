@@ -28,6 +28,14 @@ body {
     overflow: hidden;
 }
 
+.ln-rtl {
+    direction: rtl;
+}
+
+.ln-ltr {
+    direction: ltr;
+}
+
 #ln-root {
     background-color: $lnx-primary-surface-color;
 }
@@ -209,15 +217,15 @@ a {
 
     &.ln-scroll-fixed {
         overflow-y: scroll;
-        padding-left: 7px;
+        padding-inline-start: 7px;
     }
 
     &--rtl {
         direction: rtl;
 
         &.ln-scroll-fixed {
-            padding-right: 7px;
-            padding-left: 0;
+            padding-inline-end: 7px;
+            padding-inline-start: 0;
         }
     }
 
@@ -230,8 +238,8 @@ a {
         }
 
         &.ln-scroll-fixed {
-            padding-left: 0;
-            padding-right: 0;
+            padding-inline-start: 0;
+            padding-inline-end: 0;
         }
     }
 }

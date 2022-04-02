@@ -18,6 +18,10 @@ body {
         //height: 1em;
         //fill: $lnx-primary-text-color;
 
+        .ln-rtl & {
+            transform: scaleX(-1);
+        }
+
         svg {
             height: 100%;
             overflow: visible;

@@ -73,15 +73,26 @@
         &::before {
             content: "";
             position: absolute;
-            left: 0;
             top: 0;
             bottom: 0;
-            right: 93%;
+
+            .ln-ltr & {
+                right: 93%;
+                left: 0;
+                border-top-right-radius: 50%;
+                border-bottom-right-radius: 50%;
+            }
+
+            .ln-rtl & {
+                left: 93%;
+                right: 0;
+
+                border-top-left-radius: 50%;
+                border-bottom-left-radius: 50%;
+            }
+
             background-color: $lnx-primary-text-color;
             transform: scaleY(0);
-
-            border-top-right-radius: 50%;
-            border-bottom-right-radius: 50%;
 
             .ln-enable-motion & {
                 transition: transform 0.1s ease-in;

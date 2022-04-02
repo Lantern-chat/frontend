@@ -32,7 +32,7 @@
         flex-wrap: nowrap;
 
         @media (min-width: $ln-min-channel-width) {
-            text-align: left;
+            text-align: start;
         }
     }
 
@@ -47,20 +47,20 @@
     }
 
     &__users {
-        text-align: right;
+        text-align: end;
         flex: 0 1 3em;
 
         > span {
-            padding-right: 0;
+            padding-inline-end: 0;
         }
     }
 
     &__hamburger {
         flex: 0 0 auto;
-        text-align: left;
+        text-align: start;
 
         > span {
-            padding-left: 0;
+            padding-inline-start: 0;
         }
 
         @media (min-width: $ln-min-channel-width) {
@@ -78,18 +78,19 @@
 
 .ln-channel-icon {
     font-size: 1.6em;
-    margin: auto 0.1em auto 0;
+    margin: auto 0;
+    margin-inline-start: 0.1em;
     flex: 0 0 auto;
 
     @media (max-width: $ln-max-channel-width) {
-        margin-right: 0;
+        margin-inline-end: 0;
     }
 }
 
 .ln-channel-info {
     line-height: normal;
     color: $lnx-secondary-text-color;
-    text-align: left;
+    text-align: start;
 
     @media (min-width: $ln-min-channel-width) {
         max-width: calc(97vw - 35.2rem); // 4.2 + 14*2 + 3

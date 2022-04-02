@@ -219,7 +219,7 @@ export default function LoginView() {
                     <button
                         className="ln-btn ui-text"
                         classList={{ 'ln-btn--loading-icon': state.is_logging_in }}
-                        style={{ 'margin-right': 'auto' }}
+                        style={{ 'margin-inline-end': 'auto' }}
                         onClick={() => setErrorMsg(null)}
                     >
                         <Show when={state.is_logging_in} fallback={LL().LOGIN()}>

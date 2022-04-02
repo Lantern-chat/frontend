@@ -40,8 +40,9 @@
         font-size: 0.8em;
         display: flex;
         flex-direction: column;
-        text-align: left;
-        margin: auto 0 auto 0.5em;
+        text-align: start;
+        margin: auto 0;
+        margin-inline-start: 0.5em;
         overflow: hidden;
 
         &__discrim {
@@ -58,7 +59,7 @@
     &__settings {
         //display: flex;
         //justify-content: right;
-        text-align: right;
+        text-align: end;
         //width: 100%;
         font-size: 1.75em;
 

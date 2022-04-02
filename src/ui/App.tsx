@@ -104,7 +104,7 @@ function AppRouter() {
 };
 
 import { StorageKey } from "state/storage";
-import { detectLocale } from "ui/i18n/i18n-util";
+import { detectLocale, loadedLocales } from "ui/i18n/i18n-util";
 import { DETECTORS } from "ui/i18n";
 
 // manually include english, always
@@ -124,7 +124,12 @@ const I18NWrapper = lazy(async () => {
 
             setLocale(initial_locale);
 
-            createRenderEffect(() => dayjs.locale(locale()));
+            createRenderEffect(() => {
+                let dir = loadedLocales[locale()].direction;
+                document.body.classList.toggle('ln-rtl', dir == 'rtl');
+                document.body.classList.toggle('ln-ltr', dir == 'ltr');
+                dayjs.locale(locale())
+            });
 
             return (
                 <MutantProvider store={STORE}>

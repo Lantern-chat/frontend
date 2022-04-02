@@ -353,7 +353,7 @@ export default function RegisterView() {
                     <button
                         className="ln-btn ui-text"
                         classList={{ 'ln-btn--loading-icon': state.is_registering }}
-                        style={{ "margin-right": 'auto' }}
+                        style={{ "margin-inline-end": 'auto' }}
                         onClick={() => setErrorMsg(null)}
                     >
                         <Show when={state.is_registering} fallback={LL().REGISTER()}>

@@ -2,8 +2,8 @@
 
 @import "lib/variables";
 
-@function gen_temp_gradient($stops) {
-    $gradient: (to right, #000 0%);
+@function gen_temp_gradient($stops, $dir) {
+    $gradient: ($dir, #000 0%);
 
     @for $i from 0 through $stops {
         $t: math.div($i, $stops);
@@ -20,7 +20,14 @@
     display: flex;
     position: absolute;
     top: 1em;
-    left: 1em;
+
+    .ln-ltr & {
+        left: 1em;
+    }
+    .ln-rtl & {
+        right: 1em;
+    }
+
     background-color: $lnx-secondary-surface-color;
     border-radius: 1em;
     padding: 0.2em;
@@ -103,11 +110,13 @@
             outline: none;
         }
 
-        $kelvin_gradient: gen_temp_gradient(20);
+        .ln-ltr & {
+            background: linear-gradient(#{gen_temp_gradient(20, to right)});
+        }
 
-        //@debug $kelvin_gradient;
-
-        background: linear-gradient($kelvin_gradient);
+        .ln-rtl & {
+            background: linear-gradient(#{gen_temp_gradient(20, to left)});
+        }
 
         @mixin thumb() {
             box-shadow: none;

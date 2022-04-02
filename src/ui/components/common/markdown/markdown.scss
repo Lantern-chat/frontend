@@ -17,7 +17,7 @@ summary {
 summary {
     overflow-x: auto;
     padding: 0.5em;
-    margin-right: 0.5em;
+    margin-inline-end: 0.5em;
     -webkit-overflow-scrolling: touch;
     //display: table;
 
@@ -152,7 +152,7 @@ summary {
     li > {
         ul,
         ol {
-            padding-left: 1em;
+            padding-inline-start: 1em;
         }
     }
 
@@ -203,19 +203,27 @@ summary {
 
     blockquote {
         position: relative;
-        padding-left: 1em;
+        padding-inline-start: 1em;
         min-height: 1.5em;
         line-height: normal;
         text-indent: 0;
 
         &::before {
             content: "";
-            position: absolute;
+            width: 0.1em;
             background-color: $lnx-primary-text-color;
-            left: 0;
+
+            position: absolute;
             top: 0;
             bottom: 0;
-            width: 0.1em;
+
+            .ln-ltr & {
+                left: 0;
+            }
+
+            .ln-rtl & {
+                right: 0;
+            }
         }
     }
 

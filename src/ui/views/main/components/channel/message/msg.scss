@@ -68,7 +68,7 @@
         //margin-left: 1rem;
 
         text-indent: -5em;
-        margin-left: 4.5em;
+        margin-inline-start: 4.5em; // margin-left
         max-width: calc(100% - 4.5em);
         flex: 1 1 auto;
     }
@@ -82,11 +82,11 @@
         overflow: hidden;
 
         // TODO: Re-evaluate this when removing scrollbar
-        margin-right: 0.5em;
+        margin-inline-end: 0.5em;
 
         .compact & {
             padding: 0;
-            margin-right: 0;
+            margin-inline-end: 0;
         }
     }
 
@@ -164,7 +164,7 @@
         font-size: 1em;
         font-weight: bold;
         display: inline-flex;
-        margin-right: 0.5em;
+        margin-inline-end: 0.5em; // margin-right
         max-width: 20em;
         cursor: pointer;
 
@@ -216,7 +216,7 @@
         }
 
         .flags {
-            margin-left: 0.5em;
+            margin-inline-start: 0.5em; // margin-left
 
             .ln-icon {
                 vertical-align: bottom;
@@ -229,7 +229,7 @@
     &__side {
         min-width: 4.025em;
         flex-shrink: 0;
-        padding-left: 0.75em;
+        padding-inline-start: 0.75em; // padding-left
         position: relative;
         //display: flex;
         display: block;
@@ -238,7 +238,7 @@
 
         @media (min-width: $ln-min-channel-width) {
             min-width: 4.425em;
-            padding-left: 1em;
+            padding-inline-start: 1em; // padding-left
             //padding-right: 0.8em;
         }
 
@@ -334,7 +334,7 @@
 
 .ln-system-sub {
     font-size: 0.6em;
-    margin-left: 0.5em;
+    margin-left: 0.5em; // NOTE: Always positions to the right?
     vertical-align: middle;
     cursor: default;
     color: $lnx-secondary-text-color;
