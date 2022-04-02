@@ -20,6 +20,8 @@ const en_main: BaseTranslation = {
     MESSAGE_PINNED: "Message Pinned",
     SPOILER_TITLE: "Click to reveal spoiler",
     OWNER: "Owner",
+    VIEWING_OLDER: "You're viewing older messages.",
+    GOTO_NOW: "Go to now"
 };
 
 export default en_main;

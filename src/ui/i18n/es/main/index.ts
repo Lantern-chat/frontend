@@ -20,6 +20,8 @@ const es_main: NamespaceMainTranslation = {
 	MESSAGE_PINNED: "Mensaje Fijado",
 	SPOILER_TITLE: "Haga clic para revelar el spoiler",
 	OWNER: "Dueño",
+	VIEWING_OLDER: "Estás viendo mensajes antiguos.",
+	GOTO_NOW: "Ir a ahora",
 };
 
 export default es_main;

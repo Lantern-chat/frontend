@@ -183,6 +183,14 @@ export type NamespaceMainTranslation = {
 	 * Owner
 	 */
 	OWNER: string
+	/**
+	 * You're viewing older messages.
+	 */
+	VIEWING_OLDER: string
+	/**
+	 * Go to now
+	 */
+	GOTO_NOW: string
 }
 
 export type NamespaceSettingsTranslation = {
@@ -400,6 +408,14 @@ export type TranslationFunctions = {
 		 * Owner
 		 */
 		OWNER: () => LocalizedString
+		/**
+		 * You're viewing older messages.
+		 */
+		VIEWING_OLDER: () => LocalizedString
+		/**
+		 * Go to now
+		 */
+		GOTO_NOW: () => LocalizedString
 	}
 	settings: {
 		/**

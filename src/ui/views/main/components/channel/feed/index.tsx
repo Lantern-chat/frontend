@@ -3,6 +3,8 @@ import { Dynamic } from "solid-js/web";
 import { useDispatch, useSelector, useStructuredSelector } from "solid-mutant";
 import { activeParty, activeRoom } from "state/selectors/active";
 
+import { useI18nContext } from "ui/i18n/i18n-solid";
+
 import dayjs from "lib/time";
 import { user_avatar_url } from "config/urls";
 import { pickColorFromHash } from "lib/palette";
@@ -155,6 +157,8 @@ interface IGotoBottomFooterProps {
 }
 
 function GotoBottomFooter(props: IGotoBottomFooterProps) {
+    let { LL } = useI18nContext();
+
     return (
         <Branch>
             <Branch.If when={props.use_mobile_view}>
@@ -165,9 +169,9 @@ function GotoBottomFooter(props: IGotoBottomFooterProps) {
 
             <Branch.Else>
                 <div className="ln-feed-footer ui-text" onClick={() => props.onClick()}>
-                    <span>You're viewing older messages</span>
+                    <span textContent={LL().main.VIEWING_OLDER()} />
                     <span id="goto-now">
-                        Go to now <VectorIcon src={ChevronDownIcon} />
+                        {LL().main.GOTO_NOW()} <VectorIcon src={ChevronDownIcon} />
                     </span>
                 </div>
             </Branch.Else>
