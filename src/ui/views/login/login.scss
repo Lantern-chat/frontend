@@ -33,6 +33,11 @@
         &:hover {
             text-decoration: underline;
         }
+
+        @media (max-width: $ln-max-channel-width) {
+            padding-top: 1em;
+            padding-bottom: 0.5em;
+        }
     }
 
     input#totp_input {
