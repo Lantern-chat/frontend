@@ -1,6 +1,6 @@
 
 import { Dynamic, Suspense } from "solid-js/web";
-import { createEffect, createMemo, createRenderEffect, createResource, createSignal, lazy, Match, Switch, untrack, useContext } from "solid-js";
+import { createEffect, createMemo, createRenderEffect, createResource, createSignal, lazy, Match, on, Switch, untrack, useContext } from "solid-js";
 import { Provider as MutantProvider } from "solid-mutant";
 import { IHistoryState } from "state/mutators";
 
@@ -71,7 +71,15 @@ const MainWrapper = lazy(async () => {
     return {
         default: () => {
             let { locale, setLocale } = useI18nContext();
+
             setLocale(locale()); // refresh locale
+
+            // setup an effect to load the main namespace on locale changes
+            createRenderEffect(() => loadNamespaceAsync(locale(), 'main').then(() => {
+                __DEV__ && console.log("Loaded main namespace for locale", locale());
+
+                setLocale(locale());
+            }));
 
             return <MainView />;
         },
@@ -115,6 +123,7 @@ const I18NWrapper = lazy(async () => {
             let { locale, setLocale } = useI18nContext();
 
             setLocale(initial_locale);
+
             createRenderEffect(() => dayjs.locale(locale()));
 
             return (
