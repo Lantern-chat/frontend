@@ -1,16 +1,12 @@
-import type { BaseTranslation } from '../i18n-types';
+import type { Translation } from '../i18n-types';
 
 import 'dayjs/locale/es';
 
-export default {
-    CHANNEL: "Habitación",
-    PARTY: "Fiesta",
-    DIRECT_MESSAGE: "Mensaje Directo",
-    CREATE_DIRECT_MESSAGE: "Crear Mensaje Directo",
+const es: Translation = {
+    DEV_BANNER: "Esta es una compilación de desarrollo.",
     YEAR: "Año",
     MONTH: "Mes",
     DAY: "Día",
-    MONTHS: "Enero,Febrero,Marzo,Abril,Mayo,Junio,Julio,Agosto,Septiembre,Octubre,Noviembre,Diciembre",
     REGISTER: "Registro",
     LOGIN: "Acceso",
     EMAIL_ADDRESS: "Dirección de correo electrónico",
@@ -28,4 +24,6 @@ export default {
     GOTO_LOGIN: "Ir a Iniciar sesión",
     REGISTER_AGREE: "Al registrarse, acepta nuestros... esto se completará más adelante.",
     PASSWORD_REQS: "La contraseña debe tener al menos 8 caracteres y contener al menos un número o un carácter especial."
-} as BaseTranslation;
+};
+
+export default es;

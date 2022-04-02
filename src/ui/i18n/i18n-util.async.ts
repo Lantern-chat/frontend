@@ -2,12 +2,23 @@
 /* eslint-disable */
 
 import { initFormatters } from './formatters'
-import type { Locales, Translations } from './i18n-types'
+import type { Locales, Translations, Namespaces } from './i18n-types'
 import { loadedFormatters, loadedLocales, locales } from './i18n-util'
 
 const localeTranslationLoaders = {
 	en: () => import('./en'),
 	es: () => import('./es'),
+}
+
+const localeNamespaceLoaders = {
+	en: {
+		main: () => import('./en/main'),
+		settings: () => import('./en/settings')
+	},
+	es: {
+		main: () => import('./es/main'),
+		settings: () => import('./es/settings')
+	}
 }
 
 export const loadLocaleAsync = async (locale: Locales) => {
@@ -21,4 +32,9 @@ export const loadAllLocalesAsync = () => Promise.all(locales.map(loadLocaleAsync
 
 export const loadFormatters = (locale: Locales) => {
 	loadedFormatters[locale] = initFormatters(locale)
+}
+
+export const loadNamespaceAsync = async <Namespace extends Namespaces>(locale: Locales, namespace: Namespace) => {
+	if (!loadedLocales[locale]) loadedLocales[locale] = {} as Translations
+	loadedLocales[locale][namespace] = (await (localeNamespaceLoaders[locale][namespace])()).default as Translations[Namespace]
 }

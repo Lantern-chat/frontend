@@ -1,6 +1,6 @@
 
 import { Dynamic, Suspense } from "solid-js/web";
-import { createMemo, createRenderEffect, createResource, createSignal, lazy, Match, Switch, useContext } from "solid-js";
+import { createEffect, createMemo, createRenderEffect, createResource, createSignal, lazy, Match, Switch, untrack, useContext } from "solid-js";
 import { Provider as MutantProvider } from "solid-mutant";
 import { IHistoryState } from "state/mutators";
 
@@ -35,13 +35,15 @@ function LoginRoutes(props: { which: typeof LOGIN_ROUTES[number] }) {
         }
     });
 
+    let { LL } = useI18nContext();
+
     return (
         <>
             <Fireflies density={175} />
 
             <ThemeWidget />
 
-            {__DEV__ && <div className="ln-dev-banner">This is a development build.</div>}
+            {__DEV__ && <div className="ln-dev-banner" textContent={LL().DEV_BANNER()} />}
 
             <div className="ln-box ln-scroll-y">
                 <div className="ln-login-container ln-centered" style={{ zIndex: 1 }}>
@@ -55,6 +57,27 @@ function LoginRoutes(props: { which: typeof LOGIN_ROUTES[number] }) {
     );
 }
 
+import type { Locales } from "ui/i18n/i18n-types";
+import TypesafeI18n, { useI18nContext } from "ui/i18n/i18n-solid";
+import { loadLocaleAsync, loadNamespaceAsync } from "ui/i18n/i18n-util.async";
+
+const MainWrapper = lazy(async () => {
+    // TODO: Figure out how to include the english translation inside main itself
+    await Promise.all([
+        loadNamespaceAsync(localStorage.getItem(StorageKey.LOCALE) as Locales || initial_locale, 'main'),
+        MainView.preload(),
+    ]);
+
+    return {
+        default: () => {
+            let { locale, setLocale } = useI18nContext();
+            setLocale(locale()); // refresh locale
+
+            return <MainView />;
+        },
+    }
+});
+
 function AppRouter() {
     let location = useRootSelector(state => state.history.parts[0]);
 
@@ -65,7 +88,7 @@ function AppRouter() {
             </Match>
             <Match when={MAIN_ROUTES.includes(location() as any)}>
                 <Suspense fallback={Fallback}>
-                    <MainView />
+                    <MainWrapper />
                 </Suspense>
             </Match>
         </Switch>
@@ -73,38 +96,28 @@ function AppRouter() {
 };
 
 import { StorageKey } from "state/storage";
-import type { Locales } from "ui/i18n/i18n-types";
-import TypesafeI18n, { useI18nContext } from "ui/i18n/i18n-solid";
-import { loadLocaleAsync } from "ui/i18n/i18n-util.async";
 import { detectLocale } from "ui/i18n/i18n-util";
 import { DETECTORS } from "ui/i18n";
 
 // manually include english, always
 import "ui/i18n/en";
+import dayjs from "lib/time";
 
 // start pre-loading locale immediately upon script execution, not rendering
 let initial_locale = localStorage.getItem(StorageKey.LOCALE) as Locales || /*#__INLINE__*/ detectLocale(...DETECTORS);
 let loading_locale = loadLocaleAsync(initial_locale);
 
-// pretend component that uses `lazy` to defer rendering the real UI until locales are loaded.
-const I18NLoader = lazy(async () => {
+const I18NWrapper = lazy(async () => {
     await loading_locale;
 
     return {
         default: () => {
-            useI18nContext().setLocale(initial_locale);
-            return null;
-        }
-    }
-});
+            let { locale, setLocale } = useI18nContext();
 
-export default function App() {
-    // top-level suspense for locale loading, don't show UI until it's loaded.
-    return (
-        <Suspense fallback={Fallback}>
-            <TypesafeI18n locale="en">
-                <I18NLoader />
+            setLocale(initial_locale);
+            createRenderEffect(() => dayjs.locale(locale()));
 
+            return (
                 <MutantProvider store={STORE}>
                     <Toasts />
 
@@ -112,7 +125,18 @@ export default function App() {
                         <AppRouter />
                     </HistoryContext.Provider>
                 </MutantProvider>
-            </TypesafeI18n>
-        </Suspense >
+            );
+        }
+    }
+});
+
+export default function App() {
+    // top-level suspense for locale loading, don't show UI until it's loaded.
+    return (
+        <TypesafeI18n locale="en">
+            <Suspense fallback={Fallback}>
+                <I18NWrapper />
+            </Suspense>
+        </TypesafeI18n>
     );
 }

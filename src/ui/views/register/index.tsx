@@ -322,7 +322,8 @@ export default function RegisterView() {
                     <FormSelect name="month" required value={state.dob.m != null ? state.dob.m : ""} onChange={on_month_change}>
                         <option disabled hidden value="">{LL().MONTH()}</option>
 
-                        <For each={dayjs.months()}>
+                        {/*NOTE: Make each dependent on LL(), so the dayjs locale is updated as well*/}
+                        <For each={(LL(), dayjs.months())}>
                             {(month, i) => <option value={i() + 1}>{month}</option>}
                         </For>
                     </FormSelect>

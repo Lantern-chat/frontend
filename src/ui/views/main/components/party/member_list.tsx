@@ -1,6 +1,8 @@
 import { createMemo, For, Show } from "solid-js";
 import { useStructuredSelector } from "solid-mutant";
 
+import { useI18nContext } from "ui/i18n/i18n-solid";
+
 import { parse_presence, PartyMember, PresenceStatus, Role, Snowflake, UserPreferenceFlags, user_is_bot } from "state/models";
 import { RootState, useRootSelector } from "state/root";
 import { activeParty } from "state/selectors/active";
@@ -85,6 +87,8 @@ export function MemberList() {
         return { offline, online, hoisted };
     });
 
+    const { LL } = useI18nContext();
+
     return (
         <Show when={state.party}>
             <div className="ln-member-list ln-scroll-y ln-scroll-fixed">
@@ -97,13 +101,13 @@ export function MemberList() {
                 </For>
 
                 <RoleMemberList
-                    role="Online"
+                    role={LL().main.ONLINE()}
                     members={grouped_members().online}
                     owner={state.party!.party.owner}
                     is_light_theme={state.is_light_theme} />
 
                 <RoleMemberList
-                    role="Offline"
+                    role={LL().main.OFFLINE()}
                     members={grouped_members().offline}
                     owner={state.party!.party.owner}
                     is_light_theme={state.is_light_theme} />
@@ -141,6 +145,8 @@ interface IListedMemberProps {
 }
 
 function ListedMember(props: IListedMemberProps) {
+    let { LL } = useI18nContext();
+
     let color = useRootSelector(state => {
         let party_id, party;
 
@@ -173,7 +179,7 @@ function ListedMember(props: IListedMemberProps) {
 
                     <Show when={props.member.user.id == props.owner}>
                         <div className="ln-member__spacer" />
-                        <div className="ln-member__crown" title="Owner">
+                        <div className="ln-member__crown" title={LL().main.OWNER()}>
                             <VectorIcon src={CrownIcon} />
                         </div>
                     </Show>

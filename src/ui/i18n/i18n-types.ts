@@ -2,34 +2,26 @@
 /* eslint-disable */
 import type { BaseTranslation as BaseTranslationType, LocalizedString, RequiredParams } from 'typesafe-i18n'
 
-export type BaseTranslation = BaseTranslationType
+export type BaseTranslation = BaseTranslationType & DisallowNamespaces
 export type BaseLocale = 'en'
 
 export type Locales =
 	| 'en'
 	| 'es'
 
-export type Translation = RootTranslation
+export type Translation = RootTranslation & DisallowNamespaces
 
-export type Translations = RootTranslation
+export type Translations = RootTranslation &
+{
+	main: NamespaceMainTranslation,
+	settings: NamespaceSettingsTranslation
+}
 
 type RootTranslation = {
 	/**
-	 * Channel
+	 * This is a development build.
 	 */
-	CHANNEL: string
-	/**
-	 * Party
-	 */
-	PARTY: string
-	/**
-	 * Direct Message
-	 */
-	DIRECT_MESSAGE: string
-	/**
-	 * Create Direct Message
-	 */
-	CREATE_DIRECT_MESSAGE: string
+	DEV_BANNER: string
 	/**
 	 * Year
 	 */
@@ -42,10 +34,6 @@ type RootTranslation = {
 	 * Day
 	 */
 	DAY: string
-	/**
-	 * January,February,March,April,May,June,July,August,September,October,November,December
-	 */
-	MONTHS: string
 	/**
 	 * Register
 	 */
@@ -118,23 +106,143 @@ type RootTranslation = {
 	PASSWORD_REQS: string
 }
 
-export type TranslationFunctions = {
+export type NamespaceMainTranslation = {
 	/**
 	 * Channel
 	 */
-	CHANNEL: () => LocalizedString
+	CHANNEL: string
 	/**
 	 * Party
 	 */
-	PARTY: () => LocalizedString
+	PARTY: string
 	/**
 	 * Direct Message
 	 */
-	DIRECT_MESSAGE: () => LocalizedString
+	DIRECT_MESSAGE: string
 	/**
 	 * Create Direct Message
 	 */
-	CREATE_DIRECT_MESSAGE: () => LocalizedString
+	CREATE_DIRECT_MESSAGE: string
+	/**
+	 * Online
+	 */
+	ONLINE: string
+	/**
+	 * Offline
+	 */
+	OFFLINE: string
+	/**
+	 * Busy/Do Not Disturb
+	 */
+	BUSY: string
+	/**
+	 * Away
+	 */
+	AWAY: string
+	/**
+	 * Message
+	 */
+	MESSAGE: string
+	/**
+	 * Settings
+	 */
+	SETTINGS: string
+	/**
+	 * Mute
+	 */
+	MUTE: string
+	/**
+	 * Unmute
+	 */
+	UNMUTE: string
+	/**
+	 * Deafen
+	 */
+	DEAFEN: string
+	/**
+	 * Undeafen
+	 */
+	UNDEAFEN: string
+	/**
+	 * Edited
+	 */
+	EDITED: string
+	/**
+	 * Pinned
+	 */
+	PINNED: string
+	/**
+	 * Message Pinned
+	 */
+	MESSAGE_PINNED: string
+	/**
+	 * Click to reveal spoiler
+	 */
+	SPOILER_TITLE: string
+	/**
+	 * Owner
+	 */
+	OWNER: string
+}
+
+export type NamespaceSettingsTranslation = {
+	/**
+	 * Account
+	 */
+	ACCOUNT: string
+	/**
+	 * Profile
+	 */
+	PROFILE: string
+	/**
+	 * Privacy
+	 */
+	PRIVACY: string
+	/**
+	 * Notifications
+	 */
+	NOTIFICATIONS: string
+	/**
+	 * Appearance
+	 */
+	APPEARANCE: string
+	/**
+	 * Accessibility
+	 */
+	ACCESSIBILITY: string
+	/**
+	 * Text & Media
+	 */
+	TEXT_AND_MEDIA: string
+	/**
+	 * Language
+	 */
+	LANGUAGE: string
+}
+
+export type Namespaces =
+	| 'main'
+	| 'settings'
+
+type DisallowNamespaces = {
+	/**
+	 * reserved for 'main'-namespace\
+	 * you need to use the `./main/index.ts` file instead
+	 */
+	main?: "[typesafe-i18n] reserved for 'main'-namespace. You need to use the `./main/index.ts` file instead."
+
+	/**
+	 * reserved for 'settings'-namespace\
+	 * you need to use the `./settings/index.ts` file instead
+	 */
+	settings?: "[typesafe-i18n] reserved for 'settings'-namespace. You need to use the `./settings/index.ts` file instead."
+}
+
+export type TranslationFunctions = {
+	/**
+	 * This is a development build.
+	 */
+	DEV_BANNER: () => LocalizedString
 	/**
 	 * Year
 	 */
@@ -147,10 +255,6 @@ export type TranslationFunctions = {
 	 * Day
 	 */
 	DAY: () => LocalizedString
-	/**
-	 * January,February,March,April,May,June,July,August,September,October,November,December
-	 */
-	MONTHS: () => LocalizedString
 	/**
 	 * Register
 	 */
@@ -219,6 +323,118 @@ export type TranslationFunctions = {
 	 * Password must be at least 8 characters long and contain at least one number or one special character.
 	 */
 	PASSWORD_REQS: () => LocalizedString
+	main: {
+		/**
+		 * Channel
+		 */
+		CHANNEL: () => LocalizedString
+		/**
+		 * Party
+		 */
+		PARTY: () => LocalizedString
+		/**
+		 * Direct Message
+		 */
+		DIRECT_MESSAGE: () => LocalizedString
+		/**
+		 * Create Direct Message
+		 */
+		CREATE_DIRECT_MESSAGE: () => LocalizedString
+		/**
+		 * Online
+		 */
+		ONLINE: () => LocalizedString
+		/**
+		 * Offline
+		 */
+		OFFLINE: () => LocalizedString
+		/**
+		 * Busy/Do Not Disturb
+		 */
+		BUSY: () => LocalizedString
+		/**
+		 * Away
+		 */
+		AWAY: () => LocalizedString
+		/**
+		 * Message
+		 */
+		MESSAGE: () => LocalizedString
+		/**
+		 * Settings
+		 */
+		SETTINGS: () => LocalizedString
+		/**
+		 * Mute
+		 */
+		MUTE: () => LocalizedString
+		/**
+		 * Unmute
+		 */
+		UNMUTE: () => LocalizedString
+		/**
+		 * Deafen
+		 */
+		DEAFEN: () => LocalizedString
+		/**
+		 * Undeafen
+		 */
+		UNDEAFEN: () => LocalizedString
+		/**
+		 * Edited
+		 */
+		EDITED: () => LocalizedString
+		/**
+		 * Pinned
+		 */
+		PINNED: () => LocalizedString
+		/**
+		 * Message Pinned
+		 */
+		MESSAGE_PINNED: () => LocalizedString
+		/**
+		 * Click to reveal spoiler
+		 */
+		SPOILER_TITLE: () => LocalizedString
+		/**
+		 * Owner
+		 */
+		OWNER: () => LocalizedString
+	}
+	settings: {
+		/**
+		 * Account
+		 */
+		ACCOUNT: () => LocalizedString
+		/**
+		 * Profile
+		 */
+		PROFILE: () => LocalizedString
+		/**
+		 * Privacy
+		 */
+		PRIVACY: () => LocalizedString
+		/**
+		 * Notifications
+		 */
+		NOTIFICATIONS: () => LocalizedString
+		/**
+		 * Appearance
+		 */
+		APPEARANCE: () => LocalizedString
+		/**
+		 * Accessibility
+		 */
+		ACCESSIBILITY: () => LocalizedString
+		/**
+		 * Text & Media
+		 */
+		TEXT_AND_MEDIA: () => LocalizedString
+		/**
+		 * Language
+		 */
+		LANGUAGE: () => LocalizedString
+	}
 }
 
 export type Formatters = {}

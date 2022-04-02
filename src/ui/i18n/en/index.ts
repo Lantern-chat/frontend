@@ -2,15 +2,11 @@ import type { BaseTranslation } from '../i18n-types';
 
 import 'dayjs/locale/en';
 
-export default {
-	CHANNEL: "Channel",
-	PARTY: "Party",
-	DIRECT_MESSAGE: "Direct Message",
-	CREATE_DIRECT_MESSAGE: "Create Direct Message",
+const en: BaseTranslation = {
+	DEV_BANNER: "This is a development build.",
 	YEAR: "Year",
 	MONTH: "Month",
 	DAY: "Day",
-	MONTHS: "January,February,March,April,May,June,July,August,September,October,November,December",
 	REGISTER: "Register",
 	LOGIN: "Login",
 	EMAIL_ADDRESS: "Email Address",
@@ -28,4 +24,6 @@ export default {
 	GOTO_LOGIN: "Go to Login",
 	REGISTER_AGREE: "By registering, you agree to our... this will be filled in later.",
 	PASSWORD_REQS: "Password must be at least 8 characters long and contain at least one number or one special character.",
-} as BaseTranslation;
+};
+
+export default en;

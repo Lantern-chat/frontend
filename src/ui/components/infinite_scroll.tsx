@@ -357,6 +357,8 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
     let observer: ResizeObserver;
 
     onMount(() => {
+        fix_position();
+
         let container = container_ref.current!;
 
         observer = new ResizeObserverPolyfill(on_resize);
@@ -372,9 +374,6 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
             polling = false;
         });
     });
-
-    // very first fix before paint
-    queueMicrotask(() => fix_position());
 
     return (
         <div

@@ -1,5 +1,8 @@
-import { createMemo, createSelector, createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { Component, createMemo, createSelector, createSignal, For, lazy, onCleanup, onMount, Show, Suspense, useContext } from "solid-js";
 import { useDispatch, useStructuredSelector } from "solid-mutant";
+
+import { useI18nContext } from "ui/i18n/i18n-solid";
+import { loadNamespaceAsync } from "ui/i18n/i18n-util.async";
 
 import { RootState, useRootSelector } from "state/root";
 import { HISTORY } from "state/global";
@@ -8,7 +11,10 @@ import { room_url } from "config/urls";
 
 import { Link } from "ui/components/history";
 import { Modal } from "ui/components/modal";
+import { Ripple } from "ui/components/common/spinners/ripple";
 import { VectorIcon } from "ui/components/common/icon";
+
+const Fallback = () => <div className="ln-center-standalone"><Ripple size={120} /></div>;
 
 import "../modal.scss";
 import "./settings.scss";
@@ -31,14 +37,35 @@ export function SettingsModal() {
         onCleanup(() => window.removeEventListener('keyup', listener));
     });
 
+    let { locale } = useI18nContext();
+
+    loading_namedspace = loadNamespaceAsync(locale(), 'settings');
+
     return (
         <Modal>
             <div className={"ln-modal ln-settings ln-settings--" + (closing() ? 'closing' : 'opened')}>
-                <SettingsTabs do_return={do_return} />
+                <Suspense fallback={Fallback}>
+                    <SettingsTabsLoader do_return={do_return} />
+                </Suspense>
             </div>
         </Modal>
     )
 }
+
+var loading_namedspace: Promise<void>;
+
+const SettingsTabsLoader = lazy(async () => {
+    await loading_namedspace;
+
+    return {
+        default: (props: { do_return: () => void }) => {
+            let { locale, setLocale } = useI18nContext();
+            setLocale(locale());
+
+            return <SettingsTabs do_return={props.do_return} />;
+        }
+    }
+});
 
 import { ProfileSettingsTab } from "./tabs/profile";
 import { AppearanceSettingsTab } from "./tabs/appearance";
@@ -49,17 +76,23 @@ import { AccessibilitySettingsTab } from "./tabs/accessibility";
 import { MediaSettingsTab } from "./tabs/media";
 import { LanguageSettingsTab } from "./tabs/language";
 
-import { LogoutIcon } from "lantern-icons";
+import { NamespaceSettingsTranslation } from "ui/i18n/i18n-types";
 
-const TABS = [
-    { name: 'Account', path: 'account', comp: AccountSettingsTab },
-    { name: 'Profile', path: 'profile', comp: ProfileSettingsTab },
-    { name: 'Privacy', path: 'privacy', comp: PrivacySettingsTab },
-    { name: 'Notifications', path: 'notifications', comp: NotificationsSettingsTab },
-    { name: 'Appearance', path: 'appearance', comp: AppearanceSettingsTab },
-    { name: 'Accessibility', path: 'accessibility', comp: AccessibilitySettingsTab },
-    { name: 'Text & Media', path: 'media', comp: MediaSettingsTab },
-    { name: 'Language', path: 'language', comp: LanguageSettingsTab },
+interface TabMap {
+    n: keyof NamespaceSettingsTranslation,
+    p: string,
+    c: Component,
+}
+
+const TABS: Array<TabMap> = [
+    { n: 'ACCOUNT', p: 'account', c: AccountSettingsTab },
+    { n: 'PROFILE', p: 'profile', c: ProfileSettingsTab },
+    { n: 'PRIVACY', p: 'privacy', c: PrivacySettingsTab },
+    { n: 'NOTIFICATIONS', p: 'notifications', c: NotificationsSettingsTab },
+    { n: 'APPEARANCE', p: 'appearance', c: AppearanceSettingsTab },
+    { n: 'ACCESSIBILITY', p: 'accessibility', c: AccessibilitySettingsTab },
+    { n: 'TEXT_AND_MEDIA', p: 'media', c: MediaSettingsTab },
+    { n: 'LANGUAGE', p: 'language', c: LanguageSettingsTab },
 ];
 
 interface ISettingsTabsProps {
@@ -68,33 +101,40 @@ interface ISettingsTabsProps {
 
 import { logout } from "state/commands/session";
 import { Dynamic } from "solid-js/web";
+import { LogoutIcon } from "lantern-icons";
 
 function SettingsTabs(props: ISettingsTabsProps) {
+    let { LL } = useI18nContext();
+
     let state = useStructuredSelector({
         active_tab: (state: RootState) => state.history.parts[1],
         use_mobile_view: (state: RootState) => state.window.use_mobile_view,
     });
 
-    let tab = createMemo(() => TABS.find(tab => tab.path == state.active_tab) || TABS[0]);
+    let tab = createMemo(() => TABS.find(tab => tab.p == state.active_tab) || TABS[0]);
 
     let dispatch = useDispatch(),
         do_logout = () => dispatch(logout());
 
-    let is_tab_selected = createSelector(() => tab().path);
+    let is_tab_selected = createSelector(() => tab().p);
 
     return (
         <>
             <Show when={!state.use_mobile_view || !state.active_tab}>
                 <div className="ln-settings__categories">
-                    <h3>Settings</h3>
+                    <h3>{LL().main.SETTINGS()}</h3>
 
                     <ul>
                         <For each={TABS}>
-                            {({ name, path }) => (
-                                <li classList={{ 'selected': is_tab_selected(path) && !state.use_mobile_view && !!state.active_tab }}>
-                                    <Link href={`/settings/${path}`} title={name}> <div><span>{name}</span></div> </Link>
-                                </li>
-                            )}
+                            {({ n, p }) => {
+                                let name = createMemo(() => LL().settings[n]());
+
+                                return (
+                                    <li classList={{ 'selected': is_tab_selected(p) && !state.use_mobile_view && !!state.active_tab }}>
+                                        <Link href={`/settings/${p}`} title={name()}> <div><span>{name()}</span></div> </Link>
+                                    </li>
+                                );
+                            }}
                         </For>
 
                         <div className="spacer" />
@@ -117,16 +157,16 @@ function SettingsTabs(props: ISettingsTabsProps) {
                 <div className="ln-settings__page">
                     <div className="ln-settings__header">
                         <Show when={state.use_mobile_view}>
-                            <Link href="/settings" useDiv><span>Settings</span></Link>
+                            <Link href="/settings" useDiv><span>{LL().main.SETTINGS()}</span></Link>
                         </Show>
 
-                        <h3>{tab().name}</h3>
+                        <h3>{LL().settings[tab().n]()}</h3>
 
                         <div onClick={props.do_return}><span>Return</span></div>
                     </div>
 
                     <div className="ln-settings__content">
-                        <Dynamic component={tab().comp} />
+                        <Dynamic component={tab().c} />
                     </div>
                 </div>
             </Show>

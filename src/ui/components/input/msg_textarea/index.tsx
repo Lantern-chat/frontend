@@ -2,6 +2,8 @@ import { createMemo, createSignal, JSX, Show, splitProps } from 'solid-js';
 
 import { TextareaAutosize, TextareaHeightChangeMeta } from 'ui/components/input/textarea';
 
+import { useI18nContext } from 'ui/i18n/i18n-solid';
+
 import type { SetController } from 'ui/hooks/createController';
 import { parseHotkey, Hotkey } from "ui/hooks/useMain";
 import { AnyRef, composeRefs } from 'ui/hooks/createRef';
@@ -30,6 +32,8 @@ export interface IMsgTextareaController {
 import "./textarea.scss";
 export function MsgTextarea(props: IMsgTextareaProps) {
     let ta = composeRefs(props.ta);
+
+    let { LL } = useI18nContext();
 
     let [local, taprops] = splitProps(props, ['mobile', 'spellcheck', 'onChange', 'onKeyDown', 'onSelectionChange', 'onContextMenu', 'tac']);
 
@@ -147,7 +151,7 @@ export function MsgTextarea(props: IMsgTextareaProps) {
             <TextareaAutosize
                 ta={ta}
                 {...taprops} // onBlur, onFocus, onContextMenu, disabled, etc.
-                placeholder="Message..."
+                placeholder={LL().main.MESSAGE() + '...'}
                 spellcheck={spellcheck()}
                 style={style()}
                 cacheMeasurements={false}

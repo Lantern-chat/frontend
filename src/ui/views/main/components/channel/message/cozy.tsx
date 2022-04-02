@@ -13,10 +13,13 @@ import { Message as MessageBody } from "./msg";
 import { MsgAttachment } from "./attachment";
 import { createTimestamp } from "ui/hooks/createTimestamp";
 import { UICalendar, UITimestamp } from "ui/components/common/timestamp";
+import { useI18nContext } from "ui/i18n/i18n-solid";
 
 export const FULL_FORMAT = "dddd, MMMM DD, h:mm A";
 
 export function CozyMessage(props: IMessageProps) {
+    let { LL, locale } = useI18nContext();
+
     let cached_member = useSelector((state: RootState) => {
         return selectCachedUser(state, props.msg.msg.author.id, props.msg.msg.party_id)
             || { user: props.msg.msg.author, nick: props.msg.msg.member?.nick };
@@ -32,7 +35,9 @@ export function CozyMessage(props: IMessageProps) {
 
     let extra = createMemo(() => {
         if(!props.msg.sg && props.msg.et) {
-            return <span className="ui-text ln-system-sub" title={ets() as string}>(edited)</span>;
+            return <span className="ui-text ln-system-sub" title={ets() as string}>
+                ({LL().main.EDITED().toLocaleLowerCase(locale())})
+            </span>;
         }
         return;
     });
@@ -65,13 +70,13 @@ export function CozyMessage(props: IMessageProps) {
                             <UICalendar time={props.msg.ts} />
 
                             <Show when={props.msg.et}>
-                                <span className="flags" title={"Edited " + ets()}>
+                                <span className="flags" title={LL().main.EDITED() + ' ' + ets()}>
                                     <VectorIcon src={PencilIcon} />
                                 </span>
                             </Show>
 
                             <Show when={props.msg.msg.flags & MessageFlags.Pinned}>
-                                <span className="flags" title="Message Pinned">
+                                <span className="flags" title={LL().main.MESSAGE_PINNED()}>
                                     <VectorIcon src={PushPinIcon} />
                                 </span>
                             </Show>

@@ -10,12 +10,11 @@ export function createTimestamp(ts: Accessor<NonNullable<dayjs.ConfigType>>, for
 export function createTimestamp(ts: Accessor<NonNullable<dayjs.ConfigType> | null | undefined>, format?: string | Accessor<string>): Accessor<string | undefined>;
 
 export function createTimestamp(ts: Accessor<dayjs.ConfigType>, format: string | Accessor<string> = DEFAULT_FORMAT) {
-    let { locale } = useI18nContext();
-
+    const { locale } = useI18nContext();
     return createMemo(() => {
-        let time = ts();
-        if(time) {
-            return dayjs(time).locale(locale()).format(typeof format === 'function' ? format() : format);
+        let time = ts(); if(time) {
+            // track locale
+            return locale(), dayjs(time).format(typeof format === 'function' ? format() : format);
         }
         return;
     });
@@ -25,12 +24,11 @@ export function createCalendar(ts: Accessor<NonNullable<dayjs.ConfigType>>): Acc
 export function createCalendar(ts: Accessor<NonNullable<dayjs.ConfigType> | null | undefined>): Accessor<string | undefined>;
 
 export function createCalendar(ts: Accessor<dayjs.ConfigType>) {
-    let { locale } = useI18nContext();
-
+    const { locale } = useI18nContext();
     return createMemo(() => {
-        let time = ts();
-        if(time) {
-            return dayjs(time).locale(locale()).calendar();
+        let time = ts(); if(time) {
+            // track locale
+            return locale(), dayjs(time).calendar();
         }
         return;
     });

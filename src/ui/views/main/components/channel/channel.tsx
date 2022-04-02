@@ -1,6 +1,8 @@
 import { ErrorBoundary, Show } from "solid-js/web";
 import { useStructuredSelector } from "solid-mutant";
 
+import { useI18nContext } from "ui/i18n/i18n-solid";
+
 import { RootState, useRootSelector } from "state/root";
 import { activeRoom } from "state/selectors/active";
 import { Snowflake } from "state/models";
@@ -60,9 +62,8 @@ function Feed() {
 }
 
 function DevBanner() {
+    let { LL } = useI18nContext();
     return (
-        <div className="ln-banner error ui-text">
-            This is a development build.
-        </div>
+        <div className="ln-banner error ui-text" textContent={LL().DEV_BANNER()} />
     );
 }

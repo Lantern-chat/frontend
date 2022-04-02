@@ -1,10 +1,14 @@
 import { createSignal, Show } from "solid-js";
 import { useStructuredSelector } from "solid-mutant";
 
+import { HISTORY } from "state/global";
 import { RootState } from "state/root";
 import { activeParty } from "state/selectors/active";
 import { selectPrefsFlag } from "state/selectors/prefs";
 import { parse_presence, PresenceStatus, UserPreferenceFlags } from "state/models";
+
+import { loadNamespaceAsync } from "ui/i18n/i18n-util.async";
+import { useI18nContext } from "ui/i18n/i18n-solid";
 
 import { UserAvatar } from "../user_avatar";
 import { VectorIcon } from "ui/components/common/icon";
@@ -15,6 +19,8 @@ import { CogwheelIcon, SpeakerIcon, SpeakerDeafIcon, MicrophoneIcon, MicrophoneM
 
 import "./party_footer.scss";
 export function PartyFooter() {
+    let { LL, locale, setLocale } = useI18nContext();
+
     let [mute, setMute] = createSignal(false),
         [deaf, setDeaf] = createSignal(false);
 
@@ -36,6 +42,13 @@ export function PartyFooter() {
         }
     });
 
+    let activate_settings = async () => {
+        await loadNamespaceAsync(locale(), 'settings');
+        setLocale(locale());
+
+        HISTORY.pm('/settings');
+    };
+
     return (
         <footer className="ln-party-footer">
             <div className="ln-party-footer__user">
@@ -56,15 +69,15 @@ export function PartyFooter() {
             </div>
 
             <div className="ln-party-footer__settings">
-                <div onClick={() => setMute(v => !v)} title={mute() ? 'Unmute' : 'Mute'}>
+                <div onClick={() => setMute(v => !v)} title={mute() ? LL().main.UNMUTE() : LL().main.MUTE()}>
                     <VectorIcon src={mute() ? MicrophoneMuteIcon : MicrophoneIcon} />
                 </div>
 
-                <div onClick={() => setDeaf(v => !v)} title={deaf() ? 'Undeafen' : 'Deafen'}>
+                <div onClick={() => setDeaf(v => !v)} title={deaf() ? LL().main.UNDEAFEN() : LL().main.DEAFEN()}>
                     <VectorIcon src={deaf() ? SpeakerDeafIcon : SpeakerIcon} />
                 </div>
 
-                <Link href="/settings" title="Settings">
+                <Link href="/settings" title={LL().main.SETTINGS()} noAction onNavigate={activate_settings}>
                     <VectorIcon src={CogwheelIcon} />
                 </Link>
             </div>

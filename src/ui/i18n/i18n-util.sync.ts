@@ -8,9 +8,22 @@ import { loadedFormatters, loadedLocales, locales } from './i18n-util'
 import en from './en'
 import es from './es'
 
+import en_main from './en/main'
+import en_settings from './en/settings'
+import es_main from './es/main'
+import es_settings from './es/settings'
+
 const localeTranslations = {
-	en,
-	es,
+	en: {
+		...en,
+		main: en_main,
+		settings: en_settings
+	},
+	es: {
+		...es,
+		main: es_main,
+		settings: es_settings
+	},
 }
 
 export const loadLocale = (locale: Locales) => {

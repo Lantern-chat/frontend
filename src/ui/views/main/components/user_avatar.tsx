@@ -1,3 +1,6 @@
+import { createMemo, Show } from 'solid-js';
+import { useI18nContext } from 'ui/i18n/i18n-solid';
+
 import { pickColorFromHash } from 'lib/palette';
 
 import { PresenceStatus, Snowflake, User } from 'state/models';
@@ -18,9 +21,9 @@ export interface IUserAvatarProps {
 }
 
 import "./user_avatar.scss";
-import { createMemo, Show } from 'solid-js';
-
 export function UserAvatar(props: IUserAvatarProps) {
+    const { LL } = useI18nContext();
+
     let url_or_color = createMemo(() => {
         let url, backgroundColor, user = props.user;
 
@@ -35,10 +38,10 @@ export function UserAvatar(props: IUserAvatarProps) {
 
     let status = createMemo(() => {
         switch(props.status) {
-            case PresenceStatus.Online: return ["Online", "online"];
-            case PresenceStatus.Busy: return ["Busy/Do Not Disturb", "busy"];
-            case PresenceStatus.Away: return ["Away", "away"];
-            default: return ["Offline", "offline"];
+            case PresenceStatus.Online: return [LL().main.ONLINE(), "online"];
+            case PresenceStatus.Busy: return [LL().main.BUSY(), "busy"];
+            case PresenceStatus.Away: return [LL().main.AWAY(), "away"];
+            default: return [LL().main.OFFLINE(), "offline"];
         }
     });
 
