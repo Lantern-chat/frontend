@@ -10,6 +10,8 @@ const en_main: BaseTranslation = {
     ACCESSIBILITY: "Accessibility",
     TEXT_AND_MEDIA: "Text & Media",
     LANGUAGE: "Language",
+    LOGOUT: "Logout",
+    RETURN: "Return",
 };
 
 export default en_main;

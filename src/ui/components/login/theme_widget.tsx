@@ -3,6 +3,8 @@ import { createRef } from "ui/hooks/createRef";
 import { useRootSelector } from "state/root";
 import { useDispatch } from "solid-mutant";
 
+import { useI18nContext } from "ui/i18n/i18n-solid";
+
 import { themeSelector } from "state/selectors/theme";
 import { setTheme } from "state/commands/theme";
 
@@ -16,6 +18,8 @@ import throttle from 'lodash/throttle';
 
 import "./theme_widget.scss";
 export function ThemeWidget() {
+    let { LL } = useI18nContext();
+
     let input = createRef<HTMLInputElement>(),
         theme = useRootSelector(themeSelector),
         dispatch = useDispatch();
@@ -44,13 +48,13 @@ export function ThemeWidget() {
     }, 50, { trailing: true });
 
     return (
-        <div className="ln-theme-widget" title="Change Theme">
+        <div className="ln-theme-widget" title={LL().CHANGE_THEME()}>
             <div className="ln-theme-widget__icon" onClick={() => doSetTheme(interactive.temperature, !interactive.is_light)}>
                 <VectorIcon src={interactive.is_light ? MoonIcon : SunIcon} />
             </div>
 
             <div className="ln-theme-widget__options">
-                <div className="ln-theme-widget__slider" title="Change Theme Temperature">
+                <div className="ln-theme-widget__slider" title={LL().CHANGE_THEME_TEMP()}>
                     <input ref={input} type="range" className="ln-slider" name="temperature"
                         min={MIN_TEMP} max={MAX_TEMP}
                         value={interactive.temperature}

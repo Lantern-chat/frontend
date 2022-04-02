@@ -104,6 +104,14 @@ type RootTranslation = {
 	 * Password must be at least 8 characters long and contain at least one number or one special character.
 	 */
 	PASSWORD_REQS: string
+	/**
+	 * Change Theme
+	 */
+	CHANGE_THEME: string
+	/**
+	 * Change Theme Temperature
+	 */
+	CHANGE_THEME_TEMP: string
 }
 
 export type NamespaceMainTranslation = {
@@ -226,6 +234,14 @@ export type NamespaceSettingsTranslation = {
 	 * Language
 	 */
 	LANGUAGE: string
+	/**
+	 * Logout
+	 */
+	LOGOUT: string
+	/**
+	 * Return
+	 */
+	RETURN: string
 }
 
 export type Namespaces =
@@ -331,6 +347,14 @@ export type TranslationFunctions = {
 	 * Password must be at least 8 characters long and contain at least one number or one special character.
 	 */
 	PASSWORD_REQS: () => LocalizedString
+	/**
+	 * Change Theme
+	 */
+	CHANGE_THEME: () => LocalizedString
+	/**
+	 * Change Theme Temperature
+	 */
+	CHANGE_THEME_TEMP: () => LocalizedString
 	main: {
 		/**
 		 * Channel
@@ -450,6 +474,14 @@ export type TranslationFunctions = {
 		 * Language
 		 */
 		LANGUAGE: () => LocalizedString
+		/**
+		 * Logout
+		 */
+		LOGOUT: () => LocalizedString
+		/**
+		 * Return
+		 */
+		RETURN: () => LocalizedString
 	}
 }
 

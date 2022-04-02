@@ -143,7 +143,7 @@ function SettingsTabs(props: ISettingsTabsProps) {
 
                         <li>
                             <div id="logout" onClick={do_logout} title="Logout">
-                                <span>Logout</span>
+                                <span textContent={LL().settings.LOGOUT()} />
                                 <div>
                                     <VectorIcon src={LogoutIcon} />
                                 </div>
@@ -162,7 +162,9 @@ function SettingsTabs(props: ISettingsTabsProps) {
 
                         <h3>{LL().settings[tab().n]()}</h3>
 
-                        <div onClick={props.do_return}><span>Return</span></div>
+                        <div onClick={props.do_return}>
+                            <span textContent={LL().settings.RETURN()} />
+                        </div>
                     </div>
 
                     <div className="ln-settings__content">

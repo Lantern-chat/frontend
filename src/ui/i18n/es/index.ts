@@ -24,7 +24,9 @@ const es: Translation = {
     MFA_CODE: "Código 2FA",
     GOTO_LOGIN: "Ir a Iniciar sesión",
     REGISTER_AGREE: "Al registrarse, acepta nuestros... esto se completará más adelante.",
-    PASSWORD_REQS: "La contraseña debe tener al menos 8 caracteres y contener al menos un número o un carácter especial."
+    PASSWORD_REQS: "La contraseña debe tener al menos 8 caracteres y contener al menos un número o un carácter especial.",
+    CHANGE_THEME: "Cambiar de apariencia",
+    CHANGE_THEME_TEMP: "Cambiar la temperatura de apariencia",
 };
 
 export default es;

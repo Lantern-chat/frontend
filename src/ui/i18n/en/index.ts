@@ -25,6 +25,8 @@ const en: BaseTranslation = {
 	GOTO_LOGIN: "Go to Login",
 	REGISTER_AGREE: "By registering, you agree to our... this will be filled in later.",
 	PASSWORD_REQS: "Password must be at least 8 characters long and contain at least one number or one special character.",
+	CHANGE_THEME: "Change Theme",
+	CHANGE_THEME_TEMP: "Change Theme Temperature"
 };
 
 export default en;
