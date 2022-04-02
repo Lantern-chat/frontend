@@ -1,8 +1,54 @@
+import { createSelector, For } from "solid-js";
+import { useI18nContext } from "ui/i18n/i18n-solid";
+import type { Locales } from "ui/i18n/i18n-types";
+
 export const LanguageSettingsTab = () => {
     return (
-        <div>
-            English is currently the only option for this while translations are being worked on.<br />
-            We apologize for the inconvenience.
-        </div>
+        <form className="ln-settings-form">
+            <LangPicker />
+        </form>
     );
 };
+
+import { LANGUAGES } from "ui/i18n";
+import { loadLocaleAsync, loadNamespaceAsync } from "ui/i18n/i18n-util.async";
+import dayjs from "lib/time";
+
+import "./language.scss";
+function LangPicker() {
+    let { LL, locale, setLocale } = useI18nContext();
+
+    let selected = createSelector(locale);
+
+    let on_select = async (which: Locales) => {
+        await loadLocaleAsync(which);
+        await Promise.all([
+            loadNamespaceAsync(which, 'main'),
+            loadNamespaceAsync(which, 'settings')
+        ]);
+
+        dayjs.locale(which);
+        setLocale(which);
+    };
+
+    return (
+        <ul className="lang-list">
+            <For each={Object.keys(LANGUAGES)}>
+                {key => {
+                    let lang = LANGUAGES[key];
+
+                    return (
+                        <li
+                            className="lang-item"
+                            classList={{ selected: selected(key) }}
+                            onClick={() => on_select(key as Locales)}
+                        >
+                            <div className="lang-emoji">{lang.e}</div>
+                            <div className="lang-name">{lang.n}</div>
+                        </li>
+                    )
+                }}
+            </For>
+        </ul>
+    )
+}
