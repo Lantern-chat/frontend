@@ -11,7 +11,7 @@ const es_settings: NamespaceSettingsTranslation = {
 	TEXT_AND_MEDIA: "Texto y medios",
 	LANGUAGE: "Idioma",
 	LOGOUT: "Cerrar sesión",
-	RETURN: "Regreso",
-}
+	RETURN: "Volver",
+};
 
 export default es_settings

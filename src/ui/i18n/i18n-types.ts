@@ -112,6 +112,32 @@ type RootTranslation = {
 	 * Change Theme Temperature
 	 */
 	CHANGE_THEME_TEMP: string
+	CALENDAR_FORMAT: {
+		/**
+		 * [Yesterday at] h:mm A
+		 */
+		lastDay: string
+		/**
+		 * [Today at] h:mm A
+		 */
+		sameDay: string
+		/**
+		 * [Tomorrow at] h:mm A
+		 */
+		nextDay: string
+		/**
+		 * dddd [at] h:mm A
+		 */
+		nextWeek: string
+		/**
+		 * [Last] dddd [at] h:mm A
+		 */
+		lastWeek: string
+		/**
+		 * MM/DD/YYYY
+		 */
+		sameElse: string
+	}
 }
 
 export type NamespaceMainTranslation = {
@@ -355,6 +381,32 @@ export type TranslationFunctions = {
 	 * Change Theme Temperature
 	 */
 	CHANGE_THEME_TEMP: () => LocalizedString
+	CALENDAR_FORMAT: {
+		/**
+		 * [Yesterday at] h:mm A
+		 */
+		lastDay: () => LocalizedString
+		/**
+		 * [Today at] h:mm A
+		 */
+		sameDay: () => LocalizedString
+		/**
+		 * [Tomorrow at] h:mm A
+		 */
+		nextDay: () => LocalizedString
+		/**
+		 * dddd [at] h:mm A
+		 */
+		nextWeek: () => LocalizedString
+		/**
+		 * [Last] dddd [at] h:mm A
+		 */
+		lastWeek: () => LocalizedString
+		/**
+		 * MM/DD/YYYY
+		 */
+		sameElse: () => LocalizedString
+	}
 	main: {
 		/**
 		 * Channel

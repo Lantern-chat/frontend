@@ -1,6 +1,7 @@
 import { Accessor, createMemo } from "solid-js";
 import dayjs from "lib/time";
 import { useI18nContext } from "ui/i18n/i18n-solid";
+import { loadedLocales } from "ui/i18n/i18n-util";
 
 export const DEFAULT_FORMAT = "dddd, MMM Do YYYY, h:mm A";
 
@@ -27,8 +28,7 @@ export function createCalendar(ts: Accessor<dayjs.ConfigType>) {
     const { locale } = useI18nContext();
     return createMemo(() => {
         let time = ts(); if(time) {
-            // track locale
-            return locale(), dayjs(time).calendar();
+            return dayjs(time).calendar(null, loadedLocales[locale()].CALENDAR_FORMAT);
         }
         return;
     });

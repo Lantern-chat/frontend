@@ -26,7 +26,15 @@ const en: BaseTranslation = {
 	REGISTER_AGREE: "By registering, you agree to our... this will be filled in later.",
 	PASSWORD_REQS: "Password must be at least 8 characters long and contain at least one number or one special character.",
 	CHANGE_THEME: "Change Theme",
-	CHANGE_THEME_TEMP: "Change Theme Temperature"
+	CHANGE_THEME_TEMP: "Change Theme Temperature",
+	CALENDAR_FORMAT: {
+		lastDay: "[Yesterday at] h:mm A",
+		sameDay: "[Today at] h:mm A",
+		nextDay: "[Tomorrow at] h:mm A",
+		nextWeek: "dddd [at] h:mm A",
+		lastWeek: "[Last] dddd [at] h:mm A",
+		sameElse: 'MM/DD/YYYY'
+	},
 };
 
 export default en;
