@@ -2,6 +2,7 @@ import type { BaseTranslation } from '../i18n-types';
 
 import 'dayjs/locale/en';
 
+// @stringify
 const en: BaseTranslation = {
 	DEV_BANNER: "This is a development build.",
 	YEAR: "Year",

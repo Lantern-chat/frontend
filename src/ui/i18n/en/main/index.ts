@@ -1,5 +1,6 @@
 import type { BaseTranslation } from '../../i18n-types';
 
+// @stringify
 const en_main: BaseTranslation = {
     CHANNEL: "Channel",
     PARTY: "Party",

@@ -20,6 +20,7 @@ module.exports = {
         [require.resolve('babel-plugin-module-resolver'), {
             root: ["./src"],
             extensions: [".js", ".jsx", ".es", ".es6", ".mjs", ".ts", ".tsx"]
-        }]
+        }],
+        "babel-plugin-optimize-object-literals",
     ]
 };

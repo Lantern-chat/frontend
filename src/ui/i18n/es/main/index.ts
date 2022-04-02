@@ -1,5 +1,6 @@
 import type { NamespaceMainTranslation } from '../../i18n-types'
 
+// @stringify
 const es_main: NamespaceMainTranslation = {
 	CHANNEL: "Habitación",
 	PARTY: "Fiesta",
