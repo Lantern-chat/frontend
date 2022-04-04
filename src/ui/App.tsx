@@ -105,7 +105,7 @@ function AppRouter() {
 
 import { StorageKey } from "state/storage";
 import { detectLocale, loadedLocales } from "ui/i18n/i18n-util";
-import { DETECTORS } from "ui/i18n";
+import { DETECTORS, LANGUAGES } from "ui/i18n";
 
 // manually include english, always
 import "ui/i18n/en";
@@ -125,10 +125,10 @@ const I18NWrapper = lazy(async () => {
             setLocale(initial_locale);
 
             createRenderEffect(() => {
-                let dir = loadedLocales[locale()].direction;
-                document.body.classList.toggle('ln-rtl', dir == 'rtl');
-                document.body.classList.toggle('ln-ltr', dir == 'ltr');
-                dayjs.locale(locale())
+                let lang = LANGUAGES[locale()], rtl = !!lang.rtl;
+                document.body.classList.toggle('ln-rtl', rtl);
+                document.body.classList.toggle('ln-ltr', !rtl);
+                dayjs.locale(lang.d || locale());
             });
 
             return (

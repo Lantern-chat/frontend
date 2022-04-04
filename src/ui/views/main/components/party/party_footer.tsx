@@ -7,7 +7,6 @@ import { activeParty } from "state/selectors/active";
 import { selectPrefsFlag } from "state/selectors/prefs";
 import { parse_presence, PresenceStatus, UserPreferenceFlags } from "state/models";
 
-import { loadNamespaceAsync } from "ui/i18n/i18n-util.async";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 
 import { UserAvatar } from "../user_avatar";
@@ -19,7 +18,7 @@ import { CogwheelIcon, SpeakerIcon, SpeakerDeafIcon, MicrophoneIcon, MicrophoneM
 
 import "./party_footer.scss";
 export function PartyFooter() {
-    let { LL, locale, setLocale } = useI18nContext();
+    let { LL } = useI18nContext();
 
     let [mute, setMute] = createSignal(false),
         [deaf, setDeaf] = createSignal(false);
@@ -41,13 +40,6 @@ export function PartyFooter() {
             return PresenceStatus.Offline;
         }
     });
-
-    let activate_settings = async () => {
-        await loadNamespaceAsync(locale(), 'settings');
-        setLocale(locale());
-
-        HISTORY.pm('/settings');
-    };
 
     return (
         <footer className="ln-party-footer">
@@ -77,7 +69,7 @@ export function PartyFooter() {
                     <VectorIcon src={deaf() ? SpeakerDeafIcon : SpeakerIcon} />
                 </div>
 
-                <Link href="/settings" title={LL().main.SETTINGS()} noAction onNavigate={activate_settings}>
+                <Link href="/settings" title={LL().main.SETTINGS()}>
                     <VectorIcon src={CogwheelIcon} />
                 </Link>
             </div>

@@ -37,35 +37,16 @@ export function SettingsModal() {
         onCleanup(() => window.removeEventListener('keyup', listener));
     });
 
-    let { locale } = useI18nContext();
-
-    loading_namedspace = loadNamespaceAsync(locale(), 'settings');
-
     return (
         <Modal>
             <div className={"ln-modal ln-settings ln-settings--" + (closing() ? 'closing' : 'opened')}>
                 <Suspense fallback={Fallback}>
-                    <SettingsTabsLoader do_return={do_return} />
+                    <SettingsTabs do_return={do_return} />
                 </Suspense>
             </div>
         </Modal>
     )
 }
-
-var loading_namedspace: Promise<void>;
-
-const SettingsTabsLoader = lazy(async () => {
-    await loading_namedspace;
-
-    return {
-        default: (props: { do_return: () => void }) => {
-            let { locale, setLocale } = useI18nContext();
-            setLocale(locale());
-
-            return <SettingsTabs do_return={props.do_return} />;
-        }
-    }
-});
 
 import { ProfileSettingsTab } from "./tabs/profile";
 import { AppearanceSettingsTab } from "./tabs/appearance";
@@ -76,10 +57,10 @@ import { AccessibilitySettingsTab } from "./tabs/accessibility";
 import { MediaSettingsTab } from "./tabs/media";
 import { LanguageSettingsTab } from "./tabs/language";
 
-import { NamespaceSettingsTranslation } from "ui/i18n/i18n-types";
+import { NamespaceMainTranslation } from "ui/i18n/i18n-types";
 
 interface TabMap {
-    n: keyof NamespaceSettingsTranslation,
+    n: keyof NamespaceMainTranslation['settings'],
     p: string,
     c: Component,
 }
@@ -127,7 +108,7 @@ function SettingsTabs(props: ISettingsTabsProps) {
                     <ul>
                         <For each={TABS}>
                             {({ n, p }) => {
-                                let name = createMemo(() => LL().settings[n]());
+                                let name = createMemo(() => LL().main.settings[n]());
 
                                 return (
                                     <li classList={{ 'selected': is_tab_selected(p) && !state.use_mobile_view && !!state.active_tab }}>
@@ -143,7 +124,7 @@ function SettingsTabs(props: ISettingsTabsProps) {
 
                         <li>
                             <div id="logout" onClick={do_logout} title="Logout">
-                                <span textContent={LL().settings.LOGOUT()} />
+                                <span textContent={LL().main.settings.LOGOUT()} />
                                 <div>
                                     <VectorIcon src={LogoutIcon} />
                                 </div>
@@ -160,10 +141,10 @@ function SettingsTabs(props: ISettingsTabsProps) {
                             <Link href="/settings" useDiv><span>{LL().main.SETTINGS()}</span></Link>
                         </Show>
 
-                        <h3>{LL().settings[tab().n]()}</h3>
+                        <h3>{LL().main.settings[tab().n]()}</h3>
 
                         <div onClick={props.do_return}>
-                            <span textContent={LL().settings.RETURN()} />
+                            <span textContent={LL().main.settings.RETURN()} />
                         </div>
                     </div>
 

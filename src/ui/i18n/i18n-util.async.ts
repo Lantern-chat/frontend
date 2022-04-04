@@ -8,16 +8,18 @@ import { loadedFormatters, loadedLocales, locales } from './i18n-util'
 const localeTranslationLoaders = {
 	en: () => import('./en'),
 	es: () => import('./es'),
+	owo: () => import('./owo'),
 }
 
 const localeNamespaceLoaders = {
 	en: {
-		main: () => import('./en/main'),
-		settings: () => import('./en/settings')
+		main: () => import('./en/main')
 	},
 	es: {
-		main: () => import('./es/main'),
-		settings: () => import('./es/settings')
+		main: () => import('./es/main')
+	},
+	owo: {
+		main: () => import('./owo/main')
 	}
 }
 

@@ -31,7 +31,7 @@ export interface IAttachmentState {
 
 export interface IRoomState {
     room: Room,
-    msgs: IMessageState[],
+    msgs: Array<IMessageState>,
     attachments: IAttachmentState[],
     pending: IMessageState[],
     current_edit: null | Snowflake,
@@ -59,11 +59,7 @@ function starts_group(msg: IMessageState, prev: IMessageState | undefined) {
 function set_starts_group(msgs: IMessageState[], idx: number) {
     let msg = msgs[idx], prev = msgs[idx - 1];
     if(msg) {
-        if(starts_group(msg, prev)) {
-            msg.sg = true;
-        } else {
-            delete msg.sg;
-        }
+        msg.sg = starts_group(msg, prev);
     }
 }
 

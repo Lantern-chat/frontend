@@ -10,12 +10,12 @@ export const baseLocale: Locales = 'en'
 
 export const locales: Locales[] = [
 	'en',
-	'es'
+	'es',
+	'owo'
 ]
 
 export const namespaces: Namespaces[] = [
-	'main',
-	'settings'
+	'main'
 ]
 
 export const loadedLocales = {} as Record<Locales, Translations>

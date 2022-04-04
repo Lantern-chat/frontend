@@ -19,6 +19,7 @@ import { ITypingState } from "state/mutators/chat";
 //import { FileUploadModal } from "ui/views/main/modals/file_upload";
 import { Hotkey, MainContext, createClickEater, useMainHotkey } from "ui/hooks/useMain";
 
+import { useI18nContext } from "ui/i18n/i18n-solid";
 import { VectorIcon } from "ui/components/common/icon";
 import { IMsgTextareaController, MsgTextarea } from "ui/components/input/msg_textarea";
 import { EmotePicker } from "../common/emote_picker";
@@ -205,20 +206,50 @@ export function MessageBox() {
 }
 
 function UsersTyping() {
+    let { LL } = useI18nContext();
+
     let formatted = useRootSelector(state => {
         let active_party = activeParty(state),
             active_room = activeRoom(state);
 
-        if(active_party && active_room) {
+        if(active_room && active_party) {
             let typing = state.chat.rooms[active_room]?.typing;
             if(typing && typing.length) {
-                return format_users_typing(
-                    typing,
-                    state.party.parties[active_party].members,
-                    state.user.user!.id,
-                );
+                let selected = [],
+                    remaining = typing.length,
+                    members = state.party.parties[active_party].members,
+                    user_id = state.user.user!.id;
+
+                for(let entry of typing) {
+                    remaining -= 1;
+
+                    if(!__DEV__ && entry.user == user_id) {
+                        // skip self
+                        continue;
+                    }
+
+                    let member = members[entry.user];
+                    if(member) {
+                        let nick = member.nick || member.user.username;
+
+                        if(nick) {
+                            selected.push(nick);
+
+                            // max of 3 names users in typing
+                            if(selected.length == 3) break;
+                        }
+                    }
+                }
+
+                // if overflow, i18n requires the last parameter be the number remaining
+                if(remaining) {
+                    selected.push(remaining);
+                }
+
+                return LL().main.USERS_TYPING[selected.length - 1](...selected);
             }
         }
+
         return;
     });
 
@@ -227,55 +258,4 @@ function UsersTyping() {
             <span className="ui-text" textContent={formatted()} />
         </Show>
     )
-}
-
-function format_users_typing(
-    typing: DeepReadonly<Array<ITypingState>>,
-    members: DeepReadonly<Record<Snowflake, PartyMember>>,
-    user_id: Snowflake): string | undefined {
-
-    let typing_nicks = [],
-        remaining = typing.length;
-
-    for(let entry of typing) {
-        // skip self
-        if(!__DEV__ && entry.user == user_id) {
-            remaining -= 1;
-            continue;
-        };
-
-        // pick out a max of 3 names to display before it shows "and X"
-        let member = members[entry.user];
-        if(member) {
-            let nick = member.nick || member.user.username;
-
-            if(nick) {
-                typing_nicks.push(nick);
-                if(typing_nicks.length > 3) break;
-            }
-        }
-    }
-
-    // decrement remaining count by the count selected for listing
-    remaining -= typing_nicks.length;
-
-    let res, len = typing_nicks.length;
-
-    if(len == 0) return; // no one is typing
-    else if(len == 1) {
-        // OneUser is typing...
-        res = typing_nicks[0] + ' is typing...';
-    } else if(remaining <= 0) {
-        // FIXME: Remove oxford comma in two-user case
-        // Foo, Bar, and Cathy are typing...
-        res = typing_nicks.slice(0, len - 1).join(', ') + `, and ${typing_nicks[len - 1]} are typing...`;
-    } else {
-        // Foo, Bar, Cathy, and 10 other users are typing...
-        // Foo, Bar, Cathy, and 1 other user are typing...
-        let user_plural = remaining > 1 ? "users" : "user";
-
-        res = typing_nicks.join(', ') + `, and ${remaining} other ${user_plural} are typing...`;
-    }
-
-    return res;
 }

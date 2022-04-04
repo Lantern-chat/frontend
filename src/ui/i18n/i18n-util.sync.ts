@@ -7,22 +7,24 @@ import { loadedFormatters, loadedLocales, locales } from './i18n-util'
 
 import en from './en'
 import es from './es'
+import owo from './owo'
 
 import en_main from './en/main'
-import en_settings from './en/settings'
 import es_main from './es/main'
-import es_settings from './es/settings'
+import owo_main from './owo/main'
 
 const localeTranslations = {
 	en: {
 		...en,
-		main: en_main,
-		settings: en_settings
+		main: en_main
 	},
 	es: {
 		...es,
-		main: es_main,
-		settings: es_settings
+		main: es_main
+	},
+	owo: {
+		...owo,
+		main: owo_main
 	},
 }
 

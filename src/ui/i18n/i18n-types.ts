@@ -8,20 +8,16 @@ export type BaseLocale = 'en'
 export type Locales =
 	| 'en'
 	| 'es'
+	| 'owo'
 
 export type Translation = RootTranslation & DisallowNamespaces
 
 export type Translations = RootTranslation &
 {
-	main: NamespaceMainTranslation,
-	settings: NamespaceSettingsTranslation
+	main: NamespaceMainTranslation
 }
 
 type RootTranslation = {
-	/**
-	 * ltr
-	 */
-	direction: string
 	/**
 	 * This is a development build.
 	 */
@@ -229,54 +225,80 @@ export type NamespaceMainTranslation = {
 	 * Go to now
 	 */
 	GOTO_NOW: string
-}
-
-export type NamespaceSettingsTranslation = {
-	/**
-	 * Account
-	 */
-	ACCOUNT: string
-	/**
-	 * Profile
-	 */
-	PROFILE: string
-	/**
-	 * Privacy
-	 */
-	PRIVACY: string
-	/**
-	 * Notifications
-	 */
-	NOTIFICATIONS: string
-	/**
-	 * Appearance
-	 */
-	APPEARANCE: string
-	/**
-	 * Accessibility
-	 */
-	ACCESSIBILITY: string
-	/**
-	 * Text & Media
-	 */
-	TEXT_AND_MEDIA: string
-	/**
-	 * Language
-	 */
-	LANGUAGE: string
-	/**
-	 * Logout
-	 */
-	LOGOUT: string
-	/**
-	 * Return
-	 */
-	RETURN: string
+	USERS_TYPING: {
+		/**
+		 * {0} is typing...
+		 * @param {string} 0
+		 */
+		'0': RequiredParams<'0'>
+		/**
+		 * {0} and {1} are typing...
+		 * @param {string} 0
+		 * @param {string} 1
+		 */
+		'1': RequiredParams<'0' | '1'>
+		/**
+		 * {0}, {1}, and {2} are typing...
+		 * @param {string} 0
+		 * @param {string} 1
+		 * @param {string} 2
+		 */
+		'2': RequiredParams<'0' | '1' | '2'>
+		/**
+		 * {0}, {1}, {2}, and {3} others are typing...
+		 * @param {string} 0
+		 * @param {string} 1
+		 * @param {string} 2
+		 * @param {number} 3
+		 */
+		'3': RequiredParams<'0' | '1' | '2' | '3'>
+	}
+	settings: {
+		/**
+		 * Account
+		 */
+		ACCOUNT: string
+		/**
+		 * Profile
+		 */
+		PROFILE: string
+		/**
+		 * Privacy
+		 */
+		PRIVACY: string
+		/**
+		 * Notifications
+		 */
+		NOTIFICATIONS: string
+		/**
+		 * Appearance
+		 */
+		APPEARANCE: string
+		/**
+		 * Accessibility
+		 */
+		ACCESSIBILITY: string
+		/**
+		 * Text & Media
+		 */
+		TEXT_AND_MEDIA: string
+		/**
+		 * Language
+		 */
+		LANGUAGE: string
+		/**
+		 * Logout
+		 */
+		LOGOUT: string
+		/**
+		 * Return
+		 */
+		RETURN: string
+	}
 }
 
 export type Namespaces =
 	| 'main'
-	| 'settings'
 
 type DisallowNamespaces = {
 	/**
@@ -284,19 +306,9 @@ type DisallowNamespaces = {
 	 * you need to use the `./main/index.ts` file instead
 	 */
 	main?: "[typesafe-i18n] reserved for 'main'-namespace. You need to use the `./main/index.ts` file instead."
-
-	/**
-	 * reserved for 'settings'-namespace\
-	 * you need to use the `./settings/index.ts` file instead
-	 */
-	settings?: "[typesafe-i18n] reserved for 'settings'-namespace. You need to use the `./settings/index.ts` file instead."
 }
 
 export type TranslationFunctions = {
-	/**
-	 * ltr
-	 */
-	direction: () => LocalizedString
 	/**
 	 * This is a development build.
 	 */
@@ -500,48 +512,66 @@ export type TranslationFunctions = {
 		 * Go to now
 		 */
 		GOTO_NOW: () => LocalizedString
-	}
-	settings: {
-		/**
-		 * Account
-		 */
-		ACCOUNT: () => LocalizedString
-		/**
-		 * Profile
-		 */
-		PROFILE: () => LocalizedString
-		/**
-		 * Privacy
-		 */
-		PRIVACY: () => LocalizedString
-		/**
-		 * Notifications
-		 */
-		NOTIFICATIONS: () => LocalizedString
-		/**
-		 * Appearance
-		 */
-		APPEARANCE: () => LocalizedString
-		/**
-		 * Accessibility
-		 */
-		ACCESSIBILITY: () => LocalizedString
-		/**
-		 * Text & Media
-		 */
-		TEXT_AND_MEDIA: () => LocalizedString
-		/**
-		 * Language
-		 */
-		LANGUAGE: () => LocalizedString
-		/**
-		 * Logout
-		 */
-		LOGOUT: () => LocalizedString
-		/**
-		 * Return
-		 */
-		RETURN: () => LocalizedString
+		USERS_TYPING: {
+			/**
+			 * {0} is typing...
+			 */
+			'0': (arg0: string) => LocalizedString
+			/**
+			 * {0} and {1} are typing...
+			 */
+			'1': (arg0: string, arg1: string) => LocalizedString
+			/**
+			 * {0}, {1}, and {2} are typing...
+			 */
+			'2': (arg0: string, arg1: string, arg2: string) => LocalizedString
+			/**
+			 * {0}, {1}, {2}, and {3} others are typing...
+			 */
+			'3': (arg0: string, arg1: string, arg2: string, arg3: number) => LocalizedString
+		}
+		settings: {
+			/**
+			 * Account
+			 */
+			ACCOUNT: () => LocalizedString
+			/**
+			 * Profile
+			 */
+			PROFILE: () => LocalizedString
+			/**
+			 * Privacy
+			 */
+			PRIVACY: () => LocalizedString
+			/**
+			 * Notifications
+			 */
+			NOTIFICATIONS: () => LocalizedString
+			/**
+			 * Appearance
+			 */
+			APPEARANCE: () => LocalizedString
+			/**
+			 * Accessibility
+			 */
+			ACCESSIBILITY: () => LocalizedString
+			/**
+			 * Text & Media
+			 */
+			TEXT_AND_MEDIA: () => LocalizedString
+			/**
+			 * Language
+			 */
+			LANGUAGE: () => LocalizedString
+			/**
+			 * Logout
+			 */
+			LOGOUT: () => LocalizedString
+			/**
+			 * Return
+			 */
+			RETURN: () => LocalizedString
+		}
 	}
 }
 
