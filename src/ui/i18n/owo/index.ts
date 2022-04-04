@@ -25,6 +25,7 @@ const owo: Translation = {
     PASSWORD_REQS: "passwowd must be at weast 8 chawactews w-wong and contain at weast one nyumbew o-ow one speciaw chawactew.",
     CHANGE_THEME: "change theme",
     CHANGE_THEME_TEMP: "change theme tempewatuwe",
+    CHANGE_LANG: "Change Wanguage",
     CALENDAR_FORMAT: {
         lastDay: "[yestewday at] h:mm A",
         sameDay: "[today a-at] h:mm A",

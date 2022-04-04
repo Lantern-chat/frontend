@@ -27,6 +27,7 @@ const enUS: BaseTranslation = {
 	PASSWORD_REQS: "Password must be at least 8 characters long and contain at least one number or one special character.",
 	CHANGE_THEME: "Change Theme",
 	CHANGE_THEME_TEMP: "Change Theme Temperature",
+	CHANGE_LANG: "Change Language",
 	CALENDAR_FORMAT: {
 		lastDay: "[Yesterday at] h:mm A",
 		sameDay: "[Today at] h:mm A",

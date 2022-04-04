@@ -113,6 +113,10 @@ type RootTranslation = {
 	 * Change Theme Temperature
 	 */
 	CHANGE_THEME_TEMP: string
+	/**
+	 * Change Language
+	 */
+	CHANGE_LANG: string
 	CALENDAR_FORMAT: {
 		/**
 		 * [Yesterday at] h:mm A
@@ -406,6 +410,10 @@ export type TranslationFunctions = {
 	 * Change Theme Temperature
 	 */
 	CHANGE_THEME_TEMP: () => LocalizedString
+	/**
+	 * Change Language
+	 */
+	CHANGE_LANG: () => LocalizedString
 	CALENDAR_FORMAT: {
 		/**
 		 * [Yesterday at] h:mm A

@@ -1,0 +1,129 @@
+@import "lib/variables";
+
+.ln-lang-widget {
+    position: absolute;
+    top: 1em;
+
+    .ln-ltr & {
+        right: 1em;
+    }
+    .ln-rtl & {
+        left: 1em;
+    }
+
+    background-color: $lnx-secondary-surface-color;
+    border-radius: 1em;
+    padding: 0.2em;
+    z-index: 100;
+    min-height: 2.9em;
+
+    * {
+        user-select: none;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    &::before,
+    &::after {
+        opacity: 0;
+        border-radius: 1em;
+        z-index: -1;
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        transition: opacity 1s ease-in;
+    }
+
+    &::before {
+        box-shadow: 0 0.05em 0.8em black;
+        .ln-dark-theme & {
+            opacity: 1;
+        }
+    }
+
+    &::after {
+        box-shadow: 0 0.05em 0.4em #aaa;
+        .ln-light-theme & {
+            opacity: 1;
+        }
+    }
+
+    &__options,
+    &__title {
+        max-height: 0;
+        max-width: 0;
+        overflow: hidden;
+        .ln-enable-motion & {
+            transition-property: max-width, max-height;
+            transition-duration: 0.1s;
+            transition-timing-function: ease-in;
+        }
+    }
+
+    &__title {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        white-space: pre;
+        margin: 0 auto;
+        max-height: 80vh;
+    }
+
+    &:hover &__options,
+    &:hover &__title {
+        max-height: 80vh;
+        max-width: 80vh;
+    }
+
+    &__list {
+        padding: 0.5em 0;
+        margin: 0.5em 0;
+        border-top: 1px solid $lnx-primary-text-color;
+    }
+
+    &__title-wrapper {
+        display: flex;
+        justify-content: center;
+    }
+
+    &__icon {
+        display: block;
+        font-size: 2.5em;
+        //cursor: pointer;
+        fill: $lnx-primary-text-color;
+        text-align: end;
+    }
+
+    &__item {
+        cursor: pointer;
+        display: flex;
+        position: relative;
+        padding: 0 1em;
+
+        &:hover {
+            background-color: rgba(128, 128, 128, 0.1);
+        }
+
+        &.selected {
+            background-color: rgba(128, 128, 128, 0.3);
+        }
+    }
+
+    &__emoji {
+        width: 1em;
+        height: 1.1em;
+        font-size: 2.5em;
+        display: inline-flex;
+        justify-content: center;
+    }
+
+    &__name {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        white-space: pre;
+        padding-inline-start: 0.6em;
+    }
+}

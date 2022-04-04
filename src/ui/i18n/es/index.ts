@@ -27,6 +27,7 @@ const es: Translation = {
     PASSWORD_REQS: "La contraseña debe tener al menos 8 caracteres y contener al menos un número o un carácter especial.",
     CHANGE_THEME: "Cambiar de apariencia",
     CHANGE_THEME_TEMP: "Cambiar la temperatura de apariencia",
+    CHANGE_LANG: "Cambiar idioma",
     CALENDAR_FORMAT: {
         lastDay: "[Ayer a las] h:mm A",
         sameDay: "[Hoy a las] h:mm A",

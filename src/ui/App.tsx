@@ -13,6 +13,7 @@ import { HistoryContext } from "ui/components/history";
 
 import { Fireflies } from "ui/views/login/components/fireflies";
 import { ThemeWidget } from "ui/views/login/components/theme_widget";
+import { LangWidget } from "./views/login/components/lang_widget";
 import { Logo } from "ui/views/login/components/logo";
 
 import LoginView from "./views/login";
@@ -43,6 +44,7 @@ function LoginRoutes(props: { which: typeof LOGIN_ROUTES[number] }) {
             <Fireflies density={175} />
 
             <ThemeWidget />
+            <LangWidget />
 
             {__DEV__ && <div className="ln-dev-banner" textContent={LL().DEV_BANNER()} />}
 
