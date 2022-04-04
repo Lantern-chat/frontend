@@ -60,11 +60,13 @@ function LoginRoutes(props: { which: typeof LOGIN_ROUTES[number] }) {
 import type { Locales } from "ui/i18n/i18n-types";
 import TypesafeI18n, { useI18nContext } from "ui/i18n/i18n-solid";
 import { loadLocaleAsync, loadNamespaceAsync } from "ui/i18n/i18n-util.async";
+import { DETECTORS, LANGUAGES } from "ui/i18n";
 
 const MainWrapper = lazy(async () => {
     // TODO: Figure out how to include the english translation inside main itself
     await Promise.all([
-        loadNamespaceAsync(localStorage.getItem(StorageKey.LOCALE) as Locales || initial_locale, 'main'),
+        // NOTE: THis will have been set by the render effect below
+        loadNamespaceAsync(localStorage.getItem(StorageKey.LOCALE) as Locales, 'main'),
         MainView.preload(),
     ]);
 
@@ -77,7 +79,6 @@ const MainWrapper = lazy(async () => {
             // setup an effect to load the main namespace on locale changes
             createRenderEffect(() => loadNamespaceAsync(locale(), 'main').then(() => {
                 __DEV__ && console.log("Loaded main namespace for locale", locale());
-
                 setLocale(locale());
             }));
 
@@ -104,15 +105,20 @@ function AppRouter() {
 };
 
 import { StorageKey } from "state/storage";
-import { detectLocale, loadedLocales } from "ui/i18n/i18n-util";
-import { DETECTORS, LANGUAGES } from "ui/i18n";
+import { detectLocale } from "ui/i18n/i18n-util";
 
 // manually include english, always
-import "ui/i18n/en";
+import "ui/i18n/en-US";
 import dayjs from "lib/time";
 
-// start pre-loading locale immediately upon script execution, not rendering
 let initial_locale = localStorage.getItem(StorageKey.LOCALE) as Locales || /*#__INLINE__*/ detectLocale(...DETECTORS);
+
+// sanitize locale
+if(!(initial_locale in LANGUAGES)) {
+    initial_locale = 'en-US';
+}
+
+// start pre-loading locale immediately upon script execution, not rendering
 let loading_locale = loadLocaleAsync(initial_locale);
 
 const I18NWrapper = lazy(async () => {
@@ -125,10 +131,16 @@ const I18NWrapper = lazy(async () => {
             setLocale(initial_locale);
 
             createRenderEffect(() => {
-                let lang = LANGUAGES[locale()], rtl = !!lang.rtl;
+                let l = locale(), lang = LANGUAGES[l], rtl = !!lang.rtl;
                 document.body.classList.toggle('ln-rtl', rtl);
                 document.body.classList.toggle('ln-ltr', !rtl);
-                dayjs.locale(lang.d || locale());
+                dayjs.locale(lang.d || l);
+
+                // STORING LOCALE
+                __DEV__ && console.log("Storing locale", l);
+                localStorage.setItem(StorageKey.LOCALE, l);
+
+                document.documentElement.lang = l;
             });
 
             return (
@@ -147,7 +159,7 @@ const I18NWrapper = lazy(async () => {
 export default function App() {
     // top-level suspense for locale loading, don't show UI until it's loaded.
     return (
-        <TypesafeI18n locale="en">
+        <TypesafeI18n locale="en-US">
             <Suspense fallback={Fallback}>
                 <I18NWrapper />
             </Suspense>

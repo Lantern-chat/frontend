@@ -6,10 +6,11 @@ import type { LocaleDetector } from 'typesafe-i18n/detectors'
 import { detectLocale as detectLocaleFn } from 'typesafe-i18n/detectors'
 import type { Formatters, Locales, Namespaces, Translations, TranslationFunctions } from './i18n-types'
 
-export const baseLocale: Locales = 'en'
+export const baseLocale: Locales = 'en-US'
 
 export const locales: Locales[] = [
-	'en',
+	'en-GB',
+	'en-US',
 	'es',
 	'owo'
 ]

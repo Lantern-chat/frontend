@@ -6,14 +6,18 @@ import type { Locales, Translations, Namespaces } from './i18n-types'
 import { loadedFormatters, loadedLocales, locales } from './i18n-util'
 
 const localeTranslationLoaders = {
-	en: () => import('./en'),
+	'en-GB': () => import('./en-GB'),
+	'en-US': () => import('./en-US'),
 	es: () => import('./es'),
 	owo: () => import('./owo'),
 }
 
 const localeNamespaceLoaders = {
-	en: {
-		main: () => import('./en/main')
+	'en-GB': {
+		main: () => import('./en-GB/main')
+	},
+	'en-US': {
+		main: () => import('./en-US/main')
 	},
 	es: {
 		main: () => import('./es/main')

@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal, For, Index, Show } from "solid-js";
+import { createEffect, createMemo, createSignal, For, Index, JSX, Show } from "solid-js";
 
 import { createController } from "ui/hooks/createController";
 
@@ -379,15 +379,38 @@ export default function RegisterView() {
                 <FormText>{LL().REGISTER_AGREE()}</FormText>
 
                 <FormText>
-                    This site is protected by hCaptcha and its&nbsp;
-                    <a target="_blank" href="https://hcaptcha.com/privacy">Privacy Policy</a> and&nbsp;
-                    <a target="_blank" href="https://hcaptcha.com/terms">Terms of Service</a> apply.
+                    <HCaptchaTerms />
                 </FormText>
             </FormGroup>
         </form>
     );
 }
 
-if(__DEV__) {
-    RegisterView.displayName = "RegisterView";
+function HCaptchaTerms() {
+    let { LL } = useI18nContext();
+
+    let text = createMemo(() => LL().hCaptcha());
+
+    return createMemo(() => {
+        let t = text();
+        let segments: Array<JSX.Element> = [];
+        let re = /([^<]+)|<[@#](.+?)>/g, match;
+
+        do {
+            match = re.exec(t);
+            if(match) {
+                let [m, p1, p2] = match;
+
+                if(p1) {
+                    segments.push(p1);
+                } else if(p2) {
+                    let href = "https://hcaptcha.com/" + (m.startsWith('<@') ? "privacy" : "terms");
+
+                    segments.push(<a target="_blank" href={href}>{p2}</a>);
+                }
+            }
+        } while(match);
+
+        return segments;
+    });
 }

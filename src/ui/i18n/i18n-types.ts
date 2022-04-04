@@ -3,10 +3,11 @@
 import type { BaseTranslation as BaseTranslationType, LocalizedString, RequiredParams } from 'typesafe-i18n'
 
 export type BaseTranslation = BaseTranslationType & DisallowNamespaces
-export type BaseLocale = 'en'
+export type BaseLocale = 'en-US'
 
 export type Locales =
-	| 'en'
+	| 'en-GB'
+	| 'en-US'
 	| 'es'
 	| 'owo'
 
@@ -138,6 +139,10 @@ type RootTranslation = {
 		 */
 		sameElse: string
 	}
+	/**
+	 * This site is protected by hCaptcha and its <@Privacy Policy> and <#Terms of Service> apply.
+	 */
+	hCaptcha: string
 }
 
 export type NamespaceMainTranslation = {
@@ -427,6 +432,10 @@ export type TranslationFunctions = {
 		 */
 		sameElse: () => LocalizedString
 	}
+	/**
+	 * This site is protected by hCaptcha and its <@Privacy Policy> and <#Terms of Service> apply.
+	 */
+	hCaptcha: () => LocalizedString
 	main: {
 		/**
 		 * Channel

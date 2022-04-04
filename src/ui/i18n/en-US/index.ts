@@ -3,7 +3,7 @@ import type { BaseTranslation } from '../i18n-types';
 import 'dayjs/locale/en';
 
 // @stringify
-const en: BaseTranslation = {
+const enUS: BaseTranslation = {
 	DEV_BANNER: "This is a development build.",
 	YEAR: "Year",
 	MONTH: "Month",
@@ -35,6 +35,8 @@ const en: BaseTranslation = {
 		lastWeek: "[Last] dddd [at] h:mm A",
 		sameElse: 'MM/DD/YYYY'
 	},
+	// this is one sentence, split by HTML
+	hCaptcha: "This site is protected by hCaptcha and its <@Privacy Policy> and <#Terms of Service> apply.",
 };
 
-export default en;
+export default enUS;

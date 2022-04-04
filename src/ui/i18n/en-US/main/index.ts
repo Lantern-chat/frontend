@@ -1,7 +1,7 @@
 import type { BaseTranslation } from '../../i18n-types';
 
 // @stringify
-const en_main: BaseTranslation = {
+const enUS_main: BaseTranslation = {
     CHANNEL: "Channel",
     PARTY: "Party",
     DIRECT_MESSAGE: "Direct Message",
@@ -43,4 +43,4 @@ const en_main: BaseTranslation = {
     }
 };
 
-export default en_main;
+export default enUS_main;

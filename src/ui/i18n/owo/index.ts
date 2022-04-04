@@ -1,7 +1,5 @@
 import type { Translation } from '../i18n-types';
 
-import 'dayjs/locale/en';
-
 // @stringify
 const owo: Translation = {
     DEV_BANNER: "this i-is a devewopment b-buiwd.",
@@ -35,6 +33,8 @@ const owo: Translation = {
         lastWeek: "[wast] dddd [at] h:mm A",
         sameElse: 'MM/DD/YYYY'
     },
+    // unchanged to respect hCaptcha
+    hCaptcha: "This site is protected by hCaptcha and its <@Privacy Policy> and <#Terms of Service> apply.",
 };
 
 export default owo;

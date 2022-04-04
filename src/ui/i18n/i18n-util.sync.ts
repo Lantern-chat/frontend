@@ -5,18 +5,24 @@ import { initFormatters } from './formatters'
 import type { Locales, Translations } from './i18n-types'
 import { loadedFormatters, loadedLocales, locales } from './i18n-util'
 
-import en from './en'
+import en_GB from './en-GB'
+import en_US from './en-US'
 import es from './es'
 import owo from './owo'
 
-import en_main from './en/main'
+import en_GB_main from './en-GB/main'
+import en_US_main from './en-US/main'
 import es_main from './es/main'
 import owo_main from './owo/main'
 
 const localeTranslations = {
-	en: {
-		...en,
-		main: en_main
+	'en-GB': {
+		...en_GB,
+		main: en_GB_main
+	},
+	'en-US': {
+		...en_US,
+		main: en_US_main
 	},
 	es: {
 		...es,

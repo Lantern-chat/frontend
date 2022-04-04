@@ -35,6 +35,8 @@ const es: Translation = {
         lastWeek: "[El] dddd [pasado a las] h:mm A",
         sameElse: 'MM/DD/YYYY'
     },
+    // NOTE: Special syntax for privacy and tos sections
+    hCaptcha: "Este sitio está protegido por hCaptcha y se aplican su <@Política de Privacidad> y <#Términos de Servicio>.",
 };
 
 export default es;
