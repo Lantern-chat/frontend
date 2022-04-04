@@ -1,5 +1,6 @@
 {
    "adapter": "solid",
    "outputPath": "./src/ui/i18n",
+   "baseLocale": "en-US",
    "$schema": "https://unpkg.com/typesafe-i18n@5.2.3/schema/typesafe-i18n.json"
 }
