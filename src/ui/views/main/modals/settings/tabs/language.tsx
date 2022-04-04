@@ -10,16 +10,15 @@ export const LanguageSettingsTab = () => {
     );
 };
 
-import { LANGUAGES } from "ui/i18n";
+import { LANGUAGES, LANGUAGE_KEYS } from "ui/i18n";
 import { loadLocaleAsync, loadNamespaceAsync } from "ui/i18n/i18n-util.async";
 import dayjs from "lib/time";
 
 import "./language.scss";
 function LangPicker() {
-    let { LL, locale, setLocale } = useI18nContext();
+    let { locale, setLocale } = useI18nContext();
 
     let selected = createSelector(locale);
-
     let on_select = async (which: Locales) => {
         let lang = LANGUAGES[which];
 
@@ -32,7 +31,7 @@ function LangPicker() {
 
     return (
         <ul className="lang-list">
-            <For each={Object.keys(LANGUAGES)}>
+            <For each={LANGUAGE_KEYS}>
                 {key => {
                     let lang = LANGUAGES[key];
 

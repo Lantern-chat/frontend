@@ -1,3 +1,4 @@
+import { compareString } from "lib/compare";
 import { navigatorDetector, queryStringDetector } from "typesafe-i18n/detectors";
 
 export const DETECTORS = [
@@ -8,8 +9,7 @@ if(__DEV__) {
     DETECTORS.unshift(queryStringDetector);
 }
 
-import type { Locales, Namespaces } from "./i18n-types";
-import { loadLocaleAsync, loadNamespaceAsync } from "./i18n-util.async";
+import type { Locales } from "./i18n-types";
 
 // TODO: Figure out how to handle currencies.
 export interface Currency extends Intl.NumberFormatOptions {
@@ -42,3 +42,5 @@ export const LANGUAGES: ILanguages = {
     es: { n: "Español", e: "🇪🇸" },
     owo: { n: "OwO (English)", e: "😺", d: 'en' }
 };
+
+export const LANGUAGE_KEYS = Object.keys(LANGUAGES).sort(compareString) as Array<Locales>;

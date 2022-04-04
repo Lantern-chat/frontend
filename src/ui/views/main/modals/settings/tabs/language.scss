@@ -4,21 +4,30 @@
     &-list {
     }
     &-item {
+        border-radius: 0.25rem;
         display: flex;
-        padding-inline-start: 2em;
+        margin-inline-start: 1rem;
+        padding-inline-start: 1rem;
         position: relative;
+        cursor: pointer;
+
+        &:hover {
+            background-color: rgba(128, 128, 128, 0.1);
+        }
 
         &.selected {
+            background-color: rgba(128, 128, 128, 0.3);
+
             &::before {
                 content: "›";
                 position: absolute;
                 bottom: 50%;
                 font-size: 3em;
                 .ln-ltr & {
-                    left: 0;
+                    left: -2rem;
                 }
                 .ln-rtl & {
-                    right: 0;
+                    right: -2rem;
                 }
                 transform: scale(1.3, 1);
                 line-height: 26%;
@@ -29,13 +38,16 @@
 
     &-emoji {
         width: 1em;
+        height: 1.1em;
         font-size: 3em;
-        padding-inline-end: 1.2em;
+        display: inline-flex;
+        justify-content: center;
     }
 
     &-name {
         display: flex;
         flex-direction: column;
         justify-content: center;
+        padding-inline-start: 0.6em;
     }
 }
