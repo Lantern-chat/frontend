@@ -140,7 +140,7 @@ const I18NWrapper = lazy(async () => {
                 __DEV__ && console.log("Storing locale", l);
                 localStorage.setItem(StorageKey.LOCALE, l);
 
-                document.documentElement.lang = l;
+                document.documentElement.lang = lang.d || l;
             });
 
             return (
