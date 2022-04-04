@@ -7,12 +7,13 @@ import { IHistoryState } from "state/mutators";
 import { HISTORY, STORE } from "state/global";
 import { useRootSelector } from "state/root";
 
-import { Toasts } from "./components/toast";
-import { Fireflies } from "ui/components/login/fireflies";
-import { ThemeWidget } from "ui/components/login/theme_widget";
+import { Toasts } from "ui/components/toast";
 import { Ripple } from "ui/components/common/spinners/ripple";
-import { Logo } from "ui/components/login/logo";
-import { HistoryContext } from "./components/history";
+import { HistoryContext } from "ui/components/history";
+
+import { Fireflies } from "ui/views/login/components/fireflies";
+import { ThemeWidget } from "ui/views/login/components/theme_widget";
+import { Logo } from "ui/views/login/components/logo";
 
 import LoginView from "./views/login";
 import RegisterView from "./views/register";
