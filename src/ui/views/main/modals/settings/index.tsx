@@ -60,7 +60,16 @@ import { LanguageSettingsTab } from "./tabs/language";
 import { NamespaceMainTranslation } from "ui/i18n/i18n-types";
 
 interface TabMap {
-    n: keyof NamespaceMainTranslation['settings'],
+    n: keyof Pick<NamespaceMainTranslation['settings'],
+        | 'ACCOUNT'
+        | 'PROFILE'
+        | 'PRIVACY'
+        | 'NOTIFICATIONS'
+        | 'APPEARANCE'
+        | 'ACCESSIBILITY'
+        | 'TEXT_AND_MEDIA'
+        | 'LANGUAGE'
+    >,
     p: string,
     c: Component,
 }

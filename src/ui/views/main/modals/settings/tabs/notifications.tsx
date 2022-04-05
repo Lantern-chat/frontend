@@ -1,6 +1,7 @@
 import { HAS_NOTIFICATIONS } from "lib/notification";
 import { createEffect, createMemo, createSignal, onMount } from "solid-js";
 import { StorageKey } from "state/storage";
+import { useI18nContext } from "ui/i18n/i18n-solid";
 import { Toggle } from "../components/toggle";
 
 export var REQ_PERM_PROMISE: undefined | Promise<NotificationPermission>;
@@ -36,7 +37,7 @@ export function NotificationsSettingsTab() {
         if(!HAS_NOTIFICATIONS) return;
 
         let perm = Notification.permission;
-        if(Notification.permission == 'granted') {
+        if(perm == 'granted') {
             setPerm(localStorage.getItem(StorageKey.NOTIFICATIONS) as NotificationPermission || 'default');
         } else {
             setPerm(perm);
@@ -49,18 +50,12 @@ export function NotificationsSettingsTab() {
         });
     });
 
-    let label = createMemo(() => {
-        let label = "Enable Desktop Notifications";
-        if(HAS_NOTIFICATIONS && HAS_QUERY) {
-            return label;
-        }
+    let { LL } = useI18nContext();
 
-        return (
-            <>
-                {label} <br />
-                {HAS_NOTIFICATIONS ? "(May be outdated if revoked externally)" : "(Not Available)"}
-            </>
-        );
+    let label = createMemo(() => {
+        let offset = HAS_NOTIFICATIONS ? (HAS_QUERY ? 0 : 1) : 2;
+
+        return LL().main.settings.notifications.ENABLE_DESKTOP_NOTIFICATIONS[offset]();
     })
 
     return (

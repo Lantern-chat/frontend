@@ -26,6 +26,7 @@ const owo: Translation = {
     CHANGE_THEME: "change theme",
     CHANGE_THEME_TEMP: "change theme tempewatuwe",
     CHANGE_LANG: "Change Wanguage",
+    LOADING: "Woading, OwO",
 
     DEFAULT_TS_FORMAT: "dddd, MMMM Do, YYYY LT",
     CALENDAR_FORMAT: {
@@ -38,6 +39,10 @@ const owo: Translation = {
     },
     // unchanged to respect hCaptcha
     hCaptcha: "This site is protected by hCaptcha and its <@Privacy Policy> and <#Terms of Service> apply.",
+
+    units: {
+        PX: "{0}♡",
+    },
 };
 
 export default owo;

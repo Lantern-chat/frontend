@@ -28,6 +28,7 @@ const es: Translation = {
     CHANGE_THEME: "Cambiar de apariencia",
     CHANGE_THEME_TEMP: "Cambiar la temperatura de apariencia",
     CHANGE_LANG: "Cambiar idioma",
+    LOADING: "Cargando...",
 
     DEFAULT_TS_FORMAT: "LLLL",
     CALENDAR_FORMAT: {
@@ -40,6 +41,10 @@ const es: Translation = {
     },
     // NOTE: Special syntax for privacy and tos sections
     hCaptcha: "Este sitio está protegido por hCaptcha y se aplican su <@Política de Privacidad> y <#Términos de Servicio>.",
+
+    units: {
+        PX: "{0}px",
+    },
 };
 
 export default es;

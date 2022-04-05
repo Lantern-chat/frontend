@@ -32,15 +32,18 @@ export type ILanguages = {
         rtl?: boolean,
         /// DayJS Locale override
         d?: string,
+
+        /// Does NOT use SI Units (less common, so inverted logic)
+        nsi?: boolean | 1,
     }
 };
 
 // @stringify
 export const LANGUAGES: ILanguages = {
-    'en-US': { n: "English (American)", e: "🇺🇸", d: 'en' },
+    'en-US': { n: "English (American)", e: "🇺🇸", d: 'en', nsi: 1 },
     'en-GB': { n: "English (Traditional)", e: "🇬🇧", d: 'en-gb' },
     es: { n: "Español", e: "🇪🇸" },
-    owo: { n: "OwO (English)", e: "😺", d: 'en' }
+    owo: { n: "OwO (English)", e: "😺", d: 'en', nsi: 1 }
 };
 
 export const LANGUAGE_KEYS = Object.keys(LANGUAGES).sort(compareString) as Array<Locales>;

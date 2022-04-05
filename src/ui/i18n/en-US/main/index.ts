@@ -41,6 +41,44 @@ const enUS_main: BaseTranslation = {
         LANGUAGE: "Language",
         LOGOUT: "Logout",
         RETURN: "Return",
+        account: {
+            QUOTA: "{used:string}/{total:string} ({percent:string}) Upload Quota Used",
+            DEV_MODE: "Enable Developer Mode"
+        },
+        appearance: {
+            THEME: "Theme",
+            GROUP_LINES: "Show Lines Between Groups",
+            GROUP_PADDING: "Group Padding",
+            LIGHT_THEME: "Light Theme",
+            DARK_THEME: "Dark Theme",
+            OLED_THEME: "Enable OLED Dark Theme",
+            TEMP: "Temperature",
+            VIEW_MODE: "View Mode",
+            COMPACT: "Compact",
+            COZY: "Cozy",
+            FONT_EXAMPLE: "\"The wizard quickly jinxed the gnomes before they vaporized.\"",
+            CHAT_FONT_SIZE: "Chat Font Size",
+            UI_FONT_SIZE: "UI Font Size",
+            CHAT_FONT_FAMILY: "Chat Font Family",
+            UI_FONT_FAMILY: "UI Font Family",
+        },
+        notifications: {
+            ENABLE_DESKTOP_NOTIFICATIONS: [
+                "Enable Desktop Notifications",
+                "Enable Desktop Notifications (May be outdated if revoked externally)",
+                "Enable Desktop Notifications (Not Available)",
+            ]
+        },
+        media: {
+            MUTE_MEDIA: "Mute Media by Default",
+            HIDE_UNKNOWN: "Disable Attachments of Unknown Size",
+            USE_PLATFORM_EMOJIS: "Use Platform Emojis",
+            ENABLE_SPELLCHECK: "Enable Spellcheck"
+        },
+        accessibility: {
+            REDUCE_MOTION: "Reduce Motion",
+            UNFOCUS_PAUSE: "Pause GIFs on Unfocus",
+        }
     }
 };
 

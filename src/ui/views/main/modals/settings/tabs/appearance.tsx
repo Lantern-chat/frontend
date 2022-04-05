@@ -6,6 +6,7 @@ import { createRef } from "ui/hooks/createRef";
 import throttle from "lodash/throttle";
 import { mix } from "lib/math";
 
+import { useI18nContext } from "ui/i18n/i18n-solid";
 import { setTheme } from "state/commands/theme";
 import { savePrefs, savePrefsFlag } from "state/commands/prefs";
 import { Font, FONT_NAMES, UserPreferenceFlags } from "state/models";
@@ -23,6 +24,8 @@ import { MIN_TEMP, MAX_TEMP } from "lib/theme";
 
 import "./appearance.scss";
 export const AppearanceSettingsTab = () => {
+    let { LL } = useI18nContext();
+
     return (
         <form className="ln-settings-form">
             <ThemeSetting />
@@ -32,7 +35,9 @@ export const AppearanceSettingsTab = () => {
 
             <ViewSelector />
 
-            <TogglePrefsFlag htmlFor="group_lines" label="Show Lines Between Groups" flag={UserPreferenceFlags.GroupLines} />
+            <TogglePrefsFlag htmlFor="group_lines"
+                label={LL().main.settings.appearance.GROUP_LINES()}
+                flag={UserPreferenceFlags.GroupLines} />
 
             <GroupPaddingSlider />
         </form>
@@ -65,21 +70,26 @@ function ThemeSetting() {
         }
     }, 50, { trailing: true });
 
+    let { LL } = useI18nContext();
+
     return (
         <>
             <div>
-                <label>Theme</label>
+                <label>{LL().main.settings.appearance.THEME()}</label>
                 <RadioSelect
                     name="light_theme"
-                    options={[["light", "Light Theme"], ["dark", "Dark Theme"]]}
+                    options={[
+                        ["light", LL().main.settings.appearance.LIGHT_THEME()],
+                        ["dark", LL().main.settings.appearance.DARK_THEME()]
+                    ]}
                     selected={interactive.is_light ? 'light' : 'dark'}
                     onChange={value => doSetTheme(interactive.temperature, value == 'light', interactive.oled)}
                 />
             </div>
 
             <div className="ln-settings-temperature">
-                <label htmlFor="temperature">Temperature</label>
-                <div className="ln-theme-temp-slider" title="Change Theme Temperature">
+                <label htmlFor="temperature">{LL().main.settings.appearance.TEMP()}</label>
+                <div className="ln-theme-temp-slider" title={LL().CHANGE_THEME_TEMP()}>
                     <input ref={input} type="range" className="ln-slider" name="temperature"
                         min={MIN_TEMP} max={MAX_TEMP} step="1"
                         value={interactive.temperature}
@@ -88,7 +98,9 @@ function ThemeSetting() {
                 </div>
             </div>
 
-            <Toggle htmlFor="oled_mode" label="Enable OLED Dark Mode" checked={interactive.oled}
+            <Toggle htmlFor="oled_mode"
+                label={LL().main.settings.appearance.OLED_THEME()}
+                checked={interactive.oled}
                 onChange={(checked: boolean) => doSetTheme(interactive.temperature, interactive.is_light, checked)}
             />
         </>
@@ -109,12 +121,17 @@ function ViewSelector() {
             ]);
         };
 
+    let { LL } = useI18nContext();
+
     return (
         <div>
-            <label>View Mode</label>
+            <label>{LL().main.settings.appearance.VIEW_MODE()}</label>
             <RadioSelect
                 name="view"
-                options={[["cozy", "Cozy"], ["compact", "Compact"]]}
+                options={[
+                    ["cozy", LL().main.settings.appearance.COZY()],
+                    ["compact", LL().main.settings.appearance.COMPACT()]
+                ]}
                 selected={compact() ? 'compact' : 'cozy'}
                 onChange={onChange}
             />
@@ -127,8 +144,6 @@ interface IFontSelectorProps {
 }
 
 function FontSelector(props: IFontSelectorProps) {
-    let select_name, select_label;
-
     let prefs_key = createMemo(() => props.which == 'chat' ? 'chat_font' : 'ui_font');
     let size_prefs_key = createMemo(() => props.which == 'ui' ? 'ui_font_size' : 'chat_font_size');
 
@@ -162,16 +177,20 @@ function FontSelector(props: IFontSelectorProps) {
         dispatch(savePrefs({ [size_prefs_key()]: value }));
     };
 
+    let { LL } = useI18nContext();
+
     return (
         <>
             <div className="ln-settings-font">
-                <label htmlFor={props.which == 'chat' ? 'chat_font' : 'ui_font'}>
-                    {props.which == 'chat' ? 'Chat Font' : 'UI Font'}
+                <label htmlFor={prefs_key()}>
+                    {props.which == 'chat' ?
+                        LL().main.settings.appearance.CHAT_FONT_FAMILY() :
+                        LL().main.settings.appearance.UI_FONT_FAMILY()}
                 </label>
 
                 <div className="ln-settings-font__wrapper">
                     <div className="ln-settings-font__selector">
-                        <FormSelect name={select_label} value={font()} onChange={onChange}>
+                        <FormSelect name={prefs_key()} value={font()} onChange={onChange}>
                             <For each={Object.keys(FONT_NAMES)}>
                                 {font => (
                                     <option value={font} className={"ln-font-" + font.toLowerCase()}>
@@ -183,13 +202,15 @@ function FontSelector(props: IFontSelectorProps) {
                     </div>
 
                     <div className={"ln-settings-font__example ln-font-" + font().toLowerCase()} style={{ 'font-size': `${size() / 16}em` }}>
-                        "The wizard quickly jinxed the gnomes before they vaporized."
+                        {LL().main.settings.appearance.FONT_EXAMPLE()}
                     </div>
                 </div>
             </div>
 
             <SizeSlider htmlFor={size_prefs_key()} value={size()} onInput={onSizeInput}
-                label={props.which == 'chat' ? "Chat Font Size" : "UI Font Size"}
+                label={props.which == 'chat' ?
+                    LL().main.settings.appearance.CHAT_FONT_SIZE() :
+                    LL().main.settings.appearance.UI_FONT_SIZE()}
                 min={8} max={32} step={1} steps={[8, 12, 16, 20, 24, 32]} />
         </>
     )
@@ -209,28 +230,12 @@ function GroupPaddingSlider() {
     // update local padding value when selected value changes
     createEffect(() => setPad(current_padding()));
 
+    let { LL } = useI18nContext();
+
     return (
-        <SizeSlider htmlFor="group_padding" label="Group Padding" value={pad()} onInput={onInput}
+        <SizeSlider htmlFor="group_padding"
+            label={LL().main.settings.appearance.GROUP_PADDING()}
+            value={pad()} onInput={onInput}
             min={0} max={32} step={1} steps={[0, 12, 16, 24, 32]} />
     )
-}
-
-function FontSizeSlider(props: IFontSelectorProps) {
-    let prefs_key = createMemo(() => props.which == 'ui' ? 'ui_font_size' : 'chat_font_size'),
-        current_size = useRootSelector(state => state.prefs[prefs_key()]),
-        [size, setSize] = createSignal(current_size()),
-        dispatch = useDispatch();
-
-    let onInput = (value: number) => {
-        value = Math.round(value);
-
-        setSize(value);
-        dispatch(savePrefs({ [prefs_key()]: value }));
-    };
-
-    return (
-        <SizeSlider htmlFor={prefs_key()} value={size()} onInput={onInput}
-            label={(props.which == 'ui' ? 'UI' : 'Chat') + " Font Size"}
-            min={8} max={32} step={1} steps={[8, 12, 16, 20, 24, 32]} />
-    );
 }

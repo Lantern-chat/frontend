@@ -1,5 +1,5 @@
 import { createMemo, JSX } from "solid-js";
-import { px } from "ui/utils";
+import { useI18nContext } from "ui/i18n/i18n-solid";
 
 export interface ISizeSliderProps {
     steps: number[],
@@ -22,6 +22,8 @@ export function SizeSlider(props: ISizeSliderProps) {
         props.onInput(parseFloat((e.currentTarget as HTMLInputElement).value));
     };
 
+    let { LL } = useI18nContext();
+
     let bounds = createMemo(() => {
         let min = props.min ?? props.steps[0],
             max = props.max ?? props.steps[props.steps.length - 1];
@@ -43,7 +45,7 @@ export function SizeSlider(props: ISizeSliderProps) {
             let style;
             if(i > 0) { style = { left: `calc(${(step - min) / (max - min) * 100}% - 1.5em)` }; }
 
-            return (<span style={style} textContent={px(step)} />);
+            return (<span style={style} textContent={LL().units.PX(step)} />);
         });
     });
 

@@ -17,7 +17,7 @@ const owo_main: NamespaceMainTranslation = {
 	UNDEAFEN: "undeafen 🥺",
 	EDITED: "edited, mya",
 	EDITED_ON: "editwed on {ts}, nyaa!",
-	PINNED: "pinned 🥺",
+	PINNED: "pinned 😳",
 	MESSAGE_PINNED: "message pinned >_<",
 	SPOILER_TITLE: "cwick t-to weveaw spoiwew >_<",
 	OWNER: "ownew (⑅˘꒳˘)",
@@ -40,6 +40,44 @@ const owo_main: NamespaceMainTranslation = {
 		LANGUAGE: "wanguage σωσ",
 		LOGOUT: "wogout OwO",
 		RETURN: "wetuwn 😳😳😳",
+		account: {
+			QUOTA: "{used}/{total} ({percent}) u-upwoad quota used, rawr",
+			DEV_MODE: "Eenabwe D-devewopew Mode",
+		},
+		appearance: {
+			THEME: "Theme, (˘ω˘)",
+			GROUP_LINES: "show wines between gwoups, nyaa~~",
+			GROUP_PADDING: "gwoup padding, UwU",
+			LIGHT_THEME: "wight theme, :3",
+			DARK_THEME: "dawk t-theme, (⑅˘꒳˘)",
+			OLED_THEME: "enabwe o-owed dawk theme (///ˬ///✿)",
+			TEMP: "tempewatuwe ^^;;",
+			VIEW_MODE: "view mode >_<",
+			COMPACT: "compact",
+			COZY: "cozy, rawr x3",
+			FONT_EXAMPLE: "\"the wizawd quickwy jinxed the gnomes b-befowe they vapowized, /(^•ω•^).\"",
+			CHAT_FONT_SIZE: "chat font size :3",
+			UI_FONT_SIZE: "ui f-font size (ꈍᴗꈍ)",
+			CHAT_FONT_FAMILY: "chat font famiwy /(^•ω•^)",
+			UI_FONT_FAMILY: "ui font famiwy (⑅˘꒳˘)",
+		},
+		notifications: {
+			ENABLE_DESKTOP_NOTIFICATIONS: [
+				"enabwe desktop nyotifications ( ͡o ω ͡o )",
+				"enabwe desktop n-nyotifications (may be outdated i-if wevoked e-extewnawwy) òωó",
+				"enabwe d-desktop nyotifications (not a-avaiwabwe) (⑅˘꒳˘)",
+			]
+		},
+		media: {
+			MUTE_MEDIA: "mute m-media b-by defauwt XD",
+			HIDE_UNKNOWN: "disabwe attachments o-of unknown s-size",
+			USE_PLATFORM_EMOJIS: "use p-pwatfowm emojis -.-",
+			ENABLE_SPELLCHECK: "enabwe s-spewwcheck"
+		},
+		accessibility: {
+			REDUCE_MOTION: "weduce motion, nyaa~~",
+			UNFOCUS_PAUSE: "pause g-gifs on unfocus 😳",
+		}
 	}
 };
 

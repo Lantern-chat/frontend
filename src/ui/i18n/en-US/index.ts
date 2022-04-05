@@ -28,6 +28,7 @@ const enUS: BaseTranslation = {
 	CHANGE_THEME: "Change Theme",
 	CHANGE_THEME_TEMP: "Change Theme Temperature",
 	CHANGE_LANG: "Change Language",
+	LOADING: "Loading...",
 
 	DEFAULT_TS_FORMAT: "dddd, MMMM Do, YYYY LT",
 	CALENDAR_FORMAT: {
@@ -40,6 +41,11 @@ const enUS: BaseTranslation = {
 	},
 	// this is one sentence, split by HTML
 	hCaptcha: "This site is protected by hCaptcha and its <@Privacy Policy> and <#Terms of Service> apply.",
+
+	// units/dimensions
+	units: {
+		PX: "{0}px",
+	}
 };
 
 export default enUS;

@@ -118,6 +118,10 @@ type RootTranslation = {
 	 */
 	CHANGE_LANG: string
 	/**
+	 * Loading...
+	 */
+	LOADING: string
+	/**
 	 * dddd, MMMM Do, YYYY LT
 	 */
 	DEFAULT_TS_FORMAT: string
@@ -151,6 +155,13 @@ type RootTranslation = {
 	 * This site is protected by hCaptcha and its <@Privacy Policy> and <#Terms of Service> apply.
 	 */
 	hCaptcha: string
+	units: {
+		/**
+		 * {0}px
+		 * @param {unknown} 0
+		 */
+		PX: RequiredParams<'0'>
+	}
 }
 
 export type NamespaceMainTranslation = {
@@ -312,6 +323,125 @@ export type NamespaceMainTranslation = {
 		 * Return
 		 */
 		RETURN: string
+		account: {
+			/**
+			 * {used}/{total} ({percent}) Upload Quota Used
+			 * @param {string} percent
+			 * @param {string} total
+			 * @param {string} used
+			 */
+			QUOTA: RequiredParams<'percent' | 'total' | 'used'>
+			/**
+			 * Enable Developer Mode
+			 */
+			DEV_MODE: string
+		}
+		appearance: {
+			/**
+			 * Theme
+			 */
+			THEME: string
+			/**
+			 * Show Lines Between Groups
+			 */
+			GROUP_LINES: string
+			/**
+			 * Group Padding
+			 */
+			GROUP_PADDING: string
+			/**
+			 * Light Theme
+			 */
+			LIGHT_THEME: string
+			/**
+			 * Dark Theme
+			 */
+			DARK_THEME: string
+			/**
+			 * Enable OLED Dark Theme
+			 */
+			OLED_THEME: string
+			/**
+			 * Temperature
+			 */
+			TEMP: string
+			/**
+			 * View Mode
+			 */
+			VIEW_MODE: string
+			/**
+			 * Compact
+			 */
+			COMPACT: string
+			/**
+			 * Cozy
+			 */
+			COZY: string
+			/**
+			 * "The wizard quickly jinxed the gnomes before they vaporized."
+			 */
+			FONT_EXAMPLE: string
+			/**
+			 * Chat Font Size
+			 */
+			CHAT_FONT_SIZE: string
+			/**
+			 * UI Font Size
+			 */
+			UI_FONT_SIZE: string
+			/**
+			 * Chat Font Family
+			 */
+			CHAT_FONT_FAMILY: string
+			/**
+			 * UI Font Family
+			 */
+			UI_FONT_FAMILY: string
+		}
+		notifications: {
+			ENABLE_DESKTOP_NOTIFICATIONS: {
+				/**
+				 * Enable Desktop Notifications
+				 */
+				'0': string
+				/**
+				 * Enable Desktop Notifications (May be outdated if revoked externally)
+				 */
+				'1': string
+				/**
+				 * Enable Desktop Notifications (Not Available)
+				 */
+				'2': string
+			}
+		}
+		media: {
+			/**
+			 * Mute Media by Default
+			 */
+			MUTE_MEDIA: string
+			/**
+			 * Disable Attachments of Unknown Size
+			 */
+			HIDE_UNKNOWN: string
+			/**
+			 * Use Platform Emojis
+			 */
+			USE_PLATFORM_EMOJIS: string
+			/**
+			 * Enable Spellcheck
+			 */
+			ENABLE_SPELLCHECK: string
+		}
+		accessibility: {
+			/**
+			 * Reduce Motion
+			 */
+			REDUCE_MOTION: string
+			/**
+			 * Pause GIFs on Unfocus
+			 */
+			UNFOCUS_PAUSE: string
+		}
 	}
 }
 
@@ -424,6 +554,10 @@ export type TranslationFunctions = {
 	 */
 	CHANGE_LANG: () => LocalizedString
 	/**
+	 * Loading...
+	 */
+	LOADING: () => LocalizedString
+	/**
 	 * dddd, MMMM Do, YYYY LT
 	 */
 	DEFAULT_TS_FORMAT: () => LocalizedString
@@ -457,6 +591,12 @@ export type TranslationFunctions = {
 	 * This site is protected by hCaptcha and its <@Privacy Policy> and <#Terms of Service> apply.
 	 */
 	hCaptcha: () => LocalizedString
+	units: {
+		/**
+		 * {0}px
+		 */
+		PX: (arg0: unknown) => LocalizedString
+	}
 	main: {
 		/**
 		 * Channel
@@ -605,6 +745,122 @@ export type TranslationFunctions = {
 			 * Return
 			 */
 			RETURN: () => LocalizedString
+			account: {
+				/**
+				 * {used}/{total} ({percent}) Upload Quota Used
+				 */
+				QUOTA: (arg: { percent: string, total: string, used: string }) => LocalizedString
+				/**
+				 * Enable Developer Mode
+				 */
+				DEV_MODE: () => LocalizedString
+			}
+			appearance: {
+				/**
+				 * Theme
+				 */
+				THEME: () => LocalizedString
+				/**
+				 * Show Lines Between Groups
+				 */
+				GROUP_LINES: () => LocalizedString
+				/**
+				 * Group Padding
+				 */
+				GROUP_PADDING: () => LocalizedString
+				/**
+				 * Light Theme
+				 */
+				LIGHT_THEME: () => LocalizedString
+				/**
+				 * Dark Theme
+				 */
+				DARK_THEME: () => LocalizedString
+				/**
+				 * Enable OLED Dark Theme
+				 */
+				OLED_THEME: () => LocalizedString
+				/**
+				 * Temperature
+				 */
+				TEMP: () => LocalizedString
+				/**
+				 * View Mode
+				 */
+				VIEW_MODE: () => LocalizedString
+				/**
+				 * Compact
+				 */
+				COMPACT: () => LocalizedString
+				/**
+				 * Cozy
+				 */
+				COZY: () => LocalizedString
+				/**
+				 * "The wizard quickly jinxed the gnomes before they vaporized."
+				 */
+				FONT_EXAMPLE: () => LocalizedString
+				/**
+				 * Chat Font Size
+				 */
+				CHAT_FONT_SIZE: () => LocalizedString
+				/**
+				 * UI Font Size
+				 */
+				UI_FONT_SIZE: () => LocalizedString
+				/**
+				 * Chat Font Family
+				 */
+				CHAT_FONT_FAMILY: () => LocalizedString
+				/**
+				 * UI Font Family
+				 */
+				UI_FONT_FAMILY: () => LocalizedString
+			}
+			notifications: {
+				ENABLE_DESKTOP_NOTIFICATIONS: {
+					/**
+					 * Enable Desktop Notifications
+					 */
+					'0': () => LocalizedString
+					/**
+					 * Enable Desktop Notifications (May be outdated if revoked externally)
+					 */
+					'1': () => LocalizedString
+					/**
+					 * Enable Desktop Notifications (Not Available)
+					 */
+					'2': () => LocalizedString
+				}
+			}
+			media: {
+				/**
+				 * Mute Media by Default
+				 */
+				MUTE_MEDIA: () => LocalizedString
+				/**
+				 * Disable Attachments of Unknown Size
+				 */
+				HIDE_UNKNOWN: () => LocalizedString
+				/**
+				 * Use Platform Emojis
+				 */
+				USE_PLATFORM_EMOJIS: () => LocalizedString
+				/**
+				 * Enable Spellcheck
+				 */
+				ENABLE_SPELLCHECK: () => LocalizedString
+			}
+			accessibility: {
+				/**
+				 * Reduce Motion
+				 */
+				REDUCE_MOTION: () => LocalizedString
+				/**
+				 * Pause GIFs on Unfocus
+				 */
+				UNFOCUS_PAUSE: () => LocalizedString
+			}
 		}
 	}
 }

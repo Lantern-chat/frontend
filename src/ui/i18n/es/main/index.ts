@@ -41,6 +41,44 @@ const es_main: NamespaceMainTranslation = {
 		LANGUAGE: "Idioma",
 		LOGOUT: "Cerrar sesión",
 		RETURN: "Volver",
+		account: {
+			QUOTA: "{used}/{total} ({percent}) Cuota de carga utilizada",
+			DEV_MODE: "Habilitar el Modo de Desarrollador"
+		},
+		appearance: {
+			THEME: "Tema",
+			GROUP_LINES: "Mostrar líneas entre Grupos",
+			GROUP_PADDING: "Relleno de Grupo",
+			LIGHT_THEME: "Tema Ligero",
+			DARK_THEME: "Tema Oscuro",
+			OLED_THEME: "Habilitar el Tema Oscuro de OLED",
+			TEMP: "Temperatura",
+			VIEW_MODE: "Modo de vista",
+			COMPACT: "Compacto",
+			COZY: "Acogedor",
+			FONT_EXAMPLE: "\"El veloz murciélago hindú comía feliz cardillo y kiwi. La cigüeña tocaba el saxofón detrás del palenque de paja.\"",
+			CHAT_FONT_SIZE: "Tamaño de fuente de Chat",
+			UI_FONT_SIZE: "Tamaño de fuente d IU",
+			CHAT_FONT_FAMILY: "Tipo de letra del Chat",
+			UI_FONT_FAMILY: "Tipo de letra de la IU",
+		},
+		notifications: {
+			ENABLE_DESKTOP_NOTIFICATIONS: [
+				"Habilitar Notificaciones de Escritorio",
+				"Habilitar Notificaciones de Escritorio (puede estar desactualizado si se revoca externamente)",
+				"Habilitar Notificaciones de Escritorio (no disponible)",
+			]
+		},
+		media: {
+			MUTE_MEDIA: "Silenciar medios por defecto",
+			HIDE_UNKNOWN: "Deshabilitar archivos adjuntos de tamaño desconocido",
+			USE_PLATFORM_EMOJIS: "Usar emojis de plataforma",
+			ENABLE_SPELLCHECK: "Habilitar corrector ortográfico"
+		},
+		accessibility: {
+			REDUCE_MOTION: "Reducir Movimiento",
+			UNFOCUS_PAUSE: "Pausar GIF en Desenfocar",
+		}
 	}
 };
 

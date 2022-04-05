@@ -20,7 +20,7 @@ function LangPicker() {
     let on_select = async (which: Locales) => {
         await Promise.all([
             loadLocaleAsync(which),
-            loadNamespaceAsync(which, 'main')
+            loadNamespaceAsync(which, 'main'),
         ]);
 
         setLocale(which);
