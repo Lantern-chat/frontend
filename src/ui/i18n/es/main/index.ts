@@ -17,6 +17,7 @@ const es_main: NamespaceMainTranslation = {
 	DEAFEN: "Ensordecer",
 	UNDEAFEN: "Desensordecer",
 	EDITED: "Editado",
+	EDITED_ON: "Editado el {ts}",
 	PINNED: "Anclado",
 	MESSAGE_PINNED: "Mensaje Fijado",
 	SPOILER_TITLE: "Haga clic para revelar el spoiler",

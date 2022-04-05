@@ -7,14 +7,14 @@ import enUS from "../en-US";
 const enGB: Translations = {
 	...enUS as unknown as Translations,
 
-	DEFAULT_TS_FORMAT: "dddd, MMM Do YYYY, h:mm A",
+	DEFAULT_TS_FORMAT: "dddd, MMMM Do, YYYY LT",
 	CALENDAR_FORMAT: {
-		lastDay: "[Yesterday at] h:mm A",
-		sameDay: "[Today at] h:mm A",
-		nextDay: "[Tomorrow at] h:mm A",
-		nextWeek: "dddd [at] h:mm A",
-		lastWeek: "[Last] dddd [at] h:mm A",
-		sameElse: 'DD/MM/YYYY'
+		lastDay: "[Yesterday at] LT",
+		sameDay: "[Today at] LT",
+		nextDay: "[Tomorrow at] LT",
+		nextWeek: "dddd [at] LT",
+		lastWeek: "[Last] dddd [at] LT",
+		sameElse: 'L'
 	},
 };
 

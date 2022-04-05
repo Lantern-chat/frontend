@@ -3,14 +3,13 @@ import dayjs from "dayjs";
 import { ArrowThinRightIcon } from "lantern-icons";
 import { VectorIcon } from "ui/components/common/icon";
 import { IMessageProps } from "./common";
-import { FULL_FORMAT } from "./cozy";
 
 import { Message as MessageBody } from "./msg";
 import { createCalendar, createTimestamp } from "ui/hooks/createTimestamp";
 
 export function SystemMessage(props: IMessageProps) {
     let ts = createMemo(() => dayjs(props.msg.ts)),
-        title = createTimestamp(ts, FULL_FORMAT),
+        title = createTimestamp(ts),
         calendar = createCalendar(ts);
 
     return (

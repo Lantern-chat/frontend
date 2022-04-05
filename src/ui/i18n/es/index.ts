@@ -29,14 +29,14 @@ const es: Translation = {
     CHANGE_THEME_TEMP: "Cambiar la temperatura de apariencia",
     CHANGE_LANG: "Cambiar idioma",
 
-    DEFAULT_TS_FORMAT: "dddd, MMM Do YYYY, h:mm A",
+    DEFAULT_TS_FORMAT: "LLLL",
     CALENDAR_FORMAT: {
-        lastDay: "[Ayer a las] h:mm A",
-        sameDay: "[Hoy a las] h:mm A",
-        nextDay: "[Mañana a las] h:mm A",
-        nextWeek: "dddd [a las] h:mm A",
-        lastWeek: "[El] dddd [pasado a las] h:mm A",
-        sameElse: 'MM/DD/YYYY'
+        lastDay: "[Ayer a las] LT",
+        sameDay: "[Hoy a las] LT",
+        nextDay: "[Mañana a las] LT",
+        nextWeek: "dddd [a las] LT",
+        lastWeek: "[El] dddd [pasado a las] LT",
+        sameElse: 'L'
     },
     // NOTE: Special syntax for privacy and tos sections
     hCaptcha: "Este sitio está protegido por hCaptcha y se aplican su <@Política de Privacidad> y <#Términos de Servicio>.",

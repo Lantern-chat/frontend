@@ -15,8 +15,6 @@ import { createTimestamp } from "ui/hooks/createTimestamp";
 import { UICalendar, UITimestamp } from "ui/components/common/timestamp";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 
-export const FULL_FORMAT = "dddd, MMMM DD, h:mm A";
-
 export function CozyMessage(props: IMessageProps) {
     let { LL, locale } = useI18nContext();
 
@@ -25,8 +23,8 @@ export function CozyMessage(props: IMessageProps) {
             || { user: props.msg.msg.author, nick: props.msg.msg.member?.nick };
     });
 
-    let ts = createTimestamp(() => props.msg.ts, FULL_FORMAT);
-    let ets = createTimestamp(() => props.msg.et, FULL_FORMAT);
+    let ts = createTimestamp(() => props.msg.ts);
+    let ets = createTimestamp(() => props.msg.et);
 
     let nickname = createMemo(() => {
         let cached = cached_member();
@@ -35,7 +33,7 @@ export function CozyMessage(props: IMessageProps) {
 
     let extra = createMemo(() => {
         if(!props.msg.sg && props.msg.et) {
-            return <span className="ui-text ln-system-sub" title={ets() as string}>
+            return <span className="ui-text ln-system-sub" title={LL().main.EDITED_ON({ ts: ets() })}>
                 ({LL().main.EDITED().toLocaleLowerCase(locale())})
             </span>;
         }
@@ -53,7 +51,7 @@ export function CozyMessage(props: IMessageProps) {
 
                     <Branch.Else>
                         <div className="ln-msg__sidets" title={ts()}>
-                            <UITimestamp time={props.msg.ts} format="h:mm A" />
+                            <UITimestamp time={props.msg.ts} format="LT" />
                         </div>
                     </Branch.Else>
                 </Branch>
@@ -70,7 +68,7 @@ export function CozyMessage(props: IMessageProps) {
                             <UICalendar time={props.msg.ts} />
 
                             <Show when={props.msg.et}>
-                                <span className="flags" title={LL().main.EDITED() + ' ' + ets()}>
+                                <span className="flags" title={LL().main.EDITED_ON({ ts: ets() })}>
                                     <VectorIcon src={PencilIcon} />
                                 </span>
                             </Show>

@@ -28,14 +28,15 @@ const enUS: BaseTranslation = {
 	CHANGE_THEME: "Change Theme",
 	CHANGE_THEME_TEMP: "Change Theme Temperature",
 	CHANGE_LANG: "Change Language",
-	DEFAULT_TS_FORMAT: "dddd, MMM Do YYYY, h:mm A",
+
+	DEFAULT_TS_FORMAT: "dddd, MMMM Do, YYYY LT",
 	CALENDAR_FORMAT: {
-		lastDay: "[Yesterday at] h:mm A",
-		sameDay: "[Today at] h:mm A",
-		nextDay: "[Tomorrow at] h:mm A",
-		nextWeek: "dddd [at] h:mm A",
-		lastWeek: "[Last] dddd [at] h:mm A",
-		sameElse: 'MM/DD/YYYY'
+		lastDay: "[Yesterday at] LT",
+		sameDay: "[Today at] LT",
+		nextDay: "[Tomorrow at] LT",
+		nextWeek: "dddd [at] LT",
+		lastWeek: "[Last] dddd [at] LT",
+		sameElse: 'L'
 	},
 	// this is one sentence, split by HTML
 	hCaptcha: "This site is protected by hCaptcha and its <@Privacy Policy> and <#Terms of Service> apply.",

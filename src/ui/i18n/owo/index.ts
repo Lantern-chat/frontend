@@ -27,14 +27,14 @@ const owo: Translation = {
     CHANGE_THEME_TEMP: "change theme tempewatuwe",
     CHANGE_LANG: "Change Wanguage",
 
-    DEFAULT_TS_FORMAT: "dddd, MMM Do YYYY, h:mm A",
+    DEFAULT_TS_FORMAT: "dddd, MMMM Do, YYYY LT",
     CALENDAR_FORMAT: {
-        lastDay: "[yestewday at] h:mm A",
-        sameDay: "[today a-at] h:mm A",
-        nextDay: "[tomowwow at] h:mm A",
-        nextWeek: "dddd [at] h:mm A",
-        lastWeek: "[wast] dddd [at] h:mm A",
-        sameElse: 'MM/DD/YYYY'
+        lastDay: "[yestewday at] LT",
+        sameDay: "[today a-at] LT",
+        nextDay: "[tomowwow at] LT",
+        nextWeek: "dddd [at] LT",
+        lastWeek: "[wast] dddd [at] LT",
+        sameElse: 'L'
     },
     // unchanged to respect hCaptcha
     hCaptcha: "This site is protected by hCaptcha and its <@Privacy Policy> and <#Terms of Service> apply.",

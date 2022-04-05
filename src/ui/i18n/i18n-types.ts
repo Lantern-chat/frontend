@@ -118,32 +118,32 @@ type RootTranslation = {
 	 */
 	CHANGE_LANG: string
 	/**
-	 * dddd, MMM Do YYYY, h:mm A
+	 * dddd, MMMM Do, YYYY LT
 	 */
 	DEFAULT_TS_FORMAT: string
 	CALENDAR_FORMAT: {
 		/**
-		 * [Yesterday at] h:mm A
+		 * [Yesterday at] LT
 		 */
 		lastDay: string
 		/**
-		 * [Today at] h:mm A
+		 * [Today at] LT
 		 */
 		sameDay: string
 		/**
-		 * [Tomorrow at] h:mm A
+		 * [Tomorrow at] LT
 		 */
 		nextDay: string
 		/**
-		 * dddd [at] h:mm A
+		 * dddd [at] LT
 		 */
 		nextWeek: string
 		/**
-		 * [Last] dddd [at] h:mm A
+		 * [Last] dddd [at] LT
 		 */
 		lastWeek: string
 		/**
-		 * MM/DD/YYYY
+		 * L
 		 */
 		sameElse: string
 	}
@@ -214,6 +214,11 @@ export type NamespaceMainTranslation = {
 	 * Edited
 	 */
 	EDITED: string
+	/**
+	 * Edited on {ts}
+	 * @param {string} ts
+	 */
+	EDITED_ON: RequiredParams<'ts'>
 	/**
 	 * Pinned
 	 */
@@ -419,32 +424,32 @@ export type TranslationFunctions = {
 	 */
 	CHANGE_LANG: () => LocalizedString
 	/**
-	 * dddd, MMM Do YYYY, h:mm A
+	 * dddd, MMMM Do, YYYY LT
 	 */
 	DEFAULT_TS_FORMAT: () => LocalizedString
 	CALENDAR_FORMAT: {
 		/**
-		 * [Yesterday at] h:mm A
+		 * [Yesterday at] LT
 		 */
 		lastDay: () => LocalizedString
 		/**
-		 * [Today at] h:mm A
+		 * [Today at] LT
 		 */
 		sameDay: () => LocalizedString
 		/**
-		 * [Tomorrow at] h:mm A
+		 * [Tomorrow at] LT
 		 */
 		nextDay: () => LocalizedString
 		/**
-		 * dddd [at] h:mm A
+		 * dddd [at] LT
 		 */
 		nextWeek: () => LocalizedString
 		/**
-		 * [Last] dddd [at] h:mm A
+		 * [Last] dddd [at] LT
 		 */
 		lastWeek: () => LocalizedString
 		/**
-		 * MM/DD/YYYY
+		 * L
 		 */
 		sameElse: () => LocalizedString
 	}
@@ -513,6 +518,10 @@ export type TranslationFunctions = {
 		 * Edited
 		 */
 		EDITED: () => LocalizedString
+		/**
+		 * Edited on {ts}
+		 */
+		EDITED_ON: (arg: { ts: string }) => LocalizedString
 		/**
 		 * Pinned
 		 */

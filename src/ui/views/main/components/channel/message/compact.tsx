@@ -7,7 +7,6 @@ import { createTimestamp } from "ui/hooks/createTimestamp";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 import { MsgAttachment } from "./attachment";
 import { IMessageProps, MessageUserName } from "./common";
-import { FULL_FORMAT } from "./cozy";
 
 import { Message as MessageBody } from "./msg";
 
@@ -19,19 +18,21 @@ export function CompactMessage(props: IMessageProps) {
             || { user: props.msg.msg.author, nick: props.msg.msg.member?.nick };
     });
 
-    let ts = createTimestamp(() => props.msg.ts, FULL_FORMAT);
-    let ets = createTimestamp(() => props.msg.et, FULL_FORMAT);
+    let ts = createTimestamp(() => props.msg.ts);
+    let ets = createTimestamp(() => props.msg.et);
 
     let nickname = createMemo(() => {
         let cached = cached_member();
         return cached.nick || cached.user.username;
     });
 
+    let edited = createMemo(() => LL().main.EDITED().toLocaleLowerCase(locale()));
+
     let extra = createMemo(() => {
         if(props.msg.et) {
             return (
-                <span className="ui-text ln-system-sub" title={ets()!}>
-                    ({LL().main.EDITED().toLocaleLowerCase(locale())})
+                <span className="ui-text ln-system-sub" title={LL().main.EDITED_ON({ ts: ets() })}>
+                    ({edited()})
                 </span>
             );
         }
@@ -44,7 +45,7 @@ export function CompactMessage(props: IMessageProps) {
 
                 <div className="ln-msg__side">
                     <div className="ln-msg__sidets" title={ts()}>
-                        <UITimestamp time={props.msg.ts} format="h:mm A" />
+                        <UITimestamp time={props.msg.ts} format="LT" />
                     </div>
                 </div>
 
