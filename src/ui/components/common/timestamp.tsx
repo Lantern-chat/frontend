@@ -1,7 +1,7 @@
 import type { JSX } from "solid-js";
 import type dayjs from "lib/time";
 
-import { createCalendar, createTimestamp, DEFAULT_FORMAT } from "ui/hooks/createTimestamp";
+import { createCalendar, createTimestamp } from "ui/hooks/createTimestamp";
 
 export interface ITimestampProps {
     time: NonNullable<dayjs.ConfigType>,
@@ -11,7 +11,7 @@ export interface ITimestampProps {
 export type ICalendarProps = Omit<ITimestampProps, 'format'>;
 
 export function UITimestamp(props: ITimestampProps & { span?: JSX.HTMLAttributes<HTMLSpanElement> }): JSX.Element {
-    let ts = createTimestamp(() => props.time, () => props.format || DEFAULT_FORMAT);
+    let ts = createTimestamp(() => props.time, () => props.format);
     return <span className="ui-text" textContent={ts()} {...props.span || {}} />;
 }
 

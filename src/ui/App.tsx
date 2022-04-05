@@ -63,7 +63,7 @@ function LoginRoutes(props: { which: typeof LOGIN_ROUTES[number] }) {
 import type { Locales } from "ui/i18n/i18n-types";
 import TypesafeI18n, { useI18nContext } from "ui/i18n/i18n-solid";
 import { loadLocaleAsync, loadNamespaceAsync } from "ui/i18n/i18n-util.async";
-import { DETECTORS, LANGUAGES } from "ui/i18n";
+import { DETECTORS, LANGUAGES, useLocale } from "ui/i18n";
 
 const MainWrapper = lazy(async () => {
     // TODO: Figure out how to include the english translation inside main itself
@@ -75,7 +75,7 @@ const MainWrapper = lazy(async () => {
 
     return {
         default: () => {
-            let { locale, setLocale } = useI18nContext();
+            let { locale, setLocale } = useLocale();
 
             setLocale(locale()); // refresh locale
 
@@ -112,7 +112,6 @@ import { detectLocale } from "ui/i18n/i18n-util";
 
 // manually include english, always
 import "ui/i18n/en-US";
-import dayjs from "lib/time";
 
 let initial_locale = localStorage.getItem(StorageKey.LOCALE) as Locales || /*#__INLINE__*/ detectLocale(...DETECTORS);
 
@@ -129,7 +128,7 @@ const I18NWrapper = lazy(async () => {
 
     return {
         default: () => {
-            let { locale, setLocale } = useI18nContext();
+            let { locale, setLocale } = useLocale();
 
             setLocale(initial_locale);
 
@@ -137,7 +136,6 @@ const I18NWrapper = lazy(async () => {
                 let l = locale(), lang = LANGUAGES[l], rtl = !!lang.rtl;
                 document.body.classList.toggle('ln-rtl', rtl);
                 document.body.classList.toggle('ln-ltr', !rtl);
-                dayjs.locale(lang.d || l);
 
                 // STORING LOCALE
                 __DEV__ && console.log("Storing locale", l);

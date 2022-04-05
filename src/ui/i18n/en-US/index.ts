@@ -28,6 +28,7 @@ const enUS: BaseTranslation = {
 	CHANGE_THEME: "Change Theme",
 	CHANGE_THEME_TEMP: "Change Theme Temperature",
 	CHANGE_LANG: "Change Language",
+	DEFAULT_TS_FORMAT: "dddd, MMM Do YYYY, h:mm A",
 	CALENDAR_FORMAT: {
 		lastDay: "[Yesterday at] h:mm A",
 		sameDay: "[Today at] h:mm A",

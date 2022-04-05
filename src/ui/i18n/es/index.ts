@@ -28,6 +28,8 @@ const es: Translation = {
     CHANGE_THEME: "Cambiar de apariencia",
     CHANGE_THEME_TEMP: "Cambiar la temperatura de apariencia",
     CHANGE_LANG: "Cambiar idioma",
+
+    DEFAULT_TS_FORMAT: "dddd, MMM Do YYYY, h:mm A",
     CALENDAR_FORMAT: {
         lastDay: "[Ayer a las] h:mm A",
         sameDay: "[Hoy a las] h:mm A",

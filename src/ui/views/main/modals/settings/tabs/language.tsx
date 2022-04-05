@@ -1,5 +1,4 @@
 import { createSelector, For } from "solid-js";
-import { useI18nContext } from "ui/i18n/i18n-solid";
 import type { Locales } from "ui/i18n/i18n-types";
 
 export const LanguageSettingsTab = () => {
@@ -10,24 +9,20 @@ export const LanguageSettingsTab = () => {
     );
 };
 
-import { LANGUAGES, LANGUAGE_KEYS } from "ui/i18n";
+import { LANGUAGES, LANGUAGE_KEYS, useLocale } from "ui/i18n";
 import { loadLocaleAsync, loadNamespaceAsync } from "ui/i18n/i18n-util.async";
-import dayjs from "lib/time";
 
 import "./language.scss";
 function LangPicker() {
-    let { locale, setLocale } = useI18nContext();
+    let { locale, setLocale } = useLocale();
 
     let selected = createSelector(locale);
     let on_select = async (which: Locales) => {
-        let lang = LANGUAGES[which];
-
         await Promise.all([
             loadLocaleAsync(which),
             loadNamespaceAsync(which, 'main')
         ]);
 
-        dayjs.locale(lang.d || which);
         setLocale(which);
     };
 

@@ -1,27 +1,20 @@
 import { createSelector, For } from "solid-js";
 
-import dayjs from "dayjs";
-
-import { useI18nContext } from "ui/i18n/i18n-solid";
 import { Locales } from "ui/i18n/i18n-types";
-import { LANGUAGES, LANGUAGE_KEYS } from "ui/i18n";
-import { loadLocaleAsync, loadNamespaceAsync } from "ui/i18n/i18n-util.async";
+import { LANGUAGES, LANGUAGE_KEYS, useLocale } from "ui/i18n";
+import { loadLocaleAsync } from "ui/i18n/i18n-util.async";
 
 import { VectorIcon } from "ui/components/common/icon";
 import { Translate } from "lantern-icons";
 
 import "./lang_widget.scss";
 export function LangWidget() {
-    let { LL, locale, setLocale } = useI18nContext();
+    let { LL, locale, setLocale } = useLocale();
 
     let selected = createSelector(locale);
 
     let on_select = async (which: Locales) => {
-        let lang = LANGUAGES[which];
-
         await loadLocaleAsync(which);
-
-        dayjs.locale(lang.d || which);
         setLocale(which);
     };
 

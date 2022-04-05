@@ -13,6 +13,9 @@ dayjs.extend(relativeTime);
 import localeData from 'dayjs/plugin/localeData';
 dayjs.extend(localeData);
 
+import updateLocale from 'dayjs/plugin/updateLocale';
+dayjs.extend(updateLocale);
+
 import calendar from 'dayjs/plugin/calendar';
 dayjs.extend(calendar);
 

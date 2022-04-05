@@ -117,6 +117,10 @@ type RootTranslation = {
 	 * Change Language
 	 */
 	CHANGE_LANG: string
+	/**
+	 * dddd, MMM Do YYYY, h:mm A
+	 */
+	DEFAULT_TS_FORMAT: string
 	CALENDAR_FORMAT: {
 		/**
 		 * [Yesterday at] h:mm A
@@ -414,6 +418,10 @@ export type TranslationFunctions = {
 	 * Change Language
 	 */
 	CHANGE_LANG: () => LocalizedString
+	/**
+	 * dddd, MMM Do YYYY, h:mm A
+	 */
+	DEFAULT_TS_FORMAT: () => LocalizedString
 	CALENDAR_FORMAT: {
 		/**
 		 * [Yesterday at] h:mm A

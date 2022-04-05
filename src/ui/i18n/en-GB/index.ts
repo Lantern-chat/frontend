@@ -6,6 +6,8 @@ import enUS from "../en-US";
 
 const enGB: Translations = {
 	...enUS as unknown as Translations,
+
+	DEFAULT_TS_FORMAT: "dddd, MMM Do YYYY, h:mm A",
 	CALENDAR_FORMAT: {
 		lastDay: "[Yesterday at] h:mm A",
 		sameDay: "[Today at] h:mm A",

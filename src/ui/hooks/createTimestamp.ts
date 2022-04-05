@@ -1,35 +1,20 @@
 import { Accessor, createMemo } from "solid-js";
 import dayjs from "lib/time";
 import { useI18nContext } from "ui/i18n/i18n-solid";
-import { loadedLocales } from "ui/i18n/i18n-util";
-
-export const DEFAULT_FORMAT = "dddd, MMM Do YYYY, h:mm A";
 
 // TODO: Setup ticker to update timestamps
 
-export function createTimestamp(ts: Accessor<NonNullable<dayjs.ConfigType>>, format?: string | Accessor<string>): Accessor<string>;
-export function createTimestamp(ts: Accessor<NonNullable<dayjs.ConfigType> | null | undefined>, format?: string | Accessor<string>): Accessor<string | undefined>;
+export function createTimestamp(ts: Accessor<NonNullable<dayjs.ConfigType> | null | undefined>, format?: string | Accessor<string | undefined>): Accessor<string> {
+    const { locale, LL } = useI18nContext();
 
-export function createTimestamp(ts: Accessor<dayjs.ConfigType>, format: string | Accessor<string> = DEFAULT_FORMAT) {
-    const { locale } = useI18nContext();
-    return createMemo(() => {
-        let time = ts(); if(time) {
-            // track locale
-            return locale(), dayjs(time).format(typeof format === 'function' ? format() : format);
-        }
-        return;
-    });
+    // track locale
+    return createMemo(() => (locale(),
+        dayjs(ts()).format((typeof format === 'function' ? format() : format) || LL().DEFAULT_TS_FORMAT())));
 }
 
-export function createCalendar(ts: Accessor<NonNullable<dayjs.ConfigType>>): Accessor<string>;
-export function createCalendar(ts: Accessor<NonNullable<dayjs.ConfigType> | null | undefined>): Accessor<string | undefined>;
-
-export function createCalendar(ts: Accessor<dayjs.ConfigType>) {
+export function createCalendar(ts: Accessor<NonNullable<dayjs.ConfigType> | null | undefined>): Accessor<string> {
     const { locale } = useI18nContext();
-    return createMemo(() => {
-        let time = ts(); if(time) {
-            return dayjs(time).calendar(null, loadedLocales[locale()].CALENDAR_FORMAT);
-        }
-        return;
-    });
+
+    // track locale
+    return createMemo(() => (locale(), dayjs(ts()).calendar()));
 }

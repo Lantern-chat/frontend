@@ -26,6 +26,8 @@ const owo: Translation = {
     CHANGE_THEME: "change theme",
     CHANGE_THEME_TEMP: "change theme tempewatuwe",
     CHANGE_LANG: "Change Wanguage",
+
+    DEFAULT_TS_FORMAT: "dddd, MMM Do YYYY, h:mm A",
     CALENDAR_FORMAT: {
         lastDay: "[yestewday at] h:mm A",
         sameDay: "[today a-at] h:mm A",
