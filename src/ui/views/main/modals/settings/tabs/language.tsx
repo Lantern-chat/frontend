@@ -22,8 +22,10 @@ function LangPicker() {
     let on_select = async (which: Locales) => {
         let lang = LANGUAGES[which];
 
-        await loadLocaleAsync(which);
-        await loadNamespaceAsync(which, 'main');
+        await Promise.all([
+            loadLocaleAsync(which),
+            loadNamespaceAsync(which, 'main')
+        ]);
 
         dayjs.locale(lang.d || which);
         setLocale(which);
