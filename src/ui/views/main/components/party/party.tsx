@@ -123,7 +123,8 @@ export function Party() {
                     "ln-party__channel--expanded-left": state.use_mobile_view && state.show_panel == Panel.LeftRoomList,
                 }}
             >
-                <Show when={state.active_party != '@me'} fallback="Test">
+                {/*NOTE: active_party may be null */}
+                <Show when={state.active_party && state.active_party != '@me'} fallback="Test">
                     <Channel />
                 </Show>
             </div>
@@ -133,7 +134,7 @@ export function Party() {
                     className="ln-party__user-list"
                     classList={{ "ln-party__user-list--closed": state.use_mobile_view && state.show_panel == Panel.Main }}
                 >
-                    <Show when={state.active_party != '@me'} fallback="Something">
+                    <Show when={state.active_party && state.active_party != '@me'} fallback="Something">
                         <MemberList />
                     </Show>
                 </div>

@@ -65,7 +65,9 @@ function set_starts_group(msgs: IMessageState[], idx: number) {
 
 export const chatMutator = mutatorWithDefault(
     () => ({
-        rooms: {}
+        rooms: {},
+        // @me as a default will avoid odd behavior when loaded into a non-channel/non-home page
+        active_party: '@me',
     }),
     (state: IChatState, action: Action) => {
         switch(action.type) {
