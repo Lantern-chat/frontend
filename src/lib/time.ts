@@ -22,6 +22,13 @@ dayjs.extend(updateLocale);
 import calendar from 'dayjs/plugin/calendar';
 dayjs.extend(calendar);
 
+// TODO: Ensure this is properly tree-shaken
+import devHelper from "dayjs/plugin/devHelper";
+
+if(__DEV__) {
+    dayjs.extend(devHelper);
+}
+
 //import customParseFormat from 'dayjs/plugin/customParseFormat';
 //dayjs.extend(customParseFormat);
 
