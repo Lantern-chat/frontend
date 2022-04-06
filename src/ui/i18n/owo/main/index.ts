@@ -5,7 +5,7 @@ const owo_main: NamespaceMainTranslation = {
 	PARTY: "pawty rawr x3",
 	DIRECT_MESSAGE: "diwect message, mya",
 	CREATE_DIRECT_MESSAGE: "cweate d-diwect m-message, nyaa~~",
-	BOT: "OwO",
+	BOT: "{{verified:✔|}} OwO",
 	ONLINE: "onwine (⑅˘꒳˘)",
 	OFFLINE: "offwine rawr x3",
 	BUSY: "busy/do nyot distuwb (✿oωo)",

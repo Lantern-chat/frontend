@@ -80,15 +80,13 @@ type RootTranslation = {
 	 */
 	UNKNOWN_ERROR: string
 	/**
-	 * {h|{true: Don't have, false: Have}} a 2FA Code?
-	 * @param {'false' | 'true'} h
+	 * {{Don't have|Have}} a 2FA code?
 	 */
-	MFA_TOGGLE_TEXT: RequiredParams<`h|{true:${string}, false:${string}}`>
+	MFA_TOGGLE_TEXT: string
 	/**
-	 * Click here to {h|{true: hide, false: show}} the input.
-	 * @param {'false' | 'true'} h
+	 * Click here to {{hide|show}} the input.
 	 */
-	MFA_TOGGLE_FLAVOR: RequiredParams<`h|{true:${string}, false:${string}}`>
+	MFA_TOGGLE_FLAVOR: string
 	/**
 	 * 2FA Code
 	 */
@@ -182,7 +180,7 @@ export type NamespaceMainTranslation = {
 	 */
 	CREATE_DIRECT_MESSAGE: string
 	/**
-	 * Bot
+	 * {{✔|}} Bot
 	 */
 	BOT: string
 	/**
@@ -586,13 +584,13 @@ export type TranslationFunctions = {
 	 */
 	UNKNOWN_ERROR: () => LocalizedString
 	/**
-	 * {h|{true: Don't have, false: Have}} a 2FA Code?
+	 * {{Don't have|Have}} a 2FA code?
 	 */
-	MFA_TOGGLE_TEXT: (arg: { h: 'false' | 'true' }) => LocalizedString
+	MFA_TOGGLE_TEXT: (arg: { h: string | number | boolean }) => LocalizedString
 	/**
-	 * Click here to {h|{true: hide, false: show}} the input.
+	 * Click here to {{hide|show}} the input.
 	 */
-	MFA_TOGGLE_FLAVOR: (arg: { h: 'false' | 'true' }) => LocalizedString
+	MFA_TOGGLE_FLAVOR: (arg: { h: string | number | boolean }) => LocalizedString
 	/**
 	 * 2FA Code
 	 */
@@ -683,9 +681,9 @@ export type TranslationFunctions = {
 		 */
 		CREATE_DIRECT_MESSAGE: () => LocalizedString
 		/**
-		 * Bot
+		 * {{✔|}} Bot
 		 */
-		BOT: () => LocalizedString
+		BOT: (arg: { verified: string | number | boolean }) => LocalizedString
 		/**
 		 * Online
 		 */

@@ -6,7 +6,7 @@ const es_main: NamespaceMainTranslation = {
 	PARTY: "Partido",
 	DIRECT_MESSAGE: "Mensaje Directo",
 	CREATE_DIRECT_MESSAGE: "Crear Mensaje Directo",
-	BOT: "Bot",
+	BOT: "{{verified:✔|}} Bot",
 	ONLINE: "En línea",
 	OFFLINE: "Desconectado",
 	BUSY: "Ocupado / No molestar",
