@@ -50,4 +50,13 @@
         justify-content: center;
         padding-inline-start: 0.6em;
     }
+
+    &-spinner {
+        position: absolute;
+        left: -2rem;
+        top: 25%;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+    }
 }
