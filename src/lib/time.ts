@@ -7,8 +7,8 @@ dayjs.extend(utc);
 import advancedFormat from "dayjs/plugin/advancedFormat";
 dayjs.extend(advancedFormat);
 
-import relativeTime from "dayjs/plugin/relativeTime";
-dayjs.extend(relativeTime);
+//import relativeTime from "dayjs/plugin/relativeTime";
+//dayjs.extend(relativeTime);
 
 import localeData from 'dayjs/plugin/localeData';
 dayjs.extend(localeData);
@@ -22,12 +22,12 @@ dayjs.extend(updateLocale);
 import calendar from 'dayjs/plugin/calendar';
 dayjs.extend(calendar);
 
-// TODO: Ensure this is properly tree-shaken
-import devHelper from "dayjs/plugin/devHelper";
-
-if(__DEV__) {
-    dayjs.extend(devHelper);
-}
+// devHelper is broken...
+// // TODO: Ensure this is properly tree-shaken
+// import devHelper from "dayjs/plugin/devHelper";
+// if(__DEV__) {
+//     dayjs.extend(devHelper);
+// }
 
 //import customParseFormat from 'dayjs/plugin/customParseFormat';
 //dayjs.extend(customParseFormat);
