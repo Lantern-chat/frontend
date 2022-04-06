@@ -1,1 +1,0 @@
-// TODO: When a user clicks on some image or whatever, full-screen that and have a UI to navigate through media in the channel
