@@ -5,6 +5,7 @@ import type { IMessageState } from "state/mutators/chat";
 import { useRootSelector } from "state/root";
 import { activeParty } from "state/selectors/active";
 import { Avatar } from "ui/components/common/avatar";
+import { UIText } from "ui/components/common/ui-text";
 import { AnchoredModal } from "ui/components/modal/anchored";
 import { createSimpleToggleOnClick } from "ui/hooks/useMain";
 import { UserCard } from "../../menus/user_card";
@@ -42,7 +43,7 @@ export function MessageUserName(props: IUserNameProps) {
                 <UserCard user={user} />
             </AnchoredModal>
 
-            <span className="ui-text" textContent={props.name} />
+            <UIText text={props.name} />
         </h2>
     );
 }

@@ -3,6 +3,7 @@ import { useRootSelector } from "state/root";
 import { activeParty } from "state/selectors/active";
 
 import { VectorIcon } from "ui/components/common/icon";
+import { UIText } from "ui/components/common/ui-text";
 
 import { BalloonsIcon } from "lantern-icons";
 
@@ -20,7 +21,7 @@ export function PartyHeader() {
         <Show when={party()}>
             <header className="ln-party-header">
                 <div className="ln-party-header__name">
-                    <span className="ui-text" textContent={party()!.party.name} />
+                    <UIText text={party()!.party.name} />
                 </div>
 
                 <VectorIcon src={BalloonsIcon} />

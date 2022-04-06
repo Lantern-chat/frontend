@@ -1,4 +1,5 @@
-import { children, createMemo, For, JSX } from "solid-js";
+import { For, JSX } from "solid-js";
+import { useChildrenArray } from "ui/hooks/useChildrenArray";
 
 export interface IContextMenuProps {
     children: JSX.Element,
@@ -12,12 +13,7 @@ function eat(e: MouseEvent) {
 
 import "./list.scss";
 export function ContextMenu(props: IContextMenuProps) {
-    let maybe_items = children(() => props.children);
-
-    let items = () => {
-        let mi = maybe_items();
-        return Array.isArray(mi) ? mi : [mi];
-    };
+    let items = useChildrenArray(() => props.children);
 
     return (
         <ul className="ln-contextmenu ln-cm-pos" classList={{ dark: props.dark }} onContextMenu={eat}>

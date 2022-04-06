@@ -5,6 +5,7 @@ const owo_main: NamespaceMainTranslation = {
 	PARTY: "pawty rawr x3",
 	DIRECT_MESSAGE: "diwect message, mya",
 	CREATE_DIRECT_MESSAGE: "cweate d-diwect m-message, nyaa~~",
+	BOT: "OwO",
 	ONLINE: "onwine (⑅˘꒳˘)",
 	OFFLINE: "offwine rawr x3",
 	BUSY: "busy/do nyot distuwb (✿oωo)",
@@ -29,6 +30,28 @@ const owo_main: NamespaceMainTranslation = {
 		"{0}, {1}, and {2} awe typing :3", // 3 users
 		"{0}, {1}, {2}, and {3} othews awe typing /(^•ω•^)", // 4+ users, parameter 3 is a number
 	],
+	menus: {
+		COPY_ID: "copy i-id (⑅˘꒳˘)",
+		MARK_AS_READ: "mawk as wead nyaa~~",
+		INVITE_PEOPLE: "invite p-peopwe OwO",
+		msg: {
+			DELETE: "dewete message rawr x3",
+			CONFIRM: "awe you s-suwe?",
+			EDIT: "edit m-message XD",
+			COPY: "copy m-message σωσ",
+			COPY_SEL: "copy sewection (U ᵕ U❁)",
+			REPORT: "wepowt message (U ﹏ U)",
+		},
+		room: {
+			EDIT: "edit channew :3",
+		},
+		room_list: {
+			CREATE: "cweate channew σωσ",
+		}
+	},
+	member_list: {
+		ROLE: "{role} – {length}",
+	},
 	settings: {
 		ACCOUNT: "account (U ﹏ U)",
 		PROFILE: "pwofiwe (U ﹏ U)",

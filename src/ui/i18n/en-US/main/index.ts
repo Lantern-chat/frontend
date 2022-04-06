@@ -6,6 +6,7 @@ const enUS_main: BaseTranslation = {
     PARTY: "Party",
     DIRECT_MESSAGE: "Direct Message",
     CREATE_DIRECT_MESSAGE: "Create Direct Message",
+    BOT: "Bot",
     ONLINE: "Online",
     OFFLINE: "Offline",
     BUSY: "Busy/Do Not Disturb",
@@ -30,6 +31,28 @@ const enUS_main: BaseTranslation = {
         "{0:string}, {1:string}, and {2:string} are typing...", // 3 users
         "{0:string}, {1:string}, {2:string}, and {3:number} others are typing...", // 4+ users
     ],
+    menus: {
+        COPY_ID: "Copy ID",
+        MARK_AS_READ: "Mark as Read",
+        INVITE_PEOPLE: "Invite People",
+        msg: {
+            DELETE: "Delete Message",
+            CONFIRM: "Are you sure?",
+            EDIT: "Edit Message",
+            COPY: "Copy Message",
+            COPY_SEL: "Copy Selection",
+            REPORT: "Report Message",
+        },
+        room: {
+            EDIT: "Edit Channel",
+        },
+        room_list: {
+            CREATE: "Create Channel",
+        }
+    },
+    member_list: {
+        ROLE: "{role:string} – {length:number}",
+    },
     settings: {
         ACCOUNT: "Account",
         PROFILE: "Profile",

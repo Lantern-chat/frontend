@@ -182,6 +182,10 @@ export type NamespaceMainTranslation = {
 	 */
 	CREATE_DIRECT_MESSAGE: string
 	/**
+	 * Bot
+	 */
+	BOT: string
+	/**
 	 * Online
 	 */
 	ONLINE: string
@@ -281,6 +285,66 @@ export type NamespaceMainTranslation = {
 		 * @param {number} 3
 		 */
 		'3': RequiredParams<'0' | '1' | '2' | '3'>
+	}
+	menus: {
+		/**
+		 * Copy ID
+		 */
+		COPY_ID: string
+		/**
+		 * Mark as Read
+		 */
+		MARK_AS_READ: string
+		/**
+		 * Invite People
+		 */
+		INVITE_PEOPLE: string
+		msg: {
+			/**
+			 * Delete Message
+			 */
+			DELETE: string
+			/**
+			 * Are you sure?
+			 */
+			CONFIRM: string
+			/**
+			 * Edit Message
+			 */
+			EDIT: string
+			/**
+			 * Copy Message
+			 */
+			COPY: string
+			/**
+			 * Copy Selection
+			 */
+			COPY_SEL: string
+			/**
+			 * Report Message
+			 */
+			REPORT: string
+		}
+		room: {
+			/**
+			 * Edit Channel
+			 */
+			EDIT: string
+		}
+		room_list: {
+			/**
+			 * Create Channel
+			 */
+			CREATE: string
+		}
+	}
+	member_list: {
+		/**
+		 * {role} – {length}
+		 * @param {number} length
+		 * @param {string} role
+		 */
+		ROLE: RequiredParams<'length' | 'role'>
 	}
 	settings: {
 		/**
@@ -619,6 +683,10 @@ export type TranslationFunctions = {
 		 */
 		CREATE_DIRECT_MESSAGE: () => LocalizedString
 		/**
+		 * Bot
+		 */
+		BOT: () => LocalizedString
+		/**
 		 * Online
 		 */
 		ONLINE: () => LocalizedString
@@ -707,6 +775,64 @@ export type TranslationFunctions = {
 			 * {0}, {1}, {2}, and {3} others are typing...
 			 */
 			'3': (arg0: string, arg1: string, arg2: string, arg3: number) => LocalizedString
+		}
+		menus: {
+			/**
+			 * Copy ID
+			 */
+			COPY_ID: () => LocalizedString
+			/**
+			 * Mark as Read
+			 */
+			MARK_AS_READ: () => LocalizedString
+			/**
+			 * Invite People
+			 */
+			INVITE_PEOPLE: () => LocalizedString
+			msg: {
+				/**
+				 * Delete Message
+				 */
+				DELETE: () => LocalizedString
+				/**
+				 * Are you sure?
+				 */
+				CONFIRM: () => LocalizedString
+				/**
+				 * Edit Message
+				 */
+				EDIT: () => LocalizedString
+				/**
+				 * Copy Message
+				 */
+				COPY: () => LocalizedString
+				/**
+				 * Copy Selection
+				 */
+				COPY_SEL: () => LocalizedString
+				/**
+				 * Report Message
+				 */
+				REPORT: () => LocalizedString
+			}
+			room: {
+				/**
+				 * Edit Channel
+				 */
+				EDIT: () => LocalizedString
+			}
+			room_list: {
+				/**
+				 * Create Channel
+				 */
+				CREATE: () => LocalizedString
+			}
+		}
+		member_list: {
+			/**
+			 * {role} – {length}
+			 */
+			ROLE: (arg: { length: number, role: string }) => LocalizedString
 		}
 		settings: {
 			/**

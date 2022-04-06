@@ -12,6 +12,7 @@ import { pickColorFromHash } from "lib/palette";
 import { Link } from "ui/components/history";
 import { Avatar } from "ui/components/common/avatar";
 import { PositionedModal } from "ui/components/modal/positioned";
+import { UIText } from "ui/components/common/ui-text";
 
 import { createSimplePositionedContextMenu } from "ui/hooks/useMain";
 
@@ -20,6 +21,7 @@ import { ContextMenu } from "../menus/list";
 import { party_avatar_url, room_url } from "config/urls";
 
 import { Party, Snowflake, UserPreferenceFlags } from "state/models";
+import { useI18nContext } from "ui/i18n/i18n-solid";
 
 interface IPartyAvatarProps {
     party: Party,
@@ -67,23 +69,25 @@ interface IListedPartyMenuProps {
 function ListedPartyMenu(props: IListedPartyMenuProps) {
     let dev_mode = useRootSelector(selectPrefsFlag(UserPreferenceFlags.DeveloperMode));
 
+    let { LL } = useI18nContext();
+
     return (
         <ContextMenu dark>
             <div>
-                <span className="ui-text">Mark as Read</span>
+                <UIText text={LL().main.menus.MARK_AS_READ()} />
             </div>
 
             <hr />
 
             <div>
-                <span className="ui-text">Invite People</span>
+                <UIText text={LL().main.menus.INVITE_PEOPLE()} />
             </div>
 
             <Show when={dev_mode()}>
                 <hr />
 
                 <div onClick={() => copyText(props.party.id)}>
-                    <span className="ui-text">Copy ID</span>
+                    <UIText text={LL().main.menus.COPY_ID()} />
                 </div>
             </Show>
         </ContextMenu>

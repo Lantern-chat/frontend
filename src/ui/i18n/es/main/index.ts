@@ -6,6 +6,7 @@ const es_main: NamespaceMainTranslation = {
 	PARTY: "Partido",
 	DIRECT_MESSAGE: "Mensaje Directo",
 	CREATE_DIRECT_MESSAGE: "Crear Mensaje Directo",
+	BOT: "Bot",
 	ONLINE: "En línea",
 	OFFLINE: "Desconectado",
 	BUSY: "Ocupado / No molestar",
@@ -30,6 +31,28 @@ const es_main: NamespaceMainTranslation = {
 		"{0}, {1}, y {2} están escribiendo...", // 3 users
 		"{0}, {1}, {2}, y {3} más están escribiendo...", // 4+ users, parameter 3 is a number
 	],
+	menus: {
+		COPY_ID: "Copiar ID",
+		MARK_AS_READ: "Marcar como leído",
+		INVITE_PEOPLE: "Invitar a la gente",
+		msg: {
+			DELETE: "Eliminar Mensaje",
+			CONFIRM: "¿Estás seguro?",
+			EDIT: "Editar Mensaje",
+			COPY: "Copiar Mensaje",
+			COPY_SEL: "Copiar Selección",
+			REPORT: "Mensaje de Informe",
+		},
+		room: {
+			EDIT: "Editar Canal",
+		},
+		room_list: {
+			CREATE: "Crear Canal",
+		}
+	},
+	member_list: {
+		ROLE: "{role} – {length}",
+	},
 	settings: {
 		ACCOUNT: "Cuenta",
 		PROFILE: "Perfil",

@@ -4,6 +4,7 @@ import { destructure } from "ui/hooks/destructure";
 
 import { copyText } from "lib/clipboard";
 
+import { useI18nContext } from "ui/i18n/i18n-solid";
 import { RootState, Type, useRootSelector } from "state/root";
 import { activeParty, activeRoom } from "state/selectors/active";
 import { selectPrefsFlag } from "state/selectors/prefs";
@@ -11,6 +12,7 @@ import { Room, Snowflake, UserPreferenceFlags } from "state/models";
 import { Panel } from "state/mutators/window";
 import { room_avatar_url } from "config/urls";
 
+import { UIText } from "ui/components/common/ui-text";
 import { Bounce } from "ui/components/common/spinners/bounce";
 import { VectorIcon } from "ui/components/common/icon";
 import { Avatar } from "ui/components/common/avatar";
@@ -92,7 +94,7 @@ function ListedChannel(props: IListedChannelProps) {
                 <RoomIcon room={props.room} />
 
                 <div className="ln-channel-list__name">
-                    <span className="ui-text" textContent={props.room.name} />
+                    <UIText text={props.room.name} />
                 </div>
             </Link>
 
@@ -114,23 +116,25 @@ export interface IRoomContextMenuProps {
 function RoomContextMenu(props: IRoomContextMenuProps) {
     let dev_mode = useSelector(selectPrefsFlag(UserPreferenceFlags.DeveloperMode));
 
+    let { LL } = useI18nContext();
+
     return (
         <ContextMenu dark>
             <div>
-                <span className="ui-text">Mark as Read</span>
+                <UIText text={LL().main.menus.MARK_AS_READ()} />
             </div>
 
             <hr />
 
             <div>
-                <span className="ui-text">Edit Channel</span>
+                <UIText text={LL().main.menus.room.EDIT()} />
             </div>
 
             <Show when={dev_mode()}>
                 <hr />
 
                 <div onClick={() => copyText(props.room.id)}>
-                    <span className="ui-text">Copy ID</span>
+                    <UIText text={LL().main.menus.COPY_ID()} />
                 </div>
             </Show>
         </ContextMenu>
@@ -142,10 +146,12 @@ export interface IRoomListContextMenuProps {
 }
 
 function RoomListContextMenu(props: IRoomListContextMenuProps) {
+    let { LL } = useI18nContext();
+
     return (
         <ContextMenu dark>
             <div>
-                <span className="ui-text">Create Channel</span>
+                <UIText text={LL().main.menus.room_list.CREATE()} />
             </div>
         </ContextMenu>
     );

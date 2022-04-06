@@ -2,6 +2,7 @@ import { createMemo, For, Show } from "solid-js";
 import { useStructuredSelector } from "solid-mutant";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
+import { LANGUAGES } from "ui/i18n";
 
 import { parse_presence, PartyMember, PresenceStatus, Role, Snowflake, UserPreferenceFlags, user_is_bot } from "state/models";
 import { RootState, useRootSelector } from "state/root";
@@ -28,13 +29,16 @@ export function MemberList() {
         },
     });
 
-    let collator = new Intl.Collator('en-US', { sensitivity: 'base' });
+    let { locale } = useI18nContext();
+
+    // NOTE: Ensure it uses the dayjs-locale
+    let collator = createMemo(() => new Intl.Collator(LANGUAGES[locale()].d || locale(), { sensitivity: 'base' }));
 
     // name changes are rare, so sort these first
     let sorted_members = createMemo(() => {
-        let members = state.party?.members;
+        let members = state.party?.members, c = collator();
         if(members) {
-            return Object.values(members).sort((a, b) => collator.compare(
+            return Object.values(members).sort((a, b) => c.compare(
                 a.nick || a.user.username,
                 b.nick || b.user.username,
             ))
@@ -123,11 +127,14 @@ interface IRoleMemberListProps {
     is_light_theme: boolean,
 }
 
+// TODO: Localized number formatting for length
 function RoleMemberList(props: IRoleMemberListProps) {
+    let { LL } = useI18nContext();
+
     return (
         <Show when={props.members.length}>
             <div>
-                <h4 className="ui-text">{props.role} – {props.members.length}</h4>
+                <h4 className="ui-text" textContent={LL().main.member_list.ROLE({ role: props.role, length: props.members.length })} />
                 <ul>
                     <For each={props.members}>
                         {member => <ListedMember member={member} owner={props.owner} is_light_theme={props.is_light_theme} />}

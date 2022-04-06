@@ -3,6 +3,7 @@ import { useDispatch } from "solid-mutant";
 
 import { copyText } from "lib/clipboard";
 
+import { useI18nContext } from "ui/i18n/i18n-solid";
 import { useRootSelector } from "state/root";
 import { UserPreferenceFlags } from "state/models";
 import { deleteMessage } from "state/commands/message/delete";
@@ -10,16 +11,19 @@ import { IMessageState } from "state/mutators/chat";
 import { selectPrefsFlag } from "state/selectors/prefs";
 
 import { VectorIcon } from "ui/components/common/icon";
+import { UIText } from "ui/components/common/ui-text";
 
 import { ContextMenu } from "./list";
 
-import { PencilIcon } from "lantern-icons";
-import { TrashIcon } from "lantern-icons";
-import { TrashOpenIcon } from "lantern-icons";
-import { ClipboardIcon } from "lantern-icons";
-import { CopyIcon } from "lantern-icons";
-import { ChatMessageIcon } from "lantern-icons";
-import { TriangleIcon } from "lantern-icons";
+import {
+    PencilIcon,
+    TrashIcon,
+    TrashOpenIcon,
+    ClipboardIcon,
+    CopyIcon,
+    ChatMessageIcon,
+    TriangleIcon
+} from "lantern-icons";
 
 export interface IMsgContextMenuProps {
     msg: DeepReadonly<IMessageState>,
@@ -34,7 +38,10 @@ export function MsgContextMenu(props: IMsgContextMenuProps) {
 
     let [shownConfirmation, setShownConfirmation] = createSignal(false);
 
-    let confirm_text = createMemo(() => shownConfirmation() ? "Are you sure?" : "Delete Message");
+    let { LL } = useI18nContext();
+
+    let confirm_text = createMemo(() =>
+        shownConfirmation() ? LL().main.menus.msg.CONFIRM() : LL().main.menus.msg.DELETE());
 
     // if context menu changes position, remove the dialogue
     createEffect(() => (props.pos, setShownConfirmation(false)));
@@ -77,24 +84,24 @@ export function MsgContextMenu(props: IMsgContextMenuProps) {
             <Show when={!!selected}>
                 <div onClick={copy_selection}>
                     <VectorIcon src={ClipboardIcon} />
-                    <span className="ui-text">Copy Selection</span>
+                    <UIText text={LL().main.menus.msg.COPY_SEL()} />
                 </div>
 
                 <hr />
             </Show>
 
             <div>
-                <VectorIcon src={PencilIcon} /> <span className="ui-text">Edit Message</span>
+                <VectorIcon src={PencilIcon} /> <UIText text={LL().main.menus.msg.EDIT()} />
             </div>
 
             <div onClick={copy_msg}>
-                <VectorIcon src={CopyIcon} /> <span className="ui-text">Copy Message</span>
+                <VectorIcon src={CopyIcon} /> <UIText text={LL().main.menus.msg.COPY()} />
             </div>
 
             <hr />
 
             <div>
-                <VectorIcon src={TriangleIcon} /> <span className="ui-text">Report Message</span>
+                <VectorIcon src={TriangleIcon} /> <UIText text={LL().main.menus.msg.REPORT()} />
             </div>
 
             <div onClick={on_delete}
@@ -107,7 +114,7 @@ export function MsgContextMenu(props: IMsgContextMenuProps) {
                     <VectorIcon src={TrashOpenIcon} />
                 </Show>
 
-                <span className="ui-text" textContent={confirm_text()} />
+                <UIText text={confirm_text()} />
             </div>
 
             <Show when={dev_mode()}>
@@ -115,7 +122,7 @@ export function MsgContextMenu(props: IMsgContextMenuProps) {
 
                 <div onClick={() => copyText(props.msg.msg.id)}>
                     <VectorIcon src={ChatMessageIcon} />
-                    <span className="ui-text">Copy ID</span>
+                    <UIText text={LL().main.menus.COPY_ID()} />
                 </div>
             </Show>
 
