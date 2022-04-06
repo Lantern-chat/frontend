@@ -35,7 +35,7 @@ export function MsgTextarea(props: IMsgTextareaProps) {
 
     let { LL } = useI18nContext();
 
-    let [local, taprops] = splitProps(props, ['mobile', 'spellcheck', 'onChange', 'onKeyDown', 'onSelectionChange', 'onContextMenu', 'tac']);
+    let [local, taprops] = splitProps(props, ['mobile', 'spellcheck', 'onChange', 'onKeyDown', 'onSelectionChange', 'tac']);
 
     local.tac?.({
         setValue(value: string, change: boolean = true) {
