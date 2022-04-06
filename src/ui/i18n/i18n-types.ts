@@ -323,6 +323,10 @@ export type NamespaceMainTranslation = {
 		 * Return
 		 */
 		RETURN: string
+		/**
+		 * Select any category to view settings
+		 */
+		SELECT_CATEGORY: string
 		account: {
 			/**
 			 * {used}/{total} ({percent}) Upload Quota Used
@@ -745,6 +749,10 @@ export type TranslationFunctions = {
 			 * Return
 			 */
 			RETURN: () => LocalizedString
+			/**
+			 * Select any category to view settings
+			 */
+			SELECT_CATEGORY: () => LocalizedString
 			account: {
 				/**
 				 * {used}/{total} ({percent}) Upload Quota Used

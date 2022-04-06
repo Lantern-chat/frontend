@@ -41,6 +41,7 @@ const es_main: NamespaceMainTranslation = {
 		LANGUAGE: "Idioma",
 		LOGOUT: "Cerrar sesión",
 		RETURN: "Volver",
+		SELECT_CATEGORY: "Seleccione cualquier categoría para ver la configuración",
 		account: {
 			QUOTA: "{used}/{total} ({percent}) Cuota de carga utilizada",
 			DEV_MODE: "Habilitar el Modo de Desarrollador"

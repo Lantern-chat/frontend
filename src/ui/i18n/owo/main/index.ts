@@ -40,6 +40,7 @@ const owo_main: NamespaceMainTranslation = {
 		LANGUAGE: "wanguage σωσ",
 		LOGOUT: "wogout OwO",
 		RETURN: "wetuwn 😳😳😳",
+		SELECT_CATEGORY: "Sewect any categowy to view settings (⑅˘꒳˘)",
 		account: {
 			QUOTA: "{used}/{total} ({percent}) u-upwoad quota used, rawr",
 			DEV_MODE: "Eenabwe D-devewopew Mode",

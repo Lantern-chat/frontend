@@ -41,6 +41,7 @@ const enUS_main: BaseTranslation = {
         LANGUAGE: "Language",
         LOGOUT: "Logout",
         RETURN: "Return",
+        SELECT_CATEGORY: "Select any category to view settings",
         account: {
             QUOTA: "{used:string}/{total:string} ({percent:string}) Upload Quota Used",
             DEV_MODE: "Enable Developer Mode"

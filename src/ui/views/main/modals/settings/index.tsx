@@ -167,10 +167,12 @@ function SettingsTabs(props: ISettingsTabsProps) {
 }
 
 function FallbackPage() {
+    let { LL } = useI18nContext();
+
     return (
         <div className="ln-settings__page">
             <div className="ln-settings__content">
-                Select any category to view settings
+                {LL().main.settings.SELECT_CATEGORY()}
             </div>
         </div>
     );
