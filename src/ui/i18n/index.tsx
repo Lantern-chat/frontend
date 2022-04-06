@@ -23,19 +23,21 @@ export interface Currency extends Intl.NumberFormatOptions {
     numberingSystem?: "arab" | "arabext" | "bali" | "beng" | "deva" | "fullwide" | "gujr" | "guru" | "hanidec" | "khmr" | "knda" | "laoo" | "latn" | "limb" | "mlym" | "mong" | "mymr" | "orya" | "tamldec" | "telu" | "thai" | "tibt"
 }
 
-export type ILanguages = {
-    [K in Locales]: {
-        /// Name of language (in language)
-        n: string,
-        /// Emoji used to represent it (flag usually)
-        e: string,
-        rtl?: boolean,
-        /// DayJS Locale override
-        d?: string,
+export interface ILanguage {
+    /// Name of language (in language)
+    n: string,
+    /// Emoji used to represent it (flag usually)
+    e: string,
+    rtl?: boolean,
+    /// DayJS Locale override
+    d?: string,
 
-        /// Does NOT use SI Units (less common, so inverted logic)
-        nsi?: boolean | 1,
-    }
+    /// Does NOT use SI Units (less common, so inverted logic)
+    nsi?: boolean | 1,
+}
+
+export type ILanguages = {
+    [K in Locales]: ILanguage
 };
 
 // @stringify
@@ -51,9 +53,10 @@ export const LANGUAGE_KEYS = Object.keys(LANGUAGES).sort(compareString) as Array
 import dayjs from "lib/time";
 import { useI18nContext } from "./i18n-solid";
 import { loadedLocales } from "./i18n-util";
+import { Accessor, createMemo } from "solid-js";
 
 /// This should be prefered over useI18nContext when using `setLocale`
-export function useLocale(): ReturnType<typeof useI18nContext> {
+export function useLocale(): ReturnType<typeof useI18nContext> & { lang: Accessor<ILanguage> } {
     let { LL, locale, setLocale } = useI18nContext();
 
     return {
@@ -62,6 +65,7 @@ export function useLocale(): ReturnType<typeof useI18nContext> {
             dayjs.locale(l);
             dayjs.updateLocale(l, { calendar: loadedLocales[locale].CALENDAR_FORMAT });
             setLocale(locale);
-        }
+        },
+        lang: createMemo(() => LANGUAGES[locale()])
     };
 }

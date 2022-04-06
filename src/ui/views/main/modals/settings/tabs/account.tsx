@@ -6,15 +6,14 @@ import { Action, RootState } from "state/root";
 import { format_bytes } from "lib/formatting";
 import { TogglePrefsFlag } from "../components/toggle";
 import { UserPreferenceFlags } from "state/models";
-import { useI18nContext } from "ui/i18n/i18n-solid";
-import { LANGUAGES } from "ui/i18n";
+import { useLocale } from "ui/i18n";
 
 export const AccountSettingsTab = () => {
     let store = useStore<RootState, Action>(),
         dispatch = store.dispatch,
         state = store.state;
 
-    let { LL, locale } = useI18nContext();
+    let { LL, locale, lang } = useLocale();
 
     createRenderEffect(() => {
         if(state.user.user) {
@@ -25,10 +24,10 @@ export const AccountSettingsTab = () => {
     let quota = createMemo(() => {
         let user = state.user;
         if(user.quota_total !== undefined && user.quota_used !== undefined) {
-            let l = locale(), lang = LANGUAGES[l], d = lang.d || l;
+            let l = locale(), d = lang().d || l, si = !lang().nsi;
 
-            let used = format_bytes(user.quota_used, !lang.nsi, d),
-                total = format_bytes(user.quota_total, !lang.nsi, d),
+            let used = format_bytes(user.quota_used, si, d),
+                total = format_bytes(user.quota_total, si, d),
                 percent = new Intl.NumberFormat(d, {
                     maximumFractionDigits: 1,
                     style: 'unit',

@@ -2,7 +2,7 @@ import { createMemo, For, Show } from "solid-js";
 import { useStructuredSelector } from "solid-mutant";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
-import { LANGUAGES } from "ui/i18n";
+import { useLocale } from "ui/i18n";
 
 import { parse_presence, PartyMember, PresenceStatus, Role, Snowflake, UserPreferenceFlags, user_is_bot } from "state/models";
 import { RootState, useRootSelector } from "state/root";
@@ -29,10 +29,10 @@ export function MemberList() {
         },
     });
 
-    let { locale } = useI18nContext();
+    let { locale, lang } = useLocale();
 
     // NOTE: Ensure it uses the dayjs-locale
-    let collator = createMemo(() => new Intl.Collator(LANGUAGES[locale()].d || locale(), { sensitivity: 'base' }));
+    let collator = createMemo(() => new Intl.Collator(lang().d || locale(), { sensitivity: 'base' }));
 
     // name changes are rare, so sort these first
     let sorted_members = createMemo(() => {
