@@ -16,54 +16,69 @@ export function requestPermission() {
     return REQ_PERM_PROMISE;
 }
 
-const HAS_QUERY = 'permissions' in navigator && typeof navigator.permissions.query === 'function';
+const HAS_QUERY = typeof navigator.permissions?.query === 'function';
+
+/*
+    Behaviors:
+
+    on load:
+        If previously granted, but now denied, store that as denied
+        If previously denied, but now granted, keep existing or denied
+
+    on external change:
+        If previously denied, do nothing
+        If previously granted, update
+*/
+
+let stored = () => localStorage.getItem(StorageKey.NOTIFICATIONS) as NotificationPermission;
 
 export function NotificationsSettingsTab() {
-    let [perm, setPerm] = createSignal<NotificationPermission>('default');
+    let [perm, setPerm] = createSignal<NotificationPermission>(stored());
 
-    let on_change = (checked: boolean) => {
-        if(!HAS_NOTIFICATIONS) return;
+    let on_change: (checked: boolean) => void;
 
-        // eagerly assume disabled until fully granted
-        setPerm('default');
+    if(HAS_NOTIFICATIONS) {
+        onMount(() => {
+            if(Notification.permission !== 'granted') {
+                setPerm(Notification.permission);
+            }
 
-        if(checked) { requestPermission().then(res => setPerm(res)); }
-    };
+            if(HAS_QUERY) {
+                // only if already allowed, update value. This acts as a latch to only go to denied.
+                let set = (value: NotificationPermission) => stored() === 'granted' && setPerm(value);
 
-    // write to local storage whenever
-    createEffect(() => localStorage.setItem(StorageKey.NOTIFICATIONS, perm()));
-
-    onMount(() => {
-        if(!HAS_NOTIFICATIONS) return;
-
-        let perm = Notification.permission;
-        if(perm == 'granted') {
-            setPerm(localStorage.getItem(StorageKey.NOTIFICATIONS) as NotificationPermission || 'default');
-        } else {
-            setPerm(perm);
-        }
-
-        if(HAS_QUERY) navigator.permissions.query({ name: 'notifications' }).then(res => {
-            setPerm(res.state as NotificationPermission);
-            // use function() to allow `this` from `res`
-            res.onchange = function() { setPerm(this.state as NotificationPermission); };
+                navigator.permissions.query({ name: 'notifications' }).then(res => {
+                    set(res.state as NotificationPermission);
+                    // use function() to allow `this` from `res`
+                    res.onchange = function() { set(this.state as NotificationPermission); };
+                });
+            }
         });
-    });
+
+        on_change = (checked: boolean) => {
+            // eagerly assume denied until fully granted
+            setPerm('denied');
+
+            if(checked) { requestPermission().then(res => setPerm(res)); }
+        };
+
+        // write to local storage whenever
+        createEffect(() => localStorage.setItem(StorageKey.NOTIFICATIONS, perm()));
+    }
 
     let { LL } = useI18nContext();
 
     let label = createMemo(() => {
         let offset = HAS_NOTIFICATIONS ? (HAS_QUERY ? 0 : 1) : 2;
-
         return LL().main.settings.notifications.ENABLE_DESKTOP_NOTIFICATIONS[offset]();
-    })
+    });
 
     return (
         <form className="ln-settings-form">
             <Toggle
                 htmlFor="desktop_notifications"
                 label={label()}
-                onChange={on_change}
+                onChange={on_change!}
                 checked={perm() === 'granted'}
                 disabled={!HAS_NOTIFICATIONS}
             />
