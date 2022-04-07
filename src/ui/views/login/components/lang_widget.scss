@@ -13,7 +13,7 @@
 
     background-color: $lnx-secondary-surface-color;
     border-radius: 1em;
-    padding: 0.2em;
+    padding-block: 0.2rem;
     z-index: 100;
     min-height: 2.9em;
 
@@ -79,13 +79,14 @@
 
     &__list {
         padding: 0.5em 0;
-        margin: 0.5em 0;
+        margin-top: 0.5em;
         border-top: 1px solid $lnx-primary-text-color;
     }
 
     &__title-wrapper {
         display: flex;
         justify-content: center;
+        padding-inline: 0.2rem;
     }
 
     &__icon {
