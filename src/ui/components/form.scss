@@ -65,23 +65,22 @@
 
     &::before {
         position: absolute;
-        font-size: 3em;
-        line-height: 26%;
+        font-size: 1.5em;
+        line-height: 25%;
         bottom: 50%;
-        transform: scale(1.3, 1);
-        font-weight: 300;
+        transform: scale(2, 1);
 
         .ln-ltr & {
-            left: -0.5em;
+            left: -0.75em;
             @media (max-width: 49em) {
-                left: -5.5%;
+                left: -4%;
             }
         }
 
         .ln-rtl & {
-            right: -0.5em;
+            right: -0.75em;
             @media (max-width: 49em) {
-                right: -5.5%;
+                right: -4%;
             }
         }
     }
@@ -90,7 +89,7 @@
     &:focus-within,
     &:active {
         &::before {
-            content: "›";
+            content: "〉";
         }
     }
 

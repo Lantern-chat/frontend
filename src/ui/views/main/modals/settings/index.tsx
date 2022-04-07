@@ -114,7 +114,7 @@ function SettingsTabs(props: ISettingsTabsProps) {
                 <div className="ln-settings__categories">
                     <h3>{LL().main.SETTINGS()}</h3>
 
-                    <ul>
+                    <ul className="ln-scroll-y">
                         <For each={TABS}>
                             {({ n, p }) => {
                                 let name = createMemo(() => LL().main.settings[n]());
