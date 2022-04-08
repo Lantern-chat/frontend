@@ -33,11 +33,8 @@ function connect_gateway(state: DeepReadonly<RootState>) {
 
 export function mainEffect(state: DeepReadonly<RootState>, action: Action, dispatch: Dispatch<Action, RootState>) {
     switch(action.type) {
-        case Type.WINDOW_TOGGLE_USER_LIST_SIDEBAR: {
-            let w = state.window;
-            if(!w.use_mobile_view) {
-                localStorage.setItem(StorageKey.SHOW_USER_LIST, JSON.stringify(w.show_user_list));
-            }
+        case Type.WINDOW_TOGGLE_USER_LIST: {
+            localStorage.setItem(StorageKey.SHOW_USER_LIST, JSON.stringify(state.window.show_user_list));
             break;
         }
         case Type.UPDATE_PREFS: {

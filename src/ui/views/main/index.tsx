@@ -187,9 +187,8 @@ export default function Main() {
     let main = createRef<HTMLDivElement>();
 
     createEffect(() => {
-        let m = main.current;
-        if(m) {
-            let blur = () => m!.click();
+        if(main.current) {
+            let blur = () => main.current?.click();
 
             w.addEventListener('blur', blur);
             w.addEventListener('keydown', on_keydown);

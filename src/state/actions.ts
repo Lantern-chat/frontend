@@ -1,7 +1,7 @@
-import { IHistoryState } from "./mutators";
-import { Snowflake, Room, Message, PartyMember, UserPreferences } from "./models";
-import { RootState } from "state/root";
-import { ISession } from "lib/session";
+import type { IHistoryState } from "./mutators";
+import type { Snowflake, Room, Message, PartyMember, UserPreferences } from "./models";
+import type { RootState } from "state/root";
+import type { ISession } from "lib/session";
 
 export enum Type {
     API_ERROR = "API_ERROR",
@@ -15,8 +15,8 @@ export enum Type {
     CLEANUP_TYPING = "CLEANUP_TYPING",
 
     WINDOW_RESIZE = "WINDOW_RESIZE",
-    WINDOW_TOGGLE_USER_LIST_SIDEBAR = "WINDOW_TOGGLE_USER_LIST_SIDEBAR",
-    WINDOW_TOGGLE_ROOM_LIST_SIDEBAR = "WINDOW_TOGGLE_ROOM_LIST_SIDEBAR",
+    WINDOW_SET_PANEL = "WINDOW_SET_PANEL",
+    WINDOW_TOGGLE_USER_LIST = "WINDOW_TOGGLE_USER_LIST",
 
     TOGGLE_FOOTERS = "TOGGLE_FOOTERS",
 
@@ -52,37 +52,37 @@ import type { DispatchableAction as MutantDispatchableAction } from "solid-mutan
 export type DispatchableAction = MutantDispatchableAction<Action, RootState>;
 
 export type Action =
-    HistoryUpdate |
-    SessionLogin |
-    SessionExpired |
-    UpdatePrefs |
-    WindowResize |
-    WindowToggleUserListSidebar |
-    WindowToggleRoomListSidebar |
-    ToggleFooters |
-    ModalOpenCreateParty |
-    ModalCloseCreateParty |
-    OpenToast |
-    ClearToast |
-    GatewayEvent |
-    GatewayRetry |
-    PartyLoaded |
-    MessagesLoading |
-    MessagesLoaded |
-    MembersLoaded |
-    RefreshActive |
-    CleanupTyping |
-    MessageSend |
-    MessageDiscordEdit |
-    MessageEditPrev |
-    MessageEditNext |
-    MessageSendEdit |
-    MessageDraft |
-    UpdateQuota;
+    | HistoryUpdate
+    | SessionLogin
+    | SessionExpired
+    | UpdatePrefs
+    | WindowResize
+    | WindowSetPanel
+    | WindowToggleUserList
+    | ToggleFooters
+    | ModalOpenCreateParty
+    | ModalCloseCreateParty
+    | OpenToast
+    | ClearToast
+    | GatewayEvent
+    | GatewayRetry
+    | PartyLoaded
+    | MessagesLoading
+    | MessagesLoaded
+    | MembersLoaded
+    | RefreshActive
+    | CleanupTyping
+    | MessageSend
+    | MessageDiscordEdit
+    | MessageEditPrev
+    | MessageEditNext
+    | MessageSendEdit
+    | MessageDraft
+    | UpdateQuota;
 
 // HISTORY ACTIONS
 
-import { Update } from "history";
+import type { Update } from "history";
 export interface HistoryUpdate {
     type: Type.HISTORY_UPDATE,
     update: Update,
@@ -112,12 +112,15 @@ export interface WindowResize {
     type: Type.WINDOW_RESIZE,
 }
 
-export interface WindowToggleUserListSidebar {
-    type: Type.WINDOW_TOGGLE_USER_LIST_SIDEBAR,
+import type { Panel } from "./mutators/window";
+export interface WindowSetPanel {
+    type: Type.WINDOW_SET_PANEL,
+    panel: Panel,
 }
 
-export interface WindowToggleRoomListSidebar {
-    type: Type.WINDOW_TOGGLE_ROOM_LIST_SIDEBAR,
+export interface WindowToggleUserList {
+    type: Type.WINDOW_TOGGLE_USER_LIST,
+    open: boolean,
 }
 
 export interface ToggleFooters {
@@ -135,7 +138,7 @@ export interface ModalCloseCreateParty {
     type: Type.MODAL_CLOSE_CREATE_PARTY
 }
 
-import { IToast } from "ui/components/toast";
+import type { IToast } from "ui/components/toast";
 export interface OpenToast {
     type: Type.OPEN_TOAST,
     toast: PartialBy<IToast, 'id'>,
@@ -148,7 +151,7 @@ export interface ClearToast {
 
 // GATEWAY ACTIONS
 
-import { GatewayMessage } from "worker/gateway/msg";
+import type { GatewayMessage } from "worker/gateway/msg";
 export interface GatewayEvent {
     type: Type.GATEWAY_EVENT,
     payload: GatewayMessage
@@ -171,7 +174,7 @@ export interface MessagesLoading {
     room_id: Snowflake,
 }
 
-import { SearchMode } from "./commands";
+import type { SearchMode } from "./commands";
 export interface MessagesLoaded {
     type: Type.MESSAGES_LOADED,
     room_id: Snowflake,

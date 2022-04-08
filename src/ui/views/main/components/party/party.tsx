@@ -47,27 +47,26 @@ export function Party() {
                 switch(state.show_panel) {
                     case Panel.Main: {
                         // swiped right on main, go to channel list
-                        dispatch({ type: Type.WINDOW_TOGGLE_ROOM_LIST_SIDEBAR });
+                        dispatch({ type: Type.WINDOW_SET_PANEL, panel: Panel.LeftRoomList });
                         break;
                     }
                     case Panel.RightUserList: {
                         // swiped right on users, go to main
-                        dispatch({ type: Type.WINDOW_TOGGLE_USER_LIST_SIDEBAR });
+                        dispatch({ type: Type.WINDOW_SET_PANEL, panel: Panel.Main });
                         break;
                     }
                 }
             } else {
                 // swiped LEFT
-
                 switch(state.show_panel) {
                     case Panel.Main: {
                         // swiped left on main, go to users
-                        dispatch({ type: Type.WINDOW_TOGGLE_USER_LIST_SIDEBAR });
+                        dispatch({ type: Type.WINDOW_SET_PANEL, panel: Panel.RightUserList });
                         break;
                     }
                     case Panel.LeftRoomList: {
                         // swiped left on channels, go to main
-                        dispatch({ type: Type.WINDOW_TOGGLE_ROOM_LIST_SIDEBAR });
+                        dispatch({ type: Type.WINDOW_SET_PANEL, panel: Panel.Main });
                         break;
                     }
                 }
@@ -76,7 +75,7 @@ export function Party() {
     };
 
     let [showLeft, setShowLeft] = createSignal(true);
-    let [showRight, setShowRight] = createSignal(!state.use_mobile_view);
+    let [showRight, setShowRight] = createSignal(false);
 
     createRenderEffect(() => batch(() => {
         if(state.use_mobile_view) {
@@ -90,7 +89,7 @@ export function Party() {
             }
         } else {
             setShowLeft(true);
-            setShowRight(true);
+            setShowRight(false);
         }
     }));
 
@@ -123,16 +122,21 @@ export function Party() {
                     "ln-party__channel--expanded-left": state.use_mobile_view && state.show_panel == Panel.LeftRoomList,
                 }}
             >
+                {/*NOTE: This is clear element that covers the chat when on the side */}
+                <Show when={state.use_mobile_view && state.show_panel != Panel.Main}>
+                    <div className="ln-channel__cover" onClick={() => dispatch({ type: Type.WINDOW_SET_PANEL, panel: Panel.Main })} />
+                </Show>
+
                 {/*NOTE: active_party may be null */}
                 <Show when={state.active_party && state.active_party != '@me'} fallback="Test">
                     <Channel />
                 </Show>
             </div>
 
-            <Show when={showRight() && state.use_mobile_view}>
+            <Show when={showRight()}>
                 <div
                     className="ln-party__user-list"
-                    classList={{ "ln-party__user-list--closed": state.use_mobile_view && state.show_panel == Panel.Main }}
+                    classList={{ "ln-party__user-list--closed": state.show_panel == Panel.Main }}
                 >
                     <Show when={state.active_party && state.active_party != '@me'} fallback="Something">
                         <MemberList />

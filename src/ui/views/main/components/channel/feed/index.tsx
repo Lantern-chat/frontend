@@ -13,7 +13,6 @@ import { MessageFlags, Room, Snowflake, User, UserPreferenceFlags, user_is_bot, 
 import { RootState, Type, useRootSelector } from "state/root";
 import { loadMessages, SearchMode } from "state/commands";
 import { IMessageState, IRoomState } from "state/mutators/chat";
-import { Panel } from "state/mutators/window";
 import { selectPrefsFlag } from "state/selectors/prefs";
 
 import { createController } from "ui/hooks/createController";
@@ -48,7 +47,6 @@ import "./feed.scss";
 export function MessageFeed() {
     let state = useStructuredSelector({
         use_mobile_view: (state: RootState) => state.window.use_mobile_view,
-        show_panel: (state: RootState) => state.window.show_panel,
         compact: selectPrefsFlag(UserPreferenceFlags.CompactView),
         gl: selectPrefsFlag(UserPreferenceFlags.GroupLines),
         active_room: activeRoom,
@@ -70,13 +68,6 @@ export function MessageFeed() {
     });
 
     let dispatch = useDispatch();
-
-    let on_cover_click = (e: MouseEvent) => {
-        switch(state.show_panel) {
-            case Panel.LeftRoomList: dispatch({ type: Type.WINDOW_TOGGLE_ROOM_LIST_SIDEBAR }); break;
-            case Panel.RightUserList: dispatch({ type: Type.WINDOW_TOGGLE_USER_LIST_SIDEBAR }); break;
-        }
-    };
 
     let [ifs, setIFS] = createController<InfiniteScrollController>();
     // on room change, go to start of ifs
@@ -101,10 +92,6 @@ export function MessageFeed() {
 
     return (
         <div className="ln-msg-list__flex-container">
-            <Show when={state.use_mobile_view && state.show_panel != Panel.Main}>
-                <div className="ln-msg-list__cover" onClick={on_cover_click} />
-            </Show>
-
             <Show when={!state.use_mobile_view}>
                 <Timeline direction={0} position={0} />
             </Show>

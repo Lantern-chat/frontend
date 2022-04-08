@@ -43,23 +43,13 @@ export const windowMutator = mutatorWithDefault(
                 state.height = window.innerHeight;
                 break;
             }
-            case Type.WINDOW_TOGGLE_USER_LIST_SIDEBAR: {
-                if(state.use_mobile_view) {
-                    let new_panel = state.show_panel === Panel.Main ? Panel.RightUserList : Panel.Main;
-
-                    state.last_panel = state.show_panel;
-                    state.show_panel = new_panel;
-                } else {
-                    state.show_user_list = !state.show_user_list;
-                }
+            case Type.WINDOW_SET_PANEL: {
+                state.last_panel = state.show_panel;
+                state.show_panel = action.panel;
                 break;
             }
-            case Type.WINDOW_TOGGLE_ROOM_LIST_SIDEBAR: {
-                if(!state.use_mobile_view) break;
-
-                let new_panel = state.show_panel === Panel.Main ? Panel.LeftRoomList : Panel.Main;
-                state.last_panel = state.show_panel;
-                state.show_panel = new_panel;
+            case Type.WINDOW_TOGGLE_USER_LIST: {
+                state.show_user_list = action.open;
                 break;
             }
             case Type.TOGGLE_FOOTERS: {

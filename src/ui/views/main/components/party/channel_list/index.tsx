@@ -47,9 +47,9 @@ export function ChannelList() {
     let show_panel = useRootSelector(state => state.window.show_panel);
 
     let on_navigate = () => {
-        // if on the room list, toggle out of that on selection of a room.
+        // if on the room list, go to main to display channel.
         if(show_panel() == Panel.LeftRoomList) {
-            dispatch({ type: Type.WINDOW_TOGGLE_ROOM_LIST_SIDEBAR });
+            dispatch({ type: Type.WINDOW_SET_PANEL, panel: Panel.Main });
         }
     };
 

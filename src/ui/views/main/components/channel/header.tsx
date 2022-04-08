@@ -2,7 +2,8 @@ import { Show } from "solid-js";
 import { useDispatch } from "solid-mutant";
 
 import { Type } from "state/main";
-import { useRootSelector } from "state/root";
+import { Panel } from "state/mutators/window";
+import { RootState, useRootSelector } from "state/root";
 import { activeRoom } from "state/selectors/active";
 
 import { VectorIcon } from "ui/components/common/icon";
@@ -25,11 +26,23 @@ export function ChannelHeader() {
         };
     });
 
+    let show_panel = useRootSelector(state => state.window.show_panel);
+
+    let toggle_sidebar = (which: Panel) => {
+        dispatch([
+            { type: Type.WINDOW_SET_PANEL, panel: show_panel() != Panel.Main ? Panel.Main : which },
+
+            // toggle show_user_list
+            which != Panel.RightUserList ? null :
+                (dispatch, state: DeepReadonly<RootState>) => state.window.use_mobile_view || dispatch({ type: Type.WINDOW_TOGGLE_USER_LIST, open: !state.window.show_user_list })
+        ]);
+    };
+
     return (
         <div className="ln-channel-header">
             <div className="ln-channel-header__wrapper">
                 <div className="ln-channel-header__hamburger">
-                    <span onClick={() => dispatch({ type: Type.WINDOW_TOGGLE_ROOM_LIST_SIDEBAR })}>
+                    <span onClick={() => toggle_sidebar(Panel.LeftRoomList)}>
                         <VectorIcon src={MenuIcon} />
                     </span>
                 </div>
@@ -51,7 +64,7 @@ export function ChannelHeader() {
 
                 <div className="ln-channel-header__users">
                     <span
-                        onClick={() => dispatch({ type: Type.WINDOW_TOGGLE_USER_LIST_SIDEBAR })}>
+                        onClick={() => toggle_sidebar(Panel.RightUserList)}>
                         <VectorIcon src={UsersIcon} />
                     </span>
                 </div>
