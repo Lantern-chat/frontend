@@ -9,6 +9,7 @@ import { RootState } from "state/root";
 import { Message, Attachment, UserPreferenceFlags, AttachmentFlags } from "state/models";
 import { selectPrefsFlag } from "state/selectors/prefs";
 import { message_attachment_url } from "config/urls";
+import { createBytesFormatter } from "ui/hooks/createFormatter";
 
 import { createRef } from "ui/hooks/createRef";
 import { MainContext, createClickEater } from "ui/hooks/useMain";
@@ -86,6 +87,8 @@ function GenericAttachment(props: DeepReadonly<IMsgAttachmentProps>) {
 
     let eat = createClickEater();
 
+    let bytes_formatter = createBytesFormatter();
+
     return (
         <div className="ln-msg-attachment__generic">
             <div>
@@ -94,7 +97,7 @@ function GenericAttachment(props: DeepReadonly<IMsgAttachmentProps>) {
 
             <div className="ln-attachment-link ui-text">
                 <a target="__blank" title={title()} href={url()} onContextMenu={eat} textContent={props.attachment.filename} />
-                <span className="ln-attachment-size" textContent={format_bytes(props.attachment.size)} />
+                <span className="ln-attachment-size" textContent={bytes_formatter(props.attachment.size)} />
             </div>
 
             <a target="__blank" title={title()} href={url() + '?download'} className="ln-msg-attachment__download">

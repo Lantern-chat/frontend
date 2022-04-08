@@ -6,14 +6,22 @@ import { Action, RootState } from "state/root";
 import { format_bytes } from "lib/formatting";
 import { TogglePrefsFlag } from "../components/toggle";
 import { UserPreferenceFlags } from "state/models";
-import { useLocale } from "ui/i18n";
+import { createBytesFormatter, createNumberFormatter } from "ui/hooks/createFormatter";
+import { useI18nContext } from "ui/i18n/i18n-solid";
 
 export const AccountSettingsTab = () => {
     let store = useStore<RootState, Action>(),
         dispatch = store.dispatch,
         state = store.state;
 
-    let { LL, locale, lang } = useLocale();
+    let { LL } = useI18nContext();
+
+    let bytes_formatter = createBytesFormatter();
+    let num_formatter = createNumberFormatter({
+        maximumFractionDigits: 1,
+        style: 'unit',
+        unit: 'percent'
+    } as any);
 
     createRenderEffect(() => {
         if(state.user.user) {
@@ -24,15 +32,9 @@ export const AccountSettingsTab = () => {
     let quota = createMemo(() => {
         let user = state.user;
         if(user.quota_total !== undefined && user.quota_used !== undefined) {
-            let l = locale(), d = lang().d || l, si = !lang().nsi;
-
-            let used = format_bytes(user.quota_used, si, d),
-                total = format_bytes(user.quota_total, si, d),
-                percent = new Intl.NumberFormat(d, {
-                    maximumFractionDigits: 1,
-                    style: 'unit',
-                    unit: 'percent'
-                } as any).format(100 * user.quota_used / user.quota_total);
+            let used = bytes_formatter(user.quota_used),
+                total = bytes_formatter(user.quota_total),
+                percent = num_formatter(100 * user.quota_used / user.quota_total);
 
             return { used, total, percent };
         }
