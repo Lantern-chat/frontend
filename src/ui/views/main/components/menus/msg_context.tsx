@@ -11,7 +11,6 @@ import { IMessageState } from "state/mutators/chat";
 import { selectPrefsFlag } from "state/selectors/prefs";
 
 import { VectorIcon } from "ui/components/common/icon";
-import { UIText } from "ui/components/common/ui-text";
 
 import { ContextMenu } from "./list";
 
@@ -84,24 +83,24 @@ export function MsgContextMenu(props: IMsgContextMenuProps) {
             <Show when={!!selected}>
                 <div onClick={copy_selection}>
                     <VectorIcon src={ClipboardIcon} />
-                    <UIText text={LL().main.menus.msg.COPY_SEL()} />
+                    <span className="ui-text" textContent={LL().main.menus.msg.COPY_SEL()} />
                 </div>
 
                 <hr />
             </Show>
 
             <div>
-                <VectorIcon src={PencilIcon} /> <UIText text={LL().main.menus.msg.EDIT()} />
+                <VectorIcon src={PencilIcon} /> <span className="ui-text" textContent={LL().main.menus.msg.EDIT()} />
             </div>
 
             <div onClick={copy_msg}>
-                <VectorIcon src={CopyIcon} /> <UIText text={LL().main.menus.msg.COPY()} />
+                <VectorIcon src={CopyIcon} /> <span className="ui-text" textContent={LL().main.menus.msg.COPY()} />
             </div>
 
             <hr />
 
             <div>
-                <VectorIcon src={TriangleIcon} /> <UIText text={LL().main.menus.msg.REPORT()} />
+                <VectorIcon src={TriangleIcon} /> <span className="ui-text" textContent={LL().main.menus.msg.REPORT()} />
             </div>
 
             <div onClick={on_delete}
@@ -114,7 +113,7 @@ export function MsgContextMenu(props: IMsgContextMenuProps) {
                     <VectorIcon src={TrashOpenIcon} />
                 </Show>
 
-                <UIText text={confirm_text()} />
+                <span className="ui-text" textContent={confirm_text()} />
             </div>
 
             <Show when={dev_mode()}>
@@ -122,7 +121,7 @@ export function MsgContextMenu(props: IMsgContextMenuProps) {
 
                 <div onClick={() => copyText(props.msg.msg.id)}>
                     <VectorIcon src={ChatMessageIcon} />
-                    <UIText text={LL().main.menus.COPY_ID()} />
+                    <span className="ui-text" textContent={LL().main.menus.COPY_ID()} />
                 </div>
             </Show>
 
