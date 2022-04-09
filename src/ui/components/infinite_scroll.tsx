@@ -1,4 +1,4 @@
-import { JSX, createContext, useContext, createSignal, createRenderEffect, onCleanup, createEffect, onMount, children, untrack, Accessor, on } from "solid-js";
+import { JSX, createContext, useContext, createSignal, onCleanup, createEffect, onMount, children as resolveChildren, untrack, Accessor, on, children } from "solid-js";
 
 import ResizeObserverPolyfill from "resize-observer-polyfill";
 
@@ -195,7 +195,7 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
         pos = height = 0;
         anchor = props.start;
 
-        clearLater(fix_frame);
+        clearLater(fix_frame!);
 
         fix_position();
     };
@@ -309,9 +309,6 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
     };
 
     /// MOUNTING
-
-    // fix position on prop changes
-    createEffect(on(() => (props.children, props.load_next, props.load_prev), () => fix_position()));
 
     // NOTE: See feed.tsx for the controlled being used to reset the ifs on active room change
 
