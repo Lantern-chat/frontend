@@ -59,15 +59,18 @@ export function MsgAttachment(props: DeepReadonly<IMsgAttachmentProps>) {
 
     let mime_prefix = createMemo(() => props.attachment.mime?.slice(0, 5));
 
+    let unknown = createMemo(() => state.hide_unknown && !(props.attachment.width && props.attachment.height));
+    let large = createMemo(() => props.attachment.size >= (1024 * 1024 * 30));
+
     return (
         <div className="ln-msg-attachment" classList={{ 'spoiler': 0 != (props.msg.flags & AttachmentFlags.Spoiler) }}>
             <Show when={!errored()} fallback={<GenericAttachment {...props} />}>
-                <Switch>
-                    <Match when={mime_prefix() === 'image'}>
+                <Switch fallback={<GenericAttachment {...props} />}>
+                    <Match when={mime_prefix() === 'image' && !unknown() && !large()}>
                         <ImageAttachment img={common()} src={src()} attachment={props.attachment} use_mobile_view={state.use_mobile_view} />
                     </Match>
 
-                    <Match when={mime_prefix() === 'video'}>
+                    <Match when={mime_prefix() === 'video' && !unknown()}>
                         <VideoAttachment vid={common()} src={src()} attachment={props.attachment} use_mobile_view={state.use_mobile_view} mute_media={state.mute_media} />
                     </Match>
 
