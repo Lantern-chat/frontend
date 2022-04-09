@@ -1,6 +1,6 @@
 import { compareString } from "lib/compare";
 import { binarySearch } from "lib/util";
-import { Accessor, createMemo, createRenderEffect, createSignal, on, untrack } from "solid-js";
+import { Accessor, batch, createMemo, createRenderEffect, createSignal, on, untrack } from "solid-js";
 import { useDispatch } from "solid-mutant";
 import { loadMessages, SearchMode } from "state/commands";
 
@@ -48,7 +48,7 @@ export function createVirtualizedFeed(): [
     on_load_prev: () => Promise<void>,
     on_load_next: () => Promise<void>,
 ] {
-    let room = useRootSelector(state => {
+    let real_room = useRootSelector(state => {
         let ar = activeRoom(state);
         if(ar) {
             return state.chat.rooms[ar];
@@ -56,14 +56,17 @@ export function createVirtualizedFeed(): [
         return;
     });
 
+    // indirection to ensure initialization effect runs first
+    let [room, setRoom] = createSignal<DeepReadonly<IRoomState>>();
+
     let [start, setStart] = createSignal<Snowflake | undefined>(),
         [end, setEnd] = createSignal<Snowflake | undefined>();
 
     // specifically track this boolean, but memoize the changes
-    let has_msgs = createMemo(() => room()?.msgs.length != 0);
+    let has_msgs = createMemo(() => real_room()?.msgs.length != 0);
 
     createRenderEffect(() => {
-        let r = has_msgs() && room(); // will reset when room changes
+        let r = has_msgs() && real_room(); // will reset when room changes or messages load
 
         // we don't want to track initialization parameters
         untrack(() => {
@@ -76,8 +79,11 @@ export function createVirtualizedFeed(): [
                 let first = r.msgs[start_idx],
                     last = r.msgs[end_idx];
 
-                setStart(first.msg.id);
-                setEnd(last.msg.id);
+                batch(() => {
+                    setRoom(r as any);
+                    setStart(first.msg.id);
+                    setEnd(last.msg.id);
+                });
             }
         });
     });
@@ -96,9 +102,9 @@ export function createVirtualizedFeed(): [
 
     // use `on` to untrack body, as the individual message parts are unimportant for tracking
     createRenderEffect(on(
-        () => has_msgs() && room()?.msgs,
+        () => room()?.msgs,
         msgs => {
-            if(msgs) {
+            if(msgs && msgs.length) {
                 let most_recent_id = msgs[msgs.length - 1].msg.id;
                 if(end() != most_recent_id) {
                     setEnd(most_recent_id);
