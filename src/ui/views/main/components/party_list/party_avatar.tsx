@@ -12,6 +12,7 @@ import { pickColorFromHash } from "lib/palette";
 import { Link } from "ui/components/history";
 import { Avatar } from "ui/components/common/avatar";
 import { PositionedModal } from "ui/components/modal/positioned";
+import { UIText } from "ui/components/common/ui-text";
 
 import { createSimplePositionedContextMenu } from "ui/hooks/useMain";
 
@@ -73,20 +74,20 @@ function ListedPartyMenu(props: IListedPartyMenuProps) {
     return (
         <ContextMenu dark>
             <div>
-                <span className="ui-text" textContent={LL().main.menus.MARK_AS_READ()} />
+                <UIText text={LL().main.menus.MARK_AS_READ()} />
             </div>
 
             <hr />
 
             <div>
-                <span className="ui-text" textContent={LL().main.menus.INVITE_PEOPLE()} />
+                <UIText text={LL().main.menus.INVITE_PEOPLE()} />
             </div>
 
             <Show when={dev_mode()}>
                 <hr />
 
                 <div onClick={() => copyText(props.party.id)}>
-                    <span className="ui-text" textContent={LL().main.menus.COPY_ID()} />
+                    <UIText text={LL().main.menus.COPY_ID()} />
                 </div>
             </Show>
         </ContextMenu>

@@ -20,6 +20,7 @@ import { ITypingState } from "state/mutators/chat";
 import { Hotkey, MainContext, createClickEater, useMainHotkey } from "ui/hooks/useMain";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
+import { UIText } from "ui/components/common/ui-text";
 import { VectorIcon } from "ui/components/common/icon";
 import { IMsgTextareaController, MsgTextarea } from "ui/components/input/msg_textarea";
 import { EmotePicker } from "../common/emote_picker";
@@ -255,7 +256,7 @@ function UsersTyping() {
 
     return (
         <Show when={formatted()}>
-            <span className="ui-text" textContent={formatted()} />
+            <UIText text={formatted()} />
         </Show>
     )
 }

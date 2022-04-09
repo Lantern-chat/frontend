@@ -12,6 +12,7 @@ import { Room, Snowflake, UserPreferenceFlags } from "state/models";
 import { Panel } from "state/mutators/window";
 import { room_avatar_url } from "config/urls";
 
+import { UIText } from "ui/components/common/ui-text";
 import { Bounce } from "ui/components/common/spinners/bounce";
 import { VectorIcon } from "ui/components/common/icon";
 import { Avatar } from "ui/components/common/avatar";
@@ -95,7 +96,7 @@ function ListedChannel(props: IListedChannelProps) {
                 <RoomIcon room={props.room} />
 
                 <div className="ln-channel-list__name">
-                    <span className="ui-text" textContent={props.room.name} />
+                    <UIText text={props.room.name} />
                 </div>
             </Link>
 
@@ -122,20 +123,20 @@ function RoomContextMenu(props: IRoomContextMenuProps) {
     return (
         <ContextMenu dark>
             <div>
-                <span className="ui-text" textContent={LL().main.menus.MARK_AS_READ()} />
+                <UIText text={LL().main.menus.MARK_AS_READ()} />
             </div>
 
             <hr />
 
             <div>
-                <span className="ui-text" textContent={LL().main.menus.room.EDIT()} />
+                <UIText text={LL().main.menus.room.EDIT()} />
             </div>
 
             <Show when={dev_mode()}>
                 <hr />
 
                 <div onClick={() => copyText(props.room.id)}>
-                    <span className="ui-text" textContent={LL().main.menus.COPY_ID()} />
+                    <UIText text={LL().main.menus.COPY_ID()} />
                 </div>
             </Show>
         </ContextMenu>
@@ -152,7 +153,7 @@ function RoomListContextMenu(props: IRoomListContextMenuProps) {
     return (
         <ContextMenu dark>
             <div>
-                <span className="ui-text" textContent={LL().main.menus.room_list.CREATE()} />
+                <UIText text={LL().main.menus.room_list.CREATE()} />
             </div>
         </ContextMenu>
     );
