@@ -17,13 +17,13 @@ import "./msg.scss";
 export function Message(props: MessageProps) {
     return (
         <Show when={props.msg.content}>
-            <ErrorBoundary fallback={err => <DisplayError error={err} />}>
-                <Markdown source={props.msg.content!}
+            {content => (
+                <Markdown source={content}
                     className="ln-msg"
                     classList={{ 'ln-msg--editing': !!props.editing }}
                     extra={props.extra}
                 />
-            </ErrorBoundary>
+            )}
         </Show>
     );
 }

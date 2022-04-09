@@ -1,8 +1,8 @@
-import { Accessor, children as resolve_children, JSX, createMemo } from "solid-js";
+import { Accessor, children as resolveChildren, JSX, createMemo } from "solid-js";
 import { ResolvedChildren } from "solid-js/types/reactive/signal";
 
 export function useChildrenArray(children: Accessor<JSX.Element>): Accessor<Array<ResolvedChildren>> {
-    let resolved = resolve_children(children);
+    let resolved = resolveChildren(children);
 
     return createMemo(() => {
         let r = resolved();
