@@ -43,6 +43,8 @@ function compute_goto(ifs: InfiniteScrollController | null): boolean {
     return false;
 }
 
+import { createVirtualizedFeed } from "./virtual";
+
 import "./feed.scss";
 export function MessageFeed() {
     let state = useStructuredSelector({
@@ -90,6 +92,8 @@ export function MessageFeed() {
     createEffect(() => setGoto(compute_goto(ifs())));
     createEffect(() => dispatch({ type: Type.TOGGLE_FOOTERS, show: goto() }));
 
+    let [feed, on_load_prev, on_load_next] = createVirtualizedFeed();
+
     return (
         <div className="ln-msg-list__flex-container">
             <Show when={!state.use_mobile_view}>
@@ -104,6 +108,7 @@ export function MessageFeed() {
                 start={Anchor.Bottom}
                 setController={setIFS}
                 onScroll={on_scroll}
+                load_prev={on_load_prev}
                 containerClassList={{
                     'has-timeline': !state.use_mobile_view,
                     'compact': state.compact,
@@ -122,7 +127,7 @@ export function MessageFeed() {
                             </li>
                         </Show>
 
-                        <For each={state.room?.msgs}>
+                        <For each={feed()}>
                             {msg => <Message msg={msg} />}
                         </For>
                     </ul>

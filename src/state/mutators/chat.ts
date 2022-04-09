@@ -7,6 +7,7 @@ import { Message, Snowflake, Room, Attachment, ServerMsg, ServerMsgOpcode } from
 import { GatewayMessageDiscriminator } from "worker/gateway/msg";
 import { mutatorWithDefault } from "solid-mutant";
 import { ObjectMap } from "state/util/map_set";
+import { SearchMode } from "state/commands/message/load";
 
 export interface IMessageState {
     msg: Message,
@@ -136,9 +137,9 @@ export const chatMutator = mutatorWithDefault(
 
                 if(raw_msgs.length == 0) {
                     // only mark as fully loaded if search came up empty for messages before an ID
-                    //if(action.mode == SearchMode.Before) {
-                    //    room.fully_loaded = true;
-                    //}
+                    if(action.mode == SearchMode.Before) {
+                        room.fully_loaded = true;
+                    }
                     break;
                 }
 
