@@ -53,7 +53,7 @@ export function PartyAvatar(props: DeepReadonly<IPartyAvatarProps>) {
 
             <Show when={pos()}>
                 {pos => (
-                    <PositionedModal {...pos}>
+                    <PositionedModal rect={pos}>
                         <ListedPartyMenu party={props.party} />
                     </PositionedModal>
                 )}

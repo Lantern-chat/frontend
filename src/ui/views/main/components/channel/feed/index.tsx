@@ -217,9 +217,11 @@ function Message(props: { msg: DeepReadonly<IMessageState> }) {
                     <Dynamic component={Inner()} {...props} is_light_theme={state.is_light_theme} compact={state.compact} />
 
                     <Show when={pos()}>
-                        <PositionedModal {...pos()!}>
-                            <MsgContextMenu msg={props.msg} pos={pos()} onConfirmChange={(pending: boolean) => setWarn(pending)} />
-                        </PositionedModal>
+                        {pos => (
+                            <PositionedModal rect={pos}>
+                                <MsgContextMenu msg={props.msg} pos={pos} onConfirmChange={(pending: boolean) => setWarn(pending)} />
+                            </PositionedModal>
+                        )}
                     </Show>
                 </div>
             </li>

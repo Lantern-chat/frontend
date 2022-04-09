@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal, onCleanup, Show } from "solid-js";
+import { createEffect, createMemo, createRenderEffect, createSignal, onCleanup, Show } from "solid-js";
 import { createRef } from "ui/hooks/createRef";
 import { PositionedModal } from "./positioned";
 
@@ -13,29 +13,27 @@ export function AnchoredModal(props: IAnchoredModalProps) {
     let anchor = createRef<HTMLSpanElement>();
 
     let [show, setShow] = createSignal(props.show);
-    let [closing, setClosing] = createSignal(false);
+    //let [closing, setClosing] = createSignal(false);
 
-    createEffect(() => {
+    createRenderEffect(() => {
         if(props.show) {
             setShow(true);
         } else if(props.animated) {
             let t = setTimeout(() => setShow(false), 300);
-            setClosing(true);
+            //setClosing(true);
             onCleanup(() => clearTimeout(t));
         } else {
             setShow(false);
         }
     });
 
-    let rect = createMemo(() => show() && anchor.current?.getBoundingClientRect());
-
     return (
         <>
             <span ref={anchor} className="ln-context-anchor" />
 
-            <Show when={rect()}>
-                {({ top, left, bottom }) => (
-                    <PositionedModal eat={props.eat} top={top} left={left} bottom={bottom}>
+            <Show when={show() && anchor.current?.getBoundingClientRect()}>
+                {rect => (
+                    <PositionedModal eat={props.eat} rect={rect}>
                         {props.children}
                     </PositionedModal>
                 )}

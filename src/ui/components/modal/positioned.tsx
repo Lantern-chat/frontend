@@ -2,12 +2,11 @@ import { createEffect, createMemo, createSignal, JSX, onCleanup } from "solid-js
 import { px } from "ui/utils";
 import { Modal } from "./";
 
+export type ModalRect = Partial<DOMRect> & Pick<DOMRect, 'top' | 'left'>;
+
 export interface IPositionedModalProps {
     children?: any,
-    top: number,
-    left: number,
-    bottom?: number,
-    right?: number,
+    rect: ModalRect,
     eat?: string[],
 }
 
@@ -48,8 +47,9 @@ export function PositionedModal(props: IPositionedModalProps) {
 
     let computed = createMemo(() => {
         let d = dim(),
-            top = Math.min(props.top, d.height),
-            left = Math.min(props.left, d.width),
+            r = props.rect,
+            top = Math.min(r.top, d.height),
+            left = Math.min(r.left, d.width),
             on_top = top < (d.height * 0.5),
             on_left = left < (d.width * 0.5),
             style: any = {
@@ -60,8 +60,8 @@ export function PositionedModal(props: IPositionedModalProps) {
         cns.push(cnp + (on_left ? 'left' : 'right'));
 
         if(on_top) {
-            if(props.bottom !== undefined) {
-                top = props.bottom;
+            if(r.bottom !== undefined) {
+                top = r.bottom;
             }
 
             style.top = '0%';

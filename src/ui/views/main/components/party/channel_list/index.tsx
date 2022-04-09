@@ -65,10 +65,12 @@ export function ChannelList() {
                 </For>
             </Show>
 
-            <Show when={pos() && state().party_id}>
-                <PositionedModal {...pos()!}>
-                    <RoomListContextMenu party_id={state().party_id!} />
-                </PositionedModal>
+            <Show when={!!state().party_id && pos()}>
+                {pos => (
+                    <PositionedModal rect={pos}>
+                        <RoomListContextMenu party_id={state().party_id!} />
+                    </PositionedModal>
+                )}
             </Show>
         </ul>
     );
@@ -100,7 +102,7 @@ function ListedChannel(props: IListedChannelProps) {
 
             <Show when={pos()}>
                 {pos => (
-                    <PositionedModal {...pos}>
+                    <PositionedModal rect={pos}>
                         <RoomContextMenu room={props.room} />
                     </PositionedModal>
                 )}
