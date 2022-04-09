@@ -9,7 +9,6 @@ import { useRootSelector } from "state/root";
 
 import { Toasts } from "ui/components/toast";
 import { Ripple } from "ui/components/common/spinners/ripple";
-import { HistoryContext } from "ui/components/history";
 
 import { Fireflies } from "ui/views/login/components/fireflies";
 import { ThemeWidget } from "ui/views/login/components/theme_widget";
@@ -65,7 +64,23 @@ import TypesafeI18n, { useI18nContext } from "ui/i18n/i18n-solid";
 import { loadLocaleAsync, loadNamespaceAsync } from "ui/i18n/i18n-util.async";
 import { DETECTORS, LANGUAGES, useLocale } from "ui/i18n";
 
-const MainWrapper = lazy(async () => {
+const MainWrapper = {
+    default: () => {
+        let { locale, setLocale } = useLocale();
+
+        setLocale(locale()); // refresh locale
+
+        // setup an effect to load the main namespace on locale changes
+        createRenderEffect(() => loadNamespaceAsync(locale(), 'main').then(() => {
+            __DEV__ && console.log("Loaded main namespace for locale", locale());
+            setLocale(locale());
+        }));
+
+        return <MainView />;
+    }
+};
+
+const MainLoader = lazy(async () => {
     // TODO: Figure out how to include the english translation inside main itself
     await Promise.all([
         // NOTE: THis will have been set by the render effect below
@@ -73,21 +88,7 @@ const MainWrapper = lazy(async () => {
         MainView.preload(),
     ]);
 
-    return {
-        default: () => {
-            let { locale, setLocale } = useLocale();
-
-            setLocale(locale()); // refresh locale
-
-            // setup an effect to load the main namespace on locale changes
-            createRenderEffect(() => loadNamespaceAsync(locale(), 'main').then(() => {
-                __DEV__ && console.log("Loaded main namespace for locale", locale());
-                setLocale(locale());
-            }));
-
-            return <MainView />;
-        },
-    }
+    return MainWrapper;
 });
 
 function AppRouter() {
@@ -99,8 +100,8 @@ function AppRouter() {
                 <LoginRoutes which={location() as any} />
             </Match>
             <Match when={MAIN_ROUTES.includes(location() as any)}>
-                <Suspense fallback={Fallback}>
-                    <MainWrapper />
+                <Suspense fallback={<Fallback />}>
+                    <MainLoader />
                 </Suspense>
             </Match>
         </Switch>
@@ -108,10 +109,33 @@ function AppRouter() {
 };
 
 import { StorageKey } from "state/storage";
-import { detectLocale } from "ui/i18n/i18n-util";
+
+function AppInner() {
+    let { locale } = useI18nContext();
+
+    createRenderEffect(() => {
+        let l = locale(), lang = LANGUAGES[l], rtl = !!lang.rtl;
+        document.body.classList.toggle('ln-rtl', rtl);
+        document.body.classList.toggle('ln-ltr', !rtl);
+
+        // STORING LOCALE
+        __DEV__ && console.log("Storing locale", l);
+        localStorage.setItem(StorageKey.LOCALE, l);
+
+        document.documentElement.lang = lang.d || l;
+    });
+
+    return (
+        <MutantProvider store={STORE}>
+            <AppRouter />
+        </MutantProvider>
+    )
+}
 
 // manually include english, always
 import "ui/i18n/en-US";
+
+import { detectLocale } from "ui/i18n/i18n-util";
 
 let initial_locale = localStorage.getItem(StorageKey.LOCALE) as Locales || /*#__INLINE__*/ detectLocale(...DETECTORS);
 
@@ -123,47 +147,24 @@ if(!(initial_locale in LANGUAGES)) {
 // start pre-loading locale immediately upon script execution, not rendering
 let loading_locale = loadLocaleAsync(initial_locale);
 
-const I18NWrapper = lazy(async () => {
+const I18NWrapper = {
+    default: () => (
+        <TypesafeI18n locale={initial_locale}>
+            <AppInner />
+        </TypesafeI18n>
+    )
+};
+
+const I18NLoader = lazy(async () => {
     await loading_locale;
-
-    return {
-        default: () => {
-            let { locale, setLocale } = useLocale();
-
-            setLocale(initial_locale);
-
-            createRenderEffect(() => {
-                let l = locale(), lang = LANGUAGES[l], rtl = !!lang.rtl;
-                document.body.classList.toggle('ln-rtl', rtl);
-                document.body.classList.toggle('ln-ltr', !rtl);
-
-                // STORING LOCALE
-                __DEV__ && console.log("Storing locale", l);
-                localStorage.setItem(StorageKey.LOCALE, l);
-
-                document.documentElement.lang = lang.d || l;
-            });
-
-            return (
-                <MutantProvider store={STORE}>
-                    <Toasts />
-
-                    <HistoryContext.Provider value={STORE.state.history as IHistoryState}>
-                        <AppRouter />
-                    </HistoryContext.Provider>
-                </MutantProvider>
-            );
-        }
-    }
+    return I18NWrapper;
 });
 
 export default function App() {
     // top-level suspense for locale loading, don't show UI until it's loaded.
     return (
-        <TypesafeI18n locale="en-US">
-            <Suspense fallback={Fallback}>
-                <I18NWrapper />
-            </Suspense>
-        </TypesafeI18n>
+        <Suspense fallback={<Fallback />}>
+            <I18NLoader />
+        </Suspense>
     );
 }

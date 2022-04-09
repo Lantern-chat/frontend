@@ -11,12 +11,12 @@ export interface ITimestampProps {
 
 export type ICalendarProps = Omit<ITimestampProps, 'format'>;
 
-export function UITimestamp(props: ITimestampProps & { span?: JSX.HTMLAttributes<HTMLSpanElement> }): JSX.Element {
+export function UITimestamp(props: ITimestampProps): JSX.Element {
     let ts = createTimestamp(() => props.time, () => props.format);
-    return <UIText text={ts()} {...props.span || {}} />;
+    return <UIText text={ts()} />;
 }
 
-export function UICalendar(props: ICalendarProps & { span?: JSX.HTMLAttributes<HTMLSpanElement> }): JSX.Element {
+export function UICalendar(props: ICalendarProps): JSX.Element {
     let ts = createCalendar(() => props.time);
-    return <UIText text={ts()} {...props.span || {}} />;
+    return <UIText text={ts()} />;
 }

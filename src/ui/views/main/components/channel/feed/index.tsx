@@ -187,16 +187,6 @@ function Message(props: { msg: DeepReadonly<IMessageState> }) {
             onMainClick: () => setWarn(false),
         });
 
-    // select inner message component based on style.
-    // The identifier must be Proper-case to be used as a Component below.
-    let Inner = createMemo(() => {
-        if(user_is_system(props.msg.msg.author)) {
-            return SystemMessage;
-        } else {
-            return state.compact ? CompactMessage : CozyMessage;
-        }
-    });
-
     return (
         <>
             <Show when={props.msg.sg && state.gl}>
@@ -214,7 +204,8 @@ function Message(props: { msg: DeepReadonly<IMessageState> }) {
                 {...main_click_props}
             >
                 <div className="ln-msg__wrapper">
-                    <Dynamic component={Inner()} {...props} is_light_theme={state.is_light_theme} compact={state.compact} />
+                    <Dynamic component={user_is_system(props.msg.msg.author) ? SystemMessage : (state.compact ? CompactMessage : CozyMessage)}
+                        {...props} is_light_theme={state.is_light_theme} compact={state.compact} />
 
                     <Show when={pos()}>
                         {pos => (
