@@ -31,6 +31,10 @@ const es_main: NamespaceMainTranslation = {
 		"{0}, {1}, y {2} están escribiendo...", // 3 users
 		"{0}, {1}, {2}, y {3} más están escribiendo...", // 4+ users, parameter 3 is a number
 	],
+	channel: {
+		TOP1: "¡Has llegado a la cima de #{0}!",
+		TOP2: "Felicidades por llegar tan lejos."
+	},
 	menus: {
 		COPY_ID: "Copiar ID",
 		MARK_AS_READ: "Marcar como leído",

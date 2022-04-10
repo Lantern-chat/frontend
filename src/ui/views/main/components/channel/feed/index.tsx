@@ -118,13 +118,7 @@ export function MessageFeed() {
                 <InfiniteScrollContext.Provider value={ifs}>
                     <ul className="ln-msg-list" id="ln-msg-list" >
                         <Show when={state.room?.fully_loaded}>
-                            <li className="ln-msg__top">
-                                <div className="ui-text">
-                                    <VectorIcon src={BalloonIcon} /> You have reached the top of #{state.room!.room.name}! <VectorIcon src={BalloonIcon} />
-                                    <br />
-                                    Congrats on making it this far.
-                                </div>
-                            </li>
+                            <TopOfChannel name={state.room!.room.name} />
                         </Show>
 
                         <For each={feed()}>
@@ -141,6 +135,20 @@ export function MessageFeed() {
             </div>
         </div>
     );
+}
+
+function TopOfChannel(props: { name: string }) {
+    let { LL } = useI18nContext();
+
+    return (
+        <li className="ln-msg__top">
+            <div className="ui-text">
+                <VectorIcon src={BalloonIcon} />{LL().main.channel.TOP1(props.name)}<VectorIcon src={BalloonIcon} />
+                <br />
+                {LL().main.channel.TOP2()}
+            </div>
+        </li>
+    )
 }
 
 interface IGotoBottomFooterProps {

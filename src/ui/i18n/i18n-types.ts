@@ -284,6 +284,17 @@ export type NamespaceMainTranslation = {
 		 */
 		'3': RequiredParams<'0' | '1' | '2' | '3'>
 	}
+	channel: {
+		/**
+		 * You have reached the top of #{0}!
+		 * @param {unknown} 0
+		 */
+		TOP1: RequiredParams<'0'>
+		/**
+		 * Congrats on making it this far.
+		 */
+		TOP2: string
+	}
 	menus: {
 		/**
 		 * Copy ID
@@ -773,6 +784,16 @@ export type TranslationFunctions = {
 			 * {0}, {1}, {2}, and {3} others are typing...
 			 */
 			'3': (arg0: string, arg1: string, arg2: string, arg3: number) => LocalizedString
+		}
+		channel: {
+			/**
+			 * You have reached the top of #{0}!
+			 */
+			TOP1: (arg0: unknown) => LocalizedString
+			/**
+			 * Congrats on making it this far.
+			 */
+			TOP2: () => LocalizedString
 		}
 		menus: {
 			/**

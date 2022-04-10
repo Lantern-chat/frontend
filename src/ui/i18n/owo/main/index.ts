@@ -30,6 +30,10 @@ const owo_main: NamespaceMainTranslation = {
 		"{0}, {1}, and {2} awe typing :3", // 3 users
 		"{0}, {1}, {2}, and {3} othews awe typing /(^•ω•^)", // 4+ users, parameter 3 is a number
 	],
+	channel: {
+		TOP1: "You have weached the top of #{0}! OwO",
+		TOP2: "Congwats on making it this faw ^_^."
+	},
 	menus: {
 		COPY_ID: "copy i-id (⑅˘꒳˘)",
 		MARK_AS_READ: "mawk as wead nyaa~~",

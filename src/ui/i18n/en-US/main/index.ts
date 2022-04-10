@@ -32,6 +32,10 @@ const enUS_main: BaseTranslation = {
         "{0:string}, {1:string}, and {2:string} are typing...", // 3 users
         "{0:string}, {1:string}, {2:string}, and {3:number} others are typing...", // 4+ users
     ],
+    channel: {
+        TOP1: "You have reached the top of #{0}!",
+        TOP2: "Congrats on making it this far."
+    },
     menus: {
         COPY_ID: "Copy ID",
         MARK_AS_READ: "Mark as Read",
