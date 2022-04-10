@@ -1,5 +1,4 @@
 export type { IWindowState } from "./window";
-export type { IModalState } from "./modals";
 export type { IChatState } from "./chat";
 export type { IGatewayState } from "./gateway";
 export type { IUserState } from "./user";

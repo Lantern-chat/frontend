@@ -17,7 +17,6 @@ export const initialMutator = combineMutators<RootState, Action>({
     chat: dummyMutator,
     cache: dummyMutator,
     window: windowMutator,
-    modals: dummyMutator,
     gateway: dummyMutator,
     user: userMutator,
     party: dummyMutator,

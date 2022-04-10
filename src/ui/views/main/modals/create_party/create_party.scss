@@ -1,0 +1,16 @@
+@import "lib/variables";
+
+.ln-create-party {
+    text-align: center;
+
+    // desktop view
+    @media (min-width: $ln-min-channel-width) {
+        width: 30rem;
+    }
+
+    h3 {
+        padding-bottom: 1rem;
+        border-bottom: 1px solid $lnx-primary-text-color;
+        margin-bottom: 1rem;
+    }
+}

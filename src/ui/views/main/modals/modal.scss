@@ -1,15 +1,50 @@
 @import "lib/variables";
 
+@keyframes generic_modal_open {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes generic_modal_close {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
 .ln-generic-modal {
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
+
+    .ln-enable-motion & {
+        animation: 0.1s generic_modal_open ease-in forwards;
+
+        &.closing {
+            animation: 0.1s generic_modal_close ease-in both;
+        }
+    }
 
     &__inner {
         position: relative;
         margin: auto auto;
-        padding: 2rem 2rem 0 2rem;
+        padding: 1rem 2rem;
+        //padding: 1.5rem 2.5rem 1.5rem 1.5rem;
         background-color: $lnx-tertiary-surface-color;
         border-radius: 1rem;
+
+        // mobile view
+        @media (max-width: $ln-max-channel-width) {
+            border-radius: 0;
+            padding: 1rem 0;
+            margin: 0;
+            width: 100%;
+        }
     }
 
     &__close {

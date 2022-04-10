@@ -80,19 +80,26 @@ function Connecting() {
     )
 }
 
-function CreateParty(props: { can_navigate: boolean }) {
-    let dispatch = useDispatch();
+import { GenericModal } from "../../modals/generic";
+import { CreatePartyModal } from "../../modals/create_party";
 
-    let create_party_open = useRootSelector(state => state.modals.create_party_open);
+function CreateParty(props: { can_navigate: boolean }) {
+    let [show, setShow] = createSignal(false);
 
     return (
-        <li id="create-party" classList={{ 'selected': create_party_open() }}>
+        <li id="create-party" classList={{ 'selected': show() }}>
             <Avatar rounded text="+" username="Join/Create a Party"
                 wrapper={{
                     title: "Join/Create a Party",
-                    onClick: () => props.can_navigate && dispatch({ type: Type.MODAL_OPEN_CREATE_PARTY })
+                    onClick: () => props.can_navigate && setShow(true),
                 }}
             />
+
+            <Show when={show()}>
+                <GenericModal onClose={() => setShow(false)}>
+                    <CreatePartyModal />
+                </GenericModal>
+            </Show>
         </li>
     )
 }

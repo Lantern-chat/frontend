@@ -1,7 +1,6 @@
 import type {
     IChatState,
     IWindowState,
-    IModalState,
     IGatewayState,
     IUserState,
     IPartyState,
@@ -18,7 +17,6 @@ export interface RootState {
     chat: IChatState,
     cache: ICacheState,
     window: IWindowState,
-    modals: IModalState,
     gateway: IGatewayState,
     user: IUserState,
     party: IPartyState,
