@@ -40,9 +40,6 @@ export function MsgContextMenu(props: IMsgContextMenuProps) {
 
     let { LL } = useI18nContext();
 
-    let confirm_text = createMemo(() =>
-        shownConfirmation() ? LL().main.menus.msg.CONFIRM() : LL().main.menus.msg.DELETE());
-
     // if context menu changes position, remove the dialogue
     createEffect(() => (props.pos, setShownConfirmation(false)));
     createEffect(() => props.onConfirmChange(shownConfirmation()));
@@ -114,7 +111,7 @@ export function MsgContextMenu(props: IMsgContextMenuProps) {
                     <VectorIcon src={TrashOpenIcon} />
                 </Show>
 
-                <UIText text={confirm_text()} />
+                <UIText text={shownConfirmation() ? LL().main.menus.msg.CONFIRM() : LL().main.menus.msg.DELETE()} />
             </div>
 
             <Show when={dev_mode()}>
@@ -125,7 +122,6 @@ export function MsgContextMenu(props: IMsgContextMenuProps) {
                     <UIText text={LL().main.menus.COPY_ID()} />
                 </div>
             </Show>
-
         </ContextMenu>
     )
 }

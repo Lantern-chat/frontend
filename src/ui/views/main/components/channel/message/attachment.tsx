@@ -60,7 +60,7 @@ export function MsgAttachment(props: DeepReadonly<IMsgAttachmentProps>) {
     let mime_prefix = createMemo(() => props.attachment.mime?.slice(0, 5));
 
     let unknown = createMemo(() => state.hide_unknown && !(props.attachment.width && props.attachment.height));
-    let large = createMemo(() => props.attachment.size >= (1024 * 1024 * 30));
+    let large = () => props.attachment.size >= (1024 * 1024 * 30);
 
     return (
         <div className="ln-msg-attachment" classList={{ 'spoiler': 0 != (props.msg.flags & AttachmentFlags.Spoiler) }}>
@@ -139,12 +139,12 @@ function ImageAttachment(props: IImageAttachmentProps) {
     let [loaded, setLoaded] = createSignal(false);
     let visible = createInfiniteScrollIntersectionTrigger(img, TRIGGER_OPTS);
 
-    let src = createMemo(() => visible() ? props.src : undefined);
-    let style = createMemo(() => loaded() ? {} : computeModifiedStyle(props.img.style as JSX.CSSProperties || {}, props.attachment, props.use_mobile_view));
+    let src = () => visible() ? props.src : undefined;
+    let style = () => loaded() ? {} : computeModifiedStyle(props.img.style as JSX.CSSProperties || {}, props.attachment, props.use_mobile_view);
 
     let on_load = () => visible() && setLoaded(true);
 
-    let animated_format = createMemo(() => props.attachment.mime?.match(/gif|apng|webp|avif/i)?.[0]);
+    let animated_format = () => props.attachment.mime?.match(/gif|apng|webp|avif/i)?.[0];
 
     // Future work
     //createEffect(() => img.current?.classList.toggle('loading', !loaded()));
@@ -179,12 +179,11 @@ function VideoAttachment(props: IVideoAttachmentProps) {
     let visible = createInfiniteScrollIntersectionTrigger(ref, TRIGGER_OPTS);
 
     // use modified style if not loaded
-    let style = createMemo(() => loaded() ? undefined :
-        computeModifiedStyle(props.vid.style as JSX.CSSProperties || {}, props.attachment, props.use_mobile_view)
-    );
+    let style = () => loaded() ? undefined :
+        computeModifiedStyle(props.vid.style as JSX.CSSProperties || {}, props.attachment, props.use_mobile_view);
 
     // the #t=0.0001 forces iOS Safari to preload the first frame and display that as a preview
-    let src = createMemo(() => visible() ? (IS_MOBILE ? props.src + '#t=0.0001' : props.src) : undefined);
+    let src = () => visible() ? (IS_MOBILE ? props.src + '#t=0.0001' : props.src) : undefined;
 
     let on_load = () => setLoaded(true);
 

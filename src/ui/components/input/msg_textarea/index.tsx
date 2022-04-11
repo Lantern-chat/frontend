@@ -5,6 +5,7 @@ import { TextareaAutosize, TextareaHeightChangeMeta } from 'ui/components/input/
 import { useI18nContext } from 'ui/i18n/i18n-solid';
 
 import type { SetController } from 'ui/hooks/createController';
+import { createShallowMemo } from 'ui/hooks/createShallowMemo';
 import { parseHotkey, Hotkey } from "ui/hooks/useMain";
 import { AnyRef, composeRefs } from 'ui/hooks/createRef';
 
@@ -138,7 +139,7 @@ export function MsgTextarea(props: IMsgTextareaProps) {
 
     let max_rows = createMemo(() => local.mobile ? 5 : 20);
 
-    let style = createMemo(() => {
+    let style = createShallowMemo(() => {
         if(rows() < max_rows()) {
             return { 'overflow-y': 'hidden' } as JSX.CSSProperties;
         }

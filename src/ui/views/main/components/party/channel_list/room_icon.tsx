@@ -43,9 +43,11 @@ function RoomHashIcon(props: IRoomIconProps) {
             <VectorIcon src={HashIcon} />
 
             <Show when={subicon()}>
-                <div className="ln-channel-list__subicon">
-                    <VectorIcon src={subicon()!} />
-                </div>
+                {icon => (
+                    <div className="ln-channel-list__subicon">
+                        <VectorIcon src={icon} />
+                    </div>
+                )}
             </Show>
         </>
     );

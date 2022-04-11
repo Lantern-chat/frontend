@@ -77,18 +77,10 @@ function Toast(props: IToastProps) {
         }
     });
 
-    let className = createMemo(() => {
-        let cls = `ln-toast ${props.level}`;
-
-        if(cleared()) {
-            cls += ' cleared';
-        }
-
-        return cls;
-    });
-
     return (
-        <li className={className()} onClick={clearToast}>
+        <li className="ln-toast" onClick={clearToast}
+            classList={{ 'cleared': cleared(), [props.level]: true }}
+        >
             {props.title && <h3 textContent={props.title} />}
             <span>{props.text}</span>
         </li>
