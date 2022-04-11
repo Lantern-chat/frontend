@@ -36,7 +36,7 @@ function compute_goto(ifs: InfiniteScrollController | null): boolean {
             let clientHeight = container.clientHeight,
                 scrollHeight = container.scrollHeight - container.offsetHeight;
 
-            return ifs.pos < (scrollHeight - clientHeight * 5);
+            return container.scrollTop < (scrollHeight - clientHeight * 5);
         }
     }
 

@@ -1,4 +1,4 @@
-import { JSX, createContext, useContext, createSignal, onCleanup, createEffect, onMount, children as resolveChildren, untrack, Accessor, on, children } from "solid-js";
+import { JSX, createContext, useContext, createSignal, onCleanup, createEffect, onMount, children as resolveChildren, untrack, Accessor, on, children, createMemo } from "solid-js";
 
 import ResizeObserverPolyfill from "resize-observer-polyfill";
 
@@ -51,7 +51,10 @@ export interface InfiniteScrollController {
     get at_start(): boolean;
     get container(): HTMLDivElement;
     get wrapper(): HTMLDivElement;
-    get pos(): number;
+
+    clientWidth(): number;
+    clientHeight(): number;
+    scrollHeight(): number;
 }
 
 const OBSERVER_OPTIONS: ResizeObserverOptions = { box: "border-box" };
@@ -116,6 +119,7 @@ export interface IInfiniteScrollProps {
 }
 
 import "./infinite_scroll.scss";
+import { createTrigger } from "ui/hooks/createTrigger";
 export function InfiniteScroll(props: IInfiniteScrollProps) {
     let reduce_motion = useRootSelector(selectPrefsFlag(UserPreferenceFlags.ReduceAnimations));
 
@@ -218,11 +222,6 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
         }
     }
 
-    let on_resize = (entries: ResizeObserverEntry[], observer: ResizeObserver) => {
-        __DEV__ && console.log("RESIZED");
-        fix_position()
-    };
-
     let start_time: number = 0;
     let frame_time: number = 1 / 60;
 
@@ -308,7 +307,37 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
         });
     };
 
+    let [track, dirty] = createTrigger();
+
+    let on_resize = (entries: ResizeObserverEntry[], observer: ResizeObserver) => {
+        __DEV__ && console.log("RESIZED");
+        fix_position();
+        dirty();
+    };
+
     /// MOUNTING
+
+    let observer: ResizeObserver;
+
+    onMount(() => {
+        fix_position();
+
+        let container = container_ref.current!;
+
+        observer = new ResizeObserverPolyfill(on_resize);
+
+        observer.observe(container, OBSERVER_OPTIONS);
+        observer.observe(wrapper_ref.current!, OBSERVER_OPTIONS);
+
+        container.addEventListener('scroll', on_scroll, SUPPORTS_PASSIVE ? { passive: true } : false);
+
+        onCleanup(() => {
+            __DEV__ && console.log("Cleaning up IFS");
+            observer.disconnect();
+            container?.removeEventListener('scroll', on_scroll);
+            polling = false;
+        });
+    });
 
     // NOTE: See feed.tsx for the controlled being used to reset the ifs on active room change
 
@@ -325,7 +354,9 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
         get at_start() { return anchor == props.start; },
         get container() { return container_ref.current!; },
         get wrapper() { return wrapper_ref.current!; },
-        get pos() { return pos; },
+        scrollHeight: createMemo(() => { return track(), wrapper_ref.current?.scrollHeight!; }),
+        clientHeight: createMemo(() => { return track(), container_ref.current?.clientHeight!; }),
+        clientWidth: createMemo(() => { return track(), container_ref.current?.clientWidth!; }),
         gotoStartSmooth() {
             let container = container_ref.current!;
 
@@ -349,27 +380,6 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
             container.scrollTo({ top: page_border, behavior: 'instant' as any });
             do_laterish(() => container.scrollTo({ top: page_end, behavior: 'smooth' }));
         }
-    });
-
-    let observer: ResizeObserver;
-
-    onMount(() => {
-        fix_position();
-
-        let container = container_ref.current!;
-
-        observer = new ResizeObserverPolyfill(on_resize);
-
-        observer.observe(container, OBSERVER_OPTIONS);
-        observer.observe(wrapper_ref.current!, OBSERVER_OPTIONS);
-
-        container.addEventListener('scroll', on_scroll, SUPPORTS_PASSIVE ? { passive: true } : false);
-
-        onCleanup(() => {
-            observer.disconnect();
-            container?.removeEventListener('scroll', on_scroll);
-            polling = false;
-        });
     });
 
     return (
