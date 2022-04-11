@@ -153,6 +153,8 @@ export function MessageBox() {
         debug_node = (<div className="ln-msg-box__debug"><span textContent={debug()} /></div>);
     }
 
+    let is_empty = createMemo(() => value().length == 0);
+
     return (
         <>
             <div
@@ -187,7 +189,7 @@ export function MessageBox() {
                 {debug_node}
 
                 <div className="ln-msg-box__send" onClick={on_send_click}>
-                    <VectorIcon id={value().length == 0 ? Icons.Plus : Icons.Send} />
+                    <VectorIcon id={is_empty() ? Icons.Plus : Icons.Send} />
                 </div>
 
                 <Show when={!state.active_room}>
