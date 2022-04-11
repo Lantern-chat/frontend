@@ -178,7 +178,7 @@ import type { SearchMode } from "./commands";
 export interface MessagesLoaded {
     type: Type.MESSAGES_LOADED,
     room_id: Snowflake,
-    msgs: Message[],
+    msgs?: Message[],
     mode: SearchMode,
 }
 

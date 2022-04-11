@@ -135,6 +135,11 @@ export function createVirtualizedFeed(): [
             // wait for loading to end
             await on_loading_end();
 
+            // check if room changed during loading
+            if(r.room.id != room()?.room.id) {
+                return;
+            }
+
             // same logic as before
             new_start_idx = Math.max(0, searchRoom(r, new_start_id) - 100);
             new_start_id = r.msgs[new_start_idx].msg.id;

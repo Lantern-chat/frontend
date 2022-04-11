@@ -128,50 +128,52 @@ export const chatMutator = mutatorWithDefault(
                 break;
             }
             case Type.MESSAGES_LOADED: {
-                let raw_msgs = action.msgs;
+                let raw_msgs = action.msgs,
+                    room = state.rooms[action.room_id];
 
-                let room = state.rooms[action.room_id];
-                if(!room) break;
+                if(room) {
+                    room.is_loading = false;
 
-                room.is_loading = false;
+                    if(raw_msgs) {
+                        if(raw_msgs.length == 0) {
+                            // only mark as fully loaded if search came up empty for messages before an ID
+                            if(action.mode == SearchMode.Before) {
+                                room.fully_loaded = true;
+                            }
+                            break;
+                        }
 
-                if(raw_msgs.length == 0) {
-                    // only mark as fully loaded if search came up empty for messages before an ID
-                    if(action.mode == SearchMode.Before) {
-                        room.fully_loaded = true;
-                    }
-                    break;
-                }
+                        let final_msgs: Array<IMessageState> = [],
+                            old_msgs = room.msgs,
+                            new_msgs = raw_msgs.map(msg => ({
+                                msg,
+                                ts: +dayjs(msg.created_at),
+                                et: msg.edited_at ? +dayjs(msg.edited_at) : null,
+                            })).sort((a, b) => a.ts - b.ts);
 
-                let final_msgs: Array<IMessageState> = [],
-                    old_msgs = room.msgs,
-                    new_msgs = raw_msgs.map(msg => ({
-                        msg,
-                        ts: +dayjs(msg.created_at),
-                        et: msg.edited_at ? +dayjs(msg.edited_at) : null,
-                    })).sort((a, b) => a.ts - b.ts);
+                        // TODO: Get the msg_id query term and avoid full merging
+                        while(new_msgs.length && old_msgs.length) {
+                            let n = new_msgs[0], o = old_msgs[0],
+                                d = n.ts - o.ts, same = n.msg.id == o.msg.id;
 
-                // TODO: Get the msg_id query term and avoid full merging
-                while(new_msgs.length && old_msgs.length) {
-                    let n = new_msgs[0], o = old_msgs[0],
-                        d = n.ts - o.ts, same = n.msg.id == o.msg.id;
+                            if(d < 0) {
+                                final_msgs.push(new_msgs.shift()!);
+                            } else {
+                                final_msgs.push(old_msgs.shift()!);
 
-                    if(d < 0) {
-                        final_msgs.push(new_msgs.shift()!);
-                    } else {
-                        final_msgs.push(old_msgs.shift()!);
+                                if(same) {
+                                    // skip new message if same
+                                    new_msgs.shift();
+                                }
+                            }
+                        }
 
-                        if(same) {
-                            // skip new message if same
-                            new_msgs.shift();
+                        room.msgs = [...final_msgs, ...new_msgs, ...old_msgs];
+
+                        for(let i = 0; i < room.msgs.length; i++) {
+                            set_starts_group(room.msgs, i);
                         }
                     }
-                }
-
-                room.msgs = [...final_msgs, ...new_msgs, ...old_msgs];
-
-                for(let i = 0; i < room.msgs.length; i++) {
-                    set_starts_group(room.msgs, i);
                 }
 
                 break;
