@@ -1,0 +1,11 @@
+@import "lib/variables";
+
+.ln-party-header__dropdown {
+    width: 12em;
+    margin-inline: 0.5em;
+    margin-top: 0.25em;
+
+    @media (max-width: $ln-max-channel-width) {
+        width: calc(86vw - 4.5em - 1em);
+    }
+}

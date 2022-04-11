@@ -19,6 +19,7 @@
     cursor: pointer;
     user-select: none;
 
+    &.active,
     &:hover {
         background-color: $lnx-tertiary-surface-color;
     }

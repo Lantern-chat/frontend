@@ -1,5 +1,27 @@
-export function PartyOptionsDropdown() {
+import { Icons } from "lantern-icons";
+import { VectorIcon } from "ui/components/common/icon";
+import { ContextMenu } from "../../menus/list";
 
+export interface IPartyOptionsDropdownProps {
 
-    return "Menu";
+}
+
+import "./dropdown.scss";
+export function PartyOptionsDropdown(props: IPartyOptionsDropdownProps) {
+    return (
+        <div className="ln-party-header__dropdown"
+        >
+            <ContextMenu dark>
+                <div>
+                    <VectorIcon id={Icons.Balloon} />
+                    Thing
+                </div>
+
+                <div>
+                    <VectorIcon id={Icons.Balloon} />
+                    Another
+                </div>
+            </ContextMenu>
+        </div>
+    )
 }
