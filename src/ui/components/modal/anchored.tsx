@@ -9,6 +9,7 @@ export interface IAnchoredModalProps {
     animated?: boolean,
 }
 
+import "../context_menu/context_menu.scss";
 export function AnchoredModal(props: IAnchoredModalProps) {
     let anchor = createRef<HTMLSpanElement>();
 
