@@ -1,9 +1,9 @@
-import { createEffect, createMemo, createRenderEffect, createSignal, onCleanup, Show } from "solid-js";
+import { createEffect, createMemo, createRenderEffect, createSignal, onCleanup, Show, JSX } from "solid-js";
 import { createRef } from "ui/hooks/createRef";
 import { PositionedModal } from "./positioned";
 
 export interface IAnchoredModalProps {
-    children?: any,
+    children?: JSX.Element,
     show?: boolean,
     eat?: string[],
     animated?: boolean,
