@@ -2,48 +2,30 @@ import { createMemo } from "solid-js";
 
 import { MimeCategory } from "lib/mime";
 
-import {
-    PlainTextFileIcon,
-    RichTextFileIcon,
-    AudioFileIcon,
-    VideoFileIcon,
-    ImageFileIcon,
-    SpreadsheetFileIcon,
-    DatabaseFileIcon,
-    ProgramFileIcon,
-    TerminalFileIcon,
-    ScriptFileIcon,
-    PresentationFileIcon,
-    UnknownFileIcon,
-    CodeFileIcon,
-    ShieldFileIcon,
-    KeyFileIcon,
-    ZipFileIcon,
-} from "lantern-icons";
-
+import { Icons } from "lantern-icons";
 import { VectorIcon } from "ui/components/common/icon";
 
 export function MimeIcon(props: { category: MimeCategory }) {
     let icon = createMemo(() => {
         switch(props.category) {
-            case MimeCategory.PlainText: return PlainTextFileIcon;
-            case MimeCategory.RichText: return RichTextFileIcon;
-            case MimeCategory.Audio: return AudioFileIcon;
-            case MimeCategory.Video: return VideoFileIcon;
-            case MimeCategory.Image: return ImageFileIcon;
-            case MimeCategory.Spreadsheet: return SpreadsheetFileIcon;
-            case MimeCategory.Database: return DatabaseFileIcon;
-            case MimeCategory.Program: return ProgramFileIcon;
-            case MimeCategory.Terminal: return TerminalFileIcon;
-            case MimeCategory.Script: return ScriptFileIcon;
-            case MimeCategory.Presentation: return PresentationFileIcon;
-            case MimeCategory.Code: return CodeFileIcon;
-            case MimeCategory.Shield: return ShieldFileIcon;
-            case MimeCategory.Key: return KeyFileIcon;
-            case MimeCategory.Zip: return ZipFileIcon;
-            default: return UnknownFileIcon;
+            case MimeCategory.PlainText: return Icons.PlainTextFile;
+            case MimeCategory.RichText: return Icons.RichTextFile;
+            case MimeCategory.Audio: return Icons.AudioFile;
+            case MimeCategory.Video: return Icons.VideoFile;
+            case MimeCategory.Image: return Icons.ImageFile;
+            case MimeCategory.Spreadsheet: return Icons.SpreadsheetFile;
+            case MimeCategory.Database: return Icons.DatabaseFile;
+            case MimeCategory.Program: return Icons.ProgramFile;
+            case MimeCategory.Terminal: return Icons.TerminalFile;
+            case MimeCategory.Script: return Icons.ScriptFile;
+            case MimeCategory.Presentation: return Icons.PresentationFile;
+            case MimeCategory.Code: return Icons.CodeFile;
+            case MimeCategory.Shield: return Icons.ShieldFile;
+            case MimeCategory.Key: return Icons.KeyFile;
+            case MimeCategory.Zip: return Icons.ZipFile;
+            default: return Icons.UnknownFile;
         }
     });
 
-    return (<VectorIcon src={icon()} extra={{ 'data-category': MimeCategory[props.category].toLowerCase() }} />);
+    return (<VectorIcon id={icon()} extra={{ 'data-category': MimeCategory[props.category].toLowerCase() }} />);
 }

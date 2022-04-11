@@ -4,15 +4,13 @@ import { activeParty } from "state/selectors/active";
 
 import { VectorIcon } from "ui/components/common/icon";
 import { UIText } from "ui/components/common/ui-text";
-import { PartyOptionsDropdown } from "./dropdown";
-
-import { BalloonsIcon } from "lantern-icons";
-import { ChevronDownIcon, MenuCloseIcon } from "lantern-icons";
-
-
-import "./header.scss";
 import { AnchoredModal } from "ui/components/modal/anchored";
 import { createSimpleToggleOnClick } from "ui/hooks/useMain";
+import { PartyOptionsDropdown } from "./dropdown";
+
+import { Icons } from "lantern-icons";
+
+import "./header.scss";
 export function PartyHeader() {
     let party = useRootSelector(state => {
         let active_party = activeParty(state);
@@ -33,7 +31,7 @@ export function PartyHeader() {
                     <UIText text={party()!.party.name} />
                 </div>
 
-                <VectorIcon src={show() ? MenuCloseIcon : ChevronDownIcon} />
+                <VectorIcon id={show() ? Icons.MenuClose : Icons.ChevronDown} />
 
                 <AnchoredModal show={show()}>
                     <PartyOptionsDropdown />

@@ -15,15 +15,7 @@ import { UIText } from "ui/components/common/ui-text";
 
 import { ContextMenu } from "./list";
 
-import {
-    PencilIcon,
-    TrashIcon,
-    TrashOpenIcon,
-    ClipboardIcon,
-    CopyIcon,
-    ChatMessageIcon,
-    TriangleIcon
-} from "lantern-icons";
+import { Icons } from "lantern-icons";
 
 export interface IMsgContextMenuProps {
     msg: DeepReadonly<IMessageState>,
@@ -80,7 +72,7 @@ export function MsgContextMenu(props: IMsgContextMenuProps) {
         <ContextMenu>
             <Show when={!!selected}>
                 <div onClick={copy_selection}>
-                    <VectorIcon src={ClipboardIcon} />
+                    <VectorIcon id={Icons.Clipboard} />
                     <UIText text={LL().main.menus.msg.COPY_SEL()} />
                 </div>
 
@@ -88,17 +80,17 @@ export function MsgContextMenu(props: IMsgContextMenuProps) {
             </Show>
 
             <div>
-                <VectorIcon src={PencilIcon} /> <UIText text={LL().main.menus.msg.EDIT()} />
+                <VectorIcon id={Icons.Pencil} /> <UIText text={LL().main.menus.msg.EDIT()} />
             </div>
 
             <div onClick={copy_msg}>
-                <VectorIcon src={CopyIcon} /> <UIText text={LL().main.menus.msg.COPY()} />
+                <VectorIcon id={Icons.Copy} /> <UIText text={LL().main.menus.msg.COPY()} />
             </div>
 
             <hr />
 
             <div>
-                <VectorIcon src={TriangleIcon} /> <UIText text={LL().main.menus.msg.REPORT()} />
+                <VectorIcon id={Icons.Triangle} /> <UIText text={LL().main.menus.msg.REPORT()} />
             </div>
 
             <div onClick={on_delete}
@@ -107,9 +99,7 @@ export function MsgContextMenu(props: IMsgContextMenuProps) {
                     'ln-contextmenu-delete': !shownConfirmation(),
                 }}
             >
-                <Show when={shownConfirmation()} fallback={<VectorIcon src={TrashIcon} />}>
-                    <VectorIcon src={TrashOpenIcon} />
-                </Show>
+                <VectorIcon id={shownConfirmation() ? Icons.TrashOpen : Icons.Trash} />
 
                 <UIText text={shownConfirmation() ? LL().main.menus.msg.CONFIRM() : LL().main.menus.msg.DELETE()} />
             </div>
@@ -118,7 +108,7 @@ export function MsgContextMenu(props: IMsgContextMenuProps) {
                 <hr />
 
                 <div onClick={() => copyText(props.msg.msg.id)}>
-                    <VectorIcon src={ChatMessageIcon} />
+                    <VectorIcon id={Icons.ChatMessage} />
                     <UIText text={LL().main.menus.COPY_ID()} />
                 </div>
             </Show>

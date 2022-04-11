@@ -1,6 +1,6 @@
 import { createMemo } from "solid-js";
 import dayjs from "dayjs";
-import { ArrowThinRightIcon } from "lantern-icons";
+import { Icons } from "lantern-icons";
 import { VectorIcon } from "ui/components/common/icon";
 import { IMessageProps } from "./common";
 
@@ -15,7 +15,7 @@ export function SystemMessage(props: IMessageProps) {
     return (
         <>
             <div className="ln-msg__side ln-system-message">
-                <VectorIcon src={ArrowThinRightIcon} />
+                <VectorIcon id={Icons.ArrowThinRight} />
             </div>
 
             <div className="ln-msg__message ln-system-message">

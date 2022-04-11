@@ -14,7 +14,7 @@ export interface GenericModalProps {
     onClose?: () => void,
 }
 
-import { MenuCloseIcon } from "lantern-icons";
+import { Icons } from "lantern-icons";
 
 import "./modal.scss";
 export function GenericModal(props: GenericModalProps) {
@@ -37,7 +37,7 @@ export function GenericModal(props: GenericModalProps) {
         <FullscreenModal onClick={on_close} className="ln-generic-modal" classList={{ 'closing': closing() }}>
             <div className="ln-generic-modal__inner" onClick={eat}>
                 <div className="ln-generic-modal__close" onClick={on_close}>
-                    <VectorIcon src={MenuCloseIcon} />
+                    <VectorIcon id={Icons.MenuClose} />
                 </div>
                 {props.children}
             </div>

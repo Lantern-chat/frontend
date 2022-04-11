@@ -8,9 +8,7 @@ import { activeRoom } from "state/selectors/active";
 
 import { VectorIcon } from "ui/components/common/icon";
 
-import { MenuIcon } from "lantern-icons";
-import { UsersIcon } from "lantern-icons";
-import { HashIcon } from "lantern-icons";
+import { Icons } from "lantern-icons";
 
 import "./header.scss";
 export function ChannelHeader() {
@@ -43,12 +41,12 @@ export function ChannelHeader() {
             <div className="ln-channel-header__wrapper">
                 <div className="ln-channel-header__hamburger">
                     <span onClick={() => toggle_sidebar(Panel.LeftRoomList)}>
-                        <VectorIcon src={MenuIcon} />
+                        <VectorIcon id={Icons.Menu} />
                     </span>
                 </div>
 
                 <div className="ln-channel-icon">
-                    <VectorIcon src={HashIcon} />
+                    <VectorIcon id={Icons.Hash} />
                 </div>
 
                 <div className="ln-channel-info__wrapper">
@@ -65,7 +63,7 @@ export function ChannelHeader() {
                 <div className="ln-channel-header__users">
                     <span
                         onClick={() => toggle_sidebar(Panel.RightUserList)}>
-                        <VectorIcon src={UsersIcon} />
+                        <VectorIcon id={Icons.Users} />
                     </span>
                 </div>
             </div>

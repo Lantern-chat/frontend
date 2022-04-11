@@ -139,12 +139,13 @@ module.exports = (env, argv) => {
                     },
                 },
                 {
-                    test: /icons.*\.svg$/,
+                    // TODO: Better way to do this when using non-glyphicons icon packs
+                    test: /glyphicons-pro.*\.svg$/,
                     type: 'asset/source',
                 },
                 {
                     test: /\.(jpg|jpeg|png|svg|wav)(\?v=\d+\.\d+\.\d+)?$/,
-                    exclude: /(icons|fonts)/,
+                    exclude: /(glyphicons-pro|fonts)/,
                     type: 'asset/resource',
                     generator: {
                         filename: 'assets/[hash][ext][query]'

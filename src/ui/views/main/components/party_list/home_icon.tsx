@@ -8,7 +8,7 @@ import { Avatar } from "ui/components/common/avatar";
 import { VectorIcon } from "ui/components/common/icon";
 import { Link } from "ui/components/history";
 
-import { HomeIcon } from "lantern-icons";
+import { Icons } from "lantern-icons";
 
 export interface IHomeProps {
     active_party: string | undefined,
@@ -35,7 +35,7 @@ export function Home(props: IHomeProps) {
         <li id="user-home" className={'@me' == props.active_party ? 'selected' : ''} ref={ref}>
             <Link title="Home" href="/channels/@me" onNavigate={onNavigate} >
                 <Avatar rounded username="Home">
-                    <VectorIcon src={HomeIcon} />
+                    <VectorIcon id={Icons.Home} />
                 </Avatar>
             </Link>
         </li>

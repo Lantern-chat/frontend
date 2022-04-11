@@ -25,9 +25,7 @@ import { VectorIcon } from "ui/components/common/icon";
 import { IMsgTextareaController, MsgTextarea } from "ui/components/input/msg_textarea";
 import { EmotePicker } from "../common/emote_picker";
 
-//import {SmileyIcon} from "lantern-icons";
-import { SendIcon } from "lantern-icons";
-import { PlusIcon } from "lantern-icons";
+import { Icons } from "lantern-icons";
 import { createController } from "ui/hooks/createController";
 
 import "./box.scss";
@@ -189,7 +187,7 @@ export function MessageBox() {
                 {debug_node}
 
                 <div className="ln-msg-box__send" onClick={on_send_click}>
-                    <VectorIcon src={value().length == 0 ? PlusIcon : SendIcon} />
+                    <VectorIcon id={value().length == 0 ? Icons.Plus : Icons.Send} />
                 </div>
 
                 <Show when={!state.active_room}>

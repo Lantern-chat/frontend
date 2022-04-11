@@ -91,7 +91,7 @@ interface ISettingsTabsProps {
 
 import { logout } from "state/commands/session";
 import { Dynamic } from "solid-js/web";
-import { LogoutIcon } from "lantern-icons";
+import { Icons } from "lantern-icons";
 
 function SettingsTabs(props: ISettingsTabsProps) {
     let { LL } = useI18nContext();
@@ -135,7 +135,7 @@ function SettingsTabs(props: ISettingsTabsProps) {
                             <div id="logout" onClick={do_logout} title="Logout">
                                 <span textContent={LL().main.settings.LOGOUT()} />
                                 <div>
-                                    <VectorIcon src={LogoutIcon} />
+                                    <VectorIcon id={Icons.Logout} />
                                 </div>
                             </div>
                         </li>

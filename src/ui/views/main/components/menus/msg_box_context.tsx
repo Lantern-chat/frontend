@@ -5,7 +5,7 @@ import { VectorIcon } from "ui/components/common/icon";
 
 import { ContextMenu } from "./list";
 
-import { PasteIcon } from "lantern-icons";
+import { Icons } from "lantern-icons";
 
 export interface IMsgBoxContextMenuProps {
     on_paste: (text: string | null) => void,
@@ -44,7 +44,7 @@ export function MsgBoxContextMenu(props: IMsgBoxContextMenuProps) {
     return (
         <ContextMenu>
             <div onClick={on_paste}>
-                <VectorIcon src={PasteIcon} />
+                <VectorIcon id={Icons.Paste} />
                 <span className="ui-text">Paste</span>
             </div>
         </ContextMenu>

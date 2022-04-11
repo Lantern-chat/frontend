@@ -5,7 +5,7 @@ import "./logo.scss";
 export function Logo() {
     return (
         <div className="ln-logo" >
-            <img src={lantern}></img>
+            <img src={lantern} />
         </div>
     );
 }

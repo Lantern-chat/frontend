@@ -14,7 +14,7 @@ import { Link } from "ui/components/history";
 import { Spinner } from "ui/components/common/spinners/spinner";
 import { UserAvatar } from "ui/views/main/components/user_avatar";
 
-import { CogwheelIcon, SpeakerIcon, SpeakerDeafIcon, MicrophoneIcon, MicrophoneMuteIcon } from "lantern-icons";
+import { Icons } from "lantern-icons";
 
 import "./footer.scss";
 export function PartyFooter() {
@@ -62,15 +62,15 @@ export function PartyFooter() {
 
             <div className="ln-party-footer__settings">
                 <div onClick={() => setMute(v => !v)} title={mute() ? LL().main.UNMUTE() : LL().main.MUTE()}>
-                    <VectorIcon src={mute() ? MicrophoneMuteIcon : MicrophoneIcon} />
+                    <VectorIcon id={mute() ? Icons.MicrophoneMute : Icons.Microphone} />
                 </div>
 
                 <div onClick={() => setDeaf(v => !v)} title={deaf() ? LL().main.UNDEAFEN() : LL().main.DEAFEN()}>
-                    <VectorIcon src={deaf() ? SpeakerDeafIcon : SpeakerIcon} />
+                    <VectorIcon id={deaf() ? Icons.SpeakerDeaf : Icons.Speaker} />
                 </div>
 
                 <Link href="/settings" title={LL().main.SETTINGS()}>
-                    <VectorIcon src={CogwheelIcon} />
+                    <VectorIcon id={Icons.Cogwheel} />
                 </Link>
             </div>
         </footer>

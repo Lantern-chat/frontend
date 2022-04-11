@@ -22,7 +22,7 @@ import { AnimatedGif } from "ui/components/common/gif";
 import { VectorIcon } from "ui/components/common/icon";
 import { MimeIcon } from "ui/components/mime";
 
-import { SaveIcon } from "lantern-icons";
+import { Icons } from "lantern-icons";
 
 const SVG_REGEX = /svg|xml/i;
 const TEXT_REGEX = /xml|text/i;
@@ -104,7 +104,7 @@ function GenericAttachment(props: DeepReadonly<IMsgAttachmentProps>) {
             </div>
 
             <a target="__blank" title={title()} href={url() + '?download'} className="ln-msg-attachment__download">
-                <VectorIcon src={SaveIcon} />
+                <VectorIcon id={Icons.Save} />
             </a>
         </div>
     )

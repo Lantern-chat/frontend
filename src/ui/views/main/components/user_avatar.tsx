@@ -10,7 +10,7 @@ import { user_avatar_url } from 'config/urls';
 import { Avatar } from 'ui/components/common/avatar';
 import { VectorIcon } from 'ui/components/common/icon';
 
-import { MobilePhoneIcon } from "lantern-icons";
+import { Icons } from "lantern-icons";
 
 export interface IUserAvatarProps {
     user: User,
@@ -54,7 +54,7 @@ export function UserAvatar(props: IUserAvatarProps) {
                     fallback={<span className={status()[1]} />}
                     when={props.status == PresenceStatus.Online && props.is_mobile}
                 >
-                    <VectorIcon src={MobilePhoneIcon} />
+                    <VectorIcon id={Icons.MobilePhone} />
                 </Show>
             </div>
         </div>

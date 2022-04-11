@@ -27,7 +27,7 @@ import { VectorIcon } from "ui/components/common/icon";
 
 import { Anchor, InfiniteScroll, InfiniteScrollContext, InfiniteScrollController } from "ui/components/infinite_scroll";
 
-import { BalloonIcon, ChevronDownIcon } from "lantern-icons";
+import { Icons } from "lantern-icons";
 
 function compute_goto(ifs: InfiniteScrollController | null): boolean {
     if(ifs) {
@@ -143,7 +143,7 @@ function TopOfChannel(props: { name: string }) {
     return (
         <li className="ln-msg__top">
             <div className="ui-text">
-                <VectorIcon src={BalloonIcon} />{LL().main.channel.TOP1(props.name)}<VectorIcon src={BalloonIcon} />
+                <VectorIcon id={Icons.Balloon} />{LL().main.channel.TOP1(props.name)}<VectorIcon id={Icons.Balloon} />
                 <br />
                 {LL().main.channel.TOP2()}
             </div>
@@ -163,7 +163,7 @@ function GotoBottomFooter(props: IGotoBottomFooterProps) {
         <Branch>
             <Branch.If when={props.use_mobile_view}>
                 <span id="goto-now" onClick={() => props.onClick()}>
-                    <VectorIcon src={ChevronDownIcon} />
+                    <VectorIcon id={Icons.ChevronDown} />
                 </span>
             </Branch.If>
 
@@ -171,7 +171,7 @@ function GotoBottomFooter(props: IGotoBottomFooterProps) {
                 <div className="ln-feed-footer ui-text" onClick={() => props.onClick()}>
                     <span textContent={LL().main.VIEWING_OLDER()} />
                     <span id="goto-now">
-                        {LL().main.GOTO_NOW()} <VectorIcon src={ChevronDownIcon} />
+                        {LL().main.GOTO_NOW()} <VectorIcon id={Icons.ChevronDown} />
                     </span>
                 </div>
             </Branch.Else>

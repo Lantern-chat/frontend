@@ -1,5 +1,5 @@
 import { MessageFlags, user_is_bot } from "state/models";
-import { PencilIcon, PushPinIcon } from "lantern-icons";
+import { Icons } from "lantern-icons";
 import { createMemo, For, Show } from "solid-js";
 import { useSelector } from "solid-mutant";
 import { RootState } from "state/root";
@@ -69,13 +69,13 @@ export function CozyMessage(props: IMessageProps) {
 
                             <Show when={props.msg.et}>
                                 <span className="flags" title={LL().main.EDITED_ON({ ts: ets() })}>
-                                    <VectorIcon src={PencilIcon} />
+                                    <VectorIcon id={Icons.Pencil} />
                                 </span>
                             </Show>
 
                             <Show when={props.msg.msg.flags & MessageFlags.Pinned}>
                                 <span className="flags" title={LL().main.MESSAGE_PINNED()}>
-                                    <VectorIcon src={PushPinIcon} />
+                                    <VectorIcon id={Icons.PushPin} />
                                 </span>
                             </Show>
                         </span>

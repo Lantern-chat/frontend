@@ -14,7 +14,7 @@ import { VectorIcon } from "ui/components/common/icon";
 import { UserAvatar } from "../user_avatar";
 import { BotLabel } from "../misc/bot_label";
 
-import { CrownIcon } from "lantern-icons";
+import { Icons } from "lantern-icons";
 
 import "./member_list.scss";
 export function MemberList() {
@@ -187,7 +187,7 @@ function ListedMember(props: IListedMemberProps) {
                     <Show when={props.member.user.id == props.owner}>
                         <div className="ln-member__spacer" />
                         <div className="ln-member__crown" title={LL().main.OWNER()}>
-                            <VectorIcon src={CrownIcon} />
+                            <VectorIcon id={Icons.Crown} />
                         </div>
                     </Show>
 

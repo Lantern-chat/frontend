@@ -5,7 +5,7 @@ import { LANGUAGES, LANGUAGE_KEYS, useLocale } from "ui/i18n";
 import { loadLocaleAsync } from "ui/i18n/i18n-util.async";
 
 import { VectorIcon } from "ui/components/common/icon";
-import { Translate } from "lantern-icons";
+import { TranslateIcon } from "lantern-icons";
 
 import "./lang_widget.scss";
 export function LangWidget() {
@@ -24,7 +24,7 @@ export function LangWidget() {
                 <div className="ln-lang-widget__title" textContent={LL().CHANGE_LANG()} />
 
                 <div className="ln-lang-widget__icon">
-                    <VectorIcon src={Translate} />
+                    <VectorIcon src={TranslateIcon} />
                 </div>
             </div>
 

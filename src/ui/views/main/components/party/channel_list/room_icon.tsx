@@ -7,7 +7,7 @@ import { room_avatar_url } from "config/urls";
 import { Avatar } from "ui/components/common/avatar";
 import { VectorIcon } from "ui/components/common/icon";
 
-import { HashIcon, TriangleAlertIcon, LockIcon } from "lantern-icons";
+import { Icons } from "lantern-icons";
 
 interface IRoomIconProps {
     room: DeepReadonly<Room>,
@@ -31,21 +31,21 @@ function RoomHashIcon(props: IRoomIconProps) {
 
         // TODO: Rooms with overwrites
         if((flags & 16) == 16) {
-            return TriangleAlertIcon;
+            return Icons.TriangleAlert;
         } else if((flags & 64) == 64) {
-            return LockIcon;
+            return Icons.Lock;
         }
         return;
     });
 
     return (
         <>
-            <VectorIcon src={HashIcon} />
+            <VectorIcon id={Icons.Hash} />
 
             <Show when={subicon()}>
                 {icon => (
                     <div className="ln-channel-list__subicon">
-                        <VectorIcon src={icon} />
+                        <VectorIcon id={icon} />
                     </div>
                 )}
             </Show>
