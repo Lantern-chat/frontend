@@ -22,14 +22,18 @@ body {
             transform: scaleX(-1);
         }
 
-        svg {
-            overflow: visible;
-            appearance: none;
-            border: none;
-            height: 1em;
-            width: 1em;
-        }
-
         display: inline-flex;
     }
+
+    svg {
+        overflow: visible;
+        appearance: none;
+        border: none;
+        height: 1em;
+        width: 1em;
+    }
+}
+
+symbol {
+    overflow: visible;
 }
