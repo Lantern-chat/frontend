@@ -5,6 +5,7 @@
     width: 100%;
     background-color: $lnx-primary-surface-color;
     padding: 0.5em;
+    padding-inline-start: calc(5% + 7px); // based off channel list
     text-align: center;
     flex-shrink: 0;
     //z-index: 1;
@@ -15,11 +16,25 @@
 
     display: flex;
     flex-wrap: nowrap;
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+        background-color: $lnx-tertiary-surface-color;
+    }
+
+    position: relative;
+    .ln-context-anchor {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
 
     .ln-icon {
-        font-size: 2em;
-        padding: 0 0.5em;
-        vertical-align: middle;
+        margin: auto 0.5em;
+        font-size: 1.4em;
         text-align: end;
         flex: 1 0 auto;
     }
@@ -29,5 +44,11 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
+        min-width: 0;
+
+        span {
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
     }
 }

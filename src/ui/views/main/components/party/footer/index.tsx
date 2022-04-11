@@ -9,14 +9,14 @@ import { parse_presence, PresenceStatus, UserPreferenceFlags } from "state/model
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
 
-import { UserAvatar } from "../user_avatar";
 import { VectorIcon } from "ui/components/common/icon";
 import { Link } from "ui/components/history";
 import { Spinner } from "ui/components/common/spinners/spinner";
+import { UserAvatar } from "ui/views/main/components/user_avatar";
 
 import { CogwheelIcon, SpeakerIcon, SpeakerDeafIcon, MicrophoneIcon, MicrophoneMuteIcon } from "lantern-icons";
 
-import "./party_footer.scss";
+import "./footer.scss";
 export function PartyFooter() {
     let { LL } = useI18nContext();
 

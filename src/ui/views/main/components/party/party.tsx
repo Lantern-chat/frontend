@@ -3,10 +3,10 @@ import { useDispatch, useStructuredSelector } from "solid-mutant";
 
 import { ChannelList } from "./channel_list";
 import { MemberList } from "./member_list";
-import { PartyHeader } from "./party_header";
-import { PartyFooter } from "./party_footer";
 import { Channel } from "../channel/channel";
 import { HomeSideBar } from "../home/sidebar";
+import { PartyHeader } from "./header";
+import { PartyFooter } from "./footer";
 
 import { Snowflake } from "state/models";
 import { RootState, Type } from "state/root";
