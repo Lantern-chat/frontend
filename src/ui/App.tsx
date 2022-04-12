@@ -71,10 +71,14 @@ const MainWrapper = {
         setLocale(locale()); // refresh locale
 
         // setup an effect to load the main namespace on locale changes
-        createRenderEffect(() => loadNamespaceAsync(locale(), 'main').then(() => {
-            __DEV__ && console.log("Loaded main namespace for locale", locale());
-            setLocale(locale());
-        }));
+        createRenderEffect(() => {
+            if(!loadedLocales[locale()].main) {
+                loadNamespaceAsync(locale(), 'main').then(() => {
+                    __DEV__ && console.log("Loaded main namespace for locale", locale());
+                    setLocale(locale());
+                })
+            }
+        });
 
         return <MainView />;
     }
@@ -135,7 +139,7 @@ function AppInner() {
 // manually include english, always
 import "ui/i18n/en-US";
 
-import { detectLocale } from "ui/i18n/i18n-util";
+import { detectLocale, loadedLocales } from "ui/i18n/i18n-util";
 
 let initial_locale = localStorage.getItem(StorageKey.LOCALE) as Locales || /*#__INLINE__*/ detectLocale(...DETECTORS);
 
