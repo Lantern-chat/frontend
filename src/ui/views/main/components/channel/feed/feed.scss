@@ -83,9 +83,13 @@
 
 .ln-feed-footer {
     display: flex;
-    background-color: rgba(128, 128, 128, 0.7);
     padding: 0.5em;
     cursor: pointer;
+
+    background-color: rgba(128, 128, 128, 0.7);
+    .ln-light-theme & {
+        background-color: rgba(192, 192, 192, 0.7);
+    }
 
     &:first-child {
         border-top-left-radius: 0.5rem;

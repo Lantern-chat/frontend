@@ -20,10 +20,10 @@
         margin-top: 0.5em;
     }
 
-    // first attachments with no preceeding text, no spacing (otherwise since it's not the first child in parent the "multiple attachments" rule applies)
-    .ln-msg__title ~ & > *:first-child {
-        margin-top: 0;
-    }
+    // // first attachments with no preceeding text, no spacing (otherwise since it's not the first child in parent the "multiple attachments" rule applies)
+    // .ln-msg__title ~ & > *:first-child {
+    //     margin-top: 0;
+    // }
 
     &.spoiler {
         overflow: hidden;
@@ -94,7 +94,7 @@
     img {
         //max-height: 40em;
         max-height: 9 * 2.5em;
-        max-width: 16 * 2.5em;
+        max-width: min(100%, 16 * 2.5em);
 
         @media (max-width: $ln-max-channel-width) {
             max-width: 100%;

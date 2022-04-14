@@ -10,7 +10,7 @@ import "./bot_label.scss";
 export function BotLabel(props: IBotLabelProps) {
     let { LL } = useI18nContext();
 
-    let bot = createMemo(() => LL().main.BOT({ verified: !!props.v }));
+    let bot = createMemo(() => LL().main.BOT({ verified: !!props.v }).trim());
 
     return (
         <span className="bot-label" title={bot()}>
