@@ -7,7 +7,7 @@ import { createReducer } from "ui/hooks/createReducer";
 import { IS_MOBILE } from "lib/user_agent";
 
 //import { IMessageState } from "ui/views/main/reducers/messages";
-import { Action, RootState, useRootSelector } from "state/root";
+import { Action, RootState, ReadRootState, useRootSelector } from "state/root";
 import { Type } from "state/actions";
 import { PartyMember, Snowflake, User, UserPreferenceFlags } from "state/models";
 import { IParty } from "state/mutators/party";
@@ -32,10 +32,10 @@ import "./box.scss";
 export function MessageBox() {
     let state = useStructuredSelector({
         active_room: activeRoom,
-        //msg: (state: RootState) => ({ messages: [] as any[], current_edit: null }), // TODO
-        use_mobile_view: (state: RootState) => state.window.use_mobile_view,
-        showing_footers: (state: RootState) => state.window.showing_footers,
-        session: (state: RootState) => state.user.session,
+        //msg: (state: ReadRootState) => ({ messages: [] as any[], current_edit: null }), // TODO
+        use_mobile_view: (state: ReadRootState) => state.window.use_mobile_view,
+        showing_footers: (state: ReadRootState) => state.window.showing_footers,
+        session: (state: ReadRootState) => state.user.session,
         enable_spellcheck: selectPrefsFlag(UserPreferenceFlags.EnableSpellcheck),
     });
 
@@ -60,6 +60,7 @@ export function MessageBox() {
 
     // Load up any available draft, set the textarea to that,
     // then setup a callback to store the new draft when navigating away
+    let store = useStore<RootState, Action>();
     createEffect(() => {
         if(ta.current && state.active_room) {
             __DEV__ && console.log("Loading Draft");
@@ -72,7 +73,7 @@ export function MessageBox() {
             });
 
             skip = true; // skip the change event this will emit
-            untrack(() => tac()!.setValue(useStore<RootState, Action>().state.chat.rooms[state.active_room!]?.draft || ""));
+            untrack(() => tac()!.setValue(store.state.chat.rooms[state.active_room!]?.draft || ""));
         }
     });
 

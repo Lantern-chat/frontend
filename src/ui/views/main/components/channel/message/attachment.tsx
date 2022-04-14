@@ -5,7 +5,7 @@ import { IS_MOBILE } from "lib/user_agent";
 import { format_bytes } from "lib/formatting";
 import { categorize_mime } from "lib/mime";
 
-import { RootState } from "state/root";
+import { ReadRootState } from "state/root";
 import { Message, Attachment, UserPreferenceFlags, AttachmentFlags } from "state/models";
 import { selectPrefsFlag } from "state/selectors/prefs";
 import { message_attachment_url } from "config/urls";
@@ -35,7 +35,7 @@ export interface IMsgAttachmentProps {
 import "./attachment.scss";
 export function MsgAttachment(props: DeepReadonly<IMsgAttachmentProps>) {
     let state = useStructuredSelector({
-        use_mobile_view: (state: RootState) => state.window.use_mobile_view,
+        use_mobile_view: (state: ReadRootState) => state.window.use_mobile_view,
         mute_media: selectPrefsFlag(UserPreferenceFlags.MuteMedia),
         hide_unknown: selectPrefsFlag(UserPreferenceFlags.HideUnknown),
     });

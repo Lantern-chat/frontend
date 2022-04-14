@@ -1,6 +1,6 @@
 import { Show } from "solid-js";
 import { PartyMember, Snowflake, User } from "state/models";
-import { RootState, useRootSelector } from "state/root";
+import { ReadRootState, useRootSelector } from "state/root";
 import { selectCachedUser } from "state/selectors/selectCachedUser";
 
 export interface IUserCardProps {
@@ -14,7 +14,7 @@ import "./user_card.scss";
 export function UserCard(props: IUserCardProps) {
     let nick = props.member?.nick;
 
-    let cached_user = useRootSelector((state: RootState) => {
+    let cached_user = useRootSelector((state: ReadRootState) => {
         let active_party = state.chat.active_party;
         return selectCachedUser(state, props.user.id, active_party);
     });

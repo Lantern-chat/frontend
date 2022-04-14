@@ -3,7 +3,7 @@ import { useStructuredSelector } from "solid-mutant";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
 
-import { RootState, useRootSelector } from "state/root";
+import { ReadRootState, useRootSelector } from "state/root";
 import { activeRoom } from "state/selectors/active";
 import { Snowflake } from "state/models";
 
@@ -17,8 +17,8 @@ import { MemberList } from "../party/member_list";
 import "./channel.scss";
 export function Channel() {
     let state = useStructuredSelector({
-        use_mobile_view: (state: RootState) => state.window.use_mobile_view,
-        show_user_list: (state: RootState) => state.window.show_user_list,
+        use_mobile_view: (state: ReadRootState) => state.window.use_mobile_view,
+        show_user_list: (state: ReadRootState) => state.window.show_user_list,
     });
 
     return (

@@ -1,8 +1,8 @@
 import { PartyMember, Snowflake, User } from "state/models";
 import { CachedUser } from "state/mutators/cache";
-import { RootState } from "state/root";
+import { ReadRootState } from "state/root";
 
-export function selectCachedUser(state: RootState, user_id: Snowflake, party_id?: Snowflake): PartyMember | undefined {
+export function selectCachedUser(state: ReadRootState, user_id: Snowflake, party_id?: Snowflake): DeepReadonly<PartyMember> | undefined {
     if(party_id) {
         let party = state.party.parties[party_id];
         if(!party) return;

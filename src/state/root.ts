@@ -25,5 +25,7 @@ export interface RootState {
     toasts: IToastState
 }
 
+export type ReadRootState = DeepReadonly<RootState>;
+
 import { TypedUseSelectorHook, useSelector } from "solid-mutant";
 export const useRootSelector: TypedUseSelectorHook<RootState> = useSelector as any;

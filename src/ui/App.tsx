@@ -1,8 +1,7 @@
 
 import { Dynamic, Suspense } from "solid-js/web";
 import { createEffect, createMemo, createRenderEffect, createResource, createSignal, lazy, Match, on, Switch, untrack, useContext } from "solid-js";
-import { Provider as MutantProvider } from "solid-mutant";
-import { IHistoryState } from "state/mutators";
+import { MutantProvider } from "solid-mutant";
 
 import { HISTORY, STORE } from "state/global";
 import { useRootSelector } from "state/root";
@@ -36,7 +35,7 @@ function LoginRoutes(props: { which: typeof LOGIN_ROUTES[number] }) {
         }
     });
 
-    let { LL } = useI18nContext();
+    let { LL } = /*#__PURE__*/useI18nContext();
 
     return (
         <>
@@ -131,6 +130,7 @@ function AppInner() {
 
     return (
         <MutantProvider store={STORE}>
+            <Toasts />
             <AppRouter />
         </MutantProvider>
     )

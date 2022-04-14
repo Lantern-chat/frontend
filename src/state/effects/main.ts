@@ -5,7 +5,7 @@ import { loadMessages, SearchMode, activateParty, setSession } from "state/comma
 import { DEFAULT_LOGGED_IN_CHANNEL, GLOBAL, HISTORY } from "state/global";
 import { GatewayStatus } from "state/mutators/gateway";
 import { prefsMutator, getPad } from "state/mutators/prefs";
-import { Action, RootState, Type } from "state/root";
+import { Action, RootState, ReadRootState, Type } from "state/root";
 import { ServerMsgOpcode } from "state/models";
 
 import { StorageKey } from "state/storage";
@@ -22,7 +22,7 @@ import { displayNotification } from "lib/notification";
 
 const GATEWAY_ENABLED_ROUTES = ['channels', 'settings', 'invite'];
 
-function connect_gateway(state: DeepReadonly<RootState>) {
+function connect_gateway(state: ReadRootState) {
     GLOBAL.gateway!.postCmd({
         t: GatewayCommandDiscriminator.Connect,
         auth: state.user.session!.auth,
@@ -31,7 +31,7 @@ function connect_gateway(state: DeepReadonly<RootState>) {
     })
 }
 
-export function mainEffect(state: DeepReadonly<RootState>, action: Action, dispatch: Dispatch<Action, RootState>) {
+export function mainEffect(state: ReadRootState, action: Action, dispatch: Dispatch<Action, RootState>) {
     switch(action.type) {
         case Type.WINDOW_TOGGLE_USER_LIST: {
             localStorage.setItem(StorageKey.SHOW_USER_LIST, JSON.stringify(state.window.show_user_list));
@@ -220,7 +220,7 @@ export function mainEffect(state: DeepReadonly<RootState>, action: Action, dispa
                         dispatch(activateParty(active_party, active_room));
                     } else {
                         // TODO: Expand upon this or remove it entirely.
-                        if(!['settings', '@me'].includes(state.history.parts[0])) {
+                        if(!['settings', '@me', 'invite'].includes(state.history.parts[0])) {
                             __DEV__ && console.log("Ready event received but no party is active, redirecting to default");
                             HISTORY.replace(DEFAULT_LOGGED_IN_CHANNEL);
                         }

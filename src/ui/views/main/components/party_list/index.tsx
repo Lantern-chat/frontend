@@ -1,10 +1,9 @@
 import { createMemo, createSelector, createSignal, For, Show } from "solid-js";
 import { useStructuredSelector, useDispatch } from "solid-mutant";
 
-import { RootState, Type, useRootSelector } from "state/root";
+import { ReadRootState, Type, useRootSelector } from "state/root";
 import { activeParty } from "state/selectors/active";
 import { selectPrefsFlag } from "state/selectors/prefs";
-import { themeSelector } from "state/selectors/theme";
 import { GatewayStatus } from "state/mutators/gateway";
 
 import { Avatar } from "ui/components/common/avatar";
@@ -26,13 +25,12 @@ export function PartyList() {
     let [isScrolling, setIsScrolling] = createSignal(0);
 
     let state = useStructuredSelector({
-        parties: (state: RootState) => Object.values(state.party.parties).map(party => party.party).sort((a, b) => a.position - b.position),
+        parties: (state: ReadRootState) => Object.values(state.party.parties).map(party => party.party).sort((a, b) => a.position - b.position),
         is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
-        use_mobile_view: (state: RootState) => state.window.use_mobile_view,
-        user_object: (state: RootState) => state.user.user,
-        last_channel: (state: RootState) => state.party.last_channel,
-        gateway_status: (state: RootState) => state.gateway.status,
-        theme: themeSelector,
+        use_mobile_view: (state: ReadRootState) => state.window.use_mobile_view,
+        user_object: (state: ReadRootState) => state.user.user,
+        last_channel: (state: ReadRootState) => state.party.last_channel,
+        gateway_status: (state: ReadRootState) => state.gateway.status,
         active_party: activeParty,
     });
 

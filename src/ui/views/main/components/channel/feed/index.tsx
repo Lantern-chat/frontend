@@ -10,7 +10,7 @@ import { user_avatar_url } from "config/urls";
 import { pickColorFromHash } from "lib/palette";
 
 import { MessageFlags, Room, Snowflake, User, UserPreferenceFlags, user_is_bot, user_is_system } from "state/models";
-import { RootState, Type, useRootSelector } from "state/root";
+import { ReadRootState, Type, useRootSelector } from "state/root";
 import { loadMessages, SearchMode } from "state/commands";
 import { IMessageState, IRoomState } from "state/mutators/chat";
 import { selectPrefsFlag } from "state/selectors/prefs";
@@ -48,11 +48,11 @@ import { createVirtualizedFeed } from "./virtual";
 import "./feed.scss";
 export function MessageFeed() {
     let state = useStructuredSelector({
-        use_mobile_view: (state: RootState) => state.window.use_mobile_view,
+        use_mobile_view: (state: ReadRootState) => state.window.use_mobile_view,
         compact: selectPrefsFlag(UserPreferenceFlags.CompactView),
         gl: selectPrefsFlag(UserPreferenceFlags.GroupLines),
         active_room: activeRoom,
-        room: (state: RootState) => {
+        room: (state: ReadRootState) => {
             let active_room = activeRoom(state);
             if(active_room) {
                 let room_state = state.chat.rooms[active_room];

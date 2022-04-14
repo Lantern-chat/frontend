@@ -2,7 +2,7 @@ import { createSignal, Show } from "solid-js";
 import { useStructuredSelector } from "solid-mutant";
 
 import { HISTORY } from "state/global";
-import { RootState } from "state/root";
+import { ReadRootState } from "state/root";
 import { activeParty } from "state/selectors/active";
 import { selectPrefsFlag } from "state/selectors/prefs";
 import { parse_presence, PresenceStatus, UserPreferenceFlags } from "state/models";
@@ -24,9 +24,9 @@ export function PartyFooter() {
         [deaf, setDeaf] = createSignal(false);
 
     let state = useStructuredSelector({
-        user: (state: RootState) => state.user.user,
+        user: (state: ReadRootState) => state.user.user,
         is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
-        status: (state: RootState) => {
+        status: (state: ReadRootState) => {
             let active_party = activeParty(state), party, member;
 
             if(!active_party || active_party == '@me') return PresenceStatus.Online;

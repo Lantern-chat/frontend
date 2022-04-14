@@ -4,7 +4,7 @@ import { useDispatch, useStructuredSelector } from "solid-mutant";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 import { loadNamespaceAsync } from "ui/i18n/i18n-util.async";
 
-import { RootState, useRootSelector } from "state/root";
+import { ReadRootState, useRootSelector } from "state/root";
 import { HISTORY } from "state/global";
 import { activeParty, activeRoom } from "state/selectors/active";
 import { room_url } from "config/urls";
@@ -97,8 +97,8 @@ function SettingsTabs(props: ISettingsTabsProps) {
     let { LL } = useI18nContext();
 
     let state = useStructuredSelector({
-        active_tab: (state: RootState) => state.history.parts[1],
-        use_mobile_view: (state: RootState) => state.window.use_mobile_view,
+        active_tab: (state: ReadRootState) => state.history.parts[1],
+        use_mobile_view: (state: ReadRootState) => state.window.use_mobile_view,
     });
 
     let tab = createMemo(() => TABS.find(tab => tab.p == state.active_tab) || TABS[0]);

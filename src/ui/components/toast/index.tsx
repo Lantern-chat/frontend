@@ -1,5 +1,5 @@
 import { createEffect, createMemo, createSignal, For, onCleanup, Show } from "solid-js";
-import { createStructuredSelector, useDispatch } from "solid-mutant";
+import { useStructuredSelector, useDispatch } from "solid-mutant";
 import { UserPreferenceFlags } from "state/models";
 import { RootState, Type, useRootSelector } from "state/root";
 import { selectPrefsFlag } from "state/selectors/prefs";
@@ -30,15 +30,13 @@ export interface IToastProps extends IToast {
     reduced_motion: boolean,
 }
 
-const toast_selector = createStructuredSelector<RootState>()({
-    toasts: state => state.toasts.toasts,
-    reduced_motion: selectPrefsFlag(UserPreferenceFlags.ReduceAnimations),
-});
-
 import "./toast.scss";
 
 export function Toasts() {
-    let state = useRootSelector(toast_selector)();
+    let state = useStructuredSelector({
+        toasts: (state: ReadRootState) => state.toasts.toasts,
+        reduced_motion: selectPrefsFlag(UserPreferenceFlags.ReduceAnimations),
+    });
 
     return (
         <Show when={state.toasts.length}>

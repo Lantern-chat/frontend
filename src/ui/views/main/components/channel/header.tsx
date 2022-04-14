@@ -3,7 +3,7 @@ import { useDispatch } from "solid-mutant";
 
 import { Type } from "state/main";
 import { Panel } from "state/mutators/window";
-import { RootState, useRootSelector } from "state/root";
+import { ReadRootState, useRootSelector } from "state/root";
 import { activeRoom } from "state/selectors/active";
 
 import { VectorIcon } from "ui/components/common/icon";
@@ -32,7 +32,7 @@ export function ChannelHeader() {
 
             // toggle show_user_list
             which != Panel.RightUserList ? null :
-                (dispatch, state: DeepReadonly<RootState>) => state.window.use_mobile_view || dispatch({ type: Type.WINDOW_TOGGLE_USER_LIST, open: !state.window.show_user_list })
+                (dispatch, state: ReadRootState) => state.window.use_mobile_view || dispatch({ type: Type.WINDOW_TOGGLE_USER_LIST, open: !state.window.show_user_list })
         ]);
     };
 

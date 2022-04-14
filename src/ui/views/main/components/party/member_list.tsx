@@ -5,7 +5,7 @@ import { useI18nContext } from "ui/i18n/i18n-solid";
 import { useLocale } from "ui/i18n";
 
 import { parse_presence, PartyMember, PresenceStatus, Role, Snowflake, UserPreferenceFlags, user_is_bot } from "state/models";
-import { RootState, useRootSelector } from "state/root";
+import { ReadRootState, useRootSelector } from "state/root";
 import { activeParty } from "state/selectors/active";
 import { selectPrefsFlag } from "state/selectors/prefs";
 
@@ -20,7 +20,7 @@ import "./member_list.scss";
 export function MemberList() {
     let state = useStructuredSelector({
         is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
-        party: (state: RootState) => {
+        party: (state: ReadRootState) => {
             let party_id = activeParty(state);
             if(party_id) {
                 return state.party.parties[party_id];

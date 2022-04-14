@@ -9,7 +9,7 @@ import { PartyHeader } from "./header";
 import { PartyFooter } from "./footer";
 
 import { Snowflake } from "state/models";
-import { RootState, Type } from "state/root";
+import { ReadRootState, Type } from "state/root";
 import { activeParty, activeRoom } from "state/selectors/active";
 import { Panel } from "state/mutators/window";
 
@@ -17,9 +17,9 @@ import "./party.scss";
 export function Party() {
     let state = useStructuredSelector({
         active_party: activeParty,
-        show_panel: (state: RootState) => state.window.show_panel,
-        last_panel: (state: RootState) => state.window.last_panel,
-        use_mobile_view: (state: RootState) => state.window.use_mobile_view,
+        show_panel: (state: ReadRootState) => state.window.show_panel,
+        last_panel: (state: ReadRootState) => state.window.last_panel,
+        use_mobile_view: (state: ReadRootState) => state.window.use_mobile_view,
     });
 
     let dispatch = useDispatch();

@@ -1,6 +1,6 @@
 import { formatRgbBinary } from "lib/color";
 import { Role, Snowflake, User } from "state/models";
-import { RootState } from "state/root";
+import { ReadRootState } from "state/root";
 
 var COLOR_CACHE: Map<number, string> = new Map();
 
@@ -16,8 +16,8 @@ export function computeRoleColor(role: Role): string | undefined {
     return cached;
 }
 
-export function selectRoleColor(role_id: Snowflake): (state: RootState) => (string | undefined) {
-    return (state: RootState) => {
+export function selectRoleColor(role_id: Snowflake): (state: ReadRootState) => (string | undefined) {
+    return (state: ReadRootState) => {
         let role = state.party.roles[role_id];
         if(!role) return;
 
@@ -25,6 +25,6 @@ export function selectRoleColor(role_id: Snowflake): (state: RootState) => (stri
     }
 }
 
-//export function selectUserColor(party_id: Snowflake, user: User): (state: RootState) => (string | undefined) {
+//export function selectUserColor(party_id: Snowflake, user: User): (state: ReadRootState) => (string | undefined) {
 //
 //}

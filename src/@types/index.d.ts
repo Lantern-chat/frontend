@@ -7,7 +7,8 @@ interface HTMLMediaElement {
 }
 
 declare type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-declare type DeepReadonly<T> = T extends {} ? { readonly [K in keyof T]: DeepReadonly<T[K]> } : T;
+
+//declare type DeepReadonly<T> = T extends {} ? { readonly [K in keyof T]: DeepReadonly<T[K]> } : T;
 
 declare type ObjectFromList<T extends ReadonlyArray<string>, V = string> = {
     [K in (T extends ReadonlyArray<infer U> ? U : never)]: V
@@ -19,3 +20,8 @@ declare var process: any; // silence warnings
 
 type BigInt = number;
 declare const BigInt: typeof Number;
+
+
+declare type DeepReadonly<T> = 0 extends 1 & T ? T : T extends import("solid-js/store").NotWrappable ? T : {
+    readonly [K in keyof T]: DeepReadonly<T[K]>;
+};
