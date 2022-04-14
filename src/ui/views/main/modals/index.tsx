@@ -1,20 +1,20 @@
-import { Show } from 'solid-js';
-import { useStructuredSelector } from 'solid-mutant';
+import { Dynamic } from 'solid-js/web';
 
-import { RootState } from 'state/root';
+import { useRootSelector } from 'state/root';
 
+import { InviteModal } from './invite';
 import { SettingsModal } from './settings';
 
 export default function MainModals() {
-    let state = useStructuredSelector({
-        settings: (state: RootState) => state.history.parts[0] == 'settings',
-    });
+    let path = useRootSelector(state => state.history.parts[0]);
 
-    return (
-        <>
-            <Show when={state.settings}>
-                <SettingsModal />
-            </Show>
-        </>
-    );
+    let comp = () => {
+        switch(path()) {
+            case "settings": return SettingsModal;
+            case "invite": return InviteModal;
+        }
+        return;
+    };
+
+    return <Dynamic component={comp()} />;
 }

@@ -296,3 +296,9 @@ export function createClickEater(): (e: MouseEvent) => void {
         e.stopPropagation();
     };
 }
+
+export function clickEater(el: HTMLElement, events: Array<"click" | "contextmenu" | "touch">) {
+    let eat = createClickEater();
+    events.forEach(ev => el.addEventListener(ev, eat));
+    onCleanup(() => events.forEach(ev => el.removeEventListener(ev, eat)));
+}
