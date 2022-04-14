@@ -1,16 +1,14 @@
 import { createMemo, createRenderEffect, Show } from "solid-js";
-import { createStructuredSelector, useDispatch, useSelector, useStore, useStructuredSelector } from "solid-mutant";
 
 import { fetch_quota } from "state/commands/sendfile";
-import { Action, RootState } from "state/root";
-import { format_bytes } from "lib/formatting";
+import { useRootStore } from "state/root";
 import { TogglePrefsFlag } from "../components/toggle";
 import { UserPreferenceFlags } from "state/models";
 import { createBytesFormatter, createNumberFormatter } from "ui/hooks/createFormatter";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 
 export const AccountSettingsTab = () => {
-    let store = useStore<RootState, Action>(),
+    let store = useRootStore(),
         dispatch = store.dispatch,
         state = store.state;
 

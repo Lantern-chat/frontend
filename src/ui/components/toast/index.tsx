@@ -1,7 +1,7 @@
 import { createEffect, createMemo, createSignal, For, onCleanup, Show } from "solid-js";
-import { useStructuredSelector, useDispatch } from "solid-mutant";
+import { useStructuredSelector } from "solid-mutant";
 import { UserPreferenceFlags } from "state/models";
-import { RootState, Type, useRootSelector } from "state/root";
+import { ReadRootState, Type, useRootDispatch, useRootSelector } from "state/root";
 import { selectPrefsFlag } from "state/selectors/prefs";
 
 import { Modal } from "../modal";
@@ -55,7 +55,7 @@ export function Toasts() {
 
 function Toast(props: IToastProps) {
     let [cleared, setCleared] = createSignal(false),
-        dispatch = useDispatch();
+        dispatch = useRootDispatch();
 
     let clearToast = () => {
         let cb = () => dispatch({ type: Type.CLEAR_TOAST, id: props.id });

@@ -1,8 +1,7 @@
 import { createEffect, onCleanup, Show } from "solid-js";
-import { useDispatch } from 'solid-mutant';
 import throttle from 'lodash/throttle';
 
-import { Action, RootState, useRootSelector } from "state/root";
+import { Action, useRootDispatch, useRootSelector } from "state/root";
 import { mainMutator, Type } from "state/main";
 import { GLOBAL, STORE, HISTORY, type IGatewayWorker } from "state/global";
 import { mainEffect } from "state/effects/main";
@@ -70,7 +69,7 @@ import MainModals from "./modals";
 //import { savePrefs, savePrefsFlag } from "state/commands/prefs";
 //import { UserPreferenceFlags } from "state/models";
 //function SetupMainHotkeyHandler() {
-//    let dispatch = useDispatch();
+//    let dispatch = useRootDispatch();
 //
 //    useMainHotkey(Hotkey.ToggleLightTheme, () => dispatch((dispatch, state) => {
 //        let { temperature, is_light, oled } = themeSelector(state);
@@ -85,7 +84,7 @@ import MainModals from "./modals";
 
 import "./main.scss";
 export default function Main() {
-    let dispatch = useDispatch();
+    let dispatch = useRootDispatch();
 
     /// AWAY/ONLINE PRESENCE SETUP
 

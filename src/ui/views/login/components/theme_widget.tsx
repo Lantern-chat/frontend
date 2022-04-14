@@ -1,7 +1,6 @@
 import { createStore } from "solid-js/store";
 import { createRef } from "ui/hooks/createRef";
-import { useRootSelector } from "state/root";
-import { useDispatch } from "solid-mutant";
+import { useRootDispatch, useRootSelector } from "state/root";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
 
@@ -22,7 +21,7 @@ export function ThemeWidget() {
 
     let input = createRef<HTMLInputElement>(),
         theme = useRootSelector(themeSelector),
-        dispatch = useDispatch();
+        dispatch = useRootDispatch();
 
     let [interactive, setInteractive] = createStore({ ...theme() });
 

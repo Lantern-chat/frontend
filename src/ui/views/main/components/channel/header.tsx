@@ -1,9 +1,8 @@
 import { Show } from "solid-js";
-import { useDispatch } from "solid-mutant";
 
 import { Type } from "state/main";
 import { Panel } from "state/mutators/window";
-import { ReadRootState, useRootSelector } from "state/root";
+import { ReadRootState, useRootDispatch, useRootSelector } from "state/root";
 import { activeRoom } from "state/selectors/active";
 
 import { VectorIcon } from "ui/components/common/icon";
@@ -12,7 +11,7 @@ import { Icons } from "lantern-icons";
 
 import "./header.scss";
 export function ChannelHeader() {
-    let dispatch = useDispatch();
+    let dispatch = useRootDispatch();
     let room = useRootSelector(state => {
         let active_room = activeRoom(state), room;
         if(active_room) {

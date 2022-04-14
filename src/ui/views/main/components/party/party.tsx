@@ -1,5 +1,5 @@
 import { batch, createEffect, createRenderEffect, createSignal, Show } from "solid-js";
-import { useDispatch, useStructuredSelector } from "solid-mutant";
+import { useStructuredSelector } from "solid-mutant";
 
 import { ChannelList } from "./channel_list";
 import { MemberList } from "./member_list";
@@ -9,7 +9,7 @@ import { PartyHeader } from "./header";
 import { PartyFooter } from "./footer";
 
 import { Snowflake } from "state/models";
-import { ReadRootState, Type } from "state/root";
+import { ReadRootState, Type, useRootDispatch } from "state/root";
 import { activeParty, activeRoom } from "state/selectors/active";
 import { Panel } from "state/mutators/window";
 
@@ -22,7 +22,7 @@ export function Party() {
         use_mobile_view: (state: ReadRootState) => state.window.use_mobile_view,
     });
 
-    let dispatch = useDispatch();
+    let dispatch = useRootDispatch();
 
     let swipe_start = [0, 0];
 

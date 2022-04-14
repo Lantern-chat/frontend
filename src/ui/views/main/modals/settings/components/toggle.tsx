@@ -1,8 +1,8 @@
 import { createRenderEffect, createSignal, JSX } from "solid-js";
-import { useSelector, useDispatch } from "solid-mutant";
 
 import { savePrefsFlag } from "state/commands/prefs";
 import { UserPreferenceFlags } from "state/models";
+import { useRootDispatch, useRootSelector } from "state/root";
 import { selectPrefsFlag } from "state/selectors/prefs";
 
 import "./toggle.scss";
@@ -44,8 +44,8 @@ export interface ITogglePrefsFlagProps {
 }
 
 export function TogglePrefsFlag(props: ITogglePrefsFlagProps) {
-    let current_flag = useSelector(selectPrefsFlag(props.flag)),
-        dispatch = useDispatch(),
+    let current_flag = useRootSelector(selectPrefsFlag(props.flag)),
+        dispatch = useRootDispatch(),
         onChange = (checked: boolean) => {
             dispatch(savePrefsFlag(props.flag, checked));
         };

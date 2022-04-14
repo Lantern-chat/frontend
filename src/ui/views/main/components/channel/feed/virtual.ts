@@ -1,12 +1,11 @@
 import { compareString } from "lib/compare";
 import { binarySearch } from "lib/util";
 import { Accessor, batch, createMemo, createRenderEffect, createSignal, on, untrack } from "solid-js";
-import { useDispatch } from "solid-mutant";
 import { loadMessages, SearchMode } from "state/commands";
 
 import { Snowflake } from "state/models";
 import { IMessageState, IRoomState } from "state/mutators/chat";
-import { useRootSelector } from "state/root";
+import { useRootDispatch, useRootSelector } from "state/root";
 import { activeRoom } from "state/selectors/active";
 import { createOnPredicate } from "ui/hooks/createOnChange";
 
@@ -113,7 +112,7 @@ export function createVirtualizedFeed(): [
         }
     ));
 
-    let dispatch = useDispatch();
+    let dispatch = useRootDispatch();
 
     let on_loading_end = createOnPredicate(
         () => room()?.is_loading,

@@ -1,8 +1,8 @@
 import { MessageFlags, user_is_bot } from "state/models";
 import { Icons } from "lantern-icons";
 import { createMemo, For, Show } from "solid-js";
-import { useSelector } from "solid-mutant";
-import { ReadRootState } from "state/root";
+
+import { useRootSelector } from "state/root";
 import { selectCachedUser } from "state/selectors/selectCachedUser";
 import { VectorIcon } from "ui/components/common/icon";
 import { Branch } from "ui/components/flow";
@@ -18,7 +18,7 @@ import { useI18nContext } from "ui/i18n/i18n-solid";
 export function CozyMessage(props: IMessageProps) {
     let { LL, locale } = useI18nContext();
 
-    let cached_member = useSelector((state: ReadRootState) => {
+    let cached_member = useRootSelector(state => {
         return selectCachedUser(state, props.msg.msg.author.id, props.msg.msg.party_id)
             || { user: props.msg.msg.author, nick: props.msg.msg.member?.nick };
     });

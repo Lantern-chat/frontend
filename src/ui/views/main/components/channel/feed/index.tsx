@@ -1,6 +1,6 @@
 import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import { useDispatch, useSelector, useStructuredSelector } from "solid-mutant";
+import { useStructuredSelector } from "solid-mutant";
 import { activeParty, activeRoom } from "state/selectors/active";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
@@ -10,7 +10,7 @@ import { user_avatar_url } from "config/urls";
 import { pickColorFromHash } from "lib/palette";
 
 import { MessageFlags, Room, Snowflake, User, UserPreferenceFlags, user_is_bot, user_is_system } from "state/models";
-import { ReadRootState, Type, useRootSelector } from "state/root";
+import { ReadRootState, Type, useRootDispatch, useRootSelector } from "state/root";
 import { loadMessages, SearchMode } from "state/commands";
 import { IMessageState, IRoomState } from "state/mutators/chat";
 import { selectPrefsFlag } from "state/selectors/prefs";
@@ -69,7 +69,7 @@ export function MessageFeed() {
         }
     });
 
-    let dispatch = useDispatch();
+    let dispatch = useRootDispatch();
 
     let [ifs, setIFS] = createController<InfiniteScrollController>();
     // on room change, go to start of ifs

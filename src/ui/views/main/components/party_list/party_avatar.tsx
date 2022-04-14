@@ -1,9 +1,8 @@
 import { createMemo, Show } from "solid-js";
-import { useDispatch } from "solid-mutant";
 
 import { copyText } from "lib/clipboard";
 
-import { useRootSelector } from "state/root";
+import { useRootDispatch, useRootSelector } from "state/root";
 import { activateParty } from "state/commands";
 import { selectPrefsFlag } from "state/selectors/prefs";
 
@@ -33,7 +32,7 @@ interface IPartyAvatarProps {
 }
 
 export function PartyAvatar(props: DeepReadonly<IPartyAvatarProps>) {
-    let dispatch = useDispatch();
+    let dispatch = useRootDispatch();
 
     let last = createMemo(() => props.last_channel[props.party.id]),
         url = createMemo(() => props.party.avatar ? party_avatar_url(props.party.id, props.party.avatar) : void 0),

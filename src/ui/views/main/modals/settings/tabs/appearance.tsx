@@ -1,6 +1,6 @@
 import { createEffect, createMemo, createSignal, For } from "solid-js";
 import { createStore } from "solid-js/store";
-import { useDispatch, useSelector, useStructuredSelector } from "solid-mutant";
+import { useStructuredSelector } from "solid-mutant";
 import { createRef } from "ui/hooks/createRef";
 
 import throttle from "lodash/throttle";
@@ -12,7 +12,7 @@ import { savePrefs, savePrefsFlag } from "state/commands/prefs";
 import { Font, FONT_NAMES, UserPreferenceFlags } from "state/models";
 import { themeSelector } from "state/selectors/theme";
 import { selectPrefsFlag, selectGroupPad } from "state/selectors/prefs";
-import { ReadRootState, useRootSelector } from "state/root";
+import { ReadRootState, useRootDispatch, useRootSelector } from "state/root";
 
 import { FormGroup, FormInput, FormLabel, FormSelect } from "ui/components/form";
 
@@ -46,8 +46,8 @@ export const AppearanceSettingsTab = () => {
 
 function ThemeSetting() {
     let input = createRef<HTMLInputElement>(),
-        theme = useSelector(themeSelector),
-        dispatch = useDispatch(),
+        theme = useRootSelector(themeSelector),
+        dispatch = useRootDispatch(),
         [interactive, setInteractive] = createStore({ ...theme() }),
         doSetTheme = (temperature: number, is_light: boolean, oled: boolean) => {
             setInteractive({ temperature, is_light, oled });
@@ -108,8 +108,8 @@ function ThemeSetting() {
 }
 
 function ViewSelector() {
-    let current_compact = useSelector(selectPrefsFlag(UserPreferenceFlags.CompactView)),
-        dispatch = useDispatch(),
+    let current_compact = useRootSelector(selectPrefsFlag(UserPreferenceFlags.CompactView)),
+        dispatch = useRootDispatch(),
         [compact, setCompact] = createSignal(current_compact()),
         onChange = (value: string) => {
             let compact = value == 'compact';
@@ -152,7 +152,7 @@ function FontSelector(props: IFontSelectorProps) {
         current_size: (state: ReadRootState) => state.prefs[size_prefs_key()],
     });
 
-    let dispatch = useDispatch();
+    let dispatch = useRootDispatch();
 
     let [font, setFont] = createSignal(Font[state.current_font]),
         [size, setSize] = createSignal(state.current_size);
@@ -217,9 +217,9 @@ function FontSelector(props: IFontSelectorProps) {
 }
 
 function GroupPaddingSlider() {
-    let current_padding = useSelector(selectGroupPad),
+    let current_padding = useRootSelector(selectGroupPad),
         [pad, setPad] = createSignal(current_padding()),
-        dispatch = useDispatch(),
+        dispatch = useRootDispatch(),
         onInput = (value: number) => {
             value = Math.round(value);
 

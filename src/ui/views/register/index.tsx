@@ -8,8 +8,7 @@ import { UserPreferenceFlags } from "state/models";
 
 import dayjs from "lib/time";
 
-import { useDispatch } from "solid-mutant";
-import type { RootState, Action } from "state/root";
+import { useRootDispatch } from "state/root";
 import { useRootSelector } from "state/root";
 import { CLIENT } from "state/global";
 
@@ -178,7 +177,7 @@ export default function RegisterView() {
 
     setTitle(() => LL().REGISTER());
 
-    let dispatch = useDispatch<RootState, Action>();
+    let dispatch = useRootDispatch();
 
     let [hcaptcha, setHCaptchaController] = createController<HCaptchaController>();
 

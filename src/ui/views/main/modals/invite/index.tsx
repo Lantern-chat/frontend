@@ -1,10 +1,10 @@
 import { Component, createMemo, createSelector, createSignal, For, lazy, onCleanup, onMount, Show, Suspense, useContext } from "solid-js";
-import { useDispatch, useStructuredSelector } from "solid-mutant";
+import { useStructuredSelector } from "solid-mutant";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
 import { loadNamespaceAsync } from "ui/i18n/i18n-util.async";
 
-import { RootState, useRootSelector } from "state/root";
+import { useRootSelector } from "state/root";
 import { HISTORY } from "state/global";
 import { activeParty, activeRoom } from "state/selectors/active";
 import { room_url } from "config/urls";

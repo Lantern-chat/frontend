@@ -10,6 +10,8 @@ import type {
     IToastState,
 } from "./mutators";
 
+import type { Action } from "./actions";
+
 export { Type } from "./actions";
 export type { Action } from "./actions";
 
@@ -27,5 +29,7 @@ export interface RootState {
 
 export type ReadRootState = DeepReadonly<RootState>;
 
-import { TypedUseSelectorHook, useSelector } from "solid-mutant";
+import { Dispatch, Store, TypedUseSelectorHook, useDispatch, useSelector, useStore } from "solid-mutant";
 export const useRootSelector: TypedUseSelectorHook<RootState> = useSelector as any;
+export const useRootStore: () => Store<RootState, Action> = useStore;
+export const useRootDispatch: () => Dispatch<Action, RootState> = useDispatch;

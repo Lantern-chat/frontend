@@ -1,7 +1,7 @@
 import { createMemo, createSelector, createSignal, For, Show } from "solid-js";
-import { useStructuredSelector, useDispatch } from "solid-mutant";
+import { useStructuredSelector } from "solid-mutant";
 
-import { ReadRootState, Type, useRootSelector } from "state/root";
+import { ReadRootState } from "state/root";
 import { activeParty } from "state/selectors/active";
 import { selectPrefsFlag } from "state/selectors/prefs";
 import { GatewayStatus } from "state/mutators/gateway";

@@ -1,10 +1,9 @@
 import { Component, createMemo, createSelector, createSignal, For, lazy, onCleanup, onMount, Show, Suspense, useContext } from "solid-js";
-import { useDispatch, useStructuredSelector } from "solid-mutant";
+import { useStructuredSelector } from "solid-mutant";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
-import { loadNamespaceAsync } from "ui/i18n/i18n-util.async";
 
-import { ReadRootState, useRootSelector } from "state/root";
+import { ReadRootState, useRootDispatch, useRootSelector } from "state/root";
 import { HISTORY } from "state/global";
 import { activeParty, activeRoom } from "state/selectors/active";
 import { room_url } from "config/urls";
@@ -103,7 +102,7 @@ function SettingsTabs(props: ISettingsTabsProps) {
 
     let tab = createMemo(() => TABS.find(tab => tab.p == state.active_tab) || TABS[0]);
 
-    let dispatch = useDispatch(),
+    let dispatch = useRootDispatch(),
         do_logout = () => dispatch(logout());
 
     let is_tab_selected = createSelector(() => tab().p);

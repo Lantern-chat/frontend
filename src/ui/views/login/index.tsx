@@ -2,8 +2,7 @@ import { createMemo, createSignal, Show } from "solid-js";
 
 import { setSession } from "state/commands";
 
-import { useDispatch } from "solid-mutant";
-import type { RootState, Action } from "state/root";
+import { useRootDispatch } from "state/root";
 import { CLIENT } from "state/global";
 
 import { createReducer } from "ui/hooks/createReducer";
@@ -90,7 +89,7 @@ export default function LoginView() {
 
     setTitle(() => LL().LOGIN());
 
-    let dispatch = useDispatch<RootState, Action>();
+    let dispatch = useRootDispatch();
 
     // TODO: Don't bother with reducer?
     let [state, form_dispatch] = createReducer(login_state_reducer, {

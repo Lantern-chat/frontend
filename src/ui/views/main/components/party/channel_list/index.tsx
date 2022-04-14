@@ -1,11 +1,9 @@
 import { createSelector, For, Show } from "solid-js";
-import { useDispatch, useSelector, useStructuredSelector } from "solid-mutant";
-import { destructure } from "ui/hooks/destructure";
 
 import { copyText } from "lib/clipboard";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
-import { RootState, Type, useRootSelector } from "state/root";
+import { Type, useRootDispatch, useRootSelector } from "state/root";
 import { activeParty, activeRoom } from "state/selectors/active";
 import { selectPrefsFlag } from "state/selectors/prefs";
 import { Room, Snowflake, UserPreferenceFlags } from "state/models";
@@ -25,7 +23,7 @@ import { RoomIcon } from "./room_icon";
 
 import "./channel_list.scss";
 export function ChannelList() {
-    let dispatch = useDispatch();
+    let dispatch = useRootDispatch();
 
     let selected = useRootSelector(activeRoom);
 
@@ -116,7 +114,7 @@ export interface IRoomContextMenuProps {
 }
 
 function RoomContextMenu(props: IRoomContextMenuProps) {
-    let dev_mode = useSelector(selectPrefsFlag(UserPreferenceFlags.DeveloperMode));
+    let dev_mode = useRootSelector(selectPrefsFlag(UserPreferenceFlags.DeveloperMode));
 
     let { LL } = useI18nContext();
 

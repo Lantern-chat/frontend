@@ -1,10 +1,9 @@
 import { createEffect, createMemo, createSignal, Show } from "solid-js";
-import { useDispatch } from "solid-mutant";
 
 import { copyText } from "lib/clipboard";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
-import { useRootSelector } from "state/root";
+import { useRootDispatch, useRootSelector } from "state/root";
 import { UserPreferenceFlags } from "state/models";
 import { deleteMessage } from "state/commands/message/delete";
 import { IMessageState } from "state/mutators/chat";
@@ -49,7 +48,7 @@ export function MsgContextMenu(props: IMsgContextMenuProps) {
 
     let copy_selection = () => selected && copyText(selected);
 
-    let dispatch = useDispatch();
+    let dispatch = useRootDispatch();
 
     var timer: number | null = null, delayed = false;
 

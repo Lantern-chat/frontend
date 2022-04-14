@@ -1,6 +1,6 @@
 import { createSignal, JSX, onCleanup, onMount } from "solid-js";
-import { useSelector } from "solid-mutant";
 
+import { useRootSelector } from "state/root";
 import { UserPreferenceFlags } from "state/models";
 import { selectPrefsFlag } from "state/selectors/prefs";
 
@@ -20,7 +20,7 @@ import "./modal.scss";
 export function GenericModal(props: GenericModalProps) {
     let [closing, setClosing] = createSignal(false);
 
-    let reduce_animations = useSelector(selectPrefsFlag(UserPreferenceFlags.ReduceAnimations));
+    let reduce_animations = useRootSelector(selectPrefsFlag(UserPreferenceFlags.ReduceAnimations));
 
     let on_close = () => {
         if(!closing()) {

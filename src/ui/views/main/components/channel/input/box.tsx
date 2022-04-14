@@ -1,5 +1,5 @@
 import { createEffect, createMemo, createSignal, onCleanup, Show, untrack, useContext } from "solid-js";
-import { useDispatch, useStore, useStructuredSelector } from "solid-mutant";
+import { useStructuredSelector } from "solid-mutant";
 
 import { createRef } from "ui/hooks/createRef";
 import { createReducer } from "ui/hooks/createReducer";
@@ -7,7 +7,7 @@ import { createReducer } from "ui/hooks/createReducer";
 import { IS_MOBILE } from "lib/user_agent";
 
 //import { IMessageState } from "ui/views/main/reducers/messages";
-import { Action, RootState, ReadRootState, useRootSelector } from "state/root";
+import { Action, RootState, ReadRootState, useRootSelector, useRootStore, useRootDispatch } from "state/root";
 import { Type } from "state/actions";
 import { PartyMember, Snowflake, User, UserPreferenceFlags } from "state/models";
 import { IParty } from "state/mutators/party";
@@ -39,7 +39,7 @@ export function MessageBox() {
         enable_spellcheck: selectPrefsFlag(UserPreferenceFlags.EnableSpellcheck),
     });
 
-    let dispatch = useDispatch();
+    let dispatch = useRootDispatch();
 
     let main = useContext(MainContext);
 
@@ -60,7 +60,7 @@ export function MessageBox() {
 
     // Load up any available draft, set the textarea to that,
     // then setup a callback to store the new draft when navigating away
-    let store = useStore<RootState, Action>();
+    let store = useRootStore();
     createEffect(() => {
         if(ta.current && state.active_room) {
             __DEV__ && console.log("Loading Draft");
