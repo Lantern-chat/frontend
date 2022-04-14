@@ -1,4 +1,4 @@
-
+import { createRoot, untrack } from "solid-js";
 import { CombinedState, createMutantStore, Store } from "solid-mutant";
 import { BrowserHistory, createBrowserHistory, To } from "history";
 
@@ -59,10 +59,17 @@ export const GLOBAL: IGlobalState = window['LANTERN_GLOBAL'] = window['LANTERN_G
         client.set_auth(new BearerToken(session.auth));
     }
 
-    let store = createMutantStore<CombinedState<RootState>, Action>(initialMutator, {
-        history: recomputeHistoryContext(history),
-        user: { ...userMutator.default(), session },
-        prefs: loadPrefs(),
+    let store = createRoot(() => {
+        let store = createMutantStore<CombinedState<RootState>, Action>(initialMutator, {
+            history: recomputeHistoryContext(history),
+            user: { ...userMutator.default(), session },
+            prefs: loadPrefs(),
+        });
+
+        // NOTE: `themeSelector` uses `createMemo` internally, so keep it under this root
+        untrack(() => setTheme(themeSelector(store.state), false));
+
+        return store;
     });
 
     history.listen(update => store.dispatch({
@@ -71,9 +78,7 @@ export const GLOBAL: IGlobalState = window['LANTERN_GLOBAL'] = window['LANTERN_G
         ctx: recomputeHistoryContext(history)
     }));
 
-    window.addEventListener('resize', () => {
-        store.dispatch({ type: Type.WINDOW_RESIZE });
-    });
+    window.addEventListener('resize', () => store.dispatch({ type: Type.WINDOW_RESIZE }));
 
     window.addEventListener('beforeunload', () => {
         // quick way to prevent reconnecting before unloading is to make the gateway stop existing
@@ -93,8 +98,6 @@ export const GLOBAL: IGlobalState = window['LANTERN_GLOBAL'] = window['LANTERN_G
 
         history.replace(DEFAULT_LOGGED_IN_CHANNEL);
     }
-
-    setTheme(themeSelector(store.state), false);
 
     return {
         // will be set to true when main view loads
