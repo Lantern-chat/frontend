@@ -16,8 +16,6 @@ declare type ObjectFromList<T extends ReadonlyArray<string>, V = string> = {
 
 declare type TypedEvent<H extends HTMLElement, T extends Event> = T & { target: H };
 
-declare var process: any; // silence warnings
-
 type BigInt = number;
 declare const BigInt: typeof Number;
 
