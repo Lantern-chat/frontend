@@ -56,7 +56,7 @@ const enUS_main: BaseTranslation = {
         }
     },
     member_list: {
-        ROLE: "{role:string} – {length:number}",
+        ROLE: "{role:string} – {length:number|number}",
     },
     settings: {
         ACCOUNT: "Account",
@@ -71,7 +71,7 @@ const enUS_main: BaseTranslation = {
         RETURN: "Return",
         SELECT_CATEGORY: "Select any category to view settings",
         account: {
-            QUOTA: "{used:string}/{total:string} ({percent:string}) Upload Quota Used",
+            QUOTA: "{used:number|bytes}/{total:number|bytes} ({percent:number|percent}) Upload Quota Used",
             DEV_MODE: "Enable Developer Mode"
         },
         appearance: {

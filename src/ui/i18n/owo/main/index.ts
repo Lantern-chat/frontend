@@ -54,7 +54,7 @@ const owo_main: NamespaceMainTranslation = {
 		}
 	},
 	member_list: {
-		ROLE: "{role} – {length}",
+		ROLE: "{role} – {length|number}",
 	},
 	settings: {
 		ACCOUNT: "account (U ﹏ U)",
@@ -69,7 +69,7 @@ const owo_main: NamespaceMainTranslation = {
 		RETURN: "wetuwn 😳😳😳",
 		SELECT_CATEGORY: "Sewect any categowy to view settings (⑅˘꒳˘)",
 		account: {
-			QUOTA: "{used}/{total} ({percent}) u-upwoad quota used, rawr",
+			QUOTA: "{used|bytes}/{total|bytes} ({percent|percent}) u-upwoad quota used, rawr",
 			DEV_MODE: "Eenabwe D-devewopew Mode",
 		},
 		appearance: {

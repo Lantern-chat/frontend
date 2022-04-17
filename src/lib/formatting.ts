@@ -10,13 +10,13 @@ export function format_bytes(x: number, si: boolean, locale?: string): string {
     }
 
     if(locale && si) {
-        return new Intl.NumberFormat(locale, <any>{
+        return new Intl.NumberFormat(locale, {
             style: 'unit',
             unit: UNIT[i],
             maximumFractionDigits: 2,
             minimumFractionDigits: 2,
             unitDisplay: i == 0 ? 'long' : 'short',
-        }).format(x);
+        } as any).format(x);
     }
 
     return x.toFixed(2) + ' ' + (si ? SI_SUFFIXES[i] : IEC_SUFFIXES[i]);

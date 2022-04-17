@@ -1,5 +1,6 @@
 import { compareString } from "lib/compare";
 import { navigatorDetector, queryStringDetector } from "typesafe-i18n/detectors";
+import type { TranslateByString } from "typesafe-i18n";
 
 export const DETECTORS = [
     navigatorDetector,
@@ -52,7 +53,7 @@ export const LANGUAGE_KEYS = Object.keys(LANGUAGES).sort(compareString) as Array
 
 import dayjs from "lib/time";
 import { useI18nContext } from "./i18n-solid";
-import { loadedLocales } from "./i18n-util";
+import { loadedLocales, i18nString } from "./i18n-util";
 import { Accessor, createMemo } from "solid-js";
 
 /// This should be prefered over useI18nContext when using `setLocale`
@@ -66,6 +67,12 @@ export function useLocale(): ReturnType<typeof useI18nContext> & { lang: Accesso
             dayjs.updateLocale(l, { calendar: loadedLocales[locale].CALENDAR_FORMAT });
             setLocale(locale);
         },
-        lang: createMemo(() => LANGUAGES[locale()])
+        lang: createMemo(() => LANGUAGES[locale()]),
     };
+}
+
+export function createLLL(): TranslateByString {
+    let { locale } = useI18nContext();
+    let LLL = createMemo(() => i18nString(locale()));
+    return (...args) => LLL()(...args);
 }

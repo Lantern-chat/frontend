@@ -4,7 +4,6 @@ import { fetch_quota } from "state/commands/sendfile";
 import { useRootStore } from "state/root";
 import { TogglePrefsFlag } from "../components/toggle";
 import { UserPreferenceFlags } from "state/models";
-import { createBytesFormatter, createNumberFormatter } from "ui/hooks/createFormatter";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 
 export const AccountSettingsTab = () => {
@@ -13,13 +12,6 @@ export const AccountSettingsTab = () => {
         state = store.state;
 
     let { LL } = useI18nContext();
-
-    let bytes_formatter = createBytesFormatter();
-    let num_formatter = createNumberFormatter({
-        maximumFractionDigits: 1,
-        style: 'unit',
-        unit: 'percent'
-    } as any);
 
     createRenderEffect(() => {
         if(state.user.user) {
@@ -30,11 +22,11 @@ export const AccountSettingsTab = () => {
     let quota = createMemo(() => {
         let user = state.user;
         if(user.quota_total !== undefined && user.quota_used !== undefined) {
-            let used = bytes_formatter(user.quota_used),
-                total = bytes_formatter(user.quota_total),
-                percent = num_formatter(100 * user.quota_used / user.quota_total);
-
-            return { used, total, percent };
+            return {
+                used: user.quota_used,
+                total: user.quota_total,
+                percent: 100 * user.quota_used / user.quota_total
+            };
         }
         return;
     });

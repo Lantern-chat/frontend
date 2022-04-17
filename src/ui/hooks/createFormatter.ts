@@ -12,3 +12,11 @@ export function createNumberFormatter(options: Intl.NumberFormatOptions): (value
 
     return (value: number) => new Intl.NumberFormat(lang().d || locale(), options).format(value);
 }
+
+export function createPercentFormatter(digits: number = 1): (value: number) => string {
+    return createNumberFormatter({
+        maximumFractionDigits: digits,
+        style: 'unit',
+        unit: 'percent'
+    } as any);
+}

@@ -2,7 +2,6 @@ import { createMemo, createSignal, JSX, Match, Show, Switch } from "solid-js";
 import { useStructuredSelector } from "solid-mutant";
 
 import { IS_MOBILE } from "lib/user_agent";
-import { format_bytes } from "lib/formatting";
 import { categorize_mime } from "lib/mime";
 
 import { ReadRootState } from "state/root";

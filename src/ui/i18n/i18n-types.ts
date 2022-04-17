@@ -349,11 +349,11 @@ export type NamespaceMainTranslation = {
 	}
 	member_list: {
 		/**
-		 * {role} – {length}
+		 * {role} – {length|number}
 		 * @param {number} length
 		 * @param {string} role
 		 */
-		ROLE: RequiredParams<'length' | 'role'>
+		ROLE: RequiredParams<'length|number' | 'role'>
 	}
 	settings: {
 		/**
@@ -402,12 +402,12 @@ export type NamespaceMainTranslation = {
 		SELECT_CATEGORY: string
 		account: {
 			/**
-			 * {used}/{total} ({percent}) Upload Quota Used
-			 * @param {string} percent
-			 * @param {string} total
-			 * @param {string} used
+			 * {used|bytes}/{total|bytes} ({percent|percent}) Upload Quota Used
+			 * @param {number} percent
+			 * @param {number} total
+			 * @param {number} used
 			 */
-			QUOTA: RequiredParams<'percent' | 'total' | 'used'>
+			QUOTA: RequiredParams<'percent|percent' | 'total|bytes' | 'used|bytes'>
 			/**
 			 * Enable Developer Mode
 			 */
@@ -849,7 +849,7 @@ export type TranslationFunctions = {
 		}
 		member_list: {
 			/**
-			 * {role} – {length}
+			 * {role} – {length|number}
 			 */
 			ROLE: (arg: { length: number, role: string }) => LocalizedString
 		}
@@ -900,9 +900,9 @@ export type TranslationFunctions = {
 			SELECT_CATEGORY: () => LocalizedString
 			account: {
 				/**
-				 * {used}/{total} ({percent}) Upload Quota Used
+				 * {used|bytes}/{total|bytes} ({percent|percent}) Upload Quota Used
 				 */
-				QUOTA: (arg: { percent: string, total: string, used: string }) => LocalizedString
+				QUOTA: (arg: { percent: number, total: number, used: number }) => LocalizedString
 				/**
 				 * Enable Developer Mode
 				 */
@@ -1018,4 +1018,8 @@ export type TranslationFunctions = {
 	}
 }
 
-export type Formatters = {}
+export type Formatters = {
+	bytes: (value: number) => unknown
+	number: (value: number) => unknown
+	percent: (value: number) => unknown
+}

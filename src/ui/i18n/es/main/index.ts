@@ -55,7 +55,7 @@ const es_main: NamespaceMainTranslation = {
 		}
 	},
 	member_list: {
-		ROLE: "{role} – {length}",
+		ROLE: "{role} – {length|number}",
 	},
 	settings: {
 		ACCOUNT: "Cuenta",
@@ -70,7 +70,7 @@ const es_main: NamespaceMainTranslation = {
 		RETURN: "Volver",
 		SELECT_CATEGORY: "Seleccione cualquier categoría para ver la configuración",
 		account: {
-			QUOTA: "{used}/{total} ({percent}) Cuota de carga utilizada",
+			QUOTA: "{used|bytes}/{total|bytes} ({percent|percent}) Cuota de carga utilizada",
 			DEV_MODE: "Habilitar el Modo de Desarrollador"
 		},
 		appearance: {
