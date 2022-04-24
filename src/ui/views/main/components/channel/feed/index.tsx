@@ -44,6 +44,7 @@ function compute_goto(ifs: InfiniteScrollController | null): boolean {
 }
 
 import { createVirtualizedFeed } from "./virtual";
+import { Message } from "../message";
 
 import "./feed.scss";
 export function MessageFeed() {
@@ -115,7 +116,7 @@ export function MessageFeed() {
                     'group-lines': state.gl,
                 }}
             >
-                <InfiniteScrollContext.Provider value={ifs}>
+                <InfiniteScrollContext.Provider value={ifs as any}>
                     <ul className="ln-msg-list" id="ln-msg-list" >
                         <Show when={state.room?.fully_loaded}>
                             <TopOfChannel name={state.room!.room.name} />
@@ -178,54 +179,3 @@ function GotoBottomFooter(props: IGotoBottomFooterProps) {
         </Branch>
     );
 }
-
-import { CompactMessage } from "../message/compact";
-import { CozyMessage } from "../message/cozy";
-import { SystemMessage } from "../message/system";
-
-function Message(props: { msg: DeepReadonly<IMessageState> }) {
-    let state = useStructuredSelector({
-        is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
-        compact: selectPrefsFlag(UserPreferenceFlags.CompactView),
-        gl: selectPrefsFlag(UserPreferenceFlags.GroupLines),
-    });
-
-    let [warn, setWarn] = createSignal(false),
-        [pos, main_click_props] = createSimplePositionedContextMenu({
-            onMainClick: () => setWarn(false),
-        });
-
-    return (
-        <>
-            <Show when={props.msg.sg && state.gl}>
-                <hr />
-            </Show>
-
-            <li
-                id={props.msg.msg.id}
-                className="ln-msg__outer"
-                classList={{
-                    "highlighted": !!pos(),
-                    "warning": !!pos() && warn(),
-                    "sg": props.msg.sg,
-                }}
-                {...main_click_props}
-            >
-                <div className="ln-msg__wrapper">
-                    <Dynamic component={user_is_system(props.msg.msg.author) ? SystemMessage : (state.compact ? CompactMessage : CozyMessage)}
-                        {...props} is_light_theme={state.is_light_theme} compact={state.compact} />
-
-                    <Show when={pos()}>
-                        {pos => (
-                            <PositionedModal rect={pos}>
-                                <MsgContextMenu msg={props.msg} pos={pos} onConfirmChange={(pending: boolean) => setWarn(pending)} />
-                            </PositionedModal>
-                        )}
-                    </Show>
-                </div>
-            </li>
-        </>
-    );
-}
-
-

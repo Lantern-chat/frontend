@@ -1,11 +1,16 @@
 import { createMemo } from "solid-js";
 import dayjs from "dayjs";
-import { Icons } from "lantern-icons";
+import { MessageKind } from "state/models";
 import { VectorIcon } from "ui/components/common/icon";
 import { IMessageProps } from "./common";
 
-import { Message as MessageBody } from "./msg";
 import { createCalendar, createTimestamp } from "ui/hooks/createTimestamp";
+
+import { Icons } from "lantern-icons";
+import { useI18nContext } from "ui/i18n/i18n-solid";
+import { Markdown } from "ui/components/common/markdown";
+import { fnv1a } from "lib/fnv";
+import { loadedLocales } from "ui/i18n/i18n-util";
 
 export function SystemMessage(props: IMessageProps) {
     let ts = createMemo(() => dayjs(props.msg.ts)),
@@ -19,10 +24,25 @@ export function SystemMessage(props: IMessageProps) {
             </div>
 
             <div className="ln-msg__message ln-system-message">
-                <MessageBody msg={props.msg.msg} extra={
-                    <span className="ui-text ln-system-sub" title={title()} textContent={calendar()} />
-                } />
+                <Markdown source={system_body(props)} className="ln-msg"
+                    extra={<span className="ui-text ln-system-sub" title={title()} textContent={calendar()} />}
+                />
             </div>
         </>
     );
+}
+
+function system_body(props: IMessageProps): string {
+    let { LL, locale } = useI18nContext();
+
+    switch(props.msg.msg.kind) {
+        case MessageKind.Welcome: {
+            let user = props.msg.msg.author.id,
+                length = (loadedLocales[locale()].main.system.welcome as any).length;
+
+            return LL().main.system.welcome[fnv1a(user) % length]({ user });
+        }
+    }
+
+    return "";
 }

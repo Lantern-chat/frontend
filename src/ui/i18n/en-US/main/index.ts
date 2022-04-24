@@ -112,11 +112,13 @@ const enUS_main: BaseTranslation = {
             UNFOCUS_PAUSE: "Pause GIFs on Unfocus",
         }
     },
-    welcome: [
-        "Welcome, <@{user:string}>!",
-        "<@{user:string}> has joined the party!",
-        "<@{user:string}> is here, scatter!"
-    ]
+    system: {
+        welcome: [
+            "Welcome, <@{user:string}>!",
+            "<@{user:string}> has joined the party!",
+            "<@{user:string}> is here, scatter!"
+        ]
+    }
 };
 
 export default enUS_main;

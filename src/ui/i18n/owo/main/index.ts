@@ -110,11 +110,13 @@ const owo_main: NamespaceMainTranslation = {
 			UNFOCUS_PAUSE: "pause g-gifs on unfocus 😳",
 		}
 	},
-	welcome: [
-		"wewcome (ꈍᴗꈍ) <@{user}>",
-		"<@{user}> has joined the pawty!",
-		"<@{user}> i-is hewe, ^•ﻌ•^ scattew!"
-	]
+	system: {
+		welcome: [
+			"wewcome (ꈍᴗꈍ) <@{user}>",
+			"<@{user}> has joined the pawty!",
+			"<@{user}> i-is hewe, ^•ﻌ•^ scattew!"
+		]
+	}
 };
 
 export default owo_main;

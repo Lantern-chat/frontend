@@ -111,11 +111,13 @@ const es_main: NamespaceMainTranslation = {
 			UNFOCUS_PAUSE: "Pausar GIF en Desenfocar",
 		}
 	},
-	welcome: [
-		"¡Hola, <@{user}>!",
-		"¡<@{user}> se ha unido a la fiesta!",
-		"¡<@{user}> está aquí, dispérsense!"
-	]
+	system: {
+		welcome: [
+			"¡Hola, <@{user}>!",
+			"¡<@{user}> se ha unido a la fiesta!",
+			"¡<@{user}> está aquí, dispérsense!"
+		]
+	}
 };
 
 export default es_main;
