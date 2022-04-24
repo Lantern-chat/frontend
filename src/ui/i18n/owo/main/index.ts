@@ -114,7 +114,7 @@ const owo_main: NamespaceMainTranslation = {
 		welcome: [
 			"wewcome (ꈍᴗꈍ) <@{user}>",
 			"<@{user}> has joined the pawty!",
-			"<@{user}> i-is hewe, ^•ﻌ•^ scattew!"
+			"<@{user}> i-is hewe, ^•ﻌ•^ wun for it!"
 		]
 	}
 };
