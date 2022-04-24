@@ -9,6 +9,7 @@ import { FullscreenModal, Modal } from "ui/components/modal";
 
 // NOTE: USED IN DIRECTIVE BELOW
 import { clickEater } from "ui/hooks/useMain";
+false && clickEater;
 
 export interface GenericModalProps {
     children?: JSX.Element,

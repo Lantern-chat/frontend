@@ -1,4 +1,8 @@
-export function shallowEqualArrays<T>(arrA: T[] | null | undefined, arrB: T[] | null | undefined): boolean {
+export function shallowEqualArrays<T>(
+    arrA: T[] | null | undefined,
+    arrB: T[] | null | undefined,
+    cmp: (a: T, b: T) => boolean = (a, b) => a === b
+): boolean {
     if(arrA === arrB) {
         return true;
     }
@@ -14,7 +18,7 @@ export function shallowEqualArrays<T>(arrA: T[] | null | undefined, arrB: T[] | 
     }
 
     for(let i = 0; i < len; i++) {
-        if(arrA[i] !== arrB[i]) {
+        if(!cmp(arrA[i], arrB[i])) {
             return false;
         }
     }

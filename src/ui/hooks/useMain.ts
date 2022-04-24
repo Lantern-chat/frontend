@@ -297,8 +297,8 @@ export function createClickEater(): (e: MouseEvent) => void {
     };
 }
 
-export function clickEater(el: HTMLElement, events: Array<"click" | "contextmenu" | "touch">) {
-    let eat = createClickEater();
-    events.forEach(ev => el.addEventListener(ev, eat));
-    onCleanup(() => events.forEach(ev => el.removeEventListener(ev, eat)));
+export function clickEater(el: HTMLElement, events: Accessor<Array<"click" | "contextmenu" | "touch">>) {
+    let evs = events(), eat = createClickEater();
+    evs.forEach(ev => el.addEventListener(ev, eat));
+    onCleanup(() => evs.forEach(ev => el.removeEventListener(ev, eat)));
 }
