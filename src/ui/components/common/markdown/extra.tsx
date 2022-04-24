@@ -11,7 +11,7 @@ export const extraRules: ExtraRules = {
     ...defaultRules,
     mention: {
         o: defaultRules.em.o,
-        m: inlineRegex(/<([@#])(\d+)>/),
+        m: inlineRegex(/^<([@#])(\d+)>/),
         p: (capture, parse, state) => {
             return {
                 prefix: capture[1],
