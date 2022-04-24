@@ -355,6 +355,15 @@ export type NamespaceMainTranslation = {
 		 */
 		ROLE: RequiredParams<'length|number' | 'role'>
 	}
+	lightbox: {
+		/**
+		 *  — {width|number} x {height|number} ({size|bytes})
+		 * @param {number} height
+		 * @param {number} size
+		 * @param {number} width
+		 */
+		META: RequiredParams<'height|number' | 'size|bytes' | 'width|number'>
+	}
 	settings: {
 		/**
 		 * Account
@@ -519,6 +528,23 @@ export type NamespaceMainTranslation = {
 			 */
 			UNFOCUS_PAUSE: string
 		}
+	}
+	welcome: {
+		/**
+		 * Welcome, <@{user}>!
+		 * @param {string} user
+		 */
+		'0': RequiredParams<'user'>
+		/**
+		 * <@{user}> has joined the party!
+		 * @param {string} user
+		 */
+		'1': RequiredParams<'user'>
+		/**
+		 * <@{user}> is here, scatter!
+		 * @param {string} user
+		 */
+		'2': RequiredParams<'user'>
 	}
 }
 
@@ -853,6 +879,12 @@ export type TranslationFunctions = {
 			 */
 			ROLE: (arg: { length: number, role: string }) => LocalizedString
 		}
+		lightbox: {
+			/**
+			 *  — {width|number} x {height|number} ({size|bytes})
+			 */
+			META: (arg: { height: number, size: number, width: number }) => LocalizedString
+		}
 		settings: {
 			/**
 			 * Account
@@ -1014,6 +1046,20 @@ export type TranslationFunctions = {
 				 */
 				UNFOCUS_PAUSE: () => LocalizedString
 			}
+		}
+		welcome: {
+			/**
+			 * Welcome, <@{user}>!
+			 */
+			'0': (arg: { user: string }) => LocalizedString
+			/**
+			 * <@{user}> has joined the party!
+			 */
+			'1': (arg: { user: string }) => LocalizedString
+			/**
+			 * <@{user}> is here, scatter!
+			 */
+			'2': (arg: { user: string }) => LocalizedString
 		}
 	}
 }

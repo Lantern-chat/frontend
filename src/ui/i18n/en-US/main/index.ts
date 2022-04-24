@@ -58,6 +58,9 @@ const enUS_main: BaseTranslation = {
     member_list: {
         ROLE: "{role:string} – {length:number|number}",
     },
+    lightbox: {
+        META: " — {width:number|number} x {height:number|number} ({size:number|bytes})",
+    },
     settings: {
         ACCOUNT: "Account",
         PROFILE: "Profile",
@@ -108,7 +111,12 @@ const enUS_main: BaseTranslation = {
             REDUCE_MOTION: "Reduce Motion",
             UNFOCUS_PAUSE: "Pause GIFs on Unfocus",
         }
-    }
+    },
+    welcome: [
+        "Welcome, <@{user:string}>!",
+        "<@{user:string}> has joined the party!",
+        "<@{user:string}> is here, scatter!"
+    ]
 };
 
 export default enUS_main;

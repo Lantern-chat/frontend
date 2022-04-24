@@ -57,6 +57,9 @@ const es_main: NamespaceMainTranslation = {
 	member_list: {
 		ROLE: "{role} – {length|number}",
 	},
+	lightbox: {
+		META: " — {width|number} x {height|number} ({size|bytes})",
+	},
 	settings: {
 		ACCOUNT: "Cuenta",
 		PROFILE: "Perfil",
@@ -107,7 +110,12 @@ const es_main: NamespaceMainTranslation = {
 			REDUCE_MOTION: "Reducir Movimiento",
 			UNFOCUS_PAUSE: "Pausar GIF en Desenfocar",
 		}
-	}
+	},
+	welcome: [
+		"¡Hola, <@{user}>!",
+		"¡<@{user}> se ha unido a la fiesta!",
+		"¡<@{user}> está aquí, dispérsense!"
+	]
 };
 
 export default es_main;

@@ -7,6 +7,7 @@ import { selectPrefsFlag } from "state/selectors/prefs";
 import { VectorIcon } from "ui/components/common/icon";
 import { FullscreenModal, Modal } from "ui/components/modal";
 
+// NOTE: USED IN DIRECTIVE BELOW
 import { clickEater } from "ui/hooks/useMain";
 
 export interface GenericModalProps {

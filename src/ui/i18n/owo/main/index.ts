@@ -56,6 +56,9 @@ const owo_main: NamespaceMainTranslation = {
 	member_list: {
 		ROLE: "{role} – {length|number}",
 	},
+	lightbox: {
+		META: " — {width|number} x {height|number} ({size|bytes})",
+	},
 	settings: {
 		ACCOUNT: "account (U ﹏ U)",
 		PROFILE: "pwofiwe (U ﹏ U)",
@@ -106,7 +109,12 @@ const owo_main: NamespaceMainTranslation = {
 			REDUCE_MOTION: "weduce motion, nyaa~~",
 			UNFOCUS_PAUSE: "pause g-gifs on unfocus 😳",
 		}
-	}
+	},
+	welcome: [
+		"wewcome (ꈍᴗꈍ) <@{user}>",
+		"<@{user}> has joined the pawty!",
+		"<@{user}> i-is hewe, ^•ﻌ•^ scattew!"
+	]
 };
 
 export default owo_main;
