@@ -1,12 +1,11 @@
-import { JSX, createContext, useContext, createSignal, onCleanup, createEffect, onMount, children as resolveChildren, untrack, Accessor, on, children, createMemo } from "solid-js";
+import { JSX, createContext, useContext, createSignal, onCleanup, createEffect, onMount, Accessor, createMemo, createRenderEffect } from "solid-js";
 
 import ResizeObserverPolyfill from "resize-observer-polyfill";
 
 import { SUPPORTS_PASSIVE } from "lib/features";
 import { IS_IOS_SAFARI } from "lib/user_agent";
 import { createRef, Ref } from "ui/hooks/createRef";
-import { createController, SetController } from "ui/hooks/createController";
-import { createLatch } from "ui/hooks/createLatch";
+import { SetController } from "ui/hooks/createController";
 import { runBatched } from "ui/hooks/runBatched";
 
 import { useRootSelector } from "state/root";
@@ -52,6 +51,7 @@ export interface InfiniteScrollController {
     get container(): HTMLDivElement;
     get wrapper(): HTMLDivElement;
 
+    clientRect(): DOMRectReadOnly;
     clientWidth(): number;
     clientHeight(): number;
     scrollHeight(): number;
@@ -59,7 +59,7 @@ export interface InfiniteScrollController {
 
 const OBSERVER_OPTIONS: ResizeObserverOptions = { box: "border-box" };
 
-export const InfiniteScrollContext = /*#__PURE__*/ createContext<Accessor<InfiniteScrollController | null>>();
+export const InfiniteScrollContext = /*#__PURE__*/ createContext<Accessor<InfiniteScrollController>>(null!);
 
 export function createInfiniteScrollIntersection<T extends HTMLElement>(
     ref: Ref<T | undefined>,
@@ -70,11 +70,11 @@ export function createInfiniteScrollIntersection<T extends HTMLElement>(
 
     // using createEffect will re-run (and cleanup) when enable(), ifs or ref.current change
     createEffect(() => {
-        let ifs;
-        if(enable() && (ifs = useContext(InfiniteScrollContext)) && ref.current) {
+        if(enable() && ref.current) {
+            let ifs = useContext(InfiniteScrollContext);
             let observer = new IntersectionObserver(entries => {
                 entries.length && runBatched(() => setVisible(entries[0].intersectionRatio > 0), 0);
-            }, { ...opts, root: ifs()!.container });
+            }, { ...opts, root: ifs().container });
 
             observer.observe(ref.current);
             onCleanup(() => observer.disconnect());
@@ -88,9 +88,34 @@ export function createInfiniteScrollIntersectionTrigger<T extends HTMLElement>(
     ref: Ref<T | undefined>,
     opts: Pick<IntersectionObserverInit, 'rootMargin' | 'threshold'> = {},
 ) {
-    let latch: Accessor<boolean>;
-    latch = createLatch(createInfiniteScrollIntersection(ref, opts, () => !latch()));
-    return latch;
+    let [visible, setVisible] = createSignal(false);
+
+    createRenderEffect(() => {
+        if(ref.current) {
+            let ifs = useContext(InfiniteScrollContext),
+                o: { o?: IntersectionObserver } = {},
+                set_visible = () => setVisible(true),
+                do_batch = false, // only batch if not visible on observer "mount"
+                cleanup = () => {
+                    o.o?.disconnect();
+                    delete o.o;
+                };
+
+            o.o = new IntersectionObserver(entries => {
+                if(entries.length && entries[0].intersectionRatio > 0) {
+                    do_batch ? runBatched(set_visible) : set_visible();
+                    cleanup();
+                } else {
+                    do_batch = true;
+                }
+            }, { ...opts, root: ifs().container });
+
+            o.o.observe(ref.current);
+            onCleanup(cleanup);
+        }
+    });
+
+    return visible;
 }
 
 const doTimeout = (cb: () => void) => setTimeout(cb, 50);
@@ -119,7 +144,6 @@ export interface IInfiniteScrollProps {
 }
 
 import "./infinite_scroll.scss";
-import { createTrigger } from "ui/hooks/createTrigger";
 export function InfiniteScroll(props: IInfiniteScrollProps) {
     let reduce_motion = useRootSelector(selectPrefsFlag(UserPreferenceFlags.ReduceAnimations));
 
@@ -134,6 +158,8 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
     let height = 0;
     let pos = 0;
     let anchor = props.start;
+
+    let [scrollHeight, setScrollHeight] = createSignal(height);
 
     let do_resize = () => {
         polling = false;
@@ -157,7 +183,7 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
         }
 
         pos = top;
-        height = new_height;
+        setScrollHeight(height = new_height);
 
         if(top != container.scrollTop) {
             if(diff != 0) {
@@ -307,12 +333,18 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
         });
     };
 
-    let [track, dirty] = createTrigger();
+    let [clientRect, setClientRect] = createSignal(new DOMRect());
 
     let on_resize = (entries: ResizeObserverEntry[], observer: ResizeObserver) => {
         __DEV__ && console.log("RESIZED");
         fix_position();
-        dirty();
+
+        for(let entry of entries) {
+            if(entry.target === container_ref.current) {
+                setClientRect(container_ref.current.getBoundingClientRect());
+                break;
+            }
+        }
     };
 
     /// MOUNTING
@@ -341,6 +373,8 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
 
     // NOTE: See feed.tsx for the controlled being used to reset the ifs on active room change
 
+    let memoizedClientRect = createMemo(clientRect);
+
     props.setController?.({
         pause(p: boolean) {
             __DEV__ && console.log("Paused IFS:", p);
@@ -354,9 +388,10 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
         get at_start() { return anchor == props.start; },
         get container() { return container_ref.current!; },
         get wrapper() { return wrapper_ref.current!; },
-        scrollHeight: createMemo(() => { return track(), wrapper_ref.current?.scrollHeight!; }),
-        clientHeight: createMemo(() => { return track(), container_ref.current?.clientHeight!; }),
-        clientWidth: createMemo(() => { return track(), container_ref.current?.clientWidth!; }),
+        clientRect: memoizedClientRect,
+        scrollHeight,
+        clientHeight: createMemo(() => { return memoizedClientRect().height; }),
+        clientWidth: createMemo(() => { return memoizedClientRect().width; }),
         gotoStartSmooth() {
             let container = container_ref.current!;
 

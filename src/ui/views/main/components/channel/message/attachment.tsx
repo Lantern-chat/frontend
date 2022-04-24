@@ -14,6 +14,7 @@ import { createRef } from "ui/hooks/createRef";
 import { MainContext, createClickEater } from "ui/hooks/useMain";
 import { Branch } from "ui/components/flow";
 import { createInfiniteScrollIntersectionTrigger } from "ui/components/infinite_scroll";
+
 import { px } from "ui/utils";
 
 //import { LightBox } from "ui/views/main/modals/lightbox/index_img";
@@ -22,9 +23,6 @@ import { VectorIcon } from "ui/components/common/icon";
 import { MimeIcon } from "ui/components/mime";
 
 import { Icons } from "lantern-icons";
-
-const SVG_REGEX = /svg|xml/i;
-const TEXT_REGEX = /xml|text/i;
 
 export interface IMsgAttachmentProps {
     msg: Message,
@@ -156,6 +154,7 @@ function ImageAttachment(props: IImageAttachmentProps) {
                     which={which as any}
                     img={img}
                     onLoad={on_load}
+                    onLoadedMetadata={on_load}
                     style={style()} />
                 }
             </Branch.If>
@@ -165,6 +164,7 @@ function ImageAttachment(props: IImageAttachmentProps) {
                     ref={img}
                     src={src()}
                     onLoad={on_load}
+                    onLoadedMetadata={on_load}
                     style={style()}
                 />
             </Branch.Else>
