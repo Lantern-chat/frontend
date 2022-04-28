@@ -13,7 +13,7 @@ import { fnv1a } from "lib/fnv";
 import { loadedLocales } from "ui/i18n/i18n-util";
 
 export function SystemMessage(props: IMessageProps) {
-    let ts = createMemo(() => dayjs(props.msg.ts)),
+    let ts = createMemo(() => props.msg.ts),
         title = createTimestamp(ts),
         calendar = createCalendar(ts);
 

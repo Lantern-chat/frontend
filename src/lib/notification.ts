@@ -1,3 +1,5 @@
+import { StorageKey } from "state/storage";
+
 export const HAS_NOTIFICATIONS: boolean = "Notification" in window && 'permissions' in navigator;
 
 export function displayNotification(notify: () => Notification) {
@@ -5,7 +7,7 @@ export function displayNotification(notify: () => Notification) {
         return;
     }
 
-    if(Notification.permission == 'granted' && !document.hasFocus()) {
+    if(localStorage.getItem(StorageKey.NOTIFICATIONS) == 'granted' && Notification.permission == 'granted' && !document.hasFocus()) {
         notify()
     }
 }

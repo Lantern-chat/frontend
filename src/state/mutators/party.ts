@@ -299,11 +299,14 @@ export const partyMutator = mutatorWithDefault(
 
                                 if(!party) return;
 
-                                let existing: Partial<PartyMember> = party.members[id] || {},
-                                    old_roles = existing.roles;
+                                let existing: Partial<PartyMember> = party.members[id],
+                                    old_roles = existing?.roles;
 
-                                // party.members[id] = { ...existing, ...member };
-                                Object.assign(party.members[id], member);
+                                if(!existing) {
+                                    party.members[id] = member;
+                                } else {
+                                    Object.assign(party.members[id], member);
+                                }
 
                                 // handle updating roles
                                 {
