@@ -19,7 +19,7 @@ declare type TypedEvent<H extends HTMLElement, T extends Event> = T & { target: 
 type BigInt = number;
 declare const BigInt: typeof Number;
 
-
 declare type DeepReadonly<T> = 0 extends 1 & T ? T : T extends import("solid-js/store").NotWrappable ? T : {
     readonly [K in keyof T]: DeepReadonly<T[K]>;
 };
+
