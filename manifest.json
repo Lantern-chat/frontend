@@ -14,10 +14,10 @@
     "icons": [],
     "app": {
         "urls": [
-            "http://lantern.chat/"
+            "__BASE_URL__"
         ],
         "launch": {
-            "web_url": "https://lantern.chat/"
+            "web_url": "__BASE_URL__"
         },
         "background": {
             "scripts": []
