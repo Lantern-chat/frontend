@@ -306,13 +306,16 @@ export function Fireflies(props: IFireflyProps) {
             window.addEventListener(e, mouse_listener);
         }
 
-        let hidden_listener = () => {
-            state.paused = isPageHidden(); state.just_unpaused = !state.paused;
+        if(visibilityChange) {
+            let hidden_listener = () => {
+                state.paused = isPageHidden(); state.just_unpaused = !state.paused;
 
-            __DEV__ && console.log("FIREFLIES PAUSED? ", state.paused);
-        };
-        if(visibilityChange) { document.addEventListener(visibilityChange, hidden_listener); }
+                __DEV__ && console.log("FIREFLIES PAUSED? ", state.paused);
+            };
 
+            document.addEventListener(visibilityChange, hidden_listener);
+            onCleanup(() => document.removeEventListener(visibilityChange!, hidden_listener));
+        }
 
         state.frame = requestAnimationFrame((time: number) => render_fireflies(state, canvas_ref, time));
 
@@ -320,7 +323,6 @@ export function Fireflies(props: IFireflyProps) {
             // cancel animation first
             if(state.frame) cancelAnimationFrame(state.frame);
             clearInterval(interval);
-            if(visibilityChange) document.removeEventListener(visibilityChange, hidden_listener);
             for(let e of MOUSE_EVENTS) {
                 window.removeEventListener(e, mouse_listener);
             }
