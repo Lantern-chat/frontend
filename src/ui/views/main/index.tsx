@@ -57,6 +57,7 @@ if(!GLOBAL.gateway) {
 import { setPresence } from "state/commands/presence";
 
 import { Hotkey, IMainContext, MainContext, OnClickHandler, OnKeyHandler, parseHotkey, useMainHotkey } from "ui/hooks/useMain";
+import { TimeProvider } from "ui/hooks/createTimestamp";
 
 import { createRef } from "ui/hooks/createRef";
 import { Panel } from "state/mutators/window";
@@ -210,13 +211,15 @@ export default function Main() {
     return (
         <div className="ln-main" ref={main} onClick={clickAll} onContextMenu={onContextMenu}>
             <MainContext.Provider value={main_value}>
-                <Show when={!is_right_view()}>
-                    <PartyList />
-                </Show>
+                <TimeProvider>
+                    <Show when={!is_right_view()}>
+                        <PartyList />
+                    </Show>
 
-                <Party />
+                    <Party />
 
-                <MainModals />
+                    <MainModals />
+                </TimeProvider>
             </MainContext.Provider>
         </div>
     )
