@@ -1,9 +1,10 @@
-import { Accessor, createContext, createMemo, JSX, createComponent, onCleanup, useContext } from "solid-js";
+import { Accessor, createContext, createMemo, JSX, createComponent, onCleanup, useContext, createEffect } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import dayjs from "lib/time";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
+import { isPageHidden, visibilityChange } from "ui/utils";
 
 export interface TimeStore {
     s: number,
@@ -53,7 +54,7 @@ var now = new Date();
 export function TimeProvider(props: { children: JSX.Element }) {
     let [time, setTime] = createStore(DEFAULT_TIME);
 
-    let timer = setInterval(() => {
+    function update() {
         now = new Date();
 
         setTime({
@@ -62,9 +63,33 @@ export function TimeProvider(props: { children: JSX.Element }) {
             h: now.getHours(),
             d: now.getDate(),
         });
-    }, 1000);
+    }
 
-    onCleanup(() => clearInterval(timer));
+    let timer: ReturnType<typeof setInterval>;
+
+    let cleanup = () => { clearInterval(timer); },
+        start = () => { update(); timer = setInterval(update, 1000); };
+
+    createEffect(() => {
+        // use visibility events when available
+        if(visibilityChange) {
+            let listener = () => isPageHidden() ? cleanup() : start();
+            document.addEventListener(visibilityChange, listener);
+            onCleanup(() => document.removeEventListener(visibilityChange!, listener));
+        } else {
+            // otherwise just use blur/focus
+            window.addEventListener('blur', cleanup);
+            window.addEventListener('focus', start);
+
+            onCleanup(() => {
+                window.removeEventListener('blur', cleanup);
+                window.removeEventListener('focus', start);
+            });
+        }
+    });
+
+    start();
+    onCleanup(cleanup);
 
     return createComponent(TimeContext.Provider, {
         value: time,
