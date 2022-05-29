@@ -3,7 +3,7 @@ import type { Locales } from "ui/i18n/i18n-types";
 
 export const LanguageSettingsTab = () => {
     return (
-        <form className="ln-settings-form">
+        <form class="ln-settings-form">
             <LangPicker />
         </form>
     );
@@ -40,21 +40,21 @@ function LangPicker() {
     let selecting = createSelector(loading);
 
     return (
-        <ul className="lang-list">
+        <ul class="lang-list">
             <For each={LANGUAGE_KEYS}>
                 {key => {
                     let lang = LANGUAGES[key];
 
                     return (
                         <li
-                            className="lang-item"
+                            class="lang-item"
                             classList={{ selected: selected(key) }}
                             onClick={() => on_select(key as Locales)}
                         >
-                            <div className="lang-emoji">{lang.e}</div>
-                            <div className="lang-name">{lang.n}</div>
+                            <div class="lang-emoji">{lang.e}</div>
+                            <div class="lang-name">{lang.n}</div>
                             <Show when={selecting(key)}>
-                                <div className="lang-spinner">
+                                <div class="lang-spinner">
                                     <Spinner size="1.5em"></Spinner>
                                 </div>
                             </Show>

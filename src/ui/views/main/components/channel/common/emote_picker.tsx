@@ -11,7 +11,7 @@ export function EmotePicker() {
     let [show, main_click_props, setShow] = createSimpleToggleOnClick();
 
     return (
-        <div title="Emoji" className="ln-msg-box__emoji" classList={{ 'active': show() }} {...main_click_props}>
+        <div title="Emoji" class="ln-msg-box__emoji" classList={{ 'active': show() }} {...main_click_props}>
             <VectorIcon id={Icons.SmileyHalf} />
 
             <AnchoredModal show={show()} eat={["onClick"]}>
@@ -23,7 +23,7 @@ export function EmotePicker() {
 
 function EmotePickerModal() {
     return (
-        <div className="ln-emoji-picker">
+        <div class="ln-emoji-picker">
             Emote Picker
         </div>
     )

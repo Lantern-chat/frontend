@@ -19,29 +19,29 @@ export function LangWidget() {
     };
 
     return (
-        <div className="ln-lang-widget" title={LL().CHANGE_LANG()}>
-            <div className="ln-lang-widget__title-wrapper">
-                <div className="ln-lang-widget__title" textContent={LL().CHANGE_LANG()} />
+        <div class="ln-lang-widget" title={LL().CHANGE_LANG()}>
+            <div class="ln-lang-widget__title-wrapper">
+                <div class="ln-lang-widget__title" textContent={LL().CHANGE_LANG()} />
 
-                <div className="ln-lang-widget__icon">
+                <div class="ln-lang-widget__icon">
                     <VectorIcon src={TranslateIcon} />
                 </div>
             </div>
 
-            <div className="ln-lang-widget__options">
-                <ul className="ln-lang-widget__list">
+            <div class="ln-lang-widget__options">
+                <ul class="ln-lang-widget__list">
                     <For each={LANGUAGE_KEYS}>
                         {key => {
                             let lang = LANGUAGES[key];
 
                             return (
                                 <li
-                                    className="ln-lang-widget__item"
+                                    class="ln-lang-widget__item"
                                     classList={{ selected: selected(key) }}
                                     onClick={() => on_select(key as Locales)}
                                 >
-                                    <div className="ln-lang-widget__emoji">{lang.e}</div>
-                                    <div className="ln-lang-widget__name">{lang.n}</div>
+                                    <div class="ln-lang-widget__emoji">{lang.e}</div>
+                                    <div class="ln-lang-widget__name">{lang.n}</div>
                                 </li>
                             )
                         }}

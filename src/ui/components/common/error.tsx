@@ -17,7 +17,7 @@ export function DisplayError(props: { error: any }) {
     });
 
     return (
-        <div className="ln-error">
+        <div class="ln-error">
             {children()}
         </div>
     );

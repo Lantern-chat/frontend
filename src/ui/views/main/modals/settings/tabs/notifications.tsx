@@ -74,9 +74,9 @@ export function NotificationsSettingsTab() {
     });
 
     return (
-        <form className="ln-settings-form">
+        <form class="ln-settings-form">
             <Toggle
-                htmlFor="desktop_notifications"
+                for="desktop_notifications"
                 label={label()}
                 onChange={on_change!}
                 checked={perm() === 'granted'}

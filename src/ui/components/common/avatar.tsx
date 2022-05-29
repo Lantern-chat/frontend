@@ -40,16 +40,16 @@ export function Avatar(props: IAvatarProps) {
     });
 
     return (
-        <div className="ln-avatar" {...props.props}>
-            <div className="ln-avatar__wrapper" {...props.wrapper} title={props.username}>
+        <div class="ln-avatar" {...props.props}>
+            <div class="ln-avatar__wrapper" {...props.wrapper} title={props.username}>
                 <Branch>
                     <Branch.If when={props.url != null}>
                         <Show when={loading()}>
-                            <div className="ln-avatar__skel" />
+                            <div class="ln-avatar__skel" />
                         </Show>
 
                         <img src={props.url}
-                            className="ln-avatar__image"
+                            class="ln-avatar__image"
                             classList={{ 'ln-avatar--rounded': props.rounded }}
                             onLoad={on_load}
                             alt={props.username} />
@@ -57,7 +57,7 @@ export function Avatar(props: IAvatarProps) {
 
                     <Branch.Else>
                         <span
-                            className="ln-avatar__text"
+                            class="ln-avatar__text"
                             classList={{ 'ln-avatar--rounded': props.rounded }}
                             style={{ "background-color": props.backgroundColor }}
                         >

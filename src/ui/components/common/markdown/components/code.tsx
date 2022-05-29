@@ -30,7 +30,7 @@ function ignoreTouch(e: TouchEvent) {
 
 function Text(props: { src: string }) {
     return (
-        <pre className="hljs" onTouchStart={ignoreTouch}>
+        <pre class="hljs" onTouchStart={ignoreTouch}>
             <code textContent={props.src.trim()} />
         </pre>
     );
@@ -40,7 +40,7 @@ function Highlight(props: Required<ICodeProps>) {
     let html = createMemo(() => hljs.highlight(props.src, { language: props.language }).value);
 
     return (
-        <pre className="hljs" onTouchStart={ignoreTouch}>
+        <pre class="hljs" onTouchStart={ignoreTouch}>
             <code innerHTML={html()} />
         </pre>
     );

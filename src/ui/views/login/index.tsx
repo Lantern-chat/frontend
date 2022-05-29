@@ -159,27 +159,27 @@ export default function LoginView() {
     let valid_email = createMemo(() => validateEmail(state.email));
 
     return (
-        <form className="ln-form ln-login-form ui-text" onSubmit={on_submit}>
+        <form class="ln-form ln-login-form ui-text" onSubmit={on_submit}>
             <div id="title">
                 <h2>{LL().LOGIN()}</h2>
             </div>
 
             <Show when={state.totp_required}>
                 <FullscreenModal style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
-                    <div className="ln-center-standalone" style={{ color: 'white' }}>
+                    <div class="ln-center-standalone" style={{ color: 'white' }}>
                         TOTP Required
                     </div>
                 </FullscreenModal>
             </Show>
 
             <FormGroup>
-                <FormLabel htmlFor="email">{LL().EMAIL_ADDRESS()}</FormLabel>
+                <FormLabel for="email">{LL().EMAIL_ADDRESS()}</FormLabel>
                 <FormInput value={state.email} type="email" name="email" placeholder="example@example.com" required isValid={state.email ? valid_email() : null}
                     onInput={on_email_change} />
             </FormGroup>
 
             <FormGroup>
-                <FormLabel htmlFor="password">{LL().PASSWORD()}</FormLabel>
+                <FormLabel for="password">{LL().PASSWORD()}</FormLabel>
                 <FormInput value={state.pass} type="password" name="password" placeholder={LL().PASSWORD().toLocaleLowerCase(locale())} required
                     onInput={on_password_change} />
 
@@ -190,7 +190,7 @@ export default function LoginView() {
 
             <Show when={state.have_2fa}>
                 <FormGroup>
-                    <FormLabel htmlFor="totp">
+                    <FormLabel for="totp">
                         <span>{LL().MFA_CODE()}</span>
                     </FormLabel>
 
@@ -205,7 +205,7 @@ export default function LoginView() {
 
             <Show when={errorMsg()}>
                 <FormGroup>
-                    <div className="ln-login-error">
+                    <div class="ln-login-error">
                         Login Error: {errorMsg()}
                     </div>
                 </FormGroup>
@@ -216,7 +216,7 @@ export default function LoginView() {
             <FormGroup>
                 <div style={{ display: 'flex', padding: '0 1em' }}>
                     <button
-                        className="ln-btn ui-text"
+                        class="ln-btn ui-text"
                         classList={{ 'ln-btn--loading-icon': state.is_logging_in }}
                         style={{ 'margin-inline-end': 'auto' }}
                         onClick={() => setErrorMsg(null)}
@@ -226,7 +226,7 @@ export default function LoginView() {
                         </Show>
                     </button>
 
-                    <Link className="ln-btn" href="/register">{LL().REGISTER()}</Link>
+                    <Link class="ln-btn" href="/register">{LL().REGISTER()}</Link>
                 </div>
             </FormGroup>
         </form>

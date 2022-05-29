@@ -8,7 +8,7 @@ import { selectPrefsFlag } from "state/selectors/prefs";
 import "./toggle.scss";
 
 export interface IToggleProps {
-    htmlFor: string,
+    for: string,
     label: JSX.Element,
     checked?: boolean,
     onChange: (checked: boolean) => void,
@@ -28,17 +28,17 @@ export function Toggle(props: IToggleProps) {
     createRenderEffect(() => setChecked(!!props.checked));
 
     return (
-        <div className="ln-settings-toggle">
-            <label htmlFor={props.htmlFor}>{props.label}</label>
-            <span className="spacer" />
-            <input type="checkbox" name={props.htmlFor} id={props.htmlFor}
+        <div class="ln-settings-toggle">
+            <label for={props.for}>{props.label}</label>
+            <span class="spacer" />
+            <input type="checkbox" name={props.for} id={props.for}
                 checked={checked() && !props.disabled} onChange={onChange} disabled={props.disabled} />
         </div>
     );
 }
 
 export interface ITogglePrefsFlagProps {
-    htmlFor: string,
+    for: string,
     label: JSX.Element,
     flag: UserPreferenceFlags,
 }
@@ -51,6 +51,6 @@ export function TogglePrefsFlag(props: ITogglePrefsFlagProps) {
         };
 
     return (
-        <Toggle htmlFor={props.htmlFor} label={props.label} checked={current_flag()} onChange={onChange} />
+        <Toggle for={props.for} label={props.label} checked={current_flag()} onChange={onChange} />
     );
 }

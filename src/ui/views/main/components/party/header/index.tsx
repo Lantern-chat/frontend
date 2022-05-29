@@ -24,8 +24,8 @@ export function PartyHeader() {
 
     return (
         <Show when={party()}>
-            <header className="ln-party-header" classList={{ 'active': show() }} {...main_click_props}>
-                <div className="ln-party-header__name">
+            <header class="ln-party-header" classList={{ 'active': show() }} {...main_click_props}>
+                <div class="ln-party-header__name">
                     <UIText text={party()!.party.name} />
                 </div>
 

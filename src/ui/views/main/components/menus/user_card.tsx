@@ -20,10 +20,10 @@ export function UserCard(props: IUserCardProps) {
     });
 
     return (
-        <Show when={cached_user()} fallback={<span className="ui-text">User Not Found</span>}>
+        <Show when={cached_user()} fallback={<span class="ui-text">User Not Found</span>}>
             {cached_user => (
-                <div className="ln-user-card ln-contextmenu">
-                    <span className="ui-text">User: {cached_user.user.username}</span>
+                <div class="ln-user-card ln-contextmenu">
+                    <span class="ui-text">User: {cached_user.user.username}</span>
                 </div>
             )}
         </Show>

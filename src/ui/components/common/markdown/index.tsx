@@ -5,7 +5,7 @@ import { SolidMarkdownExtra } from "./extra";
 
 export interface IMarkdownProps {
     source: string,
-    className?: string,
+    class?: string,
     classList?: { [key: string]: boolean },
     extra?: JSX.Element,
 }
@@ -18,12 +18,12 @@ let classes = (cn?: string) => {
 
 export function Markdown(props: IMarkdownProps) {
     return (
-        <SolidMarkdownExtra {...props} className={classes(props.className)} />
+        <SolidMarkdownExtra {...props} class={classes(props.class)} />
     );
 }
 
 export function SimpleMarkdown(props: IMarkdownProps) {
     return (
-        <SolidMarkdown {...props} className={classes(props.className)} />
+        <SolidMarkdown {...props} class={classes(props.class)} />
     );
 }

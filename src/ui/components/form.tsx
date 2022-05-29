@@ -9,7 +9,7 @@ interface IFormGroupProps {
 
 interface IFormLabelProps {
     children: JSX.Element,
-    htmlFor?: string,
+    for?: string,
 }
 
 interface IFormTextProps {
@@ -17,15 +17,15 @@ interface IFormTextProps {
 }
 
 export function FormGroup(props: IFormGroupProps) {
-    return <div className="ln-form-group" {...props} />
+    return <div class="ln-form-group" {...props} />
 }
 
 export function FormLabel(props: IFormLabelProps) {
-    return <label className="ln-form-label" {...props} />;
+    return <label class="ln-form-label" {...props} />;
 }
 
 export function FormText(props: IFormTextProps) {
-    return <p className="ln-form-text" {...props} />;
+    return <p class="ln-form-text" {...props} />;
 }
 
 interface IFormInputProps extends JSX.InputHTMLAttributes<HTMLInputElement> {
@@ -36,12 +36,12 @@ interface IFormInputProps extends JSX.InputHTMLAttributes<HTMLInputElement> {
 
 export function FormInput(props: IFormInputProps) {
     return (
-        <span className="ln-form-control-wrapper" classList={{
-            [props.className || '']: true,
+        <span class="ln-form-control-wrapper" classList={{
+            [props.class || '']: true,
             'ln-success': props.isValid === true,
             'ln-error': props.isValid === false,
         }}>
-            <input {...props} className="ln-form-control ui-text" />
+            <input {...props} class="ln-form-control ui-text" />
         </span>
     );
 }
@@ -72,13 +72,13 @@ interface IFormSelectProps {
 
 export function FormSelect(props: IFormSelectProps) {
     return (
-        <div className="ln-form-select-wrapper">
-            <select className="ln-form-select" {...props} />
-            <span className="ln-form-select-arrow" />
+        <div class="ln-form-select-wrapper">
+            <select class="ln-form-select" {...props} />
+            <span class="ln-form-select-arrow" />
         </div>
     );
 }
 
 export function FormSelectGroup(props: { children: JSX.Element }) {
-    return <div className="ln-select-group">{props.children}</div>
+    return <div class="ln-select-group">{props.children}</div>
 }

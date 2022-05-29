@@ -13,7 +13,7 @@ export function BotLabel(props: IBotLabelProps) {
     let bot = createMemo(() => LL().main.BOT({ verified: !!props.v }).trim());
 
     return (
-        <span className="bot-label" title={bot()}>
+        <span class="bot-label" title={bot()}>
             <UIText text={bot()} />
         </span>
     );

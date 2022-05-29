@@ -36,30 +36,30 @@ export function ChannelHeader() {
     };
 
     return (
-        <div className="ln-channel-header">
-            <div className="ln-channel-header__wrapper">
-                <div className="ln-channel-header__hamburger">
+        <div class="ln-channel-header">
+            <div class="ln-channel-header__wrapper">
+                <div class="ln-channel-header__hamburger">
                     <span onClick={() => toggle_sidebar(Panel.LeftRoomList)}>
                         <VectorIcon id={Icons.Menu} />
                     </span>
                 </div>
 
-                <div className="ln-channel-icon">
+                <div class="ln-channel-icon">
                     <VectorIcon id={Icons.Hash} />
                 </div>
 
-                <div className="ln-channel-info__wrapper">
-                    <div className="ln-channel-info">
-                        <span className="ln-channel-info__name ui-text" textContent={room().name} />
+                <div class="ln-channel-info__wrapper">
+                    <div class="ln-channel-info">
+                        <span class="ln-channel-info__name ui-text" textContent={room().name} />
 
                         <Show when={room().topic}>
-                            <span className="ln-vert">&nbsp;</span>
-                            <span className="ln-channel-info__topic ui-text" textContent={room().topic} />
+                            <span class="ln-vert">&nbsp;</span>
+                            <span class="ln-channel-info__topic ui-text" textContent={room().topic} />
                         </Show>
                     </div>
                 </div>
 
-                <div className="ln-channel-header__users">
+                <div class="ln-channel-header__users">
                     <span
                         onClick={() => toggle_sidebar(Panel.RightUserList)}>
                         <VectorIcon id={Icons.Users} />

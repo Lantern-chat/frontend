@@ -9,7 +9,7 @@ export interface IPartyOptionsDropdownProps {
 import "./dropdown.scss";
 export function PartyOptionsDropdown(props: IPartyOptionsDropdownProps) {
     return (
-        <div className="ln-party-header__dropdown"
+        <div class="ln-party-header__dropdown"
         >
             <ContextMenu dark>
                 <div>

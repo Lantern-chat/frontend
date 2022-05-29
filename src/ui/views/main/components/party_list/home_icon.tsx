@@ -32,7 +32,7 @@ export function Home(props: IHomeProps) {
     };
 
     return (
-        <li id="user-home" className={'@me' == props.active_party ? 'selected' : ''} ref={ref}>
+        <li id="user-home" class={'@me' == props.active_party ? 'selected' : ''} ref={ref}>
             <Link title="Home" href="/channels/@me" onNavigate={onNavigate} >
                 <Avatar rounded username="Home">
                     <VectorIcon id={Icons.Home} />

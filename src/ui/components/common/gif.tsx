@@ -32,7 +32,7 @@ export function AnimatedGif(props: IAnimatedGifProps) {
 
     return (
         <Show when={do_freeze() && props.src} fallback={<img {...img_props} ref={img} />}>
-            <div className={"gif-wrapper ui-text " + local.which}>
+            <div class={"gif-wrapper ui-text " + local.which}>
                 <img {...img_props} ref={img} />
             </div>
         </Show>

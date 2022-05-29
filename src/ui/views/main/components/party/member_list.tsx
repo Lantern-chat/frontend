@@ -95,7 +95,7 @@ export function MemberList() {
 
     return (
         <Show when={state.party}>
-            <div className="ln-member-list ln-scroll-y ln-scroll-fixed">
+            <div class="ln-member-list ln-scroll-y ln-scroll-fixed">
                 <For each={grouped_members().hoisted}>
                     {hoisted => <RoleMemberList
                         role={hoisted.role.name}
@@ -134,7 +134,7 @@ function RoleMemberList(props: IRoleMemberListProps) {
     return (
         <Show when={props.members.length}>
             <div>
-                <h4 className="ui-text" textContent={LL().main.member_list.ROLE({ role: props.role, length: props.members.length })} />
+                <h4 class="ui-text" textContent={LL().main.member_list.ROLE({ role: props.role, length: props.members.length })} />
                 <ul>
                     <For each={props.members}>
                         {member => <ListedMember member={member} owner={props.owner} is_light_theme={props.is_light_theme} />}
@@ -170,23 +170,23 @@ function ListedMember(props: IListedMemberProps) {
     let presence = createMemo(() => parse_presence(props.member.presence));
 
     return (
-        <li className="ln-member-list__item">
+        <li class="ln-member-list__item">
             <UserAvatar nickname={display_name()}
                 user={props.member.user}
                 status={presence().status}
                 is_light_theme={props.is_light_theme}
                 is_mobile={presence().is_mobile} />
 
-            <div className="ln-member__meta">
-                <div className="ln-member__title">
+            <div class="ln-member__meta">
+                <div class="ln-member__title">
 
-                    <div className="ln-member__name">
-                        <span className="ui-text" style={{ color: color() }} textContent={display_name()} />
+                    <div class="ln-member__name">
+                        <span class="ui-text" style={{ color: color() }} textContent={display_name()} />
                     </div>
 
                     <Show when={props.member.user.id == props.owner}>
-                        <div className="ln-member__spacer" />
-                        <div className="ln-member__crown" title={LL().main.OWNER()}>
+                        <div class="ln-member__spacer" />
+                        <div class="ln-member__crown" title={LL().main.OWNER()}>
                             <VectorIcon id={Icons.Crown} />
                         </div>
                     </Show>
@@ -197,8 +197,8 @@ function ListedMember(props: IListedMemberProps) {
                 </div>
 
                 <Show when={props.member.user.status && presence().status != PresenceStatus.Offline}>
-                    <div className="ln-member__status">
-                        <span className="chat-text" textContent={props.member.user.status} />
+                    <div class="ln-member__status">
+                        <span class="chat-text" textContent={props.member.user.status} />
                     </div>
                 </Show>
             </div>

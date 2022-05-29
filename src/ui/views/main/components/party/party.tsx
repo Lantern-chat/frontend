@@ -94,13 +94,13 @@ export function Party() {
     }));
 
     return (
-        <div className="ln-party"
+        <div class="ln-party"
             onTouchStart={state.use_mobile_view ? on_touch_start : undefined}
             onTouchEnd={state.use_mobile_view ? on_touch_end : undefined}
         >
             <Show when={showLeft()}>
                 <div
-                    className="ln-party__sidebar"
+                    class="ln-party__sidebar"
                     classList={{ "ln-party__sidebar--closed": state.use_mobile_view && state.show_panel == Panel.Main }}
                 >
                     <Show
@@ -116,7 +116,7 @@ export function Party() {
             </Show>
 
             <div
-                className="ln-party__channel"
+                class="ln-party__channel"
                 classList={{
                     "ln-party__channel--expanded-right": state.use_mobile_view && state.show_panel == Panel.RightUserList,
                     "ln-party__channel--expanded-left": state.use_mobile_view && state.show_panel == Panel.LeftRoomList,
@@ -124,7 +124,7 @@ export function Party() {
             >
                 {/*NOTE: This is clear element that covers the chat when on the side */}
                 <Show when={state.use_mobile_view && state.show_panel != Panel.Main}>
-                    <div className="ln-channel__cover" onClick={() => dispatch({ type: Type.WINDOW_SET_PANEL, panel: Panel.Main })} />
+                    <div class="ln-channel__cover" onClick={() => dispatch({ type: Type.WINDOW_SET_PANEL, panel: Panel.Main })} />
                 </Show>
 
                 {/*NOTE: active_party may be null */}
@@ -135,7 +135,7 @@ export function Party() {
 
             <Show when={showRight()}>
                 <div
-                    className="ln-party__user-list"
+                    class="ln-party__user-list"
                     classList={{ "ln-party__user-list--closed": state.show_panel == Panel.Main }}
                 >
                     <Show when={state.active_party && state.active_party != '@me'} fallback="Something">

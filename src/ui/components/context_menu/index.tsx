@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createUniqueId, JSX, onCleanup, Show } from "solid-js";
+import { createEffect, createMemo, createRenderEffect, createUniqueId, JSX, onCleanup, Show } from "solid-js";
 import { Modal } from "ui/components/modal";
 import { createRef } from "ui/hooks/createRef";
 import { createTrigger } from "ui/hooks/createTrigger";
@@ -15,13 +15,13 @@ export function ContextMenu(props: IContextMenuProps) {
     let anchor_ref = createRef<HTMLSpanElement>(),
         [track, dirty] = createTrigger();
 
-    createEffect(() => {
-        if(props.show) {
-            let listener = () => dirty();
-            REFRESH_EVENTS.forEach(e => window.addEventListener(e, listener));
-            onCleanup(() => REFRESH_EVENTS.forEach(e => window.removeEventListener(e, listener)));
-        }
-    });
+    //createRenderEffect(() => {
+    //    if(props.show) {
+    //        let listener = () => dirty();
+    //        REFRESH_EVENTS.forEach(e => window.addEventListener(e, listener));
+    //        onCleanup(() => REFRESH_EVENTS.forEach(e => window.removeEventListener(e, listener)));
+    //    }
+    //});
 
     let modal = createMemo(() => {
         let rect = anchor_ref.current?.getBoundingClientRect();
@@ -61,7 +61,7 @@ export function ContextMenu(props: IContextMenuProps) {
                 <ContextMenuInner {...modal()!} children={props.children} />
             </Show>
 
-            <span ref={anchor_ref} className="ln-context-anchor" />
+            <span ref={anchor_ref} class="ln-context-anchor" />
         </>
     )
 }

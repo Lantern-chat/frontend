@@ -10,7 +10,7 @@ export function Spoiler(props: { children: JSX.Element }) {
     return (
         <span
             onClick={() => setVisible(true)}
-            className="spoiler"
+            class="spoiler"
             classList={{
                 'visible': visible(),
                 'hidden': !visible(),

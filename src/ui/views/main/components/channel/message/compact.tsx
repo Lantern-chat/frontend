@@ -30,7 +30,7 @@ export function CompactMessage(props: IMessageProps) {
     let extra = createMemo(() => {
         if(props.msg.et) {
             return (
-                <span className="ui-text ln-system-sub" title={LL().main.EDITED_ON({ ts: ets() })}>
+                <span class="ui-text ln-system-sub" title={LL().main.EDITED_ON({ ts: ets() })}>
                     ({edited()})
                 </span>
             );
@@ -39,11 +39,11 @@ export function CompactMessage(props: IMessageProps) {
     });
 
     return (
-        <div className="ln-msg--compact" classList={{ 'no-text': !props.msg.msg.content }}>
-            <div className="ln-msg__title">
+        <div class="ln-msg--compact" classList={{ 'no-text': !props.msg.msg.content }}>
+            <div class="ln-msg__title">
 
-                <div className="ln-msg__side">
-                    <div className="ln-msg__sidets" title={ts()}>
+                <div class="ln-msg__side">
+                    <div class="ln-msg__sidets" title={ts()}>
                         <UITimestamp time={props.msg.ts} format="LT" />
                     </div>
                 </div>

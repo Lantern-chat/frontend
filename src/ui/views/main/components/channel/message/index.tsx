@@ -40,7 +40,7 @@ export function Message(props: { msg: DeepReadonly<IMessageState> }) {
 
             <li
                 id={props.msg.msg.id}
-                className="ln-msg__outer"
+                class="ln-msg__outer"
                 classList={{
                     "highlighted": !!pos(),
                     "warning": !!pos() && warn(),
@@ -48,7 +48,7 @@ export function Message(props: { msg: DeepReadonly<IMessageState> }) {
                 }}
                 {...main_click_props}
             >
-                <div className="ln-msg__wrapper">
+                <div class="ln-msg__wrapper">
                     <Dynamic component={System || (state.compact ? CompactMessage : CozyMessage)} {...props}
                         is_light_theme={state.is_light_theme} compact={state.compact} />
 

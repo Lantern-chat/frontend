@@ -27,7 +27,7 @@ export const AppearanceSettingsTab = () => {
     let { LL } = useI18nContext();
 
     return (
-        <form className="ln-settings-form">
+        <form class="ln-settings-form">
             <ThemeSetting />
 
             <FontSelector which="chat" />
@@ -35,7 +35,7 @@ export const AppearanceSettingsTab = () => {
 
             <ViewSelector />
 
-            <TogglePrefsFlag htmlFor="group_lines"
+            <TogglePrefsFlag for="group_lines"
                 label={LL().main.settings.appearance.GROUP_LINES()}
                 flag={UserPreferenceFlags.GroupLines} />
 
@@ -87,10 +87,10 @@ function ThemeSetting() {
                 />
             </div>
 
-            <div className="ln-settings-temperature">
-                <label htmlFor="temperature">{LL().main.settings.appearance.TEMP()}</label>
-                <div className="ln-theme-temp-slider" title={LL().CHANGE_THEME_TEMP()}>
-                    <input ref={input} type="range" className="ln-slider" name="temperature"
+            <div class="ln-settings-temperature">
+                <label for="temperature">{LL().main.settings.appearance.TEMP()}</label>
+                <div class="ln-theme-temp-slider" title={LL().CHANGE_THEME_TEMP()}>
+                    <input ref={input} type="range" class="ln-slider" name="temperature"
                         min={MIN_TEMP} max={MAX_TEMP} step="1"
                         value={interactive.temperature}
                         onInput={e => doSetTheme(parseFloat(e.currentTarget.value), interactive.is_light, interactive.oled)}
@@ -98,7 +98,7 @@ function ThemeSetting() {
                 </div>
             </div>
 
-            <Toggle htmlFor="oled_mode"
+            <Toggle for="oled_mode"
                 label={LL().main.settings.appearance.OLED_THEME()}
                 checked={interactive.oled}
                 onChange={(checked: boolean) => doSetTheme(interactive.temperature, interactive.is_light, checked)}
@@ -181,19 +181,19 @@ function FontSelector(props: IFontSelectorProps) {
 
     return (
         <>
-            <div className="ln-settings-font">
-                <label htmlFor={prefs_key()}>
+            <div class="ln-settings-font">
+                <label for={prefs_key()}>
                     {props.which == 'chat' ?
                         LL().main.settings.appearance.CHAT_FONT_FAMILY() :
                         LL().main.settings.appearance.UI_FONT_FAMILY()}
                 </label>
 
-                <div className="ln-settings-font__wrapper">
-                    <div className="ln-settings-font__selector">
+                <div class="ln-settings-font__wrapper">
+                    <div class="ln-settings-font__selector">
                         <FormSelect name={prefs_key()} value={font()} onChange={onChange}>
                             <For each={Object.keys(FONT_NAMES)}>
                                 {font => (
-                                    <option value={font} className={"ln-font-" + font.toLowerCase()}>
+                                    <option value={font} class={"ln-font-" + font.toLowerCase()}>
                                         {FONT_NAMES[font]}
                                     </option>
                                 )}
@@ -201,13 +201,13 @@ function FontSelector(props: IFontSelectorProps) {
                         </FormSelect>
                     </div>
 
-                    <div className={"ln-settings-font__example ln-font-" + font().toLowerCase()} style={{ 'font-size': `${size() / 16}em` }}>
+                    <div class={"ln-settings-font__example ln-font-" + font().toLowerCase()} style={{ 'font-size': `${size() / 16}em` }}>
                         {LL().main.settings.appearance.FONT_EXAMPLE()}
                     </div>
                 </div>
             </div>
 
-            <SizeSlider htmlFor={size_prefs_key()} value={size()} onInput={onSizeInput}
+            <SizeSlider for={size_prefs_key()} value={size()} onInput={onSizeInput}
                 label={props.which == 'chat' ?
                     LL().main.settings.appearance.CHAT_FONT_SIZE() :
                     LL().main.settings.appearance.UI_FONT_SIZE()}
@@ -233,7 +233,7 @@ function GroupPaddingSlider() {
     let { LL } = useI18nContext();
 
     return (
-        <SizeSlider htmlFor="group_padding"
+        <SizeSlider for="group_padding"
             label={LL().main.settings.appearance.GROUP_PADDING()}
             value={pad()} onInput={onInput}
             min={0} max={32} step={1} steps={[0, 12, 16, 24, 32]} />

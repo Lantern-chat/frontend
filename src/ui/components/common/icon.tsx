@@ -44,8 +44,8 @@ const ICON_PATH = icon_path + '#';
 
 function IdVectorIcon(props: IRefVectorIconProps & IGeneralVectorIconProps) {
     return (
-        <div className="ln-icon" {...props.extra}>
-            <span className="ln-icon__wrapper" style={props.absolute ? { position: 'absolute' } : void 0}>
+        <div class="ln-icon" {...props.extra}>
+            <span class="ln-icon__wrapper" style={props.absolute ? { position: 'absolute' } : void 0}>
                 <svg><use href={ICON_PATH + props.id} /></svg>
             </span>
         </div>
@@ -54,8 +54,8 @@ function IdVectorIcon(props: IRefVectorIconProps & IGeneralVectorIconProps) {
 
 function InlineVectorIcon(props: IStaticVectorIconProps & IGeneralVectorIconProps) {
     return (
-        <div className="ln-icon" {...props.extra}>
-            <span className="ln-icon__wrapper" innerHTML={props.src} style={props.absolute ? { position: 'absolute' } : void 0} />
+        <div class="ln-icon" {...props.extra}>
+            <span class="ln-icon__wrapper" innerHTML={props.src} style={props.absolute ? { position: 'absolute' } : void 0} />
         </div>
     );
 }

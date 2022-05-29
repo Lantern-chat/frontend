@@ -151,7 +151,7 @@ export function MessageBox() {
     };
 
     let debug_node; if(__DEV__) {
-        debug_node = (<div className="ln-msg-box__debug"><span textContent={debug()} /></div>);
+        debug_node = (<div class="ln-msg-box__debug"><span textContent={debug()} /></div>);
     }
 
     let is_empty = createMemo(() => value().length == 0);
@@ -160,14 +160,14 @@ export function MessageBox() {
         <>
             <div
                 onClick={on_click_focus}
-                className="ln-msg-box"
+                class="ln-msg-box"
                 classList={{
                     'ln-msg-box--disabled': !state.active_room,
                     'focused': show_focus_border(),
                     'with-footers': state.showing_footers,
                 }}
             >
-                <div className="ln-typing ln-typing__top">
+                <div class="ln-typing ln-typing__top">
                     <Show when={state.use_mobile_view}>
                         <UsersTyping />
                     </Show>
@@ -189,16 +189,16 @@ export function MessageBox() {
 
                 {debug_node}
 
-                <div className="ln-msg-box__send" onClick={on_send_click}>
+                <div class="ln-msg-box__send" onClick={on_send_click}>
                     <VectorIcon id={is_empty() ? Icons.Plus : Icons.Send} />
                 </div>
 
                 <Show when={!state.active_room}>
-                    <span className="ln-msg-box__disable" />
+                    <span class="ln-msg-box__disable" />
                 </Show>
             </div>
 
-            <div className="ln-typing ln-typing__bottom">
+            <div class="ln-typing ln-typing__bottom">
                 <Show when={!state.use_mobile_view}>
                     <UsersTyping />
                 </Show>

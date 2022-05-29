@@ -19,7 +19,7 @@ import RegisterView from "./views/register";
 
 const MainView = lazy(() => import(/* webpackChunkName: 'MainView' */ "./views/main"));
 
-const Fallback = () => <div className="ln-center-standalone"><Ripple size={120} /></div>;
+const Fallback = () => <div class="ln-center-standalone"><Ripple size={120} /></div>;
 
 const LOGIN_ROUTES = ['login', 'register'] as const; //, 'register', 'verify', 'reset'] as const;
 const MAIN_ROUTES = ['channels', 'invite', 'settings'] as const;
@@ -44,10 +44,10 @@ function LoginRoutes(props: { which: typeof LOGIN_ROUTES[number] }) {
             <ThemeWidget />
             <LangWidget />
 
-            {__DEV__ && <div className="ln-dev-banner" textContent={LL().DEV_BANNER()} />}
+            {__DEV__ && <div class="ln-dev-banner" textContent={LL().DEV_BANNER()} />}
 
-            <div className="ln-box ln-scroll-y">
-                <div className="ln-login-container ln-centered" style={{ zIndex: 1 }}>
+            <div class="ln-box ln-scroll-y">
+                <div class="ln-login-container ln-centered" style={{ zIndex: 1 }}>
                     <Suspense fallback={Fallback}>
                         <Dynamic component={View()} />
                         <Logo />

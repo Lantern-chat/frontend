@@ -148,7 +148,7 @@ export function MsgTextarea(props: IMsgTextareaProps) {
 
     // https://github.com/buildo/react-autosize-textarea/issues/52 but same thing with the Solid version
     return (
-        <div className="ln-msg-textarea">
+        <div class="ln-msg-textarea">
             <TextareaAutosize
                 ta={ta}
                 {...taprops} // onBlur, onFocus, onContextMenu, disabled, etc.
@@ -165,7 +165,7 @@ export function MsgTextarea(props: IMsgTextareaProps) {
             />
 
             <Show when={taprops.disabled}>
-                <span className="ln-msg-textarea__disable" />
+                <span class="ln-msg-textarea__disable" />
             </Show>
         </div>
     );

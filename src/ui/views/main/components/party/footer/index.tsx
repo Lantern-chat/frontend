@@ -42,17 +42,17 @@ export function PartyFooter() {
     });
 
     return (
-        <footer className="ln-party-footer">
-            <div className="ln-party-footer__user">
+        <footer class="ln-party-footer">
+            <div class="ln-party-footer__user">
                 <Show when={state.user} fallback={<Spinner size="100%" />}>
                     {user => (<>
                         <UserAvatar nickname={user.username} user={user} status={state.status} is_light_theme={state.is_light_theme} />
 
-                        <div className="ln-username">
-                            <span className="ln-username__name ui-text">
+                        <div class="ln-username">
+                            <span class="ln-username__name ui-text">
                                 {user.username}
                             </span>
-                            <span className="ln-username__discrim ui-text">
+                            <span class="ln-username__discrim ui-text">
                                 #{user.discriminator.toString(16).toUpperCase().padStart(4, '0')}
                             </span>
                         </div>
@@ -60,7 +60,7 @@ export function PartyFooter() {
                 </Show>
             </div>
 
-            <div className="ln-party-footer__settings">
+            <div class="ln-party-footer__settings">
                 <div onClick={() => setMute(v => !v)} title={mute() ? LL().main.UNMUTE() : LL().main.MUTE()}>
                     <VectorIcon id={mute() ? Icons.MicrophoneMute : Icons.Microphone} />
                 </div>

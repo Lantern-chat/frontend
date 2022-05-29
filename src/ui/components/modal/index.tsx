@@ -14,13 +14,13 @@ export function Modal(props: ModalProps) {
 }
 
 export function FullscreenModal(props: JSX.HTMLAttributes<HTMLDivElement>) {
-    let [local, rest] = splitProps(props, ['className']);
+    let [local, rest] = splitProps(props, ['class']);
 
-    let className = createMemo(() => [local.className, "ln-fullscreen-modal"].join(" "));
+    let cn = createMemo(() => [local.class, "ln-fullscreen-modal"].join(" "));
 
     return (
         <Modal>
-            <div {...rest} className={className()} />
+            <div {...rest} class={cn()} />
         </Modal>
     );
 }

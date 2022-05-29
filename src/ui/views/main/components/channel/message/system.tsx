@@ -19,13 +19,13 @@ export function SystemMessage(props: IMessageProps) {
 
     return (
         <>
-            <div className="ln-msg__side ln-system-message">
+            <div class="ln-msg__side ln-system-message">
                 <VectorIcon id={Icons.ArrowThinRight} />
             </div>
 
-            <div className="ln-msg__message ln-system-message">
-                <Markdown source={system_body(props)} className="ln-msg"
-                    extra={<span className="ui-text ln-system-sub" title={title()} textContent={calendar()} />}
+            <div class="ln-msg__message ln-system-message">
+                <Markdown source={system_body(props)} class="ln-msg"
+                    extra={<span class="ui-text ln-system-sub" title={title()} textContent={calendar()} />}
                 />
             </div>
         </>

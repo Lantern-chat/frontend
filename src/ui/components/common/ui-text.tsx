@@ -3,5 +3,5 @@ export interface UITextProps {
 }
 
 export function UIText(props: UITextProps) {
-    return <span className="ui-text" textContent={props.text} />
+    return <span class="ui-text" textContent={props.text} />
 }

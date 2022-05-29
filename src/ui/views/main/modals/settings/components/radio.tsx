@@ -16,7 +16,7 @@ export function RadioSelect(props: IRadioProps) {
     let is_selected = createSelector(() => props.selected);
 
     return (
-        <div className="ln-settings-radio">
+        <div class="ln-settings-radio">
             <For each={props.options}>
                 {([value, label]) => (
                     <div>
@@ -25,7 +25,7 @@ export function RadioSelect(props: IRadioProps) {
                             checked={is_selected(value)}
                             onChange={onChange} />
 
-                        <label htmlFor={props.name + value}>{label}</label>
+                        <label for={props.name + value}>{label}</label>
                     </div>
                 )}
             </For>

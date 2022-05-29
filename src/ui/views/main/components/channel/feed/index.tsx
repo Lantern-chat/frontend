@@ -96,7 +96,7 @@ export function MessageFeed() {
     let [feed, on_load_prev, on_load_next] = createVirtualizedFeed();
 
     return (
-        <div className="ln-msg-list__flex-container">
+        <div class="ln-msg-list__flex-container">
             <Show when={!state.use_mobile_view}>
                 <Timeline direction={0} position={0} />
             </Show>
@@ -117,7 +117,7 @@ export function MessageFeed() {
                 }}
             >
                 <InfiniteScrollContext.Provider value={ifs as any}>
-                    <ul className="ln-msg-list" id="ln-msg-list" >
+                    <ul class="ln-msg-list" id="ln-msg-list" >
                         <Show when={state.room?.fully_loaded}>
                             <TopOfChannel name={state.room!.room.name} />
                         </Show>
@@ -129,7 +129,7 @@ export function MessageFeed() {
                 </InfiniteScrollContext.Provider>
             </InfiniteScroll>
 
-            <div className="ln-feed-footers" classList={{ 'has-timeline': !state.use_mobile_view }}>
+            <div class="ln-feed-footers" classList={{ 'has-timeline': !state.use_mobile_view }}>
                 <Show when={goto()}>
                     <GotoBottomFooter onClick={on_goto_click} use_mobile_view={state.use_mobile_view} />
                 </Show>
@@ -142,8 +142,8 @@ function TopOfChannel(props: { name: string }) {
     let { LL } = useI18nContext();
 
     return (
-        <li className="ln-msg__top">
-            <div className="ui-text">
+        <li class="ln-msg__top">
+            <div class="ui-text">
                 <VectorIcon id={Icons.Balloon} />{LL().main.channel.TOP1(props.name)}<VectorIcon id={Icons.Balloon} />
                 <br />
                 {LL().main.channel.TOP2()}
@@ -169,7 +169,7 @@ function GotoBottomFooter(props: IGotoBottomFooterProps) {
             </Branch.If>
 
             <Branch.Else>
-                <div className="ln-feed-footer ui-text" onClick={() => props.onClick()}>
+                <div class="ln-feed-footer ui-text" onClick={() => props.onClick()}>
                     <span textContent={LL().main.VIEWING_OLDER()} />
                     <span id="goto-now">
                         {LL().main.GOTO_NOW()} <VectorIcon id={Icons.ChevronDown} />

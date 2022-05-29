@@ -30,7 +30,7 @@ export function AnchoredModal(props: IAnchoredModalProps) {
 
     return (
         <>
-            <span ref={anchor} className="ln-context-anchor" />
+            <span ref={anchor} class="ln-context-anchor" />
 
             <Show when={show() && anchor.current?.getBoundingClientRect()}>
                 {rect => (

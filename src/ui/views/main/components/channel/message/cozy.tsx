@@ -33,7 +33,7 @@ export function CozyMessage(props: IMessageProps) {
 
     let extra = createMemo(() => {
         if(!props.msg.sg && props.msg.et) {
-            return <span className="ui-text ln-system-sub" title={LL().main.EDITED_ON({ ts: ets() })}>
+            return <span class="ui-text ln-system-sub" title={LL().main.EDITED_ON({ ts: ets() })}>
                 ({LL().main.EDITED().toLocaleLowerCase(locale())})
             </span>;
         }
@@ -42,7 +42,7 @@ export function CozyMessage(props: IMessageProps) {
 
     return (
         <>
-            <div className="ln-msg__side">
+            <div class="ln-msg__side">
                 <Branch>
                     <Branch.If when={props.msg.sg}>
                         {/*if first message in the group, give it the user avatar and title*/}
@@ -50,31 +50,31 @@ export function CozyMessage(props: IMessageProps) {
                     </Branch.If>
 
                     <Branch.Else>
-                        <div className="ln-msg__sidets" title={ts()}>
+                        <div class="ln-msg__sidets" title={ts()}>
                             <UITimestamp time={props.msg.ts} format="LT" />
                         </div>
                     </Branch.Else>
                 </Branch>
             </div>
 
-            <div className="ln-msg__message">
+            <div class="ln-msg__message">
                 <Show when={props.msg.sg}>
-                    <div className="ln-msg__title">
+                    <div class="ln-msg__title">
                         <MessageUserName name={nickname()} user={props.msg.msg.author} />
 
-                        <span className="ln-separator"> - </span>
+                        <span class="ln-separator"> - </span>
 
-                        <span className="ln-msg__ts" title={ts()}>
+                        <span class="ln-msg__ts" title={ts()}>
                             <UICalendar time={props.msg.ts} />
 
                             <Show when={props.msg.et}>
-                                <span className="flags" title={LL().main.EDITED_ON({ ts: ets() })}>
+                                <span class="flags" title={LL().main.EDITED_ON({ ts: ets() })}>
                                     <VectorIcon id={Icons.Pencil} />
                                 </span>
                             </Show>
 
                             <Show when={props.msg.msg.flags & MessageFlags.Pinned}>
-                                <span className="flags" title={LL().main.MESSAGE_PINNED()}>
+                                <span class="flags" title={LL().main.MESSAGE_PINNED()}>
                                     <VectorIcon id={Icons.PushPin} />
                                 </span>
                             </Show>

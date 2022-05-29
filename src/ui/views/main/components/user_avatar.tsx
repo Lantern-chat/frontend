@@ -46,12 +46,12 @@ export function UserAvatar(props: IUserAvatarProps) {
     });
 
     return (
-        <div className="ln-user-avatar">
+        <div class="ln-user-avatar">
             <Avatar username={props.nickname} text={props.nickname.charAt(0)} {...url_or_color()} />
 
-            <div className="ln-user-status" title={status()[0]}>
+            <div class="ln-user-status" title={status()[0]}>
                 <Show
-                    fallback={<span className={status()[1]} />}
+                    fallback={<span class={status()[1]} />}
                     when={props.status == PresenceStatus.Online && props.is_mobile}
                 >
                     <VectorIcon id={Icons.MobilePhone} />

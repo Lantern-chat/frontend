@@ -420,12 +420,12 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
     return (
         <div
             ref={container_ref}
-            className="ln-inf-scroll__container ln-scroll-y"
+            class="ln-inf-scroll__container ln-scroll-y"
             classList={props.containerClassList}
         >
             <div
                 ref={wrapper_ref}
-                className="ln-inf-scroll__wrapper"
+                class="ln-inf-scroll__wrapper"
                 classList={props.wrapperClassList}
             >
                 {props.children}

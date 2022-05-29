@@ -19,7 +19,7 @@ export function Message(props: MessageProps) {
         <Show when={props.msg.content}>
             {content => (
                 <Markdown source={content}
-                    className="ln-msg"
+                    class="ln-msg"
                     classList={{ 'ln-msg--editing': !!props.editing }}
                     extra={props.extra}
                 />

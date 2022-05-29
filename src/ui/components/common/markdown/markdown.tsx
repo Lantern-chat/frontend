@@ -956,7 +956,7 @@ export const defaultRules: DefaultRules = {
         p: parseCaptureInline,
         h: (node, output, state) => (
             // if last and there is extra data, append that extra data within this node
-            <div className="p">{output(node.c, state)}{state.last ? state.extra : void 0}</div>
+            <div class="p">{output(node.c, state)}{state.last ? state.extra : void 0}</div>
         ),
     },
     font: {
@@ -965,7 +965,7 @@ export const defaultRules: DefaultRules = {
         p: (capture, parse, state) => {
             return { f: capture[1], c: parse(capture[2], state) };
         },
-        h: (node, output, state) => <span className={"font-" + node.f}>{output(node.c, state)}</span>,
+        h: (node, output, state) => <span class={"font-" + node.f}>{output(node.c, state)}</span>,
     },
     color: {
         o: currOrder++,
@@ -973,7 +973,7 @@ export const defaultRules: DefaultRules = {
         p: (capture, parse, state) => {
             return { f: capture[1], c: parse(capture[2], state) };
         },
-        h: (node, output, state) => <span className={"color-" + node.f}>{output(node.c, state)}</span>,
+        h: (node, output, state) => <span class={"color-" + node.f}>{output(node.c, state)}</span>,
     },
     escape: {
         o: currOrder++,

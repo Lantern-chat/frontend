@@ -56,7 +56,7 @@ export function ChannelList() {
     let is_room_selected = createSelector(selected);
 
     return (
-        <ul className="ln-channel-list ln-scroll-y ln-scroll-fixed" {...main_click_props} >
+        <ul class="ln-channel-list ln-scroll-y ln-scroll-fixed" {...main_click_props} >
             <Show when={state().rooms?.length} fallback={<div style={{ height: "100%", paddingTop: '1em' }}><Bounce size="auto" /></div>}>
                 <For each={state().rooms}>
                     {room => <ListedChannel room={room} selected={is_room_selected(room.id)} onNavigate={on_navigate} />}
@@ -86,14 +86,14 @@ function ListedChannel(props: IListedChannelProps) {
     return (
         <li classList={{ 'selected': props.selected }} {...main_click_props}>
             <Link
-                className="ln-channel-list__channel"
+                class="ln-channel-list__channel"
                 href={`/channels/${props.room.party_id || '@me'}/${props.room.id}`}
                 onNavigate={props.onNavigate}
                 noAction={props.selected}
             >
                 <RoomIcon room={props.room} />
 
-                <div className="ln-channel-list__name">
+                <div class="ln-channel-list__name">
                     <UIText text={props.room.name} />
                 </div>
             </Link>

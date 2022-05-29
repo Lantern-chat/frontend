@@ -47,14 +47,14 @@ export function ThemeWidget() {
     }, 50, { trailing: true });
 
     return (
-        <div className="ln-theme-widget" title={LL().CHANGE_THEME()}>
-            <div className="ln-theme-widget__icon" onClick={() => doSetTheme(interactive.temperature, !interactive.is_light)}>
+        <div class="ln-theme-widget" title={LL().CHANGE_THEME()}>
+            <div class="ln-theme-widget__icon" onClick={() => doSetTheme(interactive.temperature, !interactive.is_light)}>
                 <VectorIcon src={interactive.is_light ? MoonIcon : SunIcon} />
             </div>
 
-            <div className="ln-theme-widget__options">
-                <div className="ln-theme-widget__slider" title={LL().CHANGE_THEME_TEMP()}>
-                    <input ref={input} type="range" className="ln-slider" name="temperature"
+            <div class="ln-theme-widget__options">
+                <div class="ln-theme-widget__slider" title={LL().CHANGE_THEME_TEMP()}>
+                    <input ref={input} type="range" class="ln-slider" name="temperature"
                         min={MIN_TEMP} max={MAX_TEMP}
                         value={interactive.temperature}
                         onInput={e => doSetTheme(parseFloat(e.currentTarget.value), interactive.is_light)}

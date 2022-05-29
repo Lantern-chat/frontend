@@ -25,12 +25,12 @@ export function Mention(props: IMentionProps) {
         <Switch>
             <Match when={props.prefix == '#'}>
                 <Show when={room()} fallback={<span textContent={`<#${props.id}>`} />}>
-                    {room => <Link className="ln-channel-mention" href={`/channels/${room.party_id}/${room.id}`}>#{room.name}</Link>}
+                    {room => <Link class="ln-channel-mention" href={`/channels/${room.party_id}/${room.id}`}>#{room.name}</Link>}
                 </Show>
             </Match>
             <Match when={props.prefix == '@'}>
                 <Show when={member()} fallback={<span textContent={`<@${props.id}>`} />}>
-                    {member => <span className="ln-user-mention">@{member.nick || member.user.username}</span>}
+                    {member => <span class="ln-user-mention">@{member.nick || member.user.username}</span>}
                 </Show>
             </Match>
         </Switch>

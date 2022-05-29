@@ -22,17 +22,17 @@ export function Channel() {
     });
 
     return (
-        <div className="ln-channel">
+        <div class="ln-channel">
             <ErrorBoundary fallback={err => <DisplayError error={err} />}>
                 <ChannelHeader />
 
                 {/*mobile doesn't need to wrap anything or show the user-list*/}
                 <Show when={!state.use_mobile_view} fallback={<Feed />}>
-                    <div className="ln-channel__wrapper">
+                    <div class="ln-channel__wrapper">
                         <Feed />
 
                         <Show when={state.show_user_list}>
-                            <div className="ln-channel__members">
+                            <div class="ln-channel__members">
                                 <MemberList />
                             </div>
                         </Show>
@@ -47,12 +47,12 @@ function Feed() {
     let active_room = useRootSelector(activeRoom);
 
     return (
-        <div className="ln-channel__feed">
-            <div className="ln-channel__banners">
+        <div class="ln-channel__feed">
+            <div class="ln-channel__banners">
                 {__DEV__ && <DevBanner />}
             </div>
 
-            <Show when={active_room()} fallback={<div className="ln-center-standalone">Loading...</div>}>
+            <Show when={active_room()} fallback={<div class="ln-center-standalone">Loading...</div>}>
                 <MessageFeed />
             </Show>
 
@@ -64,6 +64,6 @@ function Feed() {
 function DevBanner() {
     let { LL } = useI18nContext();
     return (
-        <div className="ln-banner error ui-text" textContent={LL().DEV_BANNER()} />
+        <div class="ln-banner error ui-text" textContent={LL().DEV_BANNER()} />
     );
 }

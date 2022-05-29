@@ -8,7 +8,7 @@ export interface ISizeSliderProps {
     max?: number,
     step?: number,
     label: JSX.Element,
-    htmlFor: string,
+    for: string,
 
     onInput: (value: number) => void,
 }
@@ -50,15 +50,15 @@ export function SizeSlider(props: ISizeSliderProps) {
     });
 
     return (
-        <div className="ln-settings-size-slider">
-            <label htmlFor={props.htmlFor}>{props.label}</label>
+        <div class="ln-settings-size-slider">
+            <label for={props.for}>{props.label}</label>
             <div>
-                <div className="ln-settings-size-slider__input" style={{ background: background() }}>
-                    <input type="range" name={props.htmlFor} min={bounds().min} max={bounds().max}
+                <div class="ln-settings-size-slider__input" style={{ background: background() }}>
+                    <input type="range" name={props.for} min={bounds().min} max={bounds().max}
                         step={props.step} value={props.value} onInput={onInput} />
                 </div>
 
-                <div className="ln-settings-size-slider__steps">
+                <div class="ln-settings-size-slider__steps">
                     {steps()}
                 </div>
             </div>

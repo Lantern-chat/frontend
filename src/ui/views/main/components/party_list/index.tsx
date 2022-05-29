@@ -44,8 +44,8 @@ export function PartyList() {
     let is_party_active = createSelector(() => state.active_party);
 
     return (
-        <div className="ln-party-list__wrapper">
-            <ol className="ln-party-list ln-scroll-y ln-scroll-y--invisible ln-scroll-fixed"
+        <div class="ln-party-list__wrapper">
+            <ol class="ln-party-list ln-scroll-y ln-scroll-y--invisible ln-scroll-fixed"
                 onScroll={on_scroll} onTouchStart={on_touchstart} onTouchEnd={on_touchend}>
 
                 <Home active_party={state.active_party} can_navigate={can_navigate()} />
@@ -71,7 +71,7 @@ export function PartyList() {
 function Connecting() {
     return (
         <li id="connecting">
-            <div className="ln-center-standalone">
+            <div class="ln-center-standalone">
                 <Spinner size="2em" />
             </div>
         </li>

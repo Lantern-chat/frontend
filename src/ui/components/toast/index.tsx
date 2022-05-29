@@ -41,7 +41,7 @@ export function Toasts() {
     return (
         <Show when={state.toasts.length}>
             <Modal>
-                <div className="ln-toast-container top right">
+                <div class="ln-toast-container top right">
                     <ul>
                         <For each={state.toasts}>
                             {toast => <Toast {...toast} reduced_motion={state.reduced_motion} />}
@@ -76,7 +76,7 @@ function Toast(props: IToastProps) {
     });
 
     return (
-        <li className="ln-toast" onClick={clearToast}
+        <li class="ln-toast" onClick={clearToast}
             classList={{ 'cleared': cleared(), [props.level]: true }}
         >
             {props.title && <h3 textContent={props.title} />}

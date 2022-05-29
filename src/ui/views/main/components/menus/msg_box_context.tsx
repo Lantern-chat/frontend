@@ -45,7 +45,7 @@ export function MsgBoxContextMenu(props: IMsgBoxContextMenuProps) {
         <ContextMenu>
             <div onClick={on_paste}>
                 <VectorIcon id={Icons.Paste} />
-                <span className="ui-text">Paste</span>
+                <span class="ui-text">Paste</span>
             </div>
         </ContextMenu>
     );

@@ -13,7 +13,7 @@ import { Modal } from "ui/components/modal";
 import { Ripple } from "ui/components/common/spinners/ripple";
 import { VectorIcon } from "ui/components/common/icon";
 
-const Fallback = () => <div className="ln-center-standalone"><Ripple size={120} /></div>;
+const Fallback = () => <div class="ln-center-standalone"><Ripple size={120} /></div>;
 
 import "../modal.scss";
 import "./settings.scss";
@@ -38,7 +38,7 @@ export function SettingsModal() {
 
     return (
         <Modal>
-            <div className={"ln-modal ln-settings ln-settings--" + (closing() ? 'closing' : 'opened')}>
+            <div class={"ln-modal ln-settings ln-settings--" + (closing() ? 'closing' : 'opened')}>
                 <Suspense fallback={Fallback}>
                     <SettingsTabs do_return={do_return} />
                 </Suspense>
@@ -110,10 +110,10 @@ function SettingsTabs(props: ISettingsTabsProps) {
     return (
         <>
             <Show when={!state.use_mobile_view || !state.active_tab}>
-                <div className="ln-settings__categories">
+                <div class="ln-settings__categories">
                     <h3>{LL().main.SETTINGS()}</h3>
 
-                    <ul className="ln-scroll-y">
+                    <ul class="ln-scroll-y">
                         <For each={TABS}>
                             {({ n, p }) => {
                                 let name = createMemo(() => LL().main.settings[n]());
@@ -126,7 +126,7 @@ function SettingsTabs(props: ISettingsTabsProps) {
                             }}
                         </For>
 
-                        <div className="spacer" />
+                        <div class="spacer" />
 
                         <hr />
 
@@ -143,8 +143,8 @@ function SettingsTabs(props: ISettingsTabsProps) {
             </Show>
 
             <Show when={!state.use_mobile_view || !!state.active_tab} fallback={<FallbackPage />}>
-                <div className="ln-settings__page">
-                    <div className="ln-settings__header">
+                <div class="ln-settings__page">
+                    <div class="ln-settings__header">
                         <Show when={state.use_mobile_view}>
                             <Link href="/settings" useDiv><span>{LL().main.SETTINGS()}</span></Link>
                         </Show>
@@ -156,7 +156,7 @@ function SettingsTabs(props: ISettingsTabsProps) {
                         </div>
                     </div>
 
-                    <div className="ln-settings__content">
+                    <div class="ln-settings__content">
                         <Dynamic component={tab().c} />
                     </div>
                 </div>
@@ -169,8 +169,8 @@ function FallbackPage() {
     let { LL } = useI18nContext();
 
     return (
-        <div className="ln-settings__page">
-            <div className="ln-settings__content">
+        <div class="ln-settings__page">
+            <div class="ln-settings__content">
                 {LL().main.settings.SELECT_CATEGORY()}
             </div>
         </div>

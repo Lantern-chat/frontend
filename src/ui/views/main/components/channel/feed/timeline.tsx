@@ -61,7 +61,7 @@ export function Timeline(props: ITimelineProps) {
     createEffect(on(rect, () => requestAnimationFrame(() => render_timeline(props, rect(), canvas_ref))));
 
     return (
-        <div className="ln-msg-list__timeline" ref={wrapper_ref}>
+        <div class="ln-msg-list__timeline" ref={wrapper_ref}>
             <canvas ref={canvas_ref} />
         </div>
     );
@@ -135,7 +135,7 @@ const TimelineInner = React.memo((props: ITimelineInnerProps) => {
     }, [props, canvas_ref]);
 
     return (
-        <div className="ln-msg-list__timeline">
+        <div class="ln-msg-list__timeline">
             <canvas ref={canvas_ref} />
         </div>
     );

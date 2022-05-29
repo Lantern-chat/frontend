@@ -60,7 +60,7 @@ export function MsgAttachment(props: DeepReadonly<IMsgAttachmentProps>) {
     let large = () => props.attachment.size >= (1024 * 1024 * 30);
 
     return (
-        <div className="ln-msg-attachment" classList={{ 'spoiler': 0 != (props.msg.flags & AttachmentFlags.Spoiler) }}>
+        <div class="ln-msg-attachment" classList={{ 'spoiler': 0 != (props.msg.flags & AttachmentFlags.Spoiler) }}>
             <Show when={!errored()} fallback={<GenericAttachment {...props} />}>
                 <Switch fallback={<GenericAttachment {...props} />}>
                     <Match when={mime_prefix() === 'image' && !unknown() && !large()}>
@@ -90,17 +90,17 @@ function GenericAttachment(props: DeepReadonly<IMsgAttachmentProps>) {
     let bytes_formatter = createBytesFormatter();
 
     return (
-        <div className="ln-msg-attachment__generic">
+        <div class="ln-msg-attachment__generic">
             <div>
                 <MimeIcon category={category()} />
             </div>
 
-            <div className="ln-attachment-link ui-text">
+            <div class="ln-attachment-link ui-text">
                 <a target="__blank" title={title()} href={url()} onContextMenu={eat} textContent={props.attachment.filename} />
-                <span className="ln-attachment-size" textContent={bytes_formatter(props.attachment.size)} />
+                <span class="ln-attachment-size" textContent={bytes_formatter(props.attachment.size)} />
             </div>
 
-            <a target="__blank" title={title()} href={url() + '?download'} className="ln-msg-attachment__download">
+            <a target="__blank" title={title()} href={url() + '?download'} class="ln-msg-attachment__download">
                 <VectorIcon id={Icons.Save} />
             </a>
         </div>
@@ -197,7 +197,7 @@ function VideoAttachment(props: IVideoAttachmentProps) {
 
 function AudioAttachment(props: IAudioAttachmentProps) {
     return (
-        <div className="ln-audio">
+        <div class="ln-audio">
             <audio {...props.audio} src={props.src} controls muted={props.mute_media} preload="none" />
         </div>
     );

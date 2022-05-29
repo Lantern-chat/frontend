@@ -44,7 +44,7 @@ export const AccountSettingsTab = () => {
                 </div>
             </Show>
 
-            <TogglePrefsFlag flag={UserPreferenceFlags.DeveloperMode} htmlFor="dev_mode"
+            <TogglePrefsFlag flag={UserPreferenceFlags.DeveloperMode} for="dev_mode"
                 label={LL().main.settings.account.DEV_MODE()} />
         </Show>
     )

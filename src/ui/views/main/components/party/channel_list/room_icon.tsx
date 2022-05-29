@@ -15,8 +15,8 @@ interface IRoomIconProps {
 
 export function RoomIcon(props: IRoomIconProps) {
     return (
-        <div className="ln-channel-list__icon">
-            <div className="ln-channel-list__icon-wrapper">
+        <div class="ln-channel-list__icon">
+            <div class="ln-channel-list__icon-wrapper">
                 <Show when={props.room.avatar} fallback={<RoomHashIcon room={props.room} />}>
                     <Avatar url={room_avatar_url(props.room.id, props.room.avatar!)} username={props.room.name} />
                 </Show>
@@ -44,7 +44,7 @@ function RoomHashIcon(props: IRoomIconProps) {
 
             <Show when={subicon()}>
                 {icon => (
-                    <div className="ln-channel-list__subicon">
+                    <div class="ln-channel-list__subicon">
                         <VectorIcon id={icon} />
                     </div>
                 )}

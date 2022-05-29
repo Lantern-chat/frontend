@@ -277,33 +277,33 @@ export default function RegisterView() {
         on_day_change = (e: Event) => on_change(e, RegisterActionType.UpdateDay);
 
     return (
-        <form className="ln-form ln-login-form ln-register-form ui-text" onSubmit={on_submit}>
+        <form class="ln-form ln-login-form ln-register-form ui-text" onSubmit={on_submit}>
             <div id="title">
                 <h2>{LL().REGISTER()}</h2>
             </div>
 
             <FormGroup>
-                <FormLabel htmlFor="email">{LL().EMAIL_ADDRESS()}</FormLabel>
+                <FormLabel for="email">{LL().EMAIL_ADDRESS()}</FormLabel>
                 <FormInput value={state.email} type="email" name="email" placeholder="example@example.com" required isValid={valid_email()}
                     onInput={on_email_change} />
             </FormGroup>
 
             <FormGroup>
-                <FormLabel htmlFor="username">{LL().USERNAME()}</FormLabel>
+                <FormLabel for="username">{LL().USERNAME()}</FormLabel>
                 <FormInput value={state.user} type="text" name="username"
                     placeholder={LL().USERNAME().toLocaleLowerCase(locale())} required isValid={valid_user()}
                     onInput={on_username_change} />
             </FormGroup>
 
             <FormGroup>
-                <FormLabel htmlFor="password">
+                <FormLabel for="password">
                     {LL().PASSWORD()}
-                    <span className="ln-tooltip" style={{ marginLeft: '0.2em' }}>
+                    <span class="ln-tooltip" style={{ marginLeft: '0.2em' }}>
                         <VectorIcon src={CircleEmptyInfoIcon} />
                     </span>
                 </FormLabel>
                 <FormInput type="password" name="password" placeholder={LL().PASSWORD().toLocaleLowerCase(locale())} required isValid={valid_pass()}
-                    className={passwordClass()} onInput={on_password_change} />
+                    class={passwordClass()} onInput={on_password_change} />
                 <FormText>{LL().PASSWORD_REQS()}</FormText>
             </FormGroup>
 
@@ -339,7 +339,7 @@ export default function RegisterView() {
 
             <Show when={errorMsg()}>
                 <FormGroup>
-                    <div className="ln-login-error">
+                    <div class="ln-login-error">
                         Registration Error: {errorMsg()}!
                     </div>
                 </FormGroup>
@@ -350,7 +350,7 @@ export default function RegisterView() {
             <FormGroup>
                 <div style={{ display: 'flex', padding: '0 1em' }}>
                     <button
-                        className="ln-btn ui-text"
+                        class="ln-btn ui-text"
                         classList={{ 'ln-btn--loading-icon': state.is_registering }}
                         style={{ "margin-inline-end": 'auto' }}
                         onClick={() => setErrorMsg(null)}
@@ -370,7 +370,7 @@ export default function RegisterView() {
                     </button>
 
 
-                    <Link href="/login" className="ln-btn">{LL().GOTO_LOGIN()}</Link>
+                    <Link href="/login" class="ln-btn">{LL().GOTO_LOGIN()}</Link>
                 </div>
             </FormGroup>
 

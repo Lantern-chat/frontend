@@ -6,12 +6,12 @@ export function AccessibilitySettingsTab() {
     let { LL } = useI18nContext();
 
     return (
-        <form className="ln-settings-form">
-            <TogglePrefsFlag htmlFor="reduce_motion"
+        <form class="ln-settings-form">
+            <TogglePrefsFlag for="reduce_motion"
                 label={LL().main.settings.accessibility.REDUCE_MOTION()}
                 flag={UserPreferenceFlags.ReduceAnimations} />
 
-            <TogglePrefsFlag htmlFor="unfocus_pause"
+            <TogglePrefsFlag for="unfocus_pause"
                 label={LL().main.settings.accessibility.UNFOCUS_PAUSE()}
                 flag={UserPreferenceFlags.UnfocusPause} />
         </form>
