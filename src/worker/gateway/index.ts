@@ -62,7 +62,13 @@ class Gateway {
     do_connect() {
         postMsg({ t: GatewayMessageDiscriminator.Connecting });
 
-        this.ws.connect(`wss://${self.location.host}/api/v1/gateway?compress=true&encoding=json`);
+        let protocol = 'wss:';
+
+        if(__DEV__ && self.location.protocol.startsWith('http')) {
+            protocol = self.location.protocol.replace('http', 'ws');
+        }
+
+        this.ws.connect(`${protocol}//${self.location.host}/api/v1/gateway?compress=true&encoding=json`);
     }
 
     retry_now() {
