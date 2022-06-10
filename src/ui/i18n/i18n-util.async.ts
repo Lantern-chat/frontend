@@ -9,6 +9,7 @@ const localeTranslationLoaders = {
 	'en-GB': () => import('./en-GB'),
 	'en-US': () => import('./en-US'),
 	es: () => import('./es'),
+	id: () => import('./id'),
 	owo: () => import('./owo'),
 }
 
@@ -21,6 +22,9 @@ const localeNamespaceLoaders = {
 	},
 	es: {
 		main: () => import('./es/main')
+	},
+	id: {
+		main: () => import('./id/main')
 	},
 	owo: {
 		main: () => import('./owo/main')
