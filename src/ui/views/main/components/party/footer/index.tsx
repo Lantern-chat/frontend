@@ -17,7 +17,7 @@ import { UserAvatar } from "ui/views/main/components/user_avatar";
 import { Icons } from "lantern-icons";
 
 import "./footer.scss";
-import { copyToClipboard } from "ui/utils";
+import { copyText } from "lib/clipboard";
 export function PartyFooter() {
     let { LL } = useI18nContext();
 
@@ -47,16 +47,16 @@ export function PartyFooter() {
             <div class="ln-party-footer__user">
                 <Show when={state.user} fallback={<Spinner size="100%" />}>
                     {user => {
-                        let user_discriminator = user.discriminator.toString(16).toUpperCase().padStart(4, '0')
+                        let user_discriminator = createMemo(() => user.discriminator.toString(16).toUpperCase().padStart(4, '0'))
                         return (<>
                             <UserAvatar nickname={user.username} user={user} status={state.status} is_light_theme={state.is_light_theme} />
 
-                            <div class="ln-username" onClick={() => copyToClipboard(user.username + '#' + user_discriminator)}>
+                            <div class="ln-username" onClick={() => copyText(user.username + '#' + user_discriminator())}>
                                 <span class="ln-username__name ui-text">
                                     {user.username}
                                 </span>
                                 <span class="ln-username__discrim ui-text">
-                                    #{user_discriminator}
+                                    #{user_discriminator()}
                                 </span>
                             </div>
                         </>)

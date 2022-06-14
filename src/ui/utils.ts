@@ -131,11 +131,3 @@ export function isPageHidden(): boolean {
     return hidden != null && d[hidden];
 }
 
-export function copyToClipboard(text: string): void {
-    var textArea = document.createElement("textarea");
-    textArea.value = text;
-    document.body.appendChild(textArea);
-    textArea.select();
-    document.execCommand("copy");
-    document.body.removeChild(textArea);
-}

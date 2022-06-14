@@ -1,4 +1,4 @@
-import { createMemo, Show } from "solid-js";
+import { createMemo, Match, Show, Switch } from "solid-js";
 import { useStructuredSelector } from "solid-mutant";
 import { PartyMember, Snowflake, User, PresenceStatus, parse_presence, UserPreferenceFlags } from "state/models";
 import { ReadRootState, useRootSelector } from "state/root";
@@ -6,7 +6,7 @@ import { activeParty } from "state/selectors/active";
 import { selectCachedUser } from "state/selectors/selectCachedUser";
 import { Avatar } from "ui/components/common/avatar";
 import { useI18nContext } from "ui/i18n/i18n-solid";
-import { copyToClipboard } from "ui/utils";
+import { copyText } from "lib/clipboard";
 import { VectorIcon } from 'ui/components/common/icon';
 
 import { Icons } from "lantern-icons";
@@ -52,7 +52,7 @@ export function UserCard(props: IUserCardProps) {
         }
         return
     })
-    let background_color = pickColorFromHash(props.user.id, state.is_light_theme);
+    let background_color = createMemo(() => pickColorFromHash(props.user.id, state.is_light_theme));
     let presence = createMemo(() => parse_presence(member_info()?.presence));
 
     let status = createMemo(() => {
@@ -64,7 +64,7 @@ export function UserCard(props: IUserCardProps) {
         }
     });
 
-    let nick = member_info()?.nick;
+    let nick = createMemo(() => member_info()?.nick);
 
     
     return (
@@ -74,7 +74,7 @@ export function UserCard(props: IUserCardProps) {
                     <>
                 <div class="ln-user-card ln-contextmenu">
                     <div class="banner" style={{"background-color":background_color}}></div>
-                    <Avatar username={props.user.username} text={(nick ?? cached_user.user.username)?.charAt(0)} backgroundColor={background_color} rounded={true} />
+                    <Avatar username={props.user.username} text={(nick() ?? cached_user.user.username)?.charAt(0)} backgroundColor={background_color()} rounded={true} />
                     <div class="ln-user-status" title={status()[0]}>
                         <Show
                             fallback={<span class={status()[1]} />}
@@ -83,13 +83,20 @@ export function UserCard(props: IUserCardProps) {
                             <VectorIcon id={Icons.MobilePhone} />
                         </Show>
                     </div>
-                    <div class="ln-username" onClick={() => copyToClipboard(cached_user.user.username + '#'+user_discriminator)}>
-                        {!nick
-                            ? <div class="font-large"><b>{cached_user.user.username}</b> <span class="ln-username__discrim">#{user_discriminator}</span></div>
-                            : <><b class="font-large">{nick}</b> <span class="ln-username__discrim">{cached_user.user.username} #{user_discriminator}</span></>
-                        }
+                    <div class="ln-username" onClick={() => copyText(cached_user.user.username + '#'+user_discriminator)}>
+                        <Switch>
+                            <Match when={nick()}>
+                                <b class="font-large">{nick}</b>
+                                <span class="ln-username__discrim">{cached_user.user.username} #{user_discriminator}</span>
+                            </Match>
+                            <Match when={!nick()}>
+                                <div class="font-large"><b>{cached_user.user.username}</b> <span class="ln-username__discrim">#{user_discriminator}</span></div>
+                            </Match>
+                        </Switch>
                     </div>
-                    {cached_user.user.status && <div class="ln-user-custom-status">{cached_user.user.status}</div>}
+                    <Show when={cached_user.user.status}>
+                        {status => <div class="ln-user-custom-status" textContent={status}/>}
+                    </Show>
                 </div></>
                 )
             }}
