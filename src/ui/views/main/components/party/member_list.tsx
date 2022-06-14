@@ -17,6 +17,11 @@ import { BotLabel } from "../misc/bot_label";
 import { Icons } from "lantern-icons";
 
 import "./member_list.scss";
+import { UIText } from "ui/components/common/ui-text";
+import { pickColorFromHash } from "lib/palette";
+import { AnchoredModal } from "ui/components/modal/anchored";
+import { UserCard } from "../menus/user_card";
+import { createSimpleToggleOnClick } from "ui/hooks/useMain";
 export function MemberList() {
     let state = useStructuredSelector({
         is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
@@ -169,8 +174,13 @@ function ListedMember(props: IListedMemberProps) {
 
     let presence = createMemo(() => parse_presence(props.member.presence));
 
+    let [show, main_click_props] = createSimpleToggleOnClick();
+
     return (
-        <li class="ln-member-list__item">
+        <li class="ln-member-list__item" {...main_click_props}>
+            <AnchoredModal show={show()}>
+                                <UserCard user={props.member.user} />
+                            </AnchoredModal>
             <UserAvatar nickname={display_name()}
                 user={props.member.user}
                 status={presence().status}

@@ -1,4 +1,4 @@
-import { createSignal, Show } from "solid-js";
+import { createMemo, createSignal, Show } from "solid-js";
 import { useStructuredSelector } from "solid-mutant";
 
 import { HISTORY } from "state/global";
@@ -17,6 +17,7 @@ import { UserAvatar } from "ui/views/main/components/user_avatar";
 import { Icons } from "lantern-icons";
 
 import "./footer.scss";
+import { copyToClipboard } from "ui/utils";
 export function PartyFooter() {
     let { LL } = useI18nContext();
 
@@ -45,18 +46,21 @@ export function PartyFooter() {
         <footer class="ln-party-footer">
             <div class="ln-party-footer__user">
                 <Show when={state.user} fallback={<Spinner size="100%" />}>
-                    {user => (<>
-                        <UserAvatar nickname={user.username} user={user} status={state.status} is_light_theme={state.is_light_theme} />
+                    {user => {
+                        let user_discriminator = user.discriminator.toString(16).toUpperCase().padStart(4, '0')
+                        return (<>
+                            <UserAvatar nickname={user.username} user={user} status={state.status} is_light_theme={state.is_light_theme} />
 
-                        <div class="ln-username">
-                            <span class="ln-username__name ui-text">
-                                {user.username}
-                            </span>
-                            <span class="ln-username__discrim ui-text">
-                                #{user.discriminator.toString(16).toUpperCase().padStart(4, '0')}
-                            </span>
-                        </div>
-                    </>)}
+                            <div class="ln-username" onClick={() => copyToClipboard(user.username + '#' + user_discriminator)}>
+                                <span class="ln-username__name ui-text">
+                                    {user.username}
+                                </span>
+                                <span class="ln-username__discrim ui-text">
+                                    #{user_discriminator}
+                                </span>
+                            </div>
+                        </>)
+                    }}
                 </Show>
             </div>
 

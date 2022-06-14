@@ -130,3 +130,12 @@ if(typeof d.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later su
 export function isPageHidden(): boolean {
     return hidden != null && d[hidden];
 }
+
+export function copyToClipboard(text: string): void {
+    var textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textArea);
+}

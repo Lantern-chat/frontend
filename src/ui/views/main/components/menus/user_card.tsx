@@ -1,7 +1,15 @@
-import { Show } from "solid-js";
-import { PartyMember, Snowflake, User } from "state/models";
+import { createMemo, Show } from "solid-js";
+import { useStructuredSelector } from "solid-mutant";
+import { PartyMember, Snowflake, User, PresenceStatus, parse_presence, UserPreferenceFlags } from "state/models";
 import { ReadRootState, useRootSelector } from "state/root";
+import { activeParty } from "state/selectors/active";
 import { selectCachedUser } from "state/selectors/selectCachedUser";
+import { Avatar } from "ui/components/common/avatar";
+import { useI18nContext } from "ui/i18n/i18n-solid";
+import { copyToClipboard } from "ui/utils";
+import { VectorIcon } from 'ui/components/common/icon';
+
+import { Icons } from "lantern-icons";
 
 export interface IUserCardProps {
     user: User,
@@ -11,21 +19,80 @@ export interface IUserCardProps {
 
 import "./list.scss";
 import "./user_card.scss";
+import { selectPrefsFlag } from "state/selectors/prefs";
+import { pickColorFromHash } from "lib/palette";
 export function UserCard(props: IUserCardProps) {
-    let nick = props.member?.nick;
+    const { LL } = useI18nContext();
 
     let cached_user = useRootSelector((state: ReadRootState) => {
         let active_party = state.chat.active_party;
         return selectCachedUser(state, props.user.id, active_party);
     });
 
+    let user_discriminator = props.user.discriminator.toString(16).toUpperCase().padStart(4, '0');
+    
+    let state = useStructuredSelector({
+        is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
+        party: (state: ReadRootState) => {
+            let party_id = activeParty(state);
+            if(party_id) {
+                return state.party.parties[party_id];
+            }
+            return;
+        },
+    });
+
+    
+    let member_info = createMemo(() => {
+        let members = state.party?.members;
+        for(let member of Object.values(members)) {
+            if(member.user.id == props.user.id) {
+                return member;
+            }
+        }
+        return
+    })
+    let background_color = pickColorFromHash(props.user.id, state.is_light_theme);
+    let presence = createMemo(() => parse_presence(member_info()?.presence));
+
+    let status = createMemo(() => {
+        switch(presence().status) {
+            case PresenceStatus.Online: return [LL().main.ONLINE(), "online"];
+            case PresenceStatus.Busy: return [LL().main.BUSY(), "busy"];
+            case PresenceStatus.Away: return [LL().main.AWAY(), "away"];
+            default: return [LL().main.OFFLINE(), "offline"];
+        }
+    });
+
+    let nick = member_info()?.nick;
+
+    
     return (
         <Show when={cached_user()} fallback={<span class="ui-text">User Not Found</span>}>
-            {cached_user => (
+            {cached_user => {
+                return (
+                    <>
                 <div class="ln-user-card ln-contextmenu">
-                    <span class="ui-text">User: {cached_user.user.username}</span>
-                </div>
-            )}
+                    <div class="banner" style={{"background-color":background_color}}></div>
+                    <Avatar username={props.user.username} text={(nick ?? cached_user.user.username)?.charAt(0)} backgroundColor={background_color} rounded={true} />
+                    <div class="ln-user-status" title={status()[0]}>
+                        <Show
+                            fallback={<span class={status()[1]} />}
+                            when={presence().status == PresenceStatus.Online && presence().is_mobile}
+                        >
+                            <VectorIcon id={Icons.MobilePhone} />
+                        </Show>
+                    </div>
+                    <div class="ln-username" onClick={() => copyToClipboard(cached_user.user.username + '#'+user_discriminator)}>
+                        {!nick
+                            ? <div class="font-large"><b>{cached_user.user.username}</b> <span class="ln-username__discrim">#{user_discriminator}</span></div>
+                            : <><b class="font-large">{nick}</b> <span class="ln-username__discrim">{cached_user.user.username} #{user_discriminator}</span></>
+                        }
+                    </div>
+                    {cached_user.user.status && <div class="ln-user-custom-status">{cached_user.user.status}</div>}
+                </div></>
+                )
+            }}
         </Show>
     );
 }

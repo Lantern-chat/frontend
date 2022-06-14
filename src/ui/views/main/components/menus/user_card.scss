@@ -1,5 +1,55 @@
 @import "lib/variables";
+@import "lib/variables";
+
 
 .ln-user-card {
-    padding: 0.9em 0.8em;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    .banner{
+        width: 300px;
+        height: 60px;
+        @media (max-width: $ln-min-channel-width) {
+            width: 200px;
+            height: 40px;
+        }
+    }
+    .ln-avatar{
+        position: absolute;
+        top: 16.66px;
+        left: 20px;
+    }
+    .ln-avatar__image, .ln-avatar__text{
+        width: 75px;
+        height: 75px;
+        font-size: 25px;
+        @media (max-width: $ln-min-channel-width) {
+            width: 50px;
+            height: 50px;
+        }
+    }
+    .ln-username{
+        cursor: pointer;
+        padding: 3em 0.8em 0.9em 0.8em;
+    }
+    .ln-user-status{
+        display: initial;
+        top: 75px;
+        left: 80px;
+        @media (max-width: $ln-min-channel-width) {
+            top: 50px;
+            left: 60px;
+        }
+    }
+    b{
+        font-weight: bold;
+    }
+    .font-large{
+        display: block;
+        font-size: 1.3rem;
+    }
+    .ln-user-custom-status{
+        display: block;
+        padding: 0.2em 0.8em 1em 0.8em;
+    }
 }
