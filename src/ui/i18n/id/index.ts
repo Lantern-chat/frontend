@@ -1,6 +1,6 @@
 import type { Translation } from '../i18n-types';
 
-import 'dayjs/locale/es';
+import 'dayjs/locale/id';
 
 // @stringify
 const id: Translation = {

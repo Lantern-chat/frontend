@@ -78,8 +78,8 @@ const idID_main: NamespaceMainTranslation = {
             DEV_MODE: "Aktikan Mode Pengembang",
         },
         appearance: {
-            THEME: "Theme",
-            GROUP_LINES: "Show Lines Between Groups",
+            THEME: "Tema",
+            GROUP_LINES: "Tunjukkan spasi antara grup",
             GROUP_PADDING: "Padding Grup",
             LIGHT_THEME: "Tema Terang",
             DARK_THEME: "Tema Gelap",
