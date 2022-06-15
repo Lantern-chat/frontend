@@ -21,6 +21,7 @@ import "./list.scss";
 import "./user_card.scss";
 import { selectPrefsFlag } from "state/selectors/prefs";
 import { pickColorFromHash } from "lib/palette";
+import { Markdown } from "ui/components/common/markdown";
 export function UserCard(props: IUserCardProps) {
     const { LL } = useI18nContext();
 
@@ -96,6 +97,13 @@ export function UserCard(props: IUserCardProps) {
                     </div>
                     <Show when={cached_user.user.status}>
                         {status => <div class="ln-user-custom-status" textContent={status}/>}
+                    </Show>
+                    <Show when={cached_user.user.bio}>
+                        <div class="divider"></div>
+                        <div class="ln-user-biography">
+                            <strong class="ln-user-biography-title">ABOUT ME</strong>
+                            <Markdown source={cached_user.user.bio!} />
+                        </div>
                     </Show>
                 </div></>
                 )

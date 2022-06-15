@@ -49,6 +49,19 @@
     }
     .ln-user-custom-status{
         display: block;
-        padding: 0.2em 0.8em 1em 0.8em;
+        padding: 0em 0.8em .5em 0.8em;
+    }
+    .divider{
+        height: 1px;
+        background-color: #90a5ee;
+    }
+    .ln-user-biography{
+        padding: 0.7em 0.8em 1em 0.8em;
+        .ln-user-biography-title{
+            font-size: .8em;
+            font-weight: bold;
+            margin-bottom: 1em;
+            display: block;
+        }
     }
 }
