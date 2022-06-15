@@ -73,7 +73,7 @@ export function UserCard(props: IUserCardProps) {
                 return (
                     <>
                 <div class="ln-user-card ln-contextmenu">
-                    <div class="banner" style={{"background-color":background_color}}></div>
+                    <div class="banner" style={{"background-color":background_color()}}></div>
                     <Avatar username={props.user.username} text={(nick() ?? cached_user.user.username)?.charAt(0)} backgroundColor={background_color()} rounded={true} />
                     <div class="ln-user-status" title={status()[0]}>
                         <Show
