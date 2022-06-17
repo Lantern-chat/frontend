@@ -30,7 +30,7 @@ export function UserCard(props: IUserCardProps) {
         return selectCachedUser(state, props.user.id, active_party);
     });
 
-    let user_discriminator = props.user.discriminator.toString(16).toUpperCase().padStart(4, '0');
+    let user_discriminator = createMemo(() => props.user.discriminator.toString(16).toUpperCase().padStart(4, '0')) ;
     
     let state = useStructuredSelector({
         is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
@@ -44,15 +44,7 @@ export function UserCard(props: IUserCardProps) {
     });
 
     
-    let member_info = createMemo(() => {
-        let members = state.party?.members;
-        for(let member of Object.values(members)) {
-            if(member.user.id == props.user.id) {
-                return member;
-            }
-        }
-        return
-    })
+    let member_info = createMemo(() => state.party?.members[props.user.id]);
     let background_color = createMemo(() => pickColorFromHash(props.user.id, state.is_light_theme));
     let presence = createMemo(() => parse_presence(member_info()?.presence));
 
@@ -87,11 +79,11 @@ export function UserCard(props: IUserCardProps) {
                     <div class="ln-username" onClick={() => copyText(cached_user.user.username + '#'+user_discriminator)}>
                         <Switch>
                             <Match when={nick()}>
-                                <b class="font-large">{nick}</b>
+                            <h4 class="ui-font">{nick}</h4>
                                 <span class="ln-username__discrim">{cached_user.user.username} #{user_discriminator}</span>
                             </Match>
                             <Match when={!nick()}>
-                                <div class="font-large"><b>{cached_user.user.username}</b> <span class="ln-username__discrim">#{user_discriminator}</span></div>
+                                <div class="font-large"><span class="ui-font">{cached_user.user.username}</span> <span class="ln-username__discrim">#{user_discriminator}</span></div>
                             </Match>
                         </Switch>
                     </div>

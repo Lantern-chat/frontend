@@ -17,35 +17,32 @@
         position: absolute;
         top: 16.66px;
         left: 20px;
-    }
-    .ln-avatar__image, .ln-avatar__text{
-        width: 75px;
-        height: 75px;
-        font-size: 25px;
-        @media (max-width: $ln-min-channel-width) {
-            width: 50px;
-            height: 50px;
+        &__image, &__text{
+            width: 75px;
+            height: 75px;
+            font-size: 25px;
+            @media (max-width: $ln-min-channel-width) {
+                width: 50px;
+                height: 50px;
+            }
         }
     }
+        
     .ln-username{
         cursor: pointer;
         padding: 3em 0.8em 0.9em 0.8em;
     }
     .ln-user-status{
         display: initial;
-        top: 75px;
-        left: 80px;
+        top: 4.5rem;
+        left: 4.8rem;
         @media (max-width: $ln-min-channel-width) {
-            top: 50px;
-            left: 60px;
+            top: 3.2rem;
+            left: 3.5rem;
         }
     }
     b{
         font-weight: bold;
-    }
-    .font-large{
-        display: block;
-        font-size: 1.3rem;
     }
     .ln-user-custom-status{
         display: block;
@@ -63,5 +60,10 @@
             margin-bottom: 1em;
             display: block;
         }
+    }
+    .ui-font{
+        font-weight: bold;
+        font-size: 1.3rem;
+        margin-bottom: .3em;
     }
 }
