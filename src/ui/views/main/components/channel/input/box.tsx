@@ -216,7 +216,7 @@ function UsersTyping() {
 
         if(active_room && active_party) {
             let typing = state.chat.rooms[active_room]?.typing;
-            if(typing.length) {
+            if(typing?.length) {
                 let selected = [],
                     remaining = typing.length,
                     members = state.party.parties[active_party].members,
