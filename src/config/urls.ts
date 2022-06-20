@@ -1,6 +1,6 @@
 import { Snowflake } from "state/models";
 
-const cdn_url = () => `https://${window.config.cdn}`;
+const cdn_url = () => `http://${window.config.cdn}:5678/cdn`;
 
 function avatar_url(category: string, id: Snowflake, hash: string): string {
     return `${cdn_url()}/avatar/${category}/${id}/${hash}`;

@@ -22,6 +22,7 @@ import "./user_card.scss";
 import { selectPrefsFlag } from "state/selectors/prefs";
 import { pickColorFromHash } from "lib/palette";
 import { Markdown } from "ui/components/common/markdown";
+import { user_avatar_url } from "config/urls";
 export function UserCard(props: IUserCardProps) {
     const { LL } = useI18nContext();
 
@@ -59,6 +60,17 @@ export function UserCard(props: IUserCardProps) {
 
     let nick = createMemo(() => member_info()?.nick);
 
+    let url_or_color = createMemo(() => {
+        let url, backgroundColor;
+        let user = member_info()!.user;
+        if(user.avatar){
+            url = user_avatar_url(user.id!, user.avatar!);
+        }else{
+            backgroundColor = pickColorFromHash(props.user.id, state.is_light_theme);
+        }
+        return { url, backgroundColor };
+    })
+
     
     return (
         <Show when={cached_user()} fallback={<span class="ui-text">User Not Found</span>}>
@@ -67,7 +79,7 @@ export function UserCard(props: IUserCardProps) {
                     <>
                 <div class="ln-user-card ln-contextmenu">
                     <div class="banner" style={{"background-color":background_color()}}></div>
-                    <Avatar username={props.user.username} text={(nick() ?? cached_user.user.username)?.charAt(0)} backgroundColor={background_color()} rounded={true} />
+                    <Avatar username={props.user.username} text={(nick() ?? cached_user.user.username)?.charAt(0)} {...url_or_color()} rounded={true} />
                     <div class="ln-user-status" title={status()[0]}>
                         <Show
                             fallback={<span class={status()[1]} />}
