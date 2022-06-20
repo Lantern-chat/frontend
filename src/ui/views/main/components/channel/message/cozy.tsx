@@ -60,7 +60,7 @@ export function CozyMessage(props: IMessageProps) {
             <div class="ln-msg__message">
                 <Show when={props.msg.sg}>
                     <div class="ln-msg__title">
-                        <MessageUserName name={nickname()} user={props.msg.msg.author} />
+                        <MessageUserName name={nickname()} user={props.msg.msg.author} is_light_theme={props.is_light_theme} />
 
                         <span class="ln-separator"> - </span>
 

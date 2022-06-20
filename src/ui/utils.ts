@@ -130,3 +130,4 @@ if(typeof d.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later su
 export function isPageHidden(): boolean {
     return hidden != null && d[hidden];
 }
+
