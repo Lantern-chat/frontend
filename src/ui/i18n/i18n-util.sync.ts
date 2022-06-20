@@ -8,11 +8,13 @@ import { loadedFormatters, loadedLocales, locales } from './i18n-util'
 import en_GB from './en-GB'
 import en_US from './en-US'
 import es from './es'
+import id from './id'
 import owo from './owo'
 
 import en_GB_main from './en-GB/main'
 import en_US_main from './en-US/main'
 import es_main from './es/main'
+import id_main from './id/main'
 import owo_main from './owo/main'
 
 const localeTranslations = {
@@ -27,6 +29,10 @@ const localeTranslations = {
 	es: {
 		...es,
 		main: es_main
+	},
+	id: {
+		...id,
+		main: id_main
 	},
 	owo: {
 		...owo,

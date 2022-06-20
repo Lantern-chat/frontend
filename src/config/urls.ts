@@ -1,9 +1,14 @@
 import { Snowflake } from "state/models";
 
-const cdn_url = () => `https://${window.config.cdn}`;
+const PROTOCOL = window.config.secure ? 'https://' : '';
+
+const CDN_URL =
+    (__DEV__ && window.config.cdn == window.location.hostname) ?
+        `${PROTOCOL}${window.location.host}/cdn` :
+        `${PROTOCOL}${window.config.cdn}`;
 
 function avatar_url(category: string, id: Snowflake, hash: string): string {
-    return `${cdn_url()}/avatar/${category}/${id}/${hash}`;
+    return `${CDN_URL}/avatar/${category}/${id}/${hash}`;
 }
 
 export function user_avatar_url(user_id: Snowflake, avatar_hash: string): string {
@@ -23,7 +28,7 @@ export function role_avatar_url(role_id: Snowflake, avatar_hash: string): string
 }
 
 export function message_attachment_url(room_id: Snowflake, attachment_id: Snowflake, filename: string): string {
-    return `${cdn_url()}/attachments/${room_id}/${attachment_id}/${filename}`
+    return `${CDN_URL}/attachments/${room_id}/${attachment_id}/${filename}`
 }
 
 export function room_url(party_id: Snowflake, room_id?: Snowflake): string {

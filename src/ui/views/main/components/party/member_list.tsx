@@ -73,7 +73,7 @@ export function MemberList() {
                 // TODO: Replace with member.flags != 0 ?
                 if(presence.status != PresenceStatus.Offline) {
                     // if the member is in any roles AND if there are any roles to hoist
-                    if(hoisted && member.roles) {
+                    if(hoisted && member.roles?.length) {
                         for(let hr of hoisted) {
                             // iterate through each hoisted role and check if this member is part of it
                             // TODO: More efficient array intersection, probably using sets/maps

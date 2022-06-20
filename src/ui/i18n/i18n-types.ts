@@ -9,6 +9,7 @@ export type Locales =
 	| 'en-GB'
 	| 'en-US'
 	| 'es'
+	| 'id'
 	| 'owo'
 
 export type Translation = RootTranslation & DisallowNamespaces

@@ -99,18 +99,14 @@ export function createVirtualizedFeed(): [
         return [];
     });
 
-    // use `on` to untrack body, as the individual message parts are unimportant for tracking
-    createRenderEffect(on(
-        () => room()?.msgs,
-        msgs => {
-            if(msgs && msgs.length) {
-                let most_recent_id = msgs[msgs.length - 1].msg.id;
-                if(end() != most_recent_id) {
-                    setEnd(most_recent_id);
-                }
-            }
+    createRenderEffect(() => {
+        let r = room(), l: number | undefined;
+
+        // NOTE: This tracks `length`
+        if(l = r?.msgs.length) {
+            untrack(() => setEnd(r!.msgs[l! - 1].msg.id));
         }
-    ));
+    });
 
     let dispatch = useRootDispatch();
 
