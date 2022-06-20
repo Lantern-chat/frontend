@@ -32,7 +32,7 @@ export interface IAttachmentState {
 
 export interface IRoomState {
     room: Room,
-    msgs: Array<IMessageState>,
+    msgs: IMessageState[],
     attachments: IAttachmentState[],
     pending: IMessageState[],
     current_edit: null | Snowflake,
