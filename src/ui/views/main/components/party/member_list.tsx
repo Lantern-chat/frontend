@@ -179,8 +179,9 @@ function ListedMember(props: IListedMemberProps) {
     return (
         <li class="ln-member-list__item" {...main_click_props}>
             <AnchoredModal show={show()}>
-                                <UserCard user={props.member.user} />
-                            </AnchoredModal>
+                <UserCard user={props.member.user} />
+            </AnchoredModal>
+
             <UserAvatar nickname={display_name()}
                 user={props.member.user}
                 status={presence().status}
