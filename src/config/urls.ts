@@ -1,6 +1,6 @@
 import { Snowflake } from "state/models";
 
-const PROTOCOL = window.config.secure ? 'https://' : '';
+const PROTOCOL = window.config.secure ? 'https://' : (window.location.protocol + '//');
 
 const CDN_URL =
     (__DEV__ && window.config.cdn == window.location.hostname) ?
