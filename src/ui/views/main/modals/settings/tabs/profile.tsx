@@ -1,7 +1,6 @@
 import { createMemo, createSignal, Match, Switch } from 'solid-js'
 import './profile.scss'
 import { Show } from 'solid-js'
-import { categorize_mime } from 'lib/mime'
 import { sendFile } from 'state/commands/sendfile'
 import { SetUserAvatar } from 'client-sdk/src/api/commands'
 import { CLIENT } from 'state/global'
@@ -16,7 +15,7 @@ import { Avatar } from 'ui/components/common/avatar'
 import { user_avatar_url } from 'config/urls'
 import { MediaPreview } from 'ui/components/file'
 import { useI18nContext } from 'ui/i18n/i18n-solid'
-import { PositionedModal } from 'ui/components/modal/positioned'
+import { imageResizer } from 'lib/imageresizing'
 
 
 export function ProfileSettingsTab() {
@@ -32,20 +31,24 @@ export function ProfileSettingsTab() {
         setAvatarError('')
     }
 
-
     const applyAvatar = () => {
-        sendFile({
-            file: {file: avatar()!},
-            onError: () => console.error("Upload error"),
-            onProgress: (loaded, total) => { console.log(loaded, total)},
-        }).then((value) => {
-            CLIENT.execute(SetUserAvatar({file_id: value!}))
-            .catch(err => {
-                if(err.code === 40413) setAvatarError('File too large, please try again with a smaller file')
-                else setAvatarError("Unexpected error, please try again")
-            })
-            setUnsavedChange(false)
-        })
+
+        imageResizer(avatar()!)
+              .then((blob) => {
+                    const resized_file = new File([blob], 'avatar.png', { type: 'image/png' })
+                    sendFile({
+                        file: {file: resized_file},
+                        onError: () => console.error("Upload error"),
+                        onProgress: (loaded, total) => { console.log(loaded, total)},
+                    }).then((value) => {
+                        CLIENT.execute(SetUserAvatar({file_id: value!}))
+                        .catch(err => {
+                            if(err.code === 40413) setAvatarError('File too large, please try again with a smaller file')
+                            else setAvatarError("Unexpected error, please try again")
+                        })
+                        setUnsavedChange(false)
+                    })
+              });
     }
 
     const { LL } = useI18nContext();
@@ -62,7 +65,7 @@ export function ProfileSettingsTab() {
             <div class="ln-user-avatar">
                 <h4 class="ui-font">AVATAR</h4>
                 <label class="ln-user-avatar-input">
-                    <input type="file" onChange={(e) => UpdateAvatar(e.target.files[0])} id="input-user-avatar" />
+                    <input type="file" onChange={(e) => UpdateAvatar((e.target as HTMLInputElement).files![0])} id="input-user-avatar" />
                     Change Avatar
                 </label>
                 <Show when={avatar_error() !== ""}>
@@ -86,7 +89,7 @@ export function ProfileSettingsTab() {
                                         <MediaPreview file={avatar()!} />
                                     </Match>
                                     <Match when={state.user.user?.avatar}>
-                                        <Avatar url={user_avatar_url(state.user.user!.id, state.user.user!.avatar)} />
+                                        <Avatar url={user_avatar_url(state.user.user!.id, state.user.user?.avatar)} />
                                     </Match>
                                 </Switch>
                             </label>
