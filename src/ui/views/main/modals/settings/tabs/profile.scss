@@ -40,6 +40,19 @@ label[for="input-user-avatar"]{
     .ui-font{
         font-weight: bold;
     }
+    &-remove-btn{
+        padding: .8em 1.2em;
+        border-radius: 5px;
+        display: inline-block;
+        margin-top: 10px;
+        margin-left: 10px;
+        cursor: pointer;
+        transition: .5s;
+        border: none;
+        &:hover{
+            text-decoration: underline;
+        }
+    }
 
     input[type="file"]{
         display: none;

@@ -2,7 +2,7 @@ import { createMemo, createSignal, Match, Switch } from 'solid-js'
 import './profile.scss'
 import { Show } from 'solid-js'
 import { sendFile } from 'state/commands/sendfile'
-import { SetUserAvatar } from 'client-sdk/src/api/commands'
+import { DeleteUserAvatar, SetUserAvatar } from 'client-sdk/src/api/commands'
 import { CLIENT } from 'state/global'
 import { pickColorFromHash } from 'lib/palette'
 import { useRootSelector, useRootStore } from 'state/root'
@@ -23,7 +23,7 @@ export function ProfileSettingsTab() {
     const [avatar, setAvatar] = createSignal<File | null>(null);
     const [avatar_error, setAvatarError] = createSignal('');
     const [unsaved_change, setUnsavedChange] = createSignal(false);
-
+    const [removing_avatar, setRemovingAvatar] = createSignal(false);
 
     const UpdateAvatar = (new_avatar:File) => {
         setUnsavedChange(true)
@@ -32,8 +32,10 @@ export function ProfileSettingsTab() {
     }
 
     const applyAvatar = () => {
-
-        imageResizer(avatar()!)
+        if (removing_avatar()){
+            CLIENT.execute(DeleteUserAvatar(state.user.user!.id))
+        } else {
+            imageResizer(avatar()!)
               .then((blob) => {
                     const resized_file = new File([blob], 'avatar.png', { type: 'image/png' })
                     sendFile({
@@ -49,6 +51,7 @@ export function ProfileSettingsTab() {
                         setUnsavedChange(false)
                     })
               });
+            }
     }
 
     const { LL } = useI18nContext();
@@ -68,6 +71,7 @@ export function ProfileSettingsTab() {
                     <input type="file" onChange={(e) => UpdateAvatar((e.target as HTMLInputElement).files![0])} id="input-user-avatar" />
                     Change Avatar
                 </label>
+                <button class='ln-user-avatar-remove-btn' onclick={() => {setRemovingAvatar(true); setUnsavedChange(true)}}>Remove Avatar</button>
                 <Show when={avatar_error() !== ""}>
                     <div class="ln-user-avatar-error ui-font">{avatar_error()}</div>
                 </Show>
@@ -83,8 +87,11 @@ export function ProfileSettingsTab() {
                         <div class="ln-user-avatar">
                             <label for="input-user-avatar">
                                 <Switch fallback={
-                                    <Avatar username={state.user.user?.username}></Avatar>
+                                    <Avatar username={state.user.user?.username} text={state.user.user?.username.charAt(0)}></Avatar>
                                 }>
+                                    <Match when={removing_avatar()}>
+                                        <Avatar username={state.user.user?.username} text={state.user.user?.username.charAt(0)}></Avatar>
+                                    </Match>
                                     <Match when={avatar()}>
                                         <MediaPreview file={avatar()!} />
                                     </Match>
