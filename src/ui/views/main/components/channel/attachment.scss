@@ -1,0 +1,48 @@
+@import 'lib/variables';
+
+.ln-attachment-area{
+    overflow: auto;
+    white-space: nowrap;
+    display: flex;
+    background-color: var(--ln-primary-surface-color);
+}
+
+.ln-channel-attachment{
+    max-width: 200px;
+    min-width: 200px;
+    max-height: 200px;
+    min-height: 200px;
+    display: inline-block;
+    padding: 1em;
+    margin: 1em;
+    border-radius: .5em;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--ln-secondary-surface-color);
+    position: relative;
+    &-delete-btn{
+        position: absolute;
+        right: 0.5em;
+        top: 0.5em;
+        background-color: var(--ln-failure-color);
+        padding: 0.3em;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    img{
+        max-width: 100%;
+        max-height: 100%;
+        width: initial;
+        flex-grow: 1;
+    }
+    &-file-name{
+        display: block;
+        span{
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: inherit;
+            display: block;
+        }
+    }
+}

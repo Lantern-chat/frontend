@@ -14,7 +14,11 @@ import { activeParty, activeRoom } from "state/selectors/active";
 import { Panel } from "state/mutators/window";
 
 import "./party.scss";
+import { createStore } from "solid-js/store";
 export function Party() {
+    const [uploadingFiles, setuploadingFiles] = createStore<File[]>([]);
+    const [droppingfile, setDroppingFile] = createSignal<boolean>(false);
+
     let state = useStructuredSelector({
         active_party: activeParty,
         show_panel: (state: ReadRootState) => state.window.show_panel,
@@ -93,11 +97,40 @@ export function Party() {
         }
     }));
 
+    window.addEventListener('dragenter', () => setDroppingFile(true));
+    const allowDrag = (e: DragEvent) => {
+        e.preventDefault();
+        e.dataTransfer!.dropEffect = 'copy';
+    }
+
+    const dropFile = (e: DragEvent) => {
+        e.preventDefault();
+        setDroppingFile(false);
+        const files = Array.from(e.dataTransfer!.files);
+        setuploadingFiles(prevFiles => [...prevFiles, ...files]);
+        setDroppingFile(false);
+    }
+
+    const removeFile = (file: File) => {
+        setuploadingFiles(prevFiles => prevFiles.filter(f => f !== file));
+    }
+
+
     return (
         <div class="ln-party"
             onTouchStart={state.use_mobile_view ? on_touch_start : undefined}
             onTouchEnd={state.use_mobile_view ? on_touch_end : undefined}
         >
+            <label class={"ln-attachment-input-field " + (droppingfile() ? 'dropping-file': '')} ondragleave={() => setDroppingFile(false)}
+                ondragenter={allowDrag} ondragover={allowDrag} 
+                ondrop={dropFile}>
+                <div class="ln-attachment-input-field-drop-label">
+                    <span class='ln-attachment-input-field-drop-label-title'>Upload files</span>
+                    <span>Drop files to send them to your friend.</span>
+                </div>
+                <input type="file" class="ln-attachment-input-field__input" />
+            </label>
+            
             <Show when={showLeft()}>
                 <div
                     class="ln-party__sidebar"
@@ -129,7 +162,7 @@ export function Party() {
 
                 {/*NOTE: active_party may be null */}
                 <Show when={state.active_party && state.active_party != '@me'} fallback="Test">
-                    <Channel />
+                    <Channel attaching_files={uploadingFiles} remove_attaching_file={removeFile} />
                 </Show>
             </div>
 
