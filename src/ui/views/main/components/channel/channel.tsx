@@ -19,7 +19,7 @@ export interface IChannelProps{
 }
 
 import "./channel.scss";
-import AttachingFiles from "./attachment";
+import Attachment from "./attachment";
 export function Channel(props: IChannelProps) {
     let state = useStructuredSelector({
         use_mobile_view: (state: ReadRootState) => state.window.use_mobile_view,
@@ -61,10 +61,10 @@ function Feed(props: IChannelProps) {
                 <MessageFeed />
             </Show>
             <Show when={props.attaching_files.length > 0}>
-                <AttachingFiles {...props} />
+                <Attachment {...props} />
             </Show>
 
-            <MessageBox />
+            <MessageBox {...props} />
         </div>
     )
 }
