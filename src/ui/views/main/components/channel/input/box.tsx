@@ -123,7 +123,7 @@ export function MessageBox(props: IChannelProps) {
     let eat = createClickEater();
 
     let on_send_click = (e: MouseEvent) => {
-        eat(e); if(value()) {
+        eat(e); if(value() || props.attaching_files.length > 0) {
             let f = focused;
 
             do_send();
@@ -135,6 +135,7 @@ export function MessageBox(props: IChannelProps) {
 
     let on_keydown = (e: KeyboardEvent) => {
         setShowFocusBorder(false);
+        if(!(value() || props.attaching_files.length > 0)) return;
 
         if(e.key == 'Enter') { do_send(); }
 

@@ -93,7 +93,7 @@ export function MsgTextarea(props: IMsgTextareaProps) {
 
         switch(e.key) {
             case 'Enter': {
-                let do_not_send = mobile || e.shiftKey || value.length == 0 || isInsideCodeBlock(ta);
+                let do_not_send = mobile || e.shiftKey || isInsideCodeBlock(ta);
 
                 if(do_not_send) {
                     bubble = false;
