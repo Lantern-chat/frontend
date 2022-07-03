@@ -13,9 +13,15 @@ import { MessageBox } from "./input/box";
 import { DisplayError } from "ui/components/common/error";
 import { MemberList } from "../party/member_list";
 
+export interface IChannelProps{
+    attaching_files: File[];
+    remove_attaching_file(file: File): void;
+    input_attachment_element: HTMLElement|undefined;
+}
 
 import "./channel.scss";
-export function Channel() {
+import Attachment from "./attachment";
+export function Channel(props: IChannelProps) {
     let state = useStructuredSelector({
         use_mobile_view: (state: ReadRootState) => state.window.use_mobile_view,
         show_user_list: (state: ReadRootState) => state.window.show_user_list,
@@ -27,9 +33,9 @@ export function Channel() {
                 <ChannelHeader />
 
                 {/*mobile doesn't need to wrap anything or show the user-list*/}
-                <Show when={!state.use_mobile_view} fallback={<Feed />}>
+                <Show when={!state.use_mobile_view} fallback={<Feed {...props} />}>
                     <div class="ln-channel__wrapper">
-                        <Feed />
+                        <Feed {...props} />
 
                         <Show when={state.show_user_list}>
                             <div class="ln-channel__members">
@@ -43,7 +49,7 @@ export function Channel() {
     );
 }
 
-function Feed() {
+function Feed(props: IChannelProps) {
     let active_room = useRootSelector(activeRoom);
 
     return (
@@ -55,8 +61,11 @@ function Feed() {
             <Show when={active_room()} fallback={<div class="ln-center-standalone">Loading...</div>}>
                 <MessageFeed />
             </Show>
+            <Show when={props.attaching_files.length > 0}>
+                <Attachment {...props} />
+            </Show>
 
-            <MessageBox />
+            <MessageBox {...props} />
         </div>
     )
 }

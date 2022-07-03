@@ -29,7 +29,10 @@ import { Icons } from "lantern-icons";
 import { createController } from "ui/hooks/createController";
 
 import "./box.scss";
-export function MessageBox() {
+import { sendFile } from "state/commands/sendfile";
+import { IChannelProps } from "../channel";
+
+export function MessageBox(props: IChannelProps) {
     let state = useStructuredSelector({
         active_room: activeRoom,
         //msg: (state: ReadRootState) => ({ messages: [] as any[], current_edit: null }), // TODO
@@ -83,9 +86,21 @@ export function MessageBox() {
         }
     });
 
-    let do_send = () => {
+    let do_send = async () => {
         if(state.active_room) {
-            dispatch(sendMessage(state.active_room, value().trim()));
+            let onError = () => console.error("Upload error");
+            let onProgress = () => { };
+            if(props.attaching_files.length > 0) {
+                let uploads = props.attaching_files.map(file => sendFile({ file: { file }, onError, onProgress }));
+                let ids = await Promise.all(uploads);
+                dispatch(sendMessage(state.active_room!, value().trim(), ids));
+                Array.from(props.attaching_files).forEach(file => {
+                    console.log(file)
+                    props.remove_attaching_file(file)
+                });
+            }else{
+                dispatch(sendMessage(state.active_room, value().trim()));
+            }
             tac()!.setValue("");
             ts = 0; // reset typing timestamp
         }
@@ -107,7 +122,7 @@ export function MessageBox() {
     let eat = createClickEater();
 
     let on_send_click = (e: MouseEvent) => {
-        eat(e); if(value()) {
+        eat(e); if(value() || props.attaching_files.length > 0) {
             let f = focused;
 
             do_send();
@@ -119,6 +134,7 @@ export function MessageBox() {
 
     let on_keydown = (e: KeyboardEvent) => {
         setShowFocusBorder(false);
+        if(!(value() || props.attaching_files.length > 0)) return;
 
         if(e.key == 'Enter') { do_send(); }
 
@@ -152,6 +168,10 @@ export function MessageBox() {
 
     let debug_node; if(__DEV__) {
         debug_node = (<div class="ln-msg-box__debug"><span textContent={debug()} /></div>);
+    }
+
+    let on_trigger_input_attachment = () => {
+        props.input_attachment_element!.click()
     }
 
     let is_empty = createMemo(() => value().length == 0);
@@ -189,7 +209,7 @@ export function MessageBox() {
 
                 {debug_node}
 
-                <div class="ln-msg-box__send" onClick={on_send_click}>
+                <div class="ln-msg-box__send" onClick={is_empty() ? on_trigger_input_attachment :on_send_click}>
                     <VectorIcon id={is_empty() ? Icons.Plus : Icons.Send} />
                 </div>
 
