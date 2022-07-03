@@ -97,6 +97,8 @@ export function Party() {
         }
     }));
 
+    let inputAttachmentElement;
+
     window.addEventListener('dragenter', () => setDroppingFile(true));
     const allowDrag = (e: DragEvent) => {
         e.preventDefault();
@@ -109,6 +111,13 @@ export function Party() {
         const files = Array.from(e.dataTransfer!.files);
         setuploadingFiles(prevFiles => [...prevFiles, ...files]);
         setDroppingFile(false);
+    }
+
+    const uploadFiles = (e: InputEvent) => {
+        const files = (e.target as HTMLInputElement).files;
+        if(files) {
+            setuploadingFiles(prevFiles => [...prevFiles, ...files]);
+        }
     }
 
     const removeFile = (file: File) => {
@@ -128,7 +137,7 @@ export function Party() {
                     <span class='ln-attachment-input-field-drop-label-title'>Upload files</span>
                     <span>Drop files to send them to your friend.</span>
                 </div>
-                <input type="file" class="ln-attachment-input-field__input" />
+                <input type="file" class="ln-attachment-input-field__input" id="attachment-input-field" ref={inputAttachmentElement} onChange={uploadFiles} multiple />
             </label>
             
             <Show when={showLeft()}>
@@ -162,7 +171,7 @@ export function Party() {
 
                 {/*NOTE: active_party may be null */}
                 <Show when={state.active_party && state.active_party != '@me'} fallback="Test">
-                    <Channel attaching_files={uploadingFiles} remove_attaching_file={removeFile} />
+                    <Channel attaching_files={uploadingFiles} remove_attaching_file={removeFile} input_attachment_element={inputAttachmentElement} />
                 </Show>
             </div>
 

@@ -171,6 +171,10 @@ export function MessageBox(props: IChannelProps) {
         debug_node = (<div class="ln-msg-box__debug"><span textContent={debug()} /></div>);
     }
 
+    let on_trigger_input_attachment = () => {
+        props.input_attachment_element!.click()
+    }
+
     let is_empty = createMemo(() => value().length == 0);
 
     return (
@@ -206,7 +210,7 @@ export function MessageBox(props: IChannelProps) {
 
                 {debug_node}
 
-                <div class="ln-msg-box__send" onClick={on_send_click}>
+                <div class="ln-msg-box__send" onClick={is_empty() ? on_trigger_input_attachment :on_send_click}>
                     <VectorIcon id={is_empty() ? Icons.Plus : Icons.Send} />
                 </div>
 

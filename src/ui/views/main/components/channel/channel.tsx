@@ -16,6 +16,7 @@ import { MemberList } from "../party/member_list";
 export interface IChannelProps{
     attaching_files: File[];
     remove_attaching_file(file: File): void;
+    input_attachment_element: HTMLElement|undefined;
 }
 
 import "./channel.scss";
