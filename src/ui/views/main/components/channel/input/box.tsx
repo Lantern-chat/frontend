@@ -86,24 +86,23 @@ export function MessageBox(props: IChannelProps) {
         }
     });
 
-    let do_send = () => {
+    let do_send = async () => {
         if(state.active_room) {
             let onError = () => console.error("Upload error");
             let onProgress = () => { };
             if(props.attaching_files.length > 0) {
                 let uploads = props.attaching_files.map(file => sendFile({ file: { file }, onError, onProgress }));
-
-                Promise.all(uploads).then(ids => {
-                    dispatch(sendMessage(state.active_room!, value().trim(), ids));
-                    props.attaching_files.forEach(file => props.remove_attaching_file(file));
-                    tac()!.setValue("");
-            ts = 0; // reset typing timestamp
+                let ids = await Promise.all(uploads);
+                dispatch(sendMessage(state.active_room!, value().trim(), ids));
+                Array.from(props.attaching_files).forEach(file => {
+                    console.log(file)
+                    props.remove_attaching_file(file)
                 });
             }else{
                 dispatch(sendMessage(state.active_room, value().trim()));
-                tac()!.setValue("");
-                ts = 0; // reset typing timestamp
             }
+            tac()!.setValue("");
+            ts = 0; // reset typing timestamp
         }
     };
 
