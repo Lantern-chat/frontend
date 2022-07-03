@@ -22,7 +22,11 @@ export function runBatched(cb: () => void, timeout: number = 5): CancelBatched {
 
     if(timeout < last_t) {
         last_t = timeout;
-        setTimeout(() => run_pending(), timeout);
+        if(timeout > 5) {
+            setTimeout(run_pending, timeout);
+        } else {
+            queueMicrotask(run_pending);
+        }
     } else if(__DEV__ && pending.size == 1) {
         alert("runBatched: This shouldn't happen");
     }

@@ -29,7 +29,7 @@ export function PartyHeader() {
                     <UIText text={party()!.party.name} />
                 </div>
 
-                <VectorIcon id={show() ? Icons.MenuClose : Icons.ChevronDown} />
+                <VectorIcon id={show() ? Icons.Close : Icons.ChevronDown} />
 
                 <AnchoredModal show={show()}>
                     <PartyOptionsDropdown />

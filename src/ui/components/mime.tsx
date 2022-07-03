@@ -20,7 +20,7 @@ export function MimeIcon(props: { category: MimeCategory }) {
             case MimeCategory.Script: return Icons.ScriptFile;
             case MimeCategory.Presentation: return Icons.PresentationFile;
             case MimeCategory.Code: return Icons.CodeFile;
-            case MimeCategory.Shield: return Icons.ShieldFile;
+            case MimeCategory.Shield: return Icons.EncryptedFile;
             case MimeCategory.Key: return Icons.KeyFile;
             case MimeCategory.Zip: return Icons.ZipFile;
             default: return Icons.UnknownFile;
