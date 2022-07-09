@@ -16,9 +16,9 @@ import { ReadRootState, useRootDispatch, useRootSelector } from "state/root";
 
 import { FormGroup, FormInput, FormLabel, FormSelect } from "ui/components/form";
 
-import { Toggle, TogglePrefsFlag } from "../components/toggle";
-import { RadioSelect } from "../components/radio";
-import { SizeSlider } from "../components/size-slider";
+import { TogglePrefsFlag, Toggle } from "../../components/toggle";
+import { RadioSelect } from "../../components/radio";
+import { SizeSlider } from "../../components/size-slider";
 
 import { MIN_TEMP, MAX_TEMP } from "lib/theme";
 

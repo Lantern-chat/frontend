@@ -47,14 +47,14 @@ export function SettingsModal() {
     )
 }
 
-import { ProfileSettingsTab } from "./tabs/profile";
-import { AppearanceSettingsTab } from "./tabs/appearance";
-import { AccountSettingsTab } from "./tabs/account";
-import { PrivacySettingsTab } from "./tabs/privacy";
-import { NotificationsSettingsTab } from "./tabs/notifications";
-import { AccessibilitySettingsTab } from "./tabs/accessibility";
-import { MediaSettingsTab } from "./tabs/media";
-import { LanguageSettingsTab } from "./tabs/language";
+import { ProfileSettingsTab } from "./tabs/user-settings/profile";
+import { AppearanceSettingsTab } from "./tabs/user-settings/appearance";
+import { AccountSettingsTab } from "./tabs/user-settings/account";
+import { PrivacySettingsTab } from "./tabs/user-settings/privacy";
+import { NotificationsSettingsTab } from "./tabs/user-settings/notifications";
+import { AccessibilitySettingsTab } from "./tabs/user-settings/accessibility";
+import { MediaSettingsTab } from "./tabs/user-settings/media";
+import { LanguageSettingsTab } from "./tabs/user-settings/language";
 
 import { NamespaceMainTranslation } from "ui/i18n/i18n-types";
 

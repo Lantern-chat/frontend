@@ -399,6 +399,26 @@ export type NamespaceMainTranslation = {
 		 */
 		LANGUAGE: string
 		/**
+		 * Server
+		 */
+		 SERVER: string
+		 /**
+		  * Roles
+		  */
+		 ROLES: string
+		 /** 
+		  * Emoji
+		  */
+		 EMOJI: string
+		 /**
+		  * Stickers
+		  */
+		 STICKERS: string
+		 /**
+		  * MEMBERS
+		  */
+		 MEMBERS: string
+		/**
 		 * Logout
 		 */
 		LOGOUT: string
@@ -921,6 +941,26 @@ export type TranslationFunctions = {
 			 * Language
 			 */
 			LANGUAGE: () => LocalizedString
+			/**
+		 	* Server
+		 	*/
+			SERVER: () => LocalizedString
+			/**
+			 * Roles
+			 */
+			ROLES: () => LocalizedString
+			/**
+			 * Emoji
+			 */
+			EMOJI: () => LocalizedString
+			/**
+			 * Stickers
+			 */
+			STICKERS: () => LocalizedString
+			/**
+			 * Members
+			 */
+			MEMBERS: () => LocalizedString
 			/**
 			 * Logout
 			 */
