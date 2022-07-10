@@ -107,7 +107,7 @@ export function Party() {
                         when={state.active_party != '@me'}
                         fallback={<HomeSideBar />}
                     >
-                        <PartyHeader use_mobile_view={state.use_mobile_view} />
+                        <PartyHeader use_mobile_view={state.use_mobile_view} party={state.active_party} />
                         <ChannelList />
                     </Show>
 

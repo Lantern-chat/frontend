@@ -13,7 +13,8 @@ import { Icons } from "lantern-icons";
 import "./header.scss";
 import { PartySettings } from "ui/views/main/modals/settings/party-settings";
 interface IPartyHeaderProps {
-    on_return: () => void,
+    use_mobile_view: boolean,
+    party: any;
 }
 export function PartyHeader(props: IPartyHeaderProps) {
     let party = useRootSelector(state => {

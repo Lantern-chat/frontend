@@ -50,6 +50,7 @@ const TABS: Array<TabMap> = [
 interface IpartySettingsProps {
     use_mobile_view: boolean,
     closePartySettings: () => void,
+    party: any;
 }
 
 export function PartySettings(props: IpartySettingsProps) {
