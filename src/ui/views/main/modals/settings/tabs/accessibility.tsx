@@ -1,6 +1,6 @@
 import { UserPreferenceFlags } from "state/models";
 import { useI18nContext } from "ui/i18n/i18n-solid";
-import { TogglePrefsFlag } from "../../components/toggle";
+import { TogglePrefsFlag } from "../components/toggle";
 
 export function AccessibilitySettingsTab() {
     let { LL } = useI18nContext();

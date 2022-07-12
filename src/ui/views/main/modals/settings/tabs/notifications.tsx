@@ -2,7 +2,7 @@ import { HAS_NOTIFICATIONS } from "lib/notification";
 import { createEffect, createMemo, createSignal, onMount } from "solid-js";
 import { StorageKey } from "state/storage";
 import { useI18nContext } from "ui/i18n/i18n-solid";
-import { Toggle } from "../../components/toggle";
+import { Toggle } from "../components/toggle";
 
 export var REQ_PERM_PROMISE: undefined | Promise<NotificationPermission>;
 

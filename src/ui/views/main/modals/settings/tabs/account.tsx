@@ -2,7 +2,7 @@ import { createMemo, createRenderEffect, Show } from "solid-js";
 
 import { fetch_quota } from "state/commands/sendfile";
 import { useRootStore } from "state/root";
-import { TogglePrefsFlag } from "../../components/toggle";
+import { TogglePrefsFlag } from "../components/toggle";
 import { UserPreferenceFlags } from "state/models";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 

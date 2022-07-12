@@ -11,7 +11,7 @@ import { PartyOptionsDropdown } from "./dropdown";
 import { Icons } from "lantern-icons";
 
 import "./header.scss";
-import { PartySettings } from "ui/views/main/modals/settings/party-settings";
+import { PartySettings } from "ui/views/main/components/modals/settings/settings";
 interface IPartyHeaderProps {
     use_mobile_view: boolean,
     party: any;

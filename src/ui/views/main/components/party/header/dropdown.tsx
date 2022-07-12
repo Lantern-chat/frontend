@@ -3,7 +3,7 @@ import { createSignal, Show } from "solid-js";
 import { VectorIcon } from "ui/components/common/icon";
 import { TimeProvider } from "ui/hooks/createTimestamp";
 import { MainContext } from "ui/hooks/useMain";
-import { PartySettings } from "ui/views/main/modals/settings/party-settings";
+import { PartySettings } from "ui/views/main/components/modals/settings/settings";
 import { ContextMenu } from "../../menus/list";
 
 export interface IPartyOptionsDropdownProps {

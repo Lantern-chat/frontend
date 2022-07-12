@@ -1,30 +1,23 @@
 import { Component, createEffect, createMemo, createSelector, createSignal, For, lazy, onCleanup, onMount, Show, Suspense, useContext } from "solid-js";
-import { useStructuredSelector } from "solid-mutant";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
 
-import { ReadRootState, useRootDispatch, useRootSelector } from "state/root";
-import { HISTORY } from "state/global";
-import { activeParty, activeRoom } from "state/selectors/active";
-import { room_url } from "config/urls";
-
-import { Link } from "ui/components/history";
 import { FullscreenModal, Modal } from "ui/components/modal";
 import { Ripple } from "ui/components/common/spinners/ripple";
-import { VectorIcon } from "ui/components/common/icon";
 
 const Fallback = () => <div class="ln-center-standalone"><Ripple size={120} /></div>;
 
-import "../modal.scss";
-import "./settings.scss";
-import "./tabs/_tab.scss";
+import "../../../modals/modal.scss";
+import "../../../modals/settings/settings.scss";
+import "../../../modals/settings/tabs/_tab.scss";
 
-import { ServerSettingsTab } from "./tabs/party-settings/server";
-import { RolesSettingsTab } from "./tabs/party-settings/roles";
-import { EmojiSettingsTab } from "./tabs/party-settings/emoji";
-import { StickersSettingsTab } from "./tabs/party-settings/stickers";
-import { MembersSettingsTab } from "./tabs/party-settings/members";
+import { ServerSettingsTab } from "./components/server";
+import { RolesSettingsTab } from "./components/roles";
+import { EmojiSettingsTab } from "./components/emoji";
+import { StickersSettingsTab } from "./components/stickers";
+import { MembersSettingsTab } from "./components/members";
 
+import { Dynamic } from "solid-js/web";
 import { NamespaceMainTranslation } from "ui/i18n/i18n-types";
 
 interface TabMap {
@@ -136,28 +129,7 @@ export function PartySettings(props: IpartySettingsProps) {
 
 
 
-import { logout } from "state/commands/session";
-import { Dynamic } from "solid-js/web";
-import { Icons } from "lantern-icons";
 
-// function SettingsTabs(props: ISettingsTabsProps) {
-//     // let { LL } = useI18nContext();
-
-//     // let state = useStructuredSelector({
-//     //     active_tab: (state: ReadRootState) => '',
-//     //     use_mobile_view: (state: ReadRootState) => state.window.use_mobile_view,
-//     // });
-
-//     // let tab = createMemo(() => TABS.find(tab => tab.p == state.active_tab) || TABS[0]);
-
-//     // let dispatch = useRootDispatch(),
-//     //     do_logout = () => dispatch(logout());
-
-//     // let is_tab_selected = createSelector(() => tab().p);
-//     return(<span>hi</span>)
-
-    
-// }
 
 function FallbackPage() {
     let { LL } = useI18nContext();
