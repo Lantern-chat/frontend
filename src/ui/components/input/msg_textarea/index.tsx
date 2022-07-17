@@ -20,9 +20,10 @@ export interface IMsgTextareaProps {
     onKeyDown(e: KeyboardEvent): void;
     onContextMenu(e: MouseEvent): void;
     onSelectionChange?(ta: HTMLTextAreaElement, in_code: boolean): void;
-
+    
     ta?: AnyRef<HTMLTextAreaElement>;
     tac?: SetController<IMsgTextareaController>,
+    changeCursorPosition: (position: number) => void;
 }
 
 export interface IMsgTextareaController {
@@ -79,7 +80,14 @@ export function MsgTextarea(props: IMsgTextareaProps) {
             // or if the textarea is already focused, don't refocus
             e.stopPropagation();
         }
+        const ta = e.target as HTMLTextAreaElement;
+        props.changeCursorPosition(ta.selectionStart -1);
     };
+
+    let onClick = (e: MouseEvent) => {
+        let ta = e.target as HTMLTextAreaElement;
+        props.changeCursorPosition(ta.selectionStart -1);
+    }
 
     let onKeyDown = (e: KeyboardEvent) => {
         let { onKeyDown, mobile } = local,
@@ -162,6 +170,7 @@ export function MsgTextarea(props: IMsgTextareaProps) {
                 onKeyDown={onKeyDown}
                 onKeyUp={onKeyUp}
                 maxlength={5000}
+                onClick={onClick}
             />
 
             <Show when={taprops.disabled}>
