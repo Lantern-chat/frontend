@@ -27,8 +27,8 @@ export function UserAvatar(props: IUserAvatarProps) {
     let url_or_color = createMemo(() => {
         let url, backgroundColor, user = props.user;
 
-        if(user.avatar) {
-            url = user_avatar_url(user.id, user.avatar);
+        if(user.profile?.avatar) {
+            url = user_avatar_url(user.id, user.profile.avatar);
         } else {
             backgroundColor = pickColorFromHash(user.id, props.is_light_theme);
         }

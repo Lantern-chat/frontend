@@ -51,9 +51,9 @@ export function MessageUserName(props: IUserNameProps) {
 export function MessageUserAvatar(props: Omit<IUserNameProps, 'msg'>) {
     let [show, main_click_props] = createSimpleToggleOnClick();
 
-    let avatar_url;
-    if(props.user.avatar) {
-        avatar_url = user_avatar_url(props.user.id, props.user.avatar);
+    let avatar_url = props.user.profile?.avatar;
+    if(avatar_url) {
+        avatar_url = user_avatar_url(props.user.id, avatar_url);
     }
 
     return (

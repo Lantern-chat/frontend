@@ -3,9 +3,9 @@ import { runBatched } from "ui/hooks/runBatched";
 import { Branch } from "../flow";
 
 export interface IAvatarProps {
-    rounded?: boolean,
-    url?: string,
-    text?: string,
+    rounded?: number | boolean,
+    url?: string | null,
+    text?: string | null,
     backgroundColor?: string,
     username: string,
     wrapper?: JSX.HTMLAttributes<HTMLDivElement>,
@@ -17,6 +17,10 @@ export interface IAvatarProps {
 // The skeleton system here kicks in after 100ms of load time on each avatar.
 // Once images are loaded, they are batched together in 5ms increments
 // to avoid thrashing the UI
+
+function br(value: number | boolean | undefined): undefined | string {
+    return value ? (+value * 100 + '%') : undefined;
+}
 
 import "./avatar.scss";
 export function Avatar(props: IAvatarProps) {
@@ -43,23 +47,26 @@ export function Avatar(props: IAvatarProps) {
         <div class="ln-avatar" {...props.props}>
             <div class="ln-avatar__wrapper" {...props.wrapper} title={props.username}>
                 <Branch>
-                    <Branch.If when={props.url != null}>
+                    <Branch.If when={props.url}>
                         <Show when={loading()}>
                             <div class="ln-avatar__skel" />
                         </Show>
 
-                        <img src={props.url}
+                        <img src={props.url!}
                             class="ln-avatar__image"
-                            classList={{ 'ln-avatar--rounded': props.rounded }}
                             onLoad={on_load}
-                            alt={props.username} />
+                            alt={props.username}
+                            style={{ 'border-radius': br(props.rounded) }}
+                        />
                     </Branch.If>
 
                     <Branch.Else>
                         <span
                             class="ln-avatar__text"
-                            classList={{ 'ln-avatar--rounded': props.rounded }}
-                            style={{ "background-color": props.backgroundColor }}
+                            style={{
+                                "background-color": props.backgroundColor,
+                                'border-radius': br(props.rounded)
+                            }}
                         >
                             {props.children || props.text || '?'}
                         </span>

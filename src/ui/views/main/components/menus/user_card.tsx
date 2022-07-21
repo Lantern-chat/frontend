@@ -78,17 +78,21 @@ export function UserCard(props: IUserCardProps) {
                             </Show>
                         </div>
 
-                        <Show when={cached_user.user.status}>
+                        <Show when={cached_user.user.profile?.status}>
                             {status => <div class="ln-user-custom-status" textContent={status} />}
                         </Show>
 
-                        <Show when={cached_user.user.bio}>
-                            <hr />
-                            <div class="ln-user-biography">
-                                <span class="ln-user-biography__title">ABOUT ME</span>
+                        <Show when={cached_user.user.profile?.bio}>
+                            {bio => (
+                                <>
+                                    <hr />
+                                    <div class="ln-user-biography">
+                                        <span class="ln-user-biography__title">ABOUT ME</span>
 
-                                <Markdown source={cached_user.user.bio!} />
-                            </div>
+                                        <Markdown source={bio} />
+                                    </div>
+                                </>
+                            )}
                         </Show>
                     </div>
                 </div>
