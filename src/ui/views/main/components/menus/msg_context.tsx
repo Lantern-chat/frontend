@@ -89,7 +89,7 @@ export function MsgContextMenu(props: IMsgContextMenuProps) {
             <hr />
 
             <div>
-                <VectorIcon id={Icons.Triangle} /> <UIText text={LL().main.menus.msg.REPORT()} />
+                <VectorIcon id={Icons.TriangleAlert} /> <UIText text={LL().main.menus.msg.REPORT()} />
             </div>
 
             <div onClick={on_delete}

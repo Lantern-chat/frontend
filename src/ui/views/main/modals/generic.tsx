@@ -46,7 +46,7 @@ export function GenericModal(props: GenericModalProps) {
         <FullscreenModal onClick={on_close} class="ln-generic-modal" classList={{ 'closing': closing() }}>
             <div class="ln-generic-modal__inner" use:clickEater={["click"]}>
                 <div class="ln-generic-modal__close" onClick={on_close}>
-                    <VectorIcon id={Icons.MenuClose} />
+                    <VectorIcon id={Icons.Close} />
                 </div>
                 {props.children}
             </div>
