@@ -3,7 +3,7 @@ import { Dynamic } from 'solid-js/web';
 import { useRootSelector } from 'state/root';
 
 import { InviteModal } from './invite';
-import { SettingsModal } from './settings';
+import { SettingsModal } from './settings/settings';
 
 export default function MainModals() {
     let path = useRootSelector(state => state.history.parts[0]);

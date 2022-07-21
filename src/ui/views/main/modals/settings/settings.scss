@@ -124,7 +124,8 @@
             text-align: center;
             width: 100%;
 
-            > a {
+            div {
+                cursor: pointer;
                 line-height: normal;
                 font-family: Whitney, "Helvetica Neue", Helvetica, Arial, sans-serif;
                 padding: 0.35em 0;
