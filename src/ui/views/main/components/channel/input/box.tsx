@@ -33,6 +33,7 @@ interface IMessageBox{
     typingMessageValue: Accessor<string>;
     typeMessage: (message: string) => void;
     changeCursorPosition: (position: number) => void;
+    showingSuggestions: Accessor<boolean>;
 }
 export function MessageBox(props: IMessageBox) {
     let state = useStructuredSelector({
@@ -190,6 +191,8 @@ export function MessageBox(props: IMessageBox) {
                     onContextMenu={eat}
                     spellcheck={state.enable_spellcheck}
                     changeCursorPosition={props.changeCursorPosition}
+                    value={props.typingMessageValue()}
+                    showingSuggestions={props.showingSuggestions}
                 />
 
                 {debug_node}

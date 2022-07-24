@@ -10,7 +10,9 @@ import'./chat_completion.scss'
 const MAX_SUGGESTION_NUMBER = 10;
 interface IChatCompletions{
     typingMessageValue: Accessor<string>;
+    typeMessage: (message: string) => void;
     cursorPosition: Accessor<number>;
+    showSuggestions: (show: boolean) => void;
 }
 
 interface ISuggestion{
@@ -31,10 +33,13 @@ const ChatCompletetions = (props: IChatCompletions) => {
     });
     
     const [suggestions, setSuggestions] = createSignal<ISuggestion[]>([]);
+    const [hoveringSuggestion, setHoveringSuggestion] = createSignal<number>(0);
+    const [showingSuggestionStartingIndex, setShowingSuggestionStartingIndex] = createSignal<number>(0);
+    const [showingSuggestionEndingIndex, setShowingSuggestionEndingIndex] = createSignal<number>(10);
     const [messageLength, setMessageLength] = createSignal(props.typingMessageValue().length);
 
     createEffect(() => {
-        const atIndex = props.typingMessageValue().indexOf("@");
+        const atIndex = props.typingMessageValue().lastIndexOf("@");
         if (atIndex === -1) {
             setSuggestions([]);
             return;
@@ -47,6 +52,7 @@ const ChatCompletetions = (props: IChatCompletions) => {
                 let username_filter = member.user.username?.toLowerCase().indexOf(suffix.toLowerCase());
                 return (nick_filter !== undefined && nick_filter !== -1) || username_filter !== undefined && username_filter !== -1
             })
+            props.showSuggestions(true);
             setSuggestions(suggestions.map(member => {
                 return {
                     suggestion: member.nick || member.user.username,
@@ -55,13 +61,66 @@ const ChatCompletetions = (props: IChatCompletions) => {
             }))
         }
     })
+    const applySuggestion = (suggestion: string) => {
+        const atIndex = props.typingMessageValue().lastIndexOf("@");
+        if (atIndex === -1) {
+            return;
+        }
+        const prefix = props.typingMessageValue().slice(0, atIndex);
+        props.typeMessage(`${prefix}@${suggestion} `);
+        setSuggestions([]);
+        props.showSuggestions(false);
+    }
+
+    const selectNextSuggestion = () => {
+        if (suggestions().length === 0) {
+            return;
+        }
+        let nextSuggestion = hoveringSuggestion() + 1;
+        if (nextSuggestion >= suggestions().length) {
+            nextSuggestion = 0;
+        }
+        setHoveringSuggestion(nextSuggestion);
+        setShowingSuggestionStartingIndex(Math.floor(nextSuggestion / MAX_SUGGESTION_NUMBER) * 10);
+        setShowingSuggestionEndingIndex((Math.floor(nextSuggestion / MAX_SUGGESTION_NUMBER) + 1) * 10);
+    }
+
+    const selectPreviousSuggestion = () => {
+        if (suggestions().length === 0) {
+            return;
+        }
+        let previousSuggestion = hoveringSuggestion() - 1;
+        if (previousSuggestion < 0) {
+            previousSuggestion = suggestions().length - 1;
+        }
+        setHoveringSuggestion(previousSuggestion);
+        setShowingSuggestionStartingIndex(Math.floor(previousSuggestion / MAX_SUGGESTION_NUMBER) * 10);
+        setShowingSuggestionEndingIndex((Math.floor(previousSuggestion / MAX_SUGGESTION_NUMBER) + 1) * 10);
+    }
+
+    createEffect(() => console.log(hoveringSuggestion()))
+
+    document.addEventListener("keyup", (e) => {
+        console.log(e.key)
+        switch(e.key){
+            case 'ArrowDown':
+                selectNextSuggestion();
+                break;
+            case 'ArrowUp':
+                selectPreviousSuggestion()
+                break;
+            case 'Enter':
+                applySuggestion(suggestions()[hoveringSuggestion()].suggestion);
+                break;
+        }
+    })
 
     return(
         <Show when={suggestions().length > 0}>
             <div class="ln-suggestions">
-                {suggestions().map(suggestion => {
+                {suggestions().slice(showingSuggestionStartingIndex(), showingSuggestionEndingIndex()).map((suggestion, index) => {
                     return (
-                        <div class="ln-suggestion">
+                        <div class={"ln-suggestion" + (hoveringSuggestion() === index + showingSuggestionStartingIndex() ? " ln-suggestion-hovering":"")} onClick={() => applySuggestion(suggestion.suggestion)}>
                             <span class="ln-suggestion__suggestion">{suggestion.suggestion}</span>
                             <span class="ln-suggestion__info">{suggestion.info}</span>
                         </div>

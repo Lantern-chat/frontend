@@ -10,4 +10,7 @@
         flex: 1;
         font-weight: bold;
     }
+    &-hovering{
+        background-color: var(--ln-secondary-surface-color, #242528);
+    }
 }

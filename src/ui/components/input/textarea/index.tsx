@@ -1,4 +1,4 @@
-import { createRenderEffect, createSignal, JSX, onCleanup, onMount, splitProps } from "solid-js";
+import { createEffect, createMemo, createRenderEffect, createSignal, JSX, onCleanup, onMount, splitProps } from "solid-js";
 
 import { AnyRef, composeRefs } from "ui/hooks/createRef";
 import { px } from "ui/utils";
@@ -88,6 +88,6 @@ export function TextareaAutosize(props: TextareaAutosizeProps) {
     return (
         <textarea {...taprops} ref={ref}
             onInput={onInput} onChange={onChange}
-            style={{ ...local.style, height: px(height()) }} />
+            style={{ ...local.style, height: px(height()) }} value={props.value} />
     );
 }
