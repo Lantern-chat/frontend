@@ -41,7 +41,6 @@ const ChatCompletetions = (props: IChatCompletions) => {
     createEffect(() => {
         const atIndex = props.typingMessageValue().lastIndexOf("@");
         if (atIndex === -1) {
-            setSuggestions([]);
             return;
         }
         const suffix = props.typingMessageValue().slice(atIndex + 1);
@@ -61,13 +60,43 @@ const ChatCompletetions = (props: IChatCompletions) => {
             }))
         }
     })
-    const applySuggestion = (suggestion: string) => {
-        const atIndex = props.typingMessageValue().lastIndexOf("@");
-        if (atIndex === -1) {
+    createEffect(() => {
+        const hastagIndex = props.typingMessageValue().lastIndexOf("#");
+        if (hastagIndex === -1) {
             return;
         }
-        const prefix = props.typingMessageValue().slice(0, atIndex);
-        props.typeMessage(`${prefix}@${suggestion} `);
+        const suffix = props.typingMessageValue().slice(hastagIndex + 1);
+        let room_names = state.party?.rooms.map(room => room.name);
+        if(room_names){
+            const suggestions = room_names.filter(room_name => {
+                let room_name_filter = room_name.toLowerCase().indexOf(suffix.toLowerCase());
+                return room_name_filter !== undefined && room_name_filter !== -1
+            })
+            props.showSuggestions(true);
+            setSuggestions(suggestions.map(room_name => {
+                return {
+                    suggestion: room_name,
+                    info: room_name
+                }
+            }))
+        }
+    })
+
+    createEffect(() => {
+        const hastagIndex = props.typingMessageValue().lastIndexOf("#");
+        const atIndex = props.typingMessageValue().lastIndexOf("@");
+        if (hastagIndex === -1 && atIndex === -1) setSuggestions([]);
+    })
+    const applySuggestion = (suggestion: string) => {
+        console.log(suggestion)
+        const atIndex = props.typingMessageValue().lastIndexOf("@");
+        const hastagIndex = props.typingMessageValue().lastIndexOf("#");
+        const symbol = atIndex > hastagIndex ? "@" : "#";
+        if (atIndex === -1 && hastagIndex === -1) {
+            return;
+        }
+        const prefix = props.typingMessageValue().slice(0, atIndex !== -1 ? atIndex : hastagIndex);
+        props.typeMessage(`${prefix}${symbol}${suggestion} `);
         setSuggestions([]);
         props.showSuggestions(false);
     }
@@ -98,10 +127,9 @@ const ChatCompletetions = (props: IChatCompletions) => {
         setShowingSuggestionEndingIndex((Math.floor(previousSuggestion / MAX_SUGGESTION_NUMBER) + 1) * 10);
     }
 
-    createEffect(() => console.log(hoveringSuggestion()))
+    createEffect(() => console.log(suggestions()))
 
     document.addEventListener("keyup", (e) => {
-        console.log(e.key)
         switch(e.key){
             case 'ArrowDown':
                 selectNextSuggestion();
