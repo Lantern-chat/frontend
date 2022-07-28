@@ -33,6 +33,7 @@ export function UserCard(props: IUserCardProps) {
 
     let state = useStructuredSelector({
         is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
+        low_bandwidth: selectPrefsFlag(UserPreferenceFlags.LowBandwidthMode),
         party: (state: ReadRootState) => {
             let party_id = activeParty(state);
             if(party_id) {
@@ -59,6 +60,7 @@ export function UserCard(props: IUserCardProps) {
                             user={cached_user.user}
                             status={presence().status}
                             is_light_theme={state.is_light_theme}
+                            low_bandwidth={state.low_bandwidth}
                             is_mobile={presence().is_mobile} />
                     </div>
 

@@ -1,14 +1,15 @@
-import type { User } from "state/models";
-import { user_avatar_url } from "config/urls";
+import { User, UserPreferenceFlags } from "state/models";
+import { asset_url } from "config/urls";
 import { pickColorFromHash } from "lib/palette";
 import type { IMessageState } from "state/mutators/chat";
-import { useRootSelector } from "state/root";
+import { useRootSelector, useRootStore } from "state/root";
 import { activeParty } from "state/selectors/active";
 import { Avatar } from "ui/components/common/avatar";
 import { UIText } from "ui/components/common/ui-text";
 import { AnchoredModal } from "ui/components/modal/anchored";
 import { createSimpleToggleOnClick } from "ui/hooks/useMain";
 import { UserCard } from "../../menus/user_card";
+import { hasUserPrefFlag } from "client-sdk";
 
 export interface IMessageProps {
     msg: DeepReadonly<IMessageState>,
@@ -51,16 +52,14 @@ export function MessageUserName(props: IUserNameProps) {
 export function MessageUserAvatar(props: Omit<IUserNameProps, 'msg'>) {
     let [show, main_click_props] = createSimpleToggleOnClick();
 
-    let avatar_url = props.user.profile?.avatar;
-    if(avatar_url) {
-        avatar_url = user_avatar_url(props.user.id, avatar_url);
-    }
+    let avatar_url = () => props.user.profile?.avatar;
 
     return (
         <Avatar
             username={props.name}
             text={props.name.charAt(0)}
-            url={avatar_url}
+            url={avatar_url() && asset_url('user', props.user.id, avatar_url()!, 'avatar',
+                hasUserPrefFlag(useRootStore().state.prefs, UserPreferenceFlags.LowBandwidthMode))}
             backgroundColor={pickColorFromHash(props.user.id, !!props.is_light_theme)}
             props={main_click_props}
             anchor={

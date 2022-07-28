@@ -528,6 +528,10 @@ export type NamespaceMainTranslation = {
 			 * Pause GIFs on Unfocus
 			 */
 			UNFOCUS_PAUSE: string
+			/**
+			 * Enable Low-Bandwidth Mode
+			 */
+			LOW_BANDWIDTH: string
 		}
 	}
 	system: {
@@ -1048,6 +1052,10 @@ export type TranslationFunctions = {
 				 * Pause GIFs on Unfocus
 				 */
 				UNFOCUS_PAUSE: () => LocalizedString
+				/**
+				 * Enable Low-Bandwidth Mode
+				 */
+				LOW_BANDWIDTH: () => LocalizedString
 			}
 		}
 		system: {

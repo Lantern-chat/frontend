@@ -109,6 +109,7 @@ const es_main: NamespaceMainTranslation = {
 		accessibility: {
 			REDUCE_MOTION: "Reducir Movimiento",
 			UNFOCUS_PAUSE: "Pausar GIF en Desenfocar",
+			LOW_BANDWIDTH: "Habilitar el modo de ancho de banda bajo",
 		}
 	},
 	system: {

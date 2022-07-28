@@ -17,8 +17,7 @@ export function Emoji(props: IEmojiProps) {
     if(!props.ui && props.value == '🍪') {
         ref = createRef();
         createEffect(() => {
-            let r = (ref as Ref<HTMLElement>).current, c = 0;
-            r && r.addEventListener('click', () => {
+            let c = 0; (ref as Ref<HTMLElement>).current?.addEventListener('click', () => {
                 if(++c == 5) { window.open('https://orteil.dashnet.org/cookieclicker/'); }
             });
         });

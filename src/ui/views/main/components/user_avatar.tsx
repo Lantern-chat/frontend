@@ -5,7 +5,7 @@ import { pickColorFromHash } from 'lib/palette';
 
 import { PresenceStatus, Snowflake, User } from 'state/models';
 
-import { user_avatar_url } from 'config/urls';
+import { user_avatar_url, asset_url } from 'config/urls';
 
 import { Avatar } from 'ui/components/common/avatar';
 import { VectorIcon } from 'ui/components/common/icon';
@@ -18,6 +18,7 @@ export interface IUserAvatarProps {
     status: PresenceStatus,
     is_light_theme: boolean,
     is_mobile?: boolean,
+    low_bandwidth: boolean,
 }
 
 import "./user_avatar.scss";
@@ -28,7 +29,7 @@ export function UserAvatar(props: IUserAvatarProps) {
         let url, backgroundColor, user = props.user;
 
         if(user.profile?.avatar) {
-            url = user_avatar_url(user.id, user.profile.avatar);
+            url = asset_url('user', user.id, user.profile.avatar, 'avatar', props.low_bandwidth);
         } else {
             backgroundColor = pickColorFromHash(user.id, props.is_light_theme);
         }

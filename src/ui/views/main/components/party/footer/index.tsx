@@ -27,6 +27,7 @@ export function PartyFooter() {
     let state = useStructuredSelector({
         user: (state: ReadRootState) => state.user.user,
         is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
+        low_bandwidth: selectPrefsFlag(UserPreferenceFlags.LowBandwidthMode),
         status: (state: ReadRootState) => {
             let active_party = activeParty(state), party, member;
 
@@ -49,7 +50,8 @@ export function PartyFooter() {
                     {user => {
                         let user_discriminator = createMemo(() => user.discriminator.toString(16).toUpperCase().padStart(4, '0'))
                         return (<>
-                            <UserAvatar nickname={user.username} user={user} status={state.status} is_light_theme={state.is_light_theme} />
+                            <UserAvatar nickname={user.username} user={user} status={state.status}
+                                low_bandwidth={state.low_bandwidth} is_light_theme={state.is_light_theme} />
 
                             <div class="ln-username" onClick={() => copyText(user.username + '#' + user_discriminator())}>
                                 <span class="ln-username__name ui-text">

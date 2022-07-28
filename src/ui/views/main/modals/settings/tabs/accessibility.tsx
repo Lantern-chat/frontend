@@ -14,6 +14,10 @@ export function AccessibilitySettingsTab() {
             <TogglePrefsFlag for="unfocus_pause"
                 label={LL().main.settings.accessibility.UNFOCUS_PAUSE()}
                 flag={UserPreferenceFlags.UnfocusPause} />
+
+            <TogglePrefsFlag for="low_bandwidth"
+                label={LL().main.settings.accessibility.LOW_BANDWIDTH()}
+                flag={UserPreferenceFlags.LowBandwidthMode} />
         </form>
     );
 }

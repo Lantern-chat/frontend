@@ -110,6 +110,7 @@ const enUS_main: BaseTranslation = {
         accessibility: {
             REDUCE_MOTION: "Reduce Motion",
             UNFOCUS_PAUSE: "Pause GIFs on Unfocus",
+            LOW_BANDWIDTH: "Enable Low-Bandwidth Mode",
         }
     },
     system: {

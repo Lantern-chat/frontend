@@ -108,6 +108,7 @@ const owo_main: NamespaceMainTranslation = {
 		accessibility: {
 			REDUCE_MOTION: "weduce motion, nyaa~~",
 			UNFOCUS_PAUSE: "pause g-gifs on unfocus 😳",
+			LOW_BANDWIDTH: "enyabwe woew-bandwidth mode",
 		}
 	},
 	system: {
