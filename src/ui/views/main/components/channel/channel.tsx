@@ -15,6 +15,8 @@ import { MemberList } from "../party/member_list";
 
 
 import "./channel.scss";
+import ChatCompletetions from "../../modals/chat_completions/chat_completions";
+import { createSignal } from "solid-js";
 export function Channel() {
     let state = useStructuredSelector({
         use_mobile_view: (state: ReadRootState) => state.window.use_mobile_view,
@@ -45,6 +47,13 @@ export function Channel() {
 
 function Feed() {
     let active_room = useRootSelector(activeRoom);
+    let [typingMessage, setTypingMessage] = createSignal("");
+    let [cursorPosition, setCursorPosition] = createSignal(0);
+    let [showingSuggestions, setShowingSuggestions] = createSignal(false);
+
+    const typeMessage = (new_message: string) => setTypingMessage(new_message);
+    const changeCursorPosition = (new_position: number) => setCursorPosition(new_position);
+    const showSuggestions = (show: boolean) => setShowingSuggestions(show);
 
     return (
         <div class="ln-channel__feed">
@@ -55,8 +64,8 @@ function Feed() {
             <Show when={active_room()} fallback={<div class="ln-center-standalone">Loading...</div>}>
                 <MessageFeed />
             </Show>
-
-            <MessageBox />
+            <ChatCompletetions typingMessageValue={typingMessage} cursorPosition={cursorPosition} typeMessage={typeMessage} showSuggestions={showSuggestions} />
+            <MessageBox typingMessageValue={typingMessage} typeMessage={typeMessage} changeCursorPosition={changeCursorPosition} showingSuggestions={showingSuggestions} />
         </div>
     )
 }

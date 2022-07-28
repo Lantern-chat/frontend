@@ -1,4 +1,4 @@
-import { createMemo, createSignal, JSX, Show, splitProps } from 'solid-js';
+import { Accessor, createMemo, createSignal, JSX, Show, splitProps } from 'solid-js';
 
 import { TextareaAutosize, TextareaHeightChangeMeta } from 'ui/components/input/textarea';
 
@@ -20,9 +20,12 @@ export interface IMsgTextareaProps {
     onKeyDown(e: KeyboardEvent): void;
     onContextMenu(e: MouseEvent): void;
     onSelectionChange?(ta: HTMLTextAreaElement, in_code: boolean): void;
-
+    
     ta?: AnyRef<HTMLTextAreaElement>;
     tac?: SetController<IMsgTextareaController>,
+    changeCursorPosition: (position: number) => void;
+    value: string;
+    showingSuggestions: Accessor<boolean>;
 }
 
 export interface IMsgTextareaController {
@@ -67,8 +70,8 @@ export function MsgTextarea(props: IMsgTextareaProps) {
 
     let onInput = (e: InputEvent) => {
         let ta = e.target as HTMLTextAreaElement;
-
-        local.onChange(ta.value = ta.value.replace(/^\n+/, '')); // remove leading whitespace and trigger change
+        if(props.showingSuggestions()) local.onChange(ta.value = ta.value.replace(/^\n+/, '').replace(/\n+$/, ''));
+        else local.onChange(ta.value = ta.value.replace(/^\n+/, '')); // remove leading whitespace and trigger change
         onSelectionChange(e);
     };
 
@@ -79,7 +82,14 @@ export function MsgTextarea(props: IMsgTextareaProps) {
             // or if the textarea is already focused, don't refocus
             e.stopPropagation();
         }
+        const ta = e.target as HTMLTextAreaElement;
+        props.changeCursorPosition(ta.selectionStart -1);
     };
+
+    let onClick = (e: MouseEvent) => {
+        let ta = e.target as HTMLTextAreaElement;
+        props.changeCursorPosition(ta.selectionStart -1);
+    }
 
     let onKeyDown = (e: KeyboardEvent) => {
         let { onKeyDown, mobile } = local,
@@ -90,10 +100,9 @@ export function MsgTextarea(props: IMsgTextareaProps) {
             modified = false,
             prevent_default = false,
             bubble = true;
-
         switch(e.key) {
             case 'Enter': {
-                let do_not_send = mobile || e.shiftKey || value.length == 0 || isInsideCodeBlock(ta);
+                let do_not_send = mobile || e.shiftKey || value.length == 0 || isInsideCodeBlock(ta) || props.showingSuggestions();
 
                 if(do_not_send) {
                     bubble = false;
@@ -162,6 +171,8 @@ export function MsgTextarea(props: IMsgTextareaProps) {
                 onKeyDown={onKeyDown}
                 onKeyUp={onKeyUp}
                 maxlength={5000}
+                onClick={onClick}
+                value={props.value}
             />
 
             <Show when={taprops.disabled}>

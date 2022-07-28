@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal, onCleanup, Show, untrack, useContext } from "solid-js";
+import { createEffect, createMemo, createSignal, onCleanup, Show, untrack, useContext, Accessor } from "solid-js";
 import { useStructuredSelector } from "solid-mutant";
 
 import { createRef } from "ui/hooks/createRef";
@@ -29,7 +29,13 @@ import { Icons } from "lantern-icons";
 import { createController } from "ui/hooks/createController";
 
 import "./box.scss";
-export function MessageBox() {
+interface IMessageBox{
+    typingMessageValue: Accessor<string>;
+    typeMessage: (message: string) => void;
+    changeCursorPosition: (position: number) => void;
+    showingSuggestions: Accessor<boolean>;
+}
+export function MessageBox(props: IMessageBox) {
     let state = useStructuredSelector({
         active_room: activeRoom,
         //msg: (state: ReadRootState) => ({ messages: [] as any[], current_edit: null }), // TODO
@@ -48,7 +54,6 @@ export function MessageBox() {
     let ta = createRef<HTMLTextAreaElement>();
     let [tac, setTAC] = createController<IMsgTextareaController>();
 
-    let [value, setValue] = createSignal("");
     let ts = 0, skip = false;
 
     let [show_focus_border, setShowFocusBorder] = createSignal(false);
@@ -69,7 +74,7 @@ export function MessageBox() {
 
             onCleanup(() => {
                 __DEV__ && console.log("Storing Draft");
-                ta.current && dispatch({ type: Type.MESSAGE_DRAFT, room, draft: untrack(value) });
+                ta.current && dispatch({ type: Type.MESSAGE_DRAFT, room, draft: untrack(props.typingMessageValue) });
             });
 
             skip = true; // skip the change event this will emit
@@ -85,7 +90,7 @@ export function MessageBox() {
 
     let do_send = () => {
         if(state.active_room) {
-            dispatch(sendMessage(state.active_room, value().trim()));
+            dispatch(sendMessage(state.active_room, props.typingMessageValue().trim()));
             tac()!.setValue("");
             ts = 0; // reset typing timestamp
         }
@@ -107,7 +112,7 @@ export function MessageBox() {
     let eat = createClickEater();
 
     let on_send_click = (e: MouseEvent) => {
-        eat(e); if(value()) {
+        eat(e); if(props.typingMessageValue()) {
             let f = focused;
 
             do_send();
@@ -129,11 +134,11 @@ export function MessageBox() {
                 (e.shiftKey ? 'Shift+' : '') +
                 (e.key === ' ' ? 'Spacebar' : e.key)
             );
-        }
+        } 
     };
 
     let on_change = (new_value: string) => {
-        let old_value = value();
+        let old_value = props.typingMessageValue();
         let new_ts = Date.now();
 
         if(!skip && state.active_room && new_value.length > old_value.length && (new_ts - ts) > 3500) {
@@ -143,7 +148,7 @@ export function MessageBox() {
 
         skip = false;
 
-        setValue(new_value);
+        props.typeMessage(new_value);
     };
 
     let on_click_focus = (e: MouseEvent) => {
@@ -154,7 +159,7 @@ export function MessageBox() {
         debug_node = (<div class="ln-msg-box__debug"><span textContent={debug()} /></div>);
     }
 
-    let is_empty = createMemo(() => value().length == 0);
+    let is_empty = createMemo(() => props.typingMessageValue().length == 0);
 
     return (
         <>
@@ -185,6 +190,9 @@ export function MessageBox() {
                     mobile={state.use_mobile_view}
                     onContextMenu={eat}
                     spellcheck={state.enable_spellcheck}
+                    changeCursorPosition={props.changeCursorPosition}
+                    value={props.typingMessageValue()}
+                    showingSuggestions={props.showingSuggestions}
                 />
 
                 {debug_node}

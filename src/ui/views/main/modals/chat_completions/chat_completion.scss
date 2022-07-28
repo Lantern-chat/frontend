@@ -1,0 +1,16 @@
+.ln-suggestions{
+    padding: 0.5em 1em;
+    background-color: var(--ln-primary-surface-color, #303136);
+}
+
+.ln-suggestion{
+    padding: .5em;
+    display: flex;
+    &__suggestion{
+        flex: 1;
+        font-weight: bold;
+    }
+    &-hovering{
+        background-color: var(--ln-secondary-surface-color, #242528);
+    }
+}
