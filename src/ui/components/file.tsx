@@ -30,15 +30,15 @@ export function MediaPreview(props: IMediaPreviewProps) {
             </Match>
 
             <Match when={mt().startsWith('image/')}>
-                <img class="ln-media" src={src()} onError={on_error} />;
+                <img class="ln-media" src={src()} onError={on_error} />
             </Match>
 
             <Match when={mt().startsWith('video/')}>
-                <video class="ln-media" src={src()} controls loop onError={on_error} />;
+                <video class="ln-media" src={src()} controls loop onError={on_error} />
             </Match>
 
             <Match when={mt().startsWith('audio/')}>
-                <audio class="ln-media" src={src()} controls onError={on_error} />;
+                <audio class="ln-media" src={src()} controls onError={on_error} />
             </Match>
         </Switch>
     );
