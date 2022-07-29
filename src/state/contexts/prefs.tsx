@@ -21,7 +21,7 @@ export function UserPrefsProvider(props: { children: JSX.Element }) {
         }
     }
 
-    accessors['UseMobileView'] = createMemo(() => store.state.window.use_mobile_view);
+    accessors['UseMobileView'] = () => store.state.window.use_mobile_view;
 
     return (
         <UserPrefsContext.Provider value={accessors as UserPreferenceAccessors}>
