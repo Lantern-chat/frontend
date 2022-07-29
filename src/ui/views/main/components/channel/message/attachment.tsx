@@ -1,12 +1,10 @@
 import { createMemo, createSignal, JSX, Match, Show, Switch } from "solid-js";
-import { useStructuredSelector } from "solid-mutant";
 
 import { IS_MOBILE } from "lib/user_agent";
 import { categorize_mime } from "lib/mime";
 
-import { ReadRootState } from "state/root";
-import { Message, Attachment, UserPreferenceFlags, AttachmentFlags } from "state/models";
-import { selectPrefsFlag } from "state/selectors/prefs";
+import { Message, Attachment, AttachmentFlags } from "state/models";
+import { usePrefs } from "state/contexts/prefs";
 import { message_attachment_url } from "config/urls";
 import { createBytesFormatter } from "ui/hooks/createFormatter";
 
@@ -31,12 +29,7 @@ export interface IMsgAttachmentProps {
 
 import "./attachment.scss";
 export function MsgAttachment(props: DeepReadonly<IMsgAttachmentProps>) {
-    let state = useStructuredSelector({
-        use_mobile_view: (state: ReadRootState) => state.window.use_mobile_view,
-        mute_media: selectPrefsFlag(UserPreferenceFlags.MuteMedia),
-        hide_unknown: selectPrefsFlag(UserPreferenceFlags.HideUnknown),
-        low_bandwidth: selectPrefsFlag(UserPreferenceFlags.LowBandwidthMode),
-    });
+    let prefs = usePrefs();
 
     let [errored, setErrored] = createSignal(false);
 
@@ -57,23 +50,23 @@ export function MsgAttachment(props: DeepReadonly<IMsgAttachmentProps>) {
 
     let mime_prefix = createMemo(() => props.attachment.mime?.slice(0, 5));
 
-    let unknown = () => state.hide_unknown && !(props.attachment.width && props.attachment.height);
+    let unknown = () => prefs.HideUnknown() && !(props.attachment.width && props.attachment.height);
     let large = () => props.attachment.size >= (1024 * 1024 * 30);
 
     return (
         <div class="ln-msg-attachment" classList={{ 'spoiler': 0 != (props.msg.flags & AttachmentFlags.Spoiler) }}>
-            <Show when={!errored() && !state.low_bandwidth} fallback={<GenericAttachment {...props} />}>
+            <Show when={!errored() && !prefs.LowBandwidthMode()} fallback={<GenericAttachment {...props} />}>
                 <Switch fallback={<GenericAttachment {...props} />}>
                     <Match when={mime_prefix() === 'image' && !unknown() && !large()}>
-                        <ImageAttachment img={common()} src={src()} attachment={props.attachment} use_mobile_view={state.use_mobile_view} />
+                        <ImageAttachment img={common()} src={src()} attachment={props.attachment} use_mobile_view={prefs.UseMobileView()} />
                     </Match>
 
                     <Match when={mime_prefix() === 'video' && !unknown()}>
-                        <VideoAttachment vid={common()} src={src()} attachment={props.attachment} use_mobile_view={state.use_mobile_view} mute_media={state.mute_media} />
+                        <VideoAttachment vid={common()} src={src()} attachment={props.attachment} use_mobile_view={prefs.UseMobileView()} />
                     </Match>
 
                     <Match when={mime_prefix() === 'audio'}>
-                        <AudioAttachment audio={common()} src={src()} attachment={props.attachment} mute_media={state.mute_media} />
+                        <AudioAttachment audio={common()} src={src()} attachment={props.attachment} />
                     </Match>
                 </Switch>
             </Show>
@@ -120,14 +113,12 @@ interface IVideoAttachmentProps {
     src: string,
     attachment: DeepReadonly<Attachment>,
     use_mobile_view: boolean,
-    mute_media: boolean,
 }
 
 interface IAudioAttachmentProps {
     audio: JSX.AudioHTMLAttributes<HTMLAudioElement>,
     src: string,
     attachment: DeepReadonly<Attachment>,
-    mute_media: boolean,
 }
 
 const TRIGGER_OPTS = { rootMargin: '150%' };
@@ -189,7 +180,7 @@ function VideoAttachment(props: IVideoAttachmentProps) {
 
     return (
         <video {...props.vid} src={src()} ref={ref}
-            style={style()} muted={props.mute_media}
+            style={style()} muted={usePrefs().MuteMedia()}
             onLoadedMetadata={on_load} onLoad={on_load}
             preload="metadata" controls
         />
@@ -199,7 +190,7 @@ function VideoAttachment(props: IVideoAttachmentProps) {
 function AudioAttachment(props: IAudioAttachmentProps) {
     return (
         <div class="ln-audio">
-            <audio {...props.audio} src={props.src} controls muted={props.mute_media} preload="none" />
+            <audio {...props.audio} src={props.src} controls muted={usePrefs().MuteMedia()} preload="none" />
         </div>
     );
 }

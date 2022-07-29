@@ -6,6 +6,7 @@ import { pickColorFromHash } from 'lib/palette';
 import { PresenceStatus, Snowflake, User } from 'state/models';
 
 import { user_avatar_url, asset_url } from 'config/urls';
+import { usePrefs } from 'state/contexts/prefs';
 
 import { Avatar } from 'ui/components/common/avatar';
 import { VectorIcon } from 'ui/components/common/icon';
@@ -16,9 +17,7 @@ export interface IUserAvatarProps {
     user: User,
     nickname: string,
     status: PresenceStatus,
-    is_light_theme: boolean,
     is_mobile?: boolean,
-    low_bandwidth: boolean,
 }
 
 import "./user_avatar.scss";
@@ -29,9 +28,9 @@ export function UserAvatar(props: IUserAvatarProps) {
         let url, backgroundColor, user = props.user;
 
         if(user.profile?.avatar) {
-            url = asset_url('user', user.id, user.profile.avatar, 'avatar', props.low_bandwidth);
+            url = asset_url('user', user.id, user.profile.avatar, 'avatar');
         } else {
-            backgroundColor = pickColorFromHash(user.id, props.is_light_theme);
+            backgroundColor = pickColorFromHash(user.id, usePrefs().LightMode());
         }
 
         return { url, backgroundColor };

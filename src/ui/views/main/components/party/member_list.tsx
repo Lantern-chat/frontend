@@ -7,7 +7,6 @@ import { useLocale } from "ui/i18n";
 import { parse_presence, PartyMember, PresenceStatus, Role, Snowflake, UserPreferenceFlags, user_is_bot } from "state/models";
 import { ReadRootState, useRootSelector } from "state/root";
 import { activeParty } from "state/selectors/active";
-import { selectPrefsFlag } from "state/selectors/prefs";
 
 import { VectorIcon } from "ui/components/common/icon";
 
@@ -24,8 +23,6 @@ import { UserCard } from "../menus/user_card";
 import { createSimpleToggleOnClick } from "ui/hooks/useMain";
 export function MemberList() {
     let state = useStructuredSelector({
-        is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
-        low_bandwidth: selectPrefsFlag(UserPreferenceFlags.LowBandwidthMode),
         party: (state: ReadRootState) => {
             let party_id = activeParty(state);
             if(party_id) {
@@ -106,24 +103,18 @@ export function MemberList() {
                     {hoisted => <RoleMemberList
                         role={hoisted.role.name}
                         members={hoisted.members}
-                        owner={state.party!.party.owner}
-                        low_bandwidth={state.low_bandwidth}
-                        is_light_theme={state.is_light_theme} />}
+                        owner={state.party!.party.owner} />}
                 </For>
 
                 <RoleMemberList
                     role={LL().main.ONLINE()}
                     members={grouped_members().online}
-                    owner={state.party!.party.owner}
-                    low_bandwidth={state.low_bandwidth}
-                    is_light_theme={state.is_light_theme} />
+                    owner={state.party!.party.owner} />
 
                 <RoleMemberList
                     role={LL().main.OFFLINE()}
                     members={grouped_members().offline}
-                    owner={state.party!.party.owner}
-                    low_bandwidth={state.low_bandwidth}
-                    is_light_theme={state.is_light_theme} />
+                    owner={state.party!.party.owner} />
             </div>
         </Show>
     )
@@ -133,8 +124,6 @@ interface IRoleMemberListProps {
     role: string,
     members: Array<DeepReadonly<PartyMember>>,
     owner: Snowflake,
-    is_light_theme: boolean,
-    low_bandwidth: boolean,
 }
 
 // TODO: Localized number formatting for length
@@ -147,8 +136,7 @@ function RoleMemberList(props: IRoleMemberListProps) {
                 <h4 class="ui-text" textContent={LL().main.member_list.ROLE({ role: props.role, length: props.members.length })} />
                 <ul>
                     <For each={props.members}>
-                        {member => <ListedMember member={member} owner={props.owner}
-                            is_light_theme={props.is_light_theme} low_bandwidth={props.low_bandwidth} />}
+                        {member => <ListedMember member={member} owner={props.owner} />}
                     </For>
                 </ul>
             </div>
@@ -159,8 +147,6 @@ function RoleMemberList(props: IRoleMemberListProps) {
 interface IListedMemberProps {
     owner: Snowflake,
     member: DeepReadonly<PartyMember>,
-    low_bandwidth: boolean,
-    is_light_theme: boolean,
 }
 
 function ListedMember(props: IListedMemberProps) {
@@ -192,8 +178,6 @@ function ListedMember(props: IListedMemberProps) {
             <UserAvatar nickname={display_name()}
                 user={props.member.user}
                 status={presence().status}
-                is_light_theme={props.is_light_theme}
-                low_bandwidth={props.low_bandwidth}
                 is_mobile={presence().is_mobile} />
 
             <div class="ln-member__meta">

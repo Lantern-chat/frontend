@@ -1,10 +1,10 @@
 
 import { createSignal, Show, untrack } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import { useStructuredSelector } from "solid-mutant";
-import { MessageFlags, UserPreferenceFlags, user_is_system } from "state/models";
+
+import { usePrefs } from "state/contexts/prefs";
+import { user_is_system } from "state/models";
 import { IMessageState } from "state/mutators/chat";
-import { selectPrefsFlag } from "state/selectors/prefs";
 import { PositionedModal } from "ui/components/modal/positioned";
 import { createSimplePositionedContextMenu } from "ui/hooks/useMain";
 import { MsgContextMenu } from "../../menus/msg_context";
@@ -15,11 +15,7 @@ import { CozyMessage } from "../message/cozy";
 import { SystemMessage } from "../message/system";
 
 export function Message(props: { msg: DeepReadonly<IMessageState> }) {
-    let state = useStructuredSelector({
-        is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
-        compact: selectPrefsFlag(UserPreferenceFlags.CompactView),
-        gl: selectPrefsFlag(UserPreferenceFlags.GroupLines),
-    });
+    let prefs = usePrefs();
 
     let [warn, setWarn] = createSignal(false),
         [pos, main_click_props] = createSimplePositionedContextMenu({
@@ -34,7 +30,7 @@ export function Message(props: { msg: DeepReadonly<IMessageState> }) {
 
     return (
         <>
-            <Show when={state.gl && props.msg.sg}>
+            <Show when={prefs.GroupLines() && props.msg.sg}>
                 <hr />
             </Show>
 
@@ -49,8 +45,8 @@ export function Message(props: { msg: DeepReadonly<IMessageState> }) {
                 {...main_click_props}
             >
                 <div class="ln-msg__wrapper">
-                    <Dynamic component={System || (state.compact ? CompactMessage : CozyMessage)} {...props}
-                        is_light_theme={state.is_light_theme} compact={state.compact} />
+                    <Dynamic component={System || (prefs.CompactView() ? CompactMessage : CozyMessage)} {...props}
+                        is_light_theme={prefs.LightMode()} compact={prefs.CompactView()} />
 
                     <Show when={pos()}>
                         {pos => (

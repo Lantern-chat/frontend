@@ -2,10 +2,9 @@ import { createEffect, createRenderEffect, JSX, onCleanup, Show, splitProps } fr
 
 import Freezeframe from "freezeframe";
 import { IS_MOBILE } from "lib/user_agent";
-import { UserPreferenceFlags } from "state/models";
-import { selectPrefsFlag } from "state/selectors/prefs";
+import { usePrefs } from "state/contexts/prefs";
 import { composeRefs, createRef, Ref } from "ui/hooks/createRef";
-import { useRootSelector } from "state/root";
+
 
 export interface IAnimatedGifProps extends JSX.ImgHTMLAttributes<HTMLImageElement> {
     which: "gif" | "apng" | "webp" | "avif",
@@ -18,7 +17,7 @@ export function AnimatedGif(props: IAnimatedGifProps) {
 
     let img = composeRefs<HTMLImageElement>(local.img),
         freeze: Freezeframe,
-        do_freeze = useRootSelector(selectPrefsFlag(UserPreferenceFlags.UnfocusPause));
+        do_freeze = usePrefs().UnfocusPause;
 
     createEffect(() => {
         let i = img.current;

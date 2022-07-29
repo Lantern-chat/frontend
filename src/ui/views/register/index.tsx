@@ -3,13 +3,11 @@ import { createEffect, createMemo, createSignal, For, Index, JSX, Show } from "s
 import { createController } from "ui/hooks/createController";
 
 import { setSession } from "state/commands";
-import { selectPrefsFlag } from "state/selectors/prefs";
-import { UserPreferenceFlags } from "state/models";
+import { usePrefs } from "state/contexts/prefs";
 
 import dayjs from "lib/time";
 
 import { useRootDispatch } from "state/root";
-import { useRootSelector } from "state/root";
 import { CLIENT } from "state/global";
 
 import { createReducer } from "ui/hooks/createReducer";
@@ -191,7 +189,7 @@ export default function RegisterView() {
     });
 
     let [errorMsg, setErrorMsg] = createSignal<string | null>(null);
-    let is_light_theme = useRootSelector(selectPrefsFlag(UserPreferenceFlags.LightMode));
+    let prefs = usePrefs();
 
     createEffect(() => {
         if(!SETUP_THEN && typeof zxcvbn == 'function') {
@@ -363,7 +361,7 @@ export default function RegisterView() {
                             setController={setHCaptchaController}
                             params={{
                                 size: "invisible",
-                                theme: is_light_theme() ? "light" : "dark",
+                                theme: prefs.LightMode() ? "light" : "dark",
                                 sitekey: "7a2a9dd4-1fa3-44cf-aa98-147052e8ea25"
                             }}
                         />

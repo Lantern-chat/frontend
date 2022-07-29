@@ -5,6 +5,7 @@ import { MutantProvider } from "solid-mutant";
 
 import { HISTORY, STORE } from "state/global";
 import { useRootSelector } from "state/root";
+import { UserPrefsProvider } from "state/contexts/prefs";
 
 import { Toasts } from "ui/components/toast";
 import { Ripple } from "ui/components/common/spinners/ripple";
@@ -130,8 +131,10 @@ function AppInner() {
 
     return (
         <MutantProvider store={STORE}>
-            <Toasts />
-            <AppRouter />
+            <UserPrefsProvider>
+                <Toasts />
+                <AppRouter />
+            </UserPrefsProvider>
         </MutantProvider>
     )
 }

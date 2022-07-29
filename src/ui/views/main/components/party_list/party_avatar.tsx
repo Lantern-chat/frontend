@@ -4,7 +4,9 @@ import { copyText } from "lib/clipboard";
 
 import { useRootDispatch, useRootSelector } from "state/root";
 import { activateParty } from "state/commands";
-import { selectPrefsFlag } from "state/selectors/prefs";
+import { Party, Snowflake, UserPreferenceFlags } from "state/models";
+import { useI18nContext } from "ui/i18n/i18n-solid";
+import { usePrefs } from "state/contexts/prefs";
 
 import { pickColorFromHash } from "lib/palette";
 
@@ -18,9 +20,6 @@ import { createSimplePositionedContextMenu } from "ui/hooks/useMain";
 import { ContextMenu } from "../menus/list";
 
 import { party_avatar_url, room_url } from "config/urls";
-
-import { Party, Snowflake, UserPreferenceFlags } from "state/models";
-import { useI18nContext } from "ui/i18n/i18n-solid";
 
 interface IPartyAvatarProps {
     party: Party,
@@ -66,7 +65,7 @@ interface IListedPartyMenuProps {
 }
 
 function ListedPartyMenu(props: IListedPartyMenuProps) {
-    let dev_mode = useRootSelector(selectPrefsFlag(UserPreferenceFlags.DeveloperMode));
+    let dev_mode = usePrefs().DeveloperMode;;
 
     let { LL } = useI18nContext();
 

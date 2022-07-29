@@ -5,8 +5,8 @@ import { copyText } from "lib/clipboard";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 import { Type, useRootDispatch, useRootSelector } from "state/root";
 import { activeParty, activeRoom } from "state/selectors/active";
-import { selectPrefsFlag } from "state/selectors/prefs";
-import { Room, Snowflake, UserPreferenceFlags } from "state/models";
+import { Room, Snowflake } from "state/models";
+import { usePrefs } from "state/contexts/prefs";
 import { Panel } from "state/mutators/window";
 import { room_avatar_url } from "config/urls";
 
@@ -114,7 +114,7 @@ export interface IRoomContextMenuProps {
 }
 
 function RoomContextMenu(props: IRoomContextMenuProps) {
-    let dev_mode = useRootSelector(selectPrefsFlag(UserPreferenceFlags.DeveloperMode));
+    let dev_mode = usePrefs().DeveloperMode;;
 
     let { LL } = useI18nContext();
 

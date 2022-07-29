@@ -1,4 +1,5 @@
 import { SUPPORTS_AVIF, SUPPORTS_WEBM } from "lib/codecs";
+import { usePrefs } from "state/contexts/prefs";
 import { Snowflake, AssetFlags, asset_flags } from "state/models";
 
 const PROTOCOL = window.config.secure ? 'https://' : (window.location.protocol + '//');
@@ -10,10 +11,10 @@ const CDN_URL =
 
 const DEFAULT_FORMATS = AssetFlags.FORMAT_PNG | AssetFlags.FORMAT_JPEG | AssetFlags.FORMAT_GIF;
 
-export function asset_url(category: string, id: Snowflake, hash: string, asset_kind: 'avatar' | 'banner' = 'avatar', lbm: boolean = false): string {
+export function asset_url(category: string, id: Snowflake, hash: string, asset_kind: 'avatar' | 'banner' = 'avatar'): string {
     let formats = DEFAULT_FORMATS | (SUPPORTS_AVIF() ? AssetFlags.FORMAT_AVIF : 0) | (SUPPORTS_WEBM() ? AssetFlags.FORMAT_WEBM : 0);
 
-    return `${CDN_URL}/${category}/${id}/${asset_kind}/${hash}?f=${asset_flags(lbm ? 0 : 90, formats, true, true)}`;
+    return `${CDN_URL}/${category}/${id}/${asset_kind}/${hash}?f=` + asset_flags(usePrefs().LowBandwidthMode() ? 0 : 90, formats, true, true);
 }
 
 export function user_avatar_url(user_id: Snowflake, avatar_hash: string): string {

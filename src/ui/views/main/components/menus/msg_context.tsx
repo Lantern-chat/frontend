@@ -3,11 +3,10 @@ import { createEffect, createMemo, createSignal, Show } from "solid-js";
 import { copyText } from "lib/clipboard";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
-import { useRootDispatch, useRootSelector } from "state/root";
-import { UserPreferenceFlags } from "state/models";
+import { useRootDispatch } from "state/root";
 import { deleteMessage } from "state/commands/message/delete";
 import { IMessageState } from "state/mutators/chat";
-import { selectPrefsFlag } from "state/selectors/prefs";
+import { usePrefs } from "state/contexts/prefs";
 
 import { VectorIcon } from "ui/components/common/icon";
 import { UIText } from "ui/components/common/ui-text";
@@ -25,7 +24,7 @@ export interface IMsgContextMenuProps {
 /// Menu shown when right-clicking on a message in chat
 import "./msg_context.scss";
 export function MsgContextMenu(props: IMsgContextMenuProps) {
-    let dev_mode = useRootSelector(selectPrefsFlag(UserPreferenceFlags.DeveloperMode));
+    let dev_mode = usePrefs().DeveloperMode;;
 
     let [shownConfirmation, setShownConfirmation] = createSignal(false);
 

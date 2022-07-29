@@ -1,9 +1,7 @@
-import { UserPreferenceFlags } from "state/models";
 import { createEffect } from "solid-js"
-import { useRootSelector } from "state/root";
-import { selectPrefsFlag } from "state/selectors/prefs";
 import { createRef, Ref } from "ui/hooks/createRef";
 import { Branch } from "./../flow";
+import { usePrefs } from "state/contexts/prefs";
 
 export interface IEmojiProps {
     value: string,
@@ -23,7 +21,7 @@ export function Emoji(props: IEmojiProps) {
         });
     }
 
-    let use_system = useRootSelector(selectPrefsFlag(UserPreferenceFlags.UsePlatformEmojis));
+    let use_system = usePrefs().UsePlatformEmojis;;
 
     // TODO: Resolve emoji to twemoji file
     return (

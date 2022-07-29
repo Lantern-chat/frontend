@@ -8,9 +8,7 @@ import { createRef, Ref } from "ui/hooks/createRef";
 import { SetController } from "ui/hooks/createController";
 import { runBatched } from "ui/hooks/runBatched";
 
-import { useRootSelector } from "state/root";
-import { selectPrefsFlag } from "state/selectors/prefs";
-import { UserPreferenceFlags } from "state/models";
+import { usePrefs } from "state/contexts/prefs";
 
 export const enum Anchor {
     Top,
@@ -145,7 +143,7 @@ export interface IInfiniteScrollProps {
 
 import "./infinite_scroll.scss";
 export function InfiniteScroll(props: IInfiniteScrollProps) {
-    let reduce_motion = useRootSelector(selectPrefsFlag(UserPreferenceFlags.ReduceAnimations));
+    let reduce_motion = usePrefs().ReduceAnimations;
 
     let container_ref = createRef<HTMLDivElement>(),
         wrapper_ref = createRef<HTMLDivElement>();

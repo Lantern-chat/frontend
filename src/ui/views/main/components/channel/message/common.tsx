@@ -58,8 +58,7 @@ export function MessageUserAvatar(props: Omit<IUserNameProps, 'msg'>) {
         <Avatar
             username={props.name}
             text={props.name.charAt(0)}
-            url={avatar_url() && asset_url('user', props.user.id, avatar_url()!, 'avatar',
-                hasUserPrefFlag(useRootStore().state.prefs, UserPreferenceFlags.LowBandwidthMode))}
+            url={avatar_url() && asset_url('user', props.user.id, avatar_url()!, 'avatar')}
             backgroundColor={pickColorFromHash(props.user.id, !!props.is_light_theme)}
             props={main_click_props}
             anchor={
