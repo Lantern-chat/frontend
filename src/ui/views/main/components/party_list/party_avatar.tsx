@@ -19,7 +19,7 @@ import { createSimplePositionedContextMenu } from "ui/hooks/useMain";
 
 import { ContextMenu } from "../menus/list";
 
-import { party_avatar_url, room_url } from "config/urls";
+import { asset_url, room_url } from "config/urls";
 
 interface IPartyAvatarProps {
     party: Party,
@@ -32,9 +32,10 @@ interface IPartyAvatarProps {
 
 export function PartyAvatar(props: DeepReadonly<IPartyAvatarProps>) {
     let dispatch = useRootDispatch();
+    let prefs = usePrefs();
 
     let last = createMemo(() => props.last_channel[props.party.id]),
-        url = createMemo(() => props.party.avatar ? party_avatar_url(props.party.id, props.party.avatar) : void 0),
+        url = createMemo(() => props.party.avatar ? asset_url('party', props.party.id, props.party.avatar, 'avatar', prefs.LowBandwidthMode()) : void 0),
         should_navigate = createMemo(() => props.can_navigate && props.party.id != props.active_party);
 
     let on_navigate = () => { should_navigate() && dispatch(activateParty(props.party.id, last())) };

@@ -5,7 +5,7 @@ import { pickColorFromHash } from 'lib/palette';
 
 import { PresenceStatus, Snowflake, User } from 'state/models';
 
-import { user_avatar_url, asset_url } from 'config/urls';
+import { asset_url } from 'config/urls';
 import { usePrefs } from 'state/contexts/prefs';
 
 import { Avatar } from 'ui/components/common/avatar';
@@ -24,13 +24,15 @@ import "./user_avatar.scss";
 export function UserAvatar(props: IUserAvatarProps) {
     const { LL } = useI18nContext();
 
+    let prefs = usePrefs();
+
     let url_or_color = createMemo(() => {
         let url, backgroundColor, user = props.user;
 
         if(user.profile?.avatar) {
-            url = asset_url('user', user.id, user.profile.avatar, 'avatar');
+            url = asset_url('user', user.id, user.profile.avatar, 'avatar', prefs.LowBandwidthMode());
         } else {
-            backgroundColor = pickColorFromHash(user.id, usePrefs().LightMode());
+            backgroundColor = pickColorFromHash(user.id, prefs.LightMode());
         }
 
         return { url, backgroundColor };

@@ -45,8 +45,7 @@ export function Message(props: { msg: DeepReadonly<IMessageState> }) {
                 {...main_click_props}
             >
                 <div class="ln-msg__wrapper">
-                    <Dynamic component={System || (prefs.CompactView() ? CompactMessage : CozyMessage)} {...props}
-                        is_light_theme={prefs.LightMode()} compact={prefs.CompactView()} />
+                    <Dynamic component={System || (prefs.CompactView() ? CompactMessage : CozyMessage)} {...props} />
 
                     <Show when={pos()}>
                         {pos => (

@@ -5,10 +5,6 @@ import { activeParty, activeRoom } from "state/selectors/active";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
 
-import dayjs from "lib/time";
-import { user_avatar_url } from "config/urls";
-import { pickColorFromHash } from "lib/palette";
-
 import { MessageFlags, Room, Snowflake, User, UserPreferenceFlags, user_is_bot, user_is_system } from "state/models";
 import { ReadRootState, Type, useRootDispatch, useRootSelector } from "state/root";
 import { loadMessages, SearchMode } from "state/commands";

@@ -8,7 +8,6 @@ import { activeParty, activeRoom } from "state/selectors/active";
 import { Room, Snowflake } from "state/models";
 import { usePrefs } from "state/contexts/prefs";
 import { Panel } from "state/mutators/window";
-import { room_avatar_url } from "config/urls";
 
 import { UIText } from "ui/components/common/ui-text";
 import { Bounce } from "ui/components/common/spinners/bounce";
