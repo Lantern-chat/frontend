@@ -30,4 +30,4 @@ declare type SnakeToCamelCase<S extends string> =
     `${T}${Capitalize<SnakeToCamelCase<U>>}` :
     S;
 
-declare type ToPascalCase<S extends string> = Capitalize<SnakeToCamelCase<Lowercase<S>>>;
+declare type ToPascalCase<S extends string> = Capitalize<SnakeToCamelCase<S>>;

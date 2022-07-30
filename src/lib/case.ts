@@ -3,5 +3,5 @@ export function capitalize(s: string): string {
 }
 
 export function to_pascal_case(s: string): string {
-    return capitalize(s.toLowerCase().replace(/([-_]\w)/g, m => capitalize(m.slice(1))));
+    return capitalize(s.replace(/([-_]\w)/g, m => capitalize(m.slice(1))));
 }
