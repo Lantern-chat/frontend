@@ -11,7 +11,7 @@ import { setTheme } from "state/commands/theme";
 import { usePrefs } from "state/contexts/prefs";
 import { savePrefs, savePrefsFlag } from "state/commands/prefs";
 import { Font, FONT_NAMES, UserPreferenceFlags } from "state/models";
-import { selectPrefsFlag, selectGroupPad } from "state/selectors/prefs";
+import { selectGroupPad } from "state/selectors/prefs";
 import { ReadRootState, useRootDispatch, useRootSelector } from "state/root";
 
 import { FormGroup, FormInput, FormLabel, FormSelect } from "ui/components/form";
@@ -108,9 +108,9 @@ function ThemeSetting() {
 }
 
 function ViewSelector() {
-    let current_compact = useRootSelector(selectPrefsFlag(UserPreferenceFlags.CompactView)),
+    let prefs = usePrefs(),
         dispatch = useRootDispatch(),
-        [compact, setCompact] = createSignal(current_compact()),
+        [compact, setCompact] = createSignal(prefs.CompactView()),
         onChange = (value: string) => {
             let compact = value == 'compact';
 

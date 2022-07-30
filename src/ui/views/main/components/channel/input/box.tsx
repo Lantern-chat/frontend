@@ -9,11 +9,9 @@ import { IS_MOBILE } from "lib/user_agent";
 //import { IMessageState } from "ui/views/main/reducers/messages";
 import { Action, RootState, ReadRootState, useRootSelector, useRootStore, useRootDispatch } from "state/root";
 import { Type } from "state/actions";
-import { PartyMember, Snowflake, User, UserPreferenceFlags } from "state/models";
-import { IParty } from "state/mutators/party";
 import { sendMessage, startTyping } from "state/commands";
 import { activeParty, activeRoom } from "state/selectors/active";
-import { selectPrefsFlag } from "state/selectors/prefs";
+import { usePrefs } from "state/contexts/prefs";
 import { ITypingState } from "state/mutators/chat";
 
 //import { FileUploadModal } from "ui/views/main/modals/file_upload";
@@ -30,13 +28,12 @@ import { createController } from "ui/hooks/createController";
 
 import "./box.scss";
 export function MessageBox() {
+    let prefs = usePrefs();
     let state = useStructuredSelector({
         active_room: activeRoom,
         //msg: (state: ReadRootState) => ({ messages: [] as any[], current_edit: null }), // TODO
-        use_mobile_view: (state: ReadRootState) => state.window.use_mobile_view,
         showing_footers: (state: ReadRootState) => state.window.showing_footers,
         session: (state: ReadRootState) => state.user.session,
-        enable_spellcheck: selectPrefsFlag(UserPreferenceFlags.EnableSpellcheck),
     });
 
     let dispatch = useRootDispatch();
@@ -168,7 +165,7 @@ export function MessageBox() {
                 }}
             >
                 <div class="ln-typing ln-typing__top">
-                    <Show when={state.use_mobile_view}>
+                    <Show when={prefs.UseMobileView()}>
                         <UsersTyping />
                     </Show>
                 </div>
@@ -182,9 +179,9 @@ export function MessageBox() {
                     tac={setTAC}
                     onKeyDown={on_keydown}
                     onChange={on_change}
-                    mobile={state.use_mobile_view}
+                    mobile={prefs.UseMobileView()}
                     onContextMenu={eat}
-                    spellcheck={state.enable_spellcheck}
+                    spellcheck={prefs.EnableSpellcheck()}
                 />
 
                 {debug_node}
@@ -199,7 +196,7 @@ export function MessageBox() {
             </div>
 
             <div class="ln-typing ln-typing__bottom">
-                <Show when={!state.use_mobile_view}>
+                <Show when={!prefs.UseMobileView()}>
                     <UsersTyping />
                 </Show>
             </div>

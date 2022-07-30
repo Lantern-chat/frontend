@@ -9,7 +9,7 @@ import { MessageFlags, Room, Snowflake, User, UserPreferenceFlags, user_is_bot, 
 import { ReadRootState, Type, useRootDispatch, useRootSelector } from "state/root";
 import { loadMessages, SearchMode } from "state/commands";
 import { IMessageState, IRoomState } from "state/mutators/chat";
-import { selectPrefsFlag } from "state/selectors/prefs";
+import { usePrefs } from "state/contexts/prefs";
 
 import { createController } from "ui/hooks/createController";
 import { AnchoredModal } from "ui/components/modal/anchored";
@@ -44,10 +44,9 @@ import { Message } from "../message";
 
 import "./feed.scss";
 export function MessageFeed() {
+    let prefs = usePrefs();
+
     let state = useStructuredSelector({
-        use_mobile_view: (state: ReadRootState) => state.window.use_mobile_view,
-        compact: selectPrefsFlag(UserPreferenceFlags.CompactView),
-        gl: selectPrefsFlag(UserPreferenceFlags.GroupLines),
         active_room: activeRoom,
         room: (state: ReadRootState) => {
             let active_room = activeRoom(state);
@@ -93,7 +92,7 @@ export function MessageFeed() {
 
     return (
         <div class="ln-msg-list__flex-container">
-            <Show when={!state.use_mobile_view}>
+            <Show when={!prefs.UseMobileView()}>
                 <Timeline direction={0} position={0} />
             </Show>
 
@@ -107,9 +106,9 @@ export function MessageFeed() {
                 onScroll={on_scroll}
                 load_prev={on_load_prev}
                 containerClassList={{
-                    'has-timeline': !state.use_mobile_view,
-                    'compact': state.compact,
-                    'group-lines': state.gl,
+                    'has-timeline': !prefs.UseMobileView(),
+                    'compact': prefs.CompactView(),
+                    'group-lines': prefs.GroupLines(),
                 }}
             >
                 <InfiniteScrollContext.Provider value={ifs as any}>
@@ -125,9 +124,9 @@ export function MessageFeed() {
                 </InfiniteScrollContext.Provider>
             </InfiniteScroll>
 
-            <div class="ln-feed-footers" classList={{ 'has-timeline': !state.use_mobile_view }}>
+            <div class="ln-feed-footers" classList={{ 'has-timeline': !prefs.UseMobileView() }}>
                 <Show when={goto()}>
-                    <GotoBottomFooter onClick={on_goto_click} use_mobile_view={state.use_mobile_view} />
+                    <GotoBottomFooter onClick={on_goto_click} use_mobile_view={prefs.UseMobileView()} />
                 </Show>
             </div>
         </div>

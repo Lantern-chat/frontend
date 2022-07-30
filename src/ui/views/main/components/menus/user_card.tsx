@@ -6,7 +6,7 @@ import { activeParty } from "state/selectors/active";
 import { selectCachedUser } from "state/selectors/selectCachedUser";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 import { copyText } from "lib/clipboard";
-import { selectPrefsFlag } from "state/selectors/prefs";
+import { usePrefs } from "state/contexts/prefs";
 import { pickColorFromHash } from "lib/palette";
 import { Markdown } from "ui/components/common/markdown";
 import { Branch } from "ui/components/flow";
@@ -23,6 +23,7 @@ import "./list.scss";
 import "./user_card.scss";
 export function UserCard(props: IUserCardProps) {
     const { LL } = useI18nContext();
+    let prefs = usePrefs();
 
     let cached_user = useRootSelector((state: ReadRootState) => {
         let active_party = state.chat.active_party;
@@ -32,7 +33,6 @@ export function UserCard(props: IUserCardProps) {
     let discriminator = createMemo(() => props.user.discriminator.toString(16).toUpperCase().padStart(4, '0'));
 
     let state = useStructuredSelector({
-        is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
         party: (state: ReadRootState) => {
             let party_id = activeParty(state);
             if(party_id) {
@@ -52,7 +52,7 @@ export function UserCard(props: IUserCardProps) {
                 <div class="ln-user-card ln-contextmenu">
                     <div class="ln-user-card__header">
                         <div class="banner"
-                            style={{ "background-color": pickColorFromHash(props.user.id, state.is_light_theme) }}
+                            style={{ "background-color": pickColorFromHash(props.user.id, prefs.LightMode()) }}
                         />
 
                         <UserAvatar nickname={nick() || cached_user.user.username}

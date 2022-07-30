@@ -3,7 +3,6 @@ import { useStructuredSelector } from "solid-mutant";
 
 import { ReadRootState } from "state/root";
 import { activeParty } from "state/selectors/active";
-import { selectPrefsFlag } from "state/selectors/prefs";
 import { GatewayStatus } from "state/mutators/gateway";
 
 import { Avatar } from "ui/components/common/avatar";
@@ -11,8 +10,6 @@ import { Spinner } from "ui/components/common/spinners/spinner";
 
 import { Home } from "./home_icon";
 import { PartyAvatar } from "./party_avatar";
-
-import { UserPreferenceFlags } from "state/models";
 
 //function asTouchEvent(e: UIEvent): TouchEvent | undefined {
 //    return (e as TouchEvent).targetTouches ? e as TouchEvent : undefined;

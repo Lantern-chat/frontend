@@ -1,8 +1,6 @@
 import { createEffect, createMemo, createSignal, For, onCleanup, Show } from "solid-js";
-import { useStructuredSelector } from "solid-mutant";
-import { UserPreferenceFlags } from "state/models";
-import { ReadRootState, Type, useRootDispatch, useRootSelector } from "state/root";
-import { selectPrefsFlag } from "state/selectors/prefs";
+import { usePrefs } from "state/contexts/prefs";
+import { Type, useRootDispatch, useRootSelector } from "state/root";
 
 import { Modal } from "../modal";
 
@@ -33,18 +31,17 @@ export interface IToastProps extends IToast {
 import "./toast.scss";
 
 export function Toasts() {
-    let state = useStructuredSelector({
-        toasts: (state: ReadRootState) => state.toasts.toasts,
-        reduced_motion: selectPrefsFlag(UserPreferenceFlags.ReduceAnimations),
-    });
+    let prefs = usePrefs();
+
+    let toasts = useRootSelector(state => state.toasts.toasts);
 
     return (
-        <Show when={state.toasts.length}>
+        <Show when={toasts().length}>
             <Modal>
                 <div class="ln-toast-container top right">
                     <ul>
-                        <For each={state.toasts}>
-                            {toast => <Toast {...toast} reduced_motion={state.reduced_motion} />}
+                        <For each={toasts()}>
+                            {toast => <Toast {...toast} reduced_motion={prefs.ReduceAnimations()} />}
                         </For>
                     </ul>
                 </div>
