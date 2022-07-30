@@ -23,3 +23,11 @@ declare type DeepReadonly<T> = 0 extends 1 & T ? T : T extends import("solid-js/
     readonly [K in keyof T]: DeepReadonly<T[K]>;
 };
 
+declare type SnakeToCamelCase<S extends string> =
+    S extends `${infer T}_${infer U}_${infer V}` ?
+    `${T}${Capitalize<U>}${Capitalize<SnakeToCamelCase<V>>}` :
+    S extends `${infer T}_${infer U}` ?
+    `${T}${Capitalize<SnakeToCamelCase<U>>}` :
+    S;
+
+declare type ToPascalCase<S extends string> = Capitalize<SnakeToCamelCase<Lowercase<S>>>;

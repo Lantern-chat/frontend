@@ -8,9 +8,9 @@ import { mix } from "lib/math";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
 import { setTheme } from "state/commands/theme";
+import { usePrefs } from "state/contexts/prefs";
 import { savePrefs, savePrefsFlag } from "state/commands/prefs";
 import { Font, FONT_NAMES, UserPreferenceFlags } from "state/models";
-import { themeSelector } from "state/selectors/theme";
 import { selectPrefsFlag, selectGroupPad } from "state/selectors/prefs";
 import { ReadRootState, useRootDispatch, useRootSelector } from "state/root";
 
@@ -46,9 +46,9 @@ export const AppearanceSettingsTab = () => {
 
 function ThemeSetting() {
     let input = createRef<HTMLInputElement>(),
-        theme = useRootSelector(themeSelector),
+        prefs = usePrefs(),
         dispatch = useRootDispatch(),
-        [interactive, setInteractive] = createStore({ ...theme() }),
+        [interactive, setInteractive] = createStore({ ...prefs.Theme() }),
         doSetTheme = (temperature: number, is_light: boolean, oled: boolean) => {
             setInteractive({ temperature, is_light, oled });
 

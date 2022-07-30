@@ -26,7 +26,6 @@ export function PartyList() {
 
     let state = useStructuredSelector({
         parties: (state: ReadRootState) => Object.values(state.party.parties).map(party => party.party).sort((a, b) => a.position - b.position),
-        is_light_theme: selectPrefsFlag(UserPreferenceFlags.LightMode),
         use_mobile_view: (state: ReadRootState) => state.window.use_mobile_view,
         user_object: (state: ReadRootState) => state.user.user,
         last_channel: (state: ReadRootState) => state.party.last_channel,
@@ -56,7 +55,6 @@ export function PartyList() {
                             party={party} last_channel={state.last_channel}
                             can_navigate={can_navigate()}
                             active_party={state.active_party}
-                            is_light_theme={state.is_light_theme}
                             is_active={is_party_active(party.id)}
                         />}
                     </For>

@@ -4,7 +4,7 @@ import { useRootDispatch, useRootSelector } from "state/root";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
 
-import { themeSelector } from "state/selectors/theme";
+import { usePrefs } from "state/contexts/prefs";
 import { setTheme } from "state/commands/theme";
 
 import { mix } from "lib/math";
@@ -20,10 +20,14 @@ export function ThemeWidget() {
     let { LL } = useI18nContext();
 
     let input = createRef<HTMLInputElement>(),
-        theme = useRootSelector(themeSelector),
+        prefs = usePrefs(),
         dispatch = useRootDispatch();
 
-    let [interactive, setInteractive] = createStore({ ...theme() });
+    let [interactive, setInteractive] = createStore({
+        temperature: prefs.Temp(),
+        is_light: prefs.LightMode(),
+        oled: prefs.OledMode(),
+    });
 
     let doSetTheme = (temperature: number, is_light: boolean) => {
         let oled = interactive.oled;

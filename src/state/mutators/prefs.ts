@@ -16,6 +16,8 @@ export const prefsMutator = mutatorWithDefault(
         tab_size: 4,
         time_format: "",
         flags: UserPreferenceFlags.AllowDms | UserPreferenceFlags.GroupLines,
+        // give this an explicit undefined value so the key is present
+        pad: undefined,
     }),
     (state: IPrefsState, action: Action) => {
         if(action.type == Type.UPDATE_PREFS) {

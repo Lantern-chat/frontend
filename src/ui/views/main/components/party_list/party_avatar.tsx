@@ -27,7 +27,6 @@ interface IPartyAvatarProps {
     can_navigate: boolean,
     is_active?: boolean,
     active_party?: Snowflake,
-    is_light_theme: boolean,
 }
 
 export function PartyAvatar(props: DeepReadonly<IPartyAvatarProps>) {
@@ -47,7 +46,7 @@ export function PartyAvatar(props: DeepReadonly<IPartyAvatarProps>) {
             <Link noAction href={room_url(props.party.id, last())} onNavigate={on_navigate}>
                 <Avatar rounded url={url()} text={props.party.name.charAt(0)}
                     username={props.party.name} wrapper={{ title: props.party.name }}
-                    backgroundColor={pickColorFromHash(props.party.id, props.is_light_theme)} />
+                    backgroundColor={pickColorFromHash(props.party.id, prefs.LightMode())} />
             </Link>
 
             <Show when={pos()}>

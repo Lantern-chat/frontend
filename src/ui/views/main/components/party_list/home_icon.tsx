@@ -1,8 +1,7 @@
 import { createEffect, createMemo } from "solid-js";
 import { createRef } from "ui/hooks/createRef";
 
-import { useRootSelector } from "state/root";
-import { themeSelector } from "state/selectors/theme";
+import { usePrefs } from "state/contexts/prefs";
 
 import { Avatar } from "ui/components/common/avatar";
 import { VectorIcon } from "ui/components/common/icon";
@@ -16,14 +15,14 @@ export interface IHomeProps {
 }
 
 export function Home(props: IHomeProps) {
-    let theme = useRootSelector(themeSelector);
+    let prefs = usePrefs();
 
     let ref = createRef<HTMLLIElement>();
 
     createEffect(() => {
         let li = ref.current;
         if(li) {
-            li.style.setProperty('--ln-home-color', compute_color(theme()));
+            li.style.setProperty('--ln-home-color', compute_color(prefs.Theme()));
         }
     });
 

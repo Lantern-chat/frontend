@@ -5,13 +5,13 @@ import { BrowserHistory, createBrowserHistory, To } from "history";
 import { Client } from "client-sdk/src/client";
 import { Driver } from "client-sdk/src/driver";
 import { BearerToken } from "client-sdk/src/models/auth";
+import { hasUserPrefFlag, UserPreferenceFlags } from "client-sdk/src/models";
 
 import { setTheme } from "lib/theme";
 
 import { recomputeHistoryContext } from "./mutators/history";
 import { StorageKey, loadSession, loadPrefs } from "./storage";
 import { GatewayCommand } from "worker/gateway/cmd";
-import { themeSelector } from "./selectors/theme";
 import { IS_MOBILE } from "lib/user_agent";
 import { RootState, Action } from "./root";
 import { userMutator } from "./mutators/user";
@@ -66,8 +66,11 @@ export const GLOBAL: IGlobalState = window['LANTERN_GLOBAL'] = window['LANTERN_G
             prefs: loadPrefs(),
         });
 
-        // NOTE: `themeSelector` uses `createMemo` internally, so keep it under this root
-        untrack(() => setTheme(themeSelector(store.state), false));
+        setTheme({
+            temperature: store.state.prefs.temp,
+            is_light: hasUserPrefFlag(store.state.prefs, UserPreferenceFlags.LightMode),
+            oled: hasUserPrefFlag(store.state.prefs, UserPreferenceFlags.OledMode),
+        }, false);
 
         return store;
     });
