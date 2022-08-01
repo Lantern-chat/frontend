@@ -11,7 +11,12 @@ import { PartyOptionsDropdown } from "./dropdown";
 import { Icons } from "lantern-icons";
 
 import "./header.scss";
-export function PartyHeader() {
+import { PartySettings } from "ui/views/main/components/modals/settings/settings";
+interface IPartyHeaderProps {
+    use_mobile_view: boolean,
+    party: any;
+}
+export function PartyHeader(props: IPartyHeaderProps) {
     let party = useRootSelector(state => {
         let active_party = activeParty(state);
         if(active_party) {
@@ -21,6 +26,10 @@ export function PartyHeader() {
     });
 
     let [show, main_click_props] = createSimpleToggleOnClick();
+    let [showingPartySettings, setShowPartySettings] = createSignal(false);
+
+    const showPartySettings = () => setShowPartySettings(true);
+    const closePartySettings = () => setShowPartySettings(false);
 
     return (
         <Show when={party()}>
@@ -31,9 +40,12 @@ export function PartyHeader() {
 
                 <VectorIcon id={show() ? Icons.Close : Icons.ChevronDown} />
 
-                <AnchoredModal show={show()}>
-                    <PartyOptionsDropdown />
+                <AnchoredModal show={!showingPartySettings() && show()}>
+                    <PartyOptionsDropdown {...props} showPartySettings={showPartySettings} />
                 </AnchoredModal>
+                <Show when={showingPartySettings()}>
+                    <PartySettings {...props} closePartySettings={closePartySettings} />
+                </Show>
             </header>
         </Show>
     );
