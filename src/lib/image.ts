@@ -5,11 +5,11 @@ function has_alpha(ctx: CanvasRenderingContext2D): boolean {
 
         for(let i = 0; i < pixels.length; i += 4) {
             if(pixels[i + 3] < 255) {
-                return false;
+                return true;
             }
         }
     }
-    return true;
+    return false;
 }
 
 export async function resize_image(url: string, width: number, height: number, lossy: boolean = false): Promise<Blob | null> {
