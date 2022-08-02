@@ -5,7 +5,7 @@ import { loadMessages, SearchMode, activateParty, setSession } from "state/comma
 import { DEFAULT_LOGGED_IN_CHANNEL, GLOBAL, HISTORY } from "state/global";
 import { GatewayStatus } from "state/mutators/gateway";
 import { prefsMutator, getPad } from "state/mutators/prefs";
-import { Action, RootState, ReadRootState, Type } from "state/root";
+import { Action, RootState, Type } from "state/root";
 import { ServerMsgOpcode } from "state/models";
 
 import { StorageKey } from "state/storage";
@@ -22,7 +22,7 @@ import { displayNotification } from "lib/notification";
 
 const GATEWAY_ENABLED_ROUTES = ['channels', 'settings', 'invite'];
 
-function connect_gateway(state: ReadRootState) {
+function connect_gateway(state: RootState) {
     GLOBAL.gateway!.postCmd({
         t: GatewayCommandDiscriminator.Connect,
         auth: state.user.session!.auth,
@@ -31,7 +31,7 @@ function connect_gateway(state: ReadRootState) {
     })
 }
 
-export function mainEffect(state: ReadRootState, action: Action, dispatch: Dispatch<Action, RootState>) {
+export function mainEffect(state: RootState, action: Action, dispatch: Dispatch<Action, RootState>) {
     switch(action.type) {
         case Type.WINDOW_TOGGLE_USER_LIST: {
             localStorage.setItem(StorageKey.SHOW_USER_LIST, JSON.stringify(state.window.show_user_list));

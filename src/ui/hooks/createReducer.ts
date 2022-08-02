@@ -1,7 +1,7 @@
-import { createStore, DeepReadonly } from "solid-js/store";
+import { createStore } from "solid-js/store";
 
-export function createReducer<S, A>(reducer: (state: DeepReadonly<S>, action: A) => S, initial: S): [state: DeepReadonly<S>, dispatch: (action: A) => void] {
+export function createReducer<S extends {}, A>(reducer: (state: S, action: A) => S, initial: S): [state: S, dispatch: (action: A) => void] {
     let [state, setState] = createStore(initial);
 
-    return [state, (action: A) => setState(state => reducer(state as DeepReadonly<S>, action))]
+    return [state, (action: A) => setState(state => reducer(state as S, action))]
 }

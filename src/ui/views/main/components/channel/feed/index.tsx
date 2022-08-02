@@ -6,7 +6,7 @@ import { activeParty, activeRoom } from "state/selectors/active";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 
 import { MessageFlags, Room, Snowflake, User, UserPreferenceFlags, user_is_bot, user_is_system } from "state/models";
-import { ReadRootState, Type, useRootDispatch, useRootSelector } from "state/root";
+import { RootState, Type, useRootDispatch, useRootSelector } from "state/root";
 import { loadMessages, SearchMode } from "state/commands";
 import { IMessageState, IRoomState } from "state/mutators/chat";
 import { usePrefs } from "state/contexts/prefs";
@@ -48,7 +48,7 @@ export function MessageFeed() {
 
     let state = useStructuredSelector({
         active_room: activeRoom,
-        room: (state: ReadRootState) => {
+        room: (state: RootState) => {
             let active_room = activeRoom(state);
             if(active_room) {
                 let room_state = state.chat.rooms[active_room];

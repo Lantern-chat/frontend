@@ -9,16 +9,16 @@ import { useRootDispatch, useRootSelector } from "state/root";
 import { activeRoom } from "state/selectors/active";
 import { createOnPredicate } from "ui/hooks/createOnChange";
 
-function searchRoom(room: DeepReadonly<IRoomState>, id: Snowflake): number {
-    let { idx } = binarySearch(room.msgs as Array<DeepReadonly<IMessageState>>,
-        (x: DeepReadonly<IMessageState>) => compareString(x.msg.id, id)
+function searchRoom(room: IRoomState, id: Snowflake): number {
+    let { idx } = binarySearch(room.msgs as Array<IMessageState>,
+        (x: IMessageState) => compareString(x.msg.id, id)
     );
 
     return idx;
 }
 
 function createMessageIndex(
-    room: Accessor<DeepReadonly<IRoomState> | undefined>,
+    room: Accessor<IRoomState | undefined>,
     id: Accessor<Snowflake | undefined>
 ): Accessor<number | undefined> {
     return createMemo(() => {
@@ -43,7 +43,7 @@ Process:
 */
 
 export function createVirtualizedFeed(): [
-    feed: () => DeepReadonly<Array<IMessageState>>,
+    feed: () => Array<IMessageState>,
     on_load_prev: () => Promise<void>,
     on_load_next: () => Promise<void>,
 ] {
@@ -56,7 +56,7 @@ export function createVirtualizedFeed(): [
     });
 
     // indirection to ensure initialization effect runs first
-    let [room, setRoom] = createSignal<DeepReadonly<IRoomState>>();
+    let [room, setRoom] = createSignal<IRoomState>();
 
     let [start, setStart] = createSignal<Snowflake | undefined>(),
         [end, setEnd] = createSignal<Snowflake | undefined>();

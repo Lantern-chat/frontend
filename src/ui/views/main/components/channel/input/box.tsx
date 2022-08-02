@@ -7,7 +7,7 @@ import { createReducer } from "ui/hooks/createReducer";
 import { IS_MOBILE } from "lib/user_agent";
 
 //import { IMessageState } from "ui/views/main/reducers/messages";
-import { Action, RootState, ReadRootState, useRootSelector, useRootStore, useRootDispatch } from "state/root";
+import { RootState, useRootSelector, useRootStore, useRootDispatch } from "state/root";
 import { Type } from "state/actions";
 import { sendMessage, startTyping } from "state/commands";
 import { activeParty, activeRoom } from "state/selectors/active";
@@ -31,9 +31,9 @@ export function MessageBox() {
     let prefs = usePrefs();
     let state = useStructuredSelector({
         active_room: activeRoom,
-        //msg: (state: ReadRootState) => ({ messages: [] as any[], current_edit: null }), // TODO
-        showing_footers: (state: ReadRootState) => state.window.showing_footers,
-        session: (state: ReadRootState) => state.user.session,
+        //msg: (state: RootState) => ({ messages: [] as any[], current_edit: null }), // TODO
+        showing_footers: (state: RootState) => state.window.showing_footers,
+        session: (state: RootState) => state.user.session,
     });
 
     let dispatch = useRootDispatch();

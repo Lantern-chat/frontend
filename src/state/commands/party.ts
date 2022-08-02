@@ -2,12 +2,12 @@ import { NAV_TIMEOUT } from "config/base";
 import { room_url } from "config/urls";
 import { DispatchableAction, Type } from "state/actions";
 import { CLIENT, HISTORY } from "state/global";
-import { Room, Snowflake } from "state/models";
+import type { Room, Snowflake } from "state/models";
 
 import { GetPartyMembers, GetPartyRooms } from "client-sdk/src/api/commands/party";
 import { loadMessages } from "./message/load";
 
-function get_default_room(rooms: DeepReadonly<Room[]>): Snowflake | undefined {
+function get_default_room(rooms: Room[]): Snowflake | undefined {
     let default_room, any_room;
     for(let room of rooms) {
         any_room = room.id;

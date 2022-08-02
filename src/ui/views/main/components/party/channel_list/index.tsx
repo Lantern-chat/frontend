@@ -31,7 +31,7 @@ export function ChannelList() {
 
         let res = { party_id } as {
             party_id: Snowflake | undefined,
-            rooms?: DeepReadonly<Array<Room>>,
+            rooms?: Array<Room>,
         };
 
         if(party_id) {
@@ -74,7 +74,7 @@ export function ChannelList() {
 }
 
 interface IListedChannelProps {
-    room: DeepReadonly<Room>,
+    room: Room,
     selected: boolean,
     onNavigate?: () => void,
 }
@@ -109,7 +109,7 @@ function ListedChannel(props: IListedChannelProps) {
 }
 
 export interface IRoomContextMenuProps {
-    room: DeepReadonly<Room>,
+    room: Room,
 }
 
 function RoomContextMenu(props: IRoomContextMenuProps) {

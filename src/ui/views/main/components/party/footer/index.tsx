@@ -2,7 +2,7 @@ import { createMemo, createSignal, Show } from "solid-js";
 import { useStructuredSelector } from "solid-mutant";
 
 import { HISTORY } from "state/global";
-import { ReadRootState } from "state/root";
+import { RootState } from "state/root";
 import { activeParty } from "state/selectors/active";
 import { parse_presence, PresenceStatus } from "state/models";
 
@@ -24,8 +24,8 @@ export function PartyFooter() {
         [deaf, setDeaf] = createSignal(false);
 
     let state = useStructuredSelector({
-        user: (state: ReadRootState) => state.user.user,
-        status: (state: ReadRootState) => {
+        user: (state: RootState) => state.user.user,
+        status: (state: RootState) => {
             let active_party = activeParty(state), party, member;
 
             if(!active_party || active_party == '@me') return PresenceStatus.Online;

@@ -1,4 +1,4 @@
-import { Session } from "state/models";
+import type { Session } from "state/models";
 import type { LongTimeout } from "lib/time";
 
 export interface ISession {

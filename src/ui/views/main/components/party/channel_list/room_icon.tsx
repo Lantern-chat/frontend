@@ -10,7 +10,7 @@ import { VectorIcon } from "ui/components/common/icon";
 import { Icons } from "lantern-icons";
 
 interface IRoomIconProps {
-    room: DeepReadonly<Room>,
+    room: Room,
 }
 
 export function RoomIcon(props: IRoomIconProps) {

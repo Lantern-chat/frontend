@@ -29,7 +29,7 @@ interface IPartyAvatarProps {
     active_party?: Snowflake,
 }
 
-export function PartyAvatar(props: DeepReadonly<IPartyAvatarProps>) {
+export function PartyAvatar(props: IPartyAvatarProps) {
     let dispatch = useRootDispatch();
     let prefs = usePrefs();
 
@@ -61,7 +61,7 @@ export function PartyAvatar(props: DeepReadonly<IPartyAvatarProps>) {
 }
 
 interface IListedPartyMenuProps {
-    party: DeepReadonly<Party>,
+    party: Party,
 }
 
 function ListedPartyMenu(props: IListedPartyMenuProps) {

@@ -5,7 +5,7 @@ import { useI18nContext } from "ui/i18n/i18n-solid";
 import { useLocale } from "ui/i18n";
 
 import { parse_presence, PartyMember, PresenceStatus, Role, Snowflake, UserPreferenceFlags, user_is_bot } from "state/models";
-import { ReadRootState, useRootSelector } from "state/root";
+import { RootState, useRootSelector } from "state/root";
 import { activeParty } from "state/selectors/active";
 
 import { VectorIcon } from "ui/components/common/icon";
@@ -23,7 +23,7 @@ import { UserCard } from "../menus/user_card";
 import { createSimpleToggleOnClick } from "ui/hooks/useMain";
 export function MemberList() {
     let state = useStructuredSelector({
-        party: (state: ReadRootState) => {
+        party: (state: RootState) => {
             let party_id = activeParty(state);
             if(party_id) {
                 return state.party.parties[party_id];
@@ -54,7 +54,7 @@ export function MemberList() {
             party = state.party?.party;
 
         let offline = [], online = [],
-            hoisted: Array<{ role: Role, members: Array<DeepReadonly<PartyMember>> }> = [];
+            hoisted: Array<{ role: Role, members: Array<PartyMember> }> = [];
 
         if(members && party) {
             let roles = party.roles;
@@ -122,7 +122,7 @@ export function MemberList() {
 
 interface IRoleMemberListProps {
     role: string,
-    members: Array<DeepReadonly<PartyMember>>,
+    members: Array<PartyMember>,
     owner: Snowflake,
 }
 
@@ -146,7 +146,7 @@ function RoleMemberList(props: IRoleMemberListProps) {
 
 interface IListedMemberProps {
     owner: Snowflake,
-    member: DeepReadonly<PartyMember>,
+    member: PartyMember,
 }
 
 function ListedMember(props: IListedMemberProps) {

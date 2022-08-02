@@ -1,3 +1,3 @@
 export function PrivacySettingsTab() {
-    return <div >Privacy</div>;
+    return <div>Privacy</div>;
 }

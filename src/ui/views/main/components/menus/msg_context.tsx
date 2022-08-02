@@ -16,7 +16,7 @@ import { ContextMenu } from "./list";
 import { Icons } from "lantern-icons";
 
 export interface IMsgContextMenuProps {
-    msg: DeepReadonly<IMessageState>,
+    msg: IMessageState,
     pos: any,
     onConfirmChange: (pending: boolean) => void,
 }
@@ -24,7 +24,7 @@ export interface IMsgContextMenuProps {
 /// Menu shown when right-clicking on a message in chat
 import "./msg_context.scss";
 export function MsgContextMenu(props: IMsgContextMenuProps) {
-    let dev_mode = usePrefs().DeveloperMode;;
+    let dev_mode = usePrefs().DeveloperMode;
 
     let [shownConfirmation, setShownConfirmation] = createSignal(false);
 

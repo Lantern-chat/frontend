@@ -8,7 +8,7 @@ import { Message as MessageModel } from "state/models";
 
 export interface MessageProps {
     editing?: boolean,
-    msg: DeepReadonly<MessageModel>,
+    msg: MessageModel,
     //classList?: { [key: string]: boolean },
     extra?: JSX.Element,
 }

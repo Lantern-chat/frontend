@@ -12,7 +12,7 @@ import { usePrefs } from "state/contexts/prefs";
 import { savePrefs, savePrefsFlag } from "state/commands/prefs";
 import { Font, FONT_NAMES, UserPreferenceFlags } from "state/models";
 import { selectGroupPad } from "state/selectors/prefs";
-import { ReadRootState, useRootDispatch, useRootSelector } from "state/root";
+import { RootState, useRootDispatch, useRootSelector } from "state/root";
 
 import { FormGroup, FormInput, FormLabel, FormSelect } from "ui/components/form";
 
@@ -148,8 +148,8 @@ function FontSelector(props: IFontSelectorProps) {
     let size_prefs_key = createMemo(() => props.which == 'ui' ? 'ui_font_size' : 'chat_font_size');
 
     let state = useStructuredSelector({
-        current_font: (state: ReadRootState) => state.prefs[prefs_key()],
-        current_size: (state: ReadRootState) => state.prefs[size_prefs_key()],
+        current_font: (state: RootState) => state.prefs[prefs_key()],
+        current_size: (state: RootState) => state.prefs[size_prefs_key()],
     });
 
     let dispatch = useRootDispatch();

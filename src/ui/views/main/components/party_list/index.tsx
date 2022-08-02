@@ -1,7 +1,7 @@
 import { createMemo, createSelector, createSignal, For, Show } from "solid-js";
 import { useStructuredSelector } from "solid-mutant";
 
-import { ReadRootState } from "state/root";
+import { RootState } from "state/root";
 import { activeParty } from "state/selectors/active";
 import { GatewayStatus } from "state/mutators/gateway";
 
@@ -22,11 +22,11 @@ export function PartyList() {
     let [isScrolling, setIsScrolling] = createSignal(0);
 
     let state = useStructuredSelector({
-        parties: (state: ReadRootState) => Object.values(state.party.parties).map(party => party.party).sort((a, b) => a.position - b.position),
-        use_mobile_view: (state: ReadRootState) => state.window.use_mobile_view,
-        user_object: (state: ReadRootState) => state.user.user,
-        last_channel: (state: ReadRootState) => state.party.last_channel,
-        gateway_status: (state: ReadRootState) => state.gateway.status,
+        parties: (state: RootState) => Object.values(state.party.parties).map(party => party.party).sort((a, b) => a.position - b.position),
+        use_mobile_view: (state: RootState) => state.window.use_mobile_view,
+        user_object: (state: RootState) => state.user.user,
+        last_channel: (state: RootState) => state.party.last_channel,
+        gateway_status: (state: RootState) => state.gateway.status,
         active_party: activeParty,
     });
 

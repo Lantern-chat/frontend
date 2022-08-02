@@ -28,7 +28,7 @@ export interface IMsgAttachmentProps {
 }
 
 import "./attachment.scss";
-export function MsgAttachment(props: DeepReadonly<IMsgAttachmentProps>) {
+export function MsgAttachment(props: IMsgAttachmentProps) {
     let prefs = usePrefs();
 
     let [errored, setErrored] = createSignal(false);
@@ -74,7 +74,7 @@ export function MsgAttachment(props: DeepReadonly<IMsgAttachmentProps>) {
     )
 }
 
-function GenericAttachment(props: DeepReadonly<IMsgAttachmentProps>) {
+function GenericAttachment(props: IMsgAttachmentProps) {
     let url = createMemo(() => message_attachment_url(props.msg.room_id, props.attachment.id, props.attachment.filename));
     let title = createMemo(() => (props.attachment.filename + ' (' + props.attachment.size + ')'));
     let category = createMemo(() => categorize_mime(props.attachment.filename, props.attachment.mime));
@@ -111,14 +111,14 @@ interface IImageAttachmentProps {
 interface IVideoAttachmentProps {
     vid: JSX.VideoHTMLAttributes<HTMLVideoElement>,
     src: string,
-    attachment: DeepReadonly<Attachment>,
+    attachment: Attachment,
     use_mobile_view: boolean,
 }
 
 interface IAudioAttachmentProps {
     audio: JSX.AudioHTMLAttributes<HTMLAudioElement>,
     src: string,
-    attachment: DeepReadonly<Attachment>,
+    attachment: Attachment,
 }
 
 const TRIGGER_OPTS = { rootMargin: '150%' };

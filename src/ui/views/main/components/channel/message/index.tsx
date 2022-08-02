@@ -14,7 +14,7 @@ import { CompactMessage } from "../message/compact";
 import { CozyMessage } from "../message/cozy";
 import { SystemMessage } from "../message/system";
 
-export function Message(props: { msg: DeepReadonly<IMessageState> }) {
+export function Message(props: { msg: IMessageState }) {
     let prefs = usePrefs();
 
     let [warn, setWarn] = createSignal(false),
