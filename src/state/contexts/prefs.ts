@@ -1,10 +1,11 @@
-import { to_pascal_case } from "lib/case";
-import { ITheme } from "lib/theme";
-import { Accessor, createContext, createMemo, JSX, useContext } from "solid-js";
+import { Accessor, createComponent, createContext, createMemo, JSX, useContext } from "solid-js";
 import { unwrap } from "solid-js/store";
 
-import { UserPreferences, UserPreferenceFlags, hasUserPrefFlag } from "state/models";
-import { IPrefsState } from "state/mutators/prefs";
+import { to_pascal_case } from "lib/case";
+import type { ITheme } from "lib/theme";
+import type { IPrefsState } from "state/mutators/prefs";
+
+import { UserPreferenceFlags, hasUserPrefFlag } from "state/models";
 import { useRootStore } from "state/root";
 
 export type UserPreferenceAccessors =
@@ -32,20 +33,16 @@ export function UserPrefsProvider(props: { children: JSX.Element }) {
     }
 
     accessors['UseMobileView'] = () => store.state.window.use_mobile_view;
-    accessors['Theme'] = (): ITheme => {
-        let prefs = accessors as UserPreferenceAccessors;
-        return {
-            temperature: prefs.Temp(),
-            is_light: prefs.LightMode(),
-            oled: prefs.OledMode(),
-        };
-    };
+    accessors['Theme'] = (): ITheme => ({
+        temperature: (accessors as UserPreferenceAccessors).Temp(),
+        is_light: (accessors as UserPreferenceAccessors).LightMode(),
+        oled: (accessors as UserPreferenceAccessors).OledMode(),
+    });
 
-    return (
-        <UserPrefsContext.Provider value={accessors as UserPreferenceAccessors}>
-            {props.children}
-        </UserPrefsContext.Provider>
-    );
+    return createComponent(UserPrefsContext.Provider, {
+        get value() { return accessors as UserPreferenceAccessors; },
+        get children() { return props.children; }
+    });
 }
 
 export function usePrefs(): UserPreferenceAccessors {
