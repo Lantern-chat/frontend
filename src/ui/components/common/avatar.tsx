@@ -19,7 +19,7 @@ export interface IAvatarProps {
 // to avoid thrashing the UI
 
 function br(value: number | boolean | undefined): undefined | string {
-    return value ? (+value * 100 + '%') : undefined;
+    return value ? (+value * 50 + '%') : '0%';
 }
 
 import "./avatar.scss";
