@@ -171,11 +171,11 @@
         color: white;
 
         .ln-enhanced-contrast & {
-            filter: drop-shadow(0 0 1px black);
+            filter: drop-shadow(0 0 2px black);
         }
 
         .ln-light-theme.ln-enhanced-contrast & {
-            filter: drop-shadow(0 0 1px white);
+            filter: drop-shadow(0 0 2px white);
         }
 
         .ln-light-theme & {
