@@ -1,5 +1,5 @@
 //import * as d3 from "d3-color";
-import { formatRGB, linear2srgb, linear_srgb2oklab, oklab2linear_srgb, parseRgb, polar2lab, saturate_lab, srgb2linear } from "./color";
+import { clamp_linear, formatRGB, linear2srgb, linear_srgb2oklab, oklab2linear_srgb, parseRgb, polar2lab, saturate_lab, srgb2linear } from "./color";
 import { fnv1a } from "./fnv";
 import { mix } from "./math";
 
@@ -21,5 +21,5 @@ export function pickColorFromHash(value: string, light: boolean): string {
     // adjust saturation for theme
     color = light ? saturate_lab(color, 0.9) : color;
 
-    return formatRGB(oklab2linear_srgb(color), 1, true);
+    return formatRGB(clamp_linear(oklab2linear_srgb(color)), 1, true);
 }

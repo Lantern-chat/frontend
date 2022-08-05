@@ -282,6 +282,9 @@ function linearsrgb2linear({ r, g, b }: RGBColor): RGBColor {
 export function srgb2linear(c: RGBColor): RGBColor {
     return linearsrgb2linear(u82linear(c));
 }
+export const clamp_linear = ({ r, g, b }: RGBColor): RGBColor => ({
+    r: clamp01(r), g: clamp01(g), b: clamp01(b),
+});
 
 
 
