@@ -72,6 +72,12 @@ export function oklab2linear_srgb(c: LabColor): RGBColor {
     };
 }
 
+export const lighten_lab = ({ L, a, b }: LabColor, l: number): LabColor => ({
+    L: L * l,
+    a,
+    b,
+});
+
 export const saturate_lab = ({ L, a, b }: LabColor, s: number): LabColor => ({
     L,
     a: a * s,
@@ -177,13 +183,8 @@ export function hsv2hsl({ h, s, v }: HSVColor): HSLColor {
     return hsl(h, (l == 0 || l == 1) ? 0 : (v - l) / min(l, 1 - l), l);
 }
 
-export function rgb2hsl(rgb: RGBColor): HSLColor {
-    return rgb2hslv(rgb, false) as HSLColor;
-}
-
-export function rgb2hsv(rgb: RGBColor): HSVColor {
-    return rgb2hslv(rgb, true) as HSVColor;
-}
+export const rgb2hsl = (rgb: RGBColor): HSLColor => rgb2hslv(rgb, false) as HSLColor;
+export const rgb2hsv = (rgb: RGBColor): HSVColor => rgb2hslv(rgb, true) as HSVColor;
 
 export function change_color(rgb: RGBColor, { h: hue, s: saturation, l: lightness }: IChangeColorOptions): RGBColor {
     let { h, s, l } = rgb2hsl(rgb),
@@ -219,46 +220,19 @@ export function scale_color(rgb: RGBColor, { h: hue, s: saturation, l: lightness
     });
 }
 
-export function hue(color: Color): number {
-    return any2hsl(color).h;
-}
-
-export function saturation(color: Color): number {
-    return any2hsl(color).s;
-}
-
-export function lightness(color: Color): number {
-    return any2hsl(color).l;
-}
-
-
-
-export function lighten(rgb: RGBColor, amount: number): RGBColor {
-    return adjust_color(rgb, {
-        l: amount,
-    });
-}
-
-export function darken(rgb: RGBColor, amount: number): RGBColor {
-    return lighten(rgb, -amount);
-}
-
-export function saturate(rgb: RGBColor, amount: number): RGBColor {
-    return adjust_color(rgb, {
-        s: amount,
-    });
-}
-
-export function desaturate(rgb: RGBColor, amount: number): RGBColor {
-    return saturate(rgb, -amount);
-}
+export const hue = (color: Color): number => any2hsl(color).h;
+export const saturation = (color: Color): number => any2hsl(color).s;
+export const lightness = (color: Color): number => any2hsl(color).l;
+export const lighten = (rgb: RGBColor, amount: number): RGBColor => adjust_color(rgb, { l: amount });
+export const darken = (rgb: RGBColor, amount: number): RGBColor => lighten(rgb, -amount);
+export const saturate = (rgb: RGBColor, amount: number): RGBColor => adjust_color(rgb, { s: amount });
+export const desaturate = (rgb: RGBColor, amount: number): RGBColor => saturate(rgb, -amount);
 
 export function normalize({ r, g, b }: RGBColor): RGBColor {
     let v = max(r, g, b);
     let iv = v > 0 ? 1 / v : 0;
     return rgb(r * iv, g * iv, b * iv);
 }
-
 
 
 function linear2u8({ r, g, b }: RGBColor): RGBColor {
@@ -279,16 +253,10 @@ function linearsrgb2linear({ r, g, b }: RGBColor): RGBColor {
     let s2l = (u: number) => u <= 0.04045 ? (u / 12.92) : Math.pow((u + 0.055) / 1.055, 2.4);
     return { r: s2l(r), g: s2l(g), b: s2l(b) };
 }
-export function srgb2linear(c: RGBColor): RGBColor {
-    return linearsrgb2linear(u82linear(c));
-}
+export const srgb2linear = (c: RGBColor): RGBColor => linearsrgb2linear(u82linear(c));
 export const clamp_linear = ({ r, g, b }: RGBColor): RGBColor => ({
     r: clamp01(r), g: clamp01(g), b: clamp01(b),
 });
-
-
-
-
 
 
 // https://tannerhelland.com/2012/09/18/convert-temperature-rgb-algorithm-code.html
@@ -370,11 +338,8 @@ export const unpack_rgb = (rgb: number): RGBColor => ({
 
 export const pack_rgb = ({ r, g, b }: RGBColor): number => (b | (g << 8) | (r << 16));
 
-export function parseRgb(hex: string): RGBColor {
-    hex = hex.startsWith('#') ? hex.slice(1) : hex;
-
-    return unpack_rgb(parseInt(hex, 16));
-}
+export const parseRgb = (hex: string): RGBColor =>
+    unpack_rgb(parseInt(hex.startsWith('#') ? hex.slice(1) : hex, 16));
 
 export function formatRGB(c: RGBColor, alpha?: number, srgb?: boolean): string {
     if(__DEV__) {
