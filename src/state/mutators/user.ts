@@ -61,7 +61,7 @@ export const userMutator = mutatorWithDefault(
                                 // overwrite own user info if same user and has private fields present
                                 // indicating it's meant for us
                                 if(user.id == state.user!.id && user.email) {
-                                    state.user = user;
+                                    Object.assign(state.user, user);
                                 }
 
                                 break;

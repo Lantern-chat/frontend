@@ -1,9 +1,9 @@
-import { createMemo, Show } from 'solid-js';
+import { Accessor, createMemo, Show } from 'solid-js';
 import { useI18nContext } from 'ui/i18n/i18n-solid';
 
 import { pickColorFromHash } from 'lib/palette';
 
-import { PresenceStatus, Snowflake, User } from 'state/models';
+import { parse_presence, PresenceStatus, Snowflake, User, UserPresence, UserProfile } from 'state/models';
 
 import { asset_url } from 'config/urls';
 import { usePrefs } from 'state/contexts/prefs';
@@ -14,32 +14,46 @@ import { VectorIcon } from 'ui/components/common/icon';
 import { Icons } from "lantern-icons";
 
 export interface IUserAvatarProps {
-    user: User,
+    user_id: Snowflake,
+    profile: UserProfile | null | undefined,
     nickname: string,
-    status: PresenceStatus,
-    is_mobile?: boolean,
+    color?: Accessor<string>,
+
+    presence: UserPresence | null | undefined,
+
+    roundness?: number,
+
+    /// Override the avatar URL
+    url?: string | null,
 }
 
 import "./user_avatar.scss";
 export function UserAvatar(props: IUserAvatarProps) {
     const { LL } = useI18nContext();
 
-    let prefs = usePrefs();
+    const prefs = usePrefs();
+
+    let presence = createMemo(() => props.presence ? parse_presence(props.presence) : {
+        is_mobile: false,
+        status: PresenceStatus.Offline,
+    });
 
     let url_or_color = createMemo(() => {
-        let url, backgroundColor, user = props.user;
+        let url = props.url, backgroundColor;
 
-        if(user.profile?.avatar) {
-            url = asset_url('user', user.id, user.profile.avatar, 'avatar', prefs.LowBandwidthMode());
-        } else {
-            backgroundColor = pickColorFromHash(user.id, prefs.LightMode());
+        if(!url) {
+            if(props.profile?.avatar) {
+                url = asset_url('user', props.user_id, props.profile.avatar, 'avatar', prefs.LowBandwidthMode());
+            } else {
+                backgroundColor = props.color?.() || pickColorFromHash(props.user_id, prefs.LightMode());
+            }
         }
 
         return { url, backgroundColor };
     });
 
     let status = createMemo(() => {
-        switch(props.status) {
+        switch(presence().status) {
             case PresenceStatus.Online: return [LL().main.ONLINE(), "online"];
             case PresenceStatus.Busy: return [LL().main.BUSY(), "busy"];
             case PresenceStatus.Away: return [LL().main.AWAY(), "away"];
@@ -49,12 +63,12 @@ export function UserAvatar(props: IUserAvatarProps) {
 
     return (
         <div class="ln-user-avatar">
-            <Avatar username={props.nickname} text={props.nickname.charAt(0)} {...url_or_color()} />
+            <Avatar username={props.nickname} text={props.nickname.charAt(0)} {...url_or_color()} rounded={props.roundness} />
 
             <div class="ln-user-status" title={status()[0]}>
                 <Show
                     fallback={<span class={status()[1]} />}
-                    when={props.status == PresenceStatus.Online && props.is_mobile}
+                    when={presence().status == PresenceStatus.Online && presence().is_mobile}
                 >
                     <VectorIcon id={Icons.MobilePhone} />
                 </Show>

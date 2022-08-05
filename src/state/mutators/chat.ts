@@ -182,104 +182,102 @@ export const chatMutator = mutatorWithDefault(
             case Type.GATEWAY_EVENT: {
                 let ap = action.payload;
 
-                switch(ap.t) {
-                    case GatewayMessageDiscriminator.Event: {
-                        let event: ServerMsg = ap.p;
+                if(ap.t != GatewayMessageDiscriminator.Event) {
+                    break;
+                }
 
-                        switch(event.o) {
-                            case ServerMsgOpcode.MessageDelete: {
-                                let raw = event.p, room = state.rooms[raw.room_id];
-                                if(!room) return;
+                let event: ServerMsg = ap.p;
 
-                                let msg_idx = room.msgs.findIndex(msg => msg.msg.id == raw.id);
-                                if(msg_idx < 0) return;
+                switch(event.o) {
+                    case ServerMsgOpcode.MessageDelete: {
+                        let raw = event.p, room = state.rooms[raw.room_id];
+                        if(!room) return;
 
-                                room.msgs.splice(msg_idx, 1);
+                        let msg_idx = room.msgs.findIndex(msg => msg.msg.id == raw.id);
+                        if(msg_idx < 0) return;
 
-                                // after message is removed, update the msg at the new index
-                                set_starts_group(room.msgs, msg_idx);
+                        room.msgs.splice(msg_idx, 1);
 
+                        // after message is removed, update the msg at the new index
+                        set_starts_group(room.msgs, msg_idx);
+
+                        break;
+                    }
+                    case ServerMsgOpcode.MessageCreate: {
+                        let raw_msg = event.p, msg = {
+                            msg: raw_msg,
+                            ts: +dayjs(raw_msg.created_at),
+                            et: raw_msg.edited_at ? +dayjs(raw_msg.edited_at) : null,
+                        };
+
+                        let room = state.rooms[raw_msg.room_id];
+                        if(!room) return;
+
+                        // we try to keep the messages sorted by timestamp, and messages may not always
+                        // arrive in order, so find where it should be inserted
+                        let { idx, found } = binarySearch(room.msgs, m => m.ts - msg.ts);
+
+                        // message already exists (weird, but whatever)
+                        if(found && room.msgs[idx].msg.id == raw_msg.id) return;
+
+                        // insert message into the correct place to maintain sort order
+                        room.msgs.splice(idx, 0, msg);
+
+                        // after insertion, cascade check to start group
+                        for(let i = idx; i < room.msgs.length; i++) {
+                            set_starts_group(room.msgs, i);
+                        }
+
+                        __DEV__ && console.log("Splicing message '%s' at index %d", raw_msg.content, idx);
+
+                        // when a message is received, it should clear any typing indicator for the author
+                        // of that message
+
+                        // search for any users typing with this message's user ID
+                        for(let idx = 0; idx < room.typing.length; idx++) {
+                            // if found, remove them from the typing list,
+                            // as the message that was just sent was probably what they were typing
+                            if(room.typing[idx].user == raw_msg.author.id) {
+                                room.typing.splice(idx, 1); // delete 1
                                 break;
                             }
-                            case ServerMsgOpcode.MessageCreate: {
-                                let raw_msg = event.p, msg = {
-                                    msg: raw_msg,
-                                    ts: +dayjs(raw_msg.created_at),
-                                    et: raw_msg.edited_at ? +dayjs(raw_msg.edited_at) : null,
+                        }
+
+                        break;
+                    }
+                    case ServerMsgOpcode.MessageUpdate: {
+                        let raw_msg = event.p, room = state.rooms[raw_msg.room_id];
+                        if(room) {
+                            let msg: IMessageState = {
+                                msg: raw_msg,
+                                ts: +dayjs(raw_msg.created_at),
+                                et: raw_msg.edited_at ? +dayjs(raw_msg.edited_at) : null,
+                            }, { idx, found } = binarySearch(room.msgs, m => m.ts - msg.ts);
+
+                            if(found && room.msgs[idx].msg.id == raw_msg.id) {
+                                // NOTE: overwrite with msg except for sg
+                                Object.assign(room.msgs[idx], msg);
+                            }
+                        }
+
+                        break;
+                    }
+                    case ServerMsgOpcode.TypingStart: {
+                        let { user, room: room_id } = event.p;
+                        let room = state.rooms[room_id];
+                        if(room) {
+                            let ts = Date.now();
+                            // search through typing entries for this room for any existing
+                            // entries to refresh
+                            for(let entry of room.typing) {
+                                if(entry.user == user) {
+                                    entry.ts = ts; // refresh timestamp
+                                    return; // early exit
                                 };
-
-                                let room = state.rooms[raw_msg.room_id];
-                                if(!room) return;
-
-                                // we try to keep the messages sorted by timestamp, and messages may not always
-                                // arrive in order, so find where it should be inserted
-                                let { idx, found } = binarySearch(room.msgs, m => m.ts - msg.ts);
-
-                                // message already exists (weird, but whatever)
-                                if(found && room.msgs[idx].msg.id == raw_msg.id) return;
-
-                                // insert message into the correct place to maintain sort order
-                                room.msgs.splice(idx, 0, msg);
-
-                                // after insertion, cascade check to start group
-                                for(let i = idx; i < room.msgs.length; i++) {
-                                    set_starts_group(room.msgs, i);
-                                }
-
-                                __DEV__ && console.log("Splicing message '%s' at index %d", raw_msg.content, idx);
-
-                                // when a message is received, it should clear any typing indicator for the author
-                                // of that message
-
-                                // search for any users typing with this message's user ID
-                                for(let idx = 0; idx < room.typing.length; idx++) {
-                                    // if found, remove them from the typing list,
-                                    // as the message that was just sent was probably what they were typing
-                                    if(room.typing[idx].user == raw_msg.author.id) {
-                                        room.typing.splice(idx, 1); // delete 1
-                                        break;
-                                    }
-                                }
-
-                                break;
                             }
-                            case ServerMsgOpcode.MessageUpdate: {
-                                let raw_msg = event.p, room = state.rooms[raw_msg.room_id];
-                                if(room) {
-                                    let msg: IMessageState = {
-                                        msg: raw_msg,
-                                        ts: +dayjs(raw_msg.created_at),
-                                        et: raw_msg.edited_at ? +dayjs(raw_msg.edited_at) : null,
-                                    }, { idx, found } = binarySearch(room.msgs, m => m.ts - msg.ts);
 
-                                    if(found && room.msgs[idx].msg.id == raw_msg.id) {
-                                        // NOTE: overwrite with msg except for sg
-                                        Object.assign(room.msgs[idx], msg);
-                                    }
-                                }
-
-                                break;
-                            }
-                            case ServerMsgOpcode.TypingStart: {
-                                let { user, room: room_id } = event.p;
-                                let room = state.rooms[room_id];
-                                if(room) {
-                                    let ts = Date.now();
-                                    // search through typing entries for this room for any existing
-                                    // entries to refresh
-                                    for(let entry of room.typing) {
-                                        if(entry.user == user) {
-                                            entry.ts = ts; // refresh timestamp
-                                            return; // early exit
-                                        };
-                                    }
-
-                                    // if not found above (and returned early), push new typing entry
-                                    room.typing.push({ user, ts });
-                                }
-
-                                break;
-                            }
+                            // if not found above (and returned early), push new typing entry
+                            room.typing.push({ user, ts });
                         }
 
                         break;

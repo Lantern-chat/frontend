@@ -48,7 +48,7 @@ export function CompactMessage(props: IMessageProps) {
                     </div>
                 </div>
 
-                <MessageUserName name={nickname()} user={props.msg.msg.author} />
+                <MessageUserName name={nickname()} user={props.msg.msg.author} party_id={props.msg.msg.party_id} />
             </div>
 
             <MessageBody msg={props.msg.msg} extra={extra()} />

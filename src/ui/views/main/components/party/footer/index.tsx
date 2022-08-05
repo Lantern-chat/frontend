@@ -2,7 +2,7 @@ import { createMemo, createSignal, Show } from "solid-js";
 import { useStructuredSelector } from "solid-mutant";
 
 import { HISTORY } from "state/global";
-import { RootState } from "state/root";
+import { RootState, useRootSelector } from "state/root";
 import { activeParty } from "state/selectors/active";
 import { parse_presence, PresenceStatus } from "state/models";
 
@@ -17,41 +17,27 @@ import { Icons } from "lantern-icons";
 
 import "./footer.scss";
 import { copyText } from "lib/clipboard";
+import { selectCachedUser } from "state/selectors/selectCachedUser";
 export function PartyFooter() {
     let { LL } = useI18nContext();
 
     let [mute, setMute] = createSignal(false),
         [deaf, setDeaf] = createSignal(false);
 
-    let state = useStructuredSelector({
-        user: (state: RootState) => state.user.user,
-        status: (state: RootState) => {
-            let active_party = activeParty(state), party, member;
-
-            if(!active_party || active_party == '@me') return PresenceStatus.Online;
-
-            if(party = state.party.parties[active_party]) {
-                if(member = party.members[state.user.user!.id]) {
-                    return parse_presence(member.presence).status;
-                }
-            }
-
-            return PresenceStatus.Offline;
-        }
-    });
+    let cached_user = useRootSelector(state => state.user.user && selectCachedUser(state, state.user.user!.id, activeParty(state)));
 
     return (
         <footer class="ln-party-footer">
             <div class="ln-party-footer__user">
-                <Show when={state.user} fallback={<Spinner size="100%" />}>
+                <Show when={cached_user()} fallback={<Spinner size="100%" />}>
                     {user => {
-                        let user_discriminator = createMemo(() => user.discriminator.toString(16).toUpperCase().padStart(4, '0'))
+                        let user_discriminator = createMemo(() => user.user.discriminator.toString(16).toUpperCase().padStart(4, '0'))
                         return (<>
-                            <UserAvatar nickname={user.username} user={user} status={state.status} />
+                            <UserAvatar nickname={user.user.username} user_id={user.user.id} profile={user.profile} presence={user.presence} />
 
-                            <div class="ln-username" onClick={() => copyText(user.username + '#' + user_discriminator())}>
+                            <div class="ln-username" onClick={() => copyText(user.user.username + '#' + user_discriminator())}>
                                 <span class="ln-username__name ui-text">
-                                    {user.username}
+                                    {user.user.username}
                                 </span>
                                 <span class="ln-username__discrim ui-text">
                                     #{user_discriminator()}

@@ -170,7 +170,7 @@ export const partyMutator = mutatorWithDefault(
                                 }
 
                                 if(existing) {
-                                    existing.party = party as Party;
+                                    Object.assign(existing.party, party);
                                 } else {
                                     // create party
                                     state.parties[party.id] = {
@@ -376,7 +376,7 @@ export const partyMutator = mutatorWithDefault(
                                         member = party.members[user.id];
 
                                     if(member) {
-                                        member.user = user;
+                                        Object.assign(member.user, user);
                                     }
                                 }
                                 break;

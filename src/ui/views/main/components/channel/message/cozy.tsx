@@ -46,7 +46,7 @@ export function CozyMessage(props: IMessageProps) {
                 <Branch>
                     <Branch.If when={props.msg.sg}>
                         {/*if first message in the group, give it the user avatar and title*/}
-                        <MessageUserAvatar user={cached_member().user} name={nickname()} />
+                        <MessageUserAvatar user={cached_member().user} name={nickname()} party_id={props.msg.msg.party_id} />
                     </Branch.If>
 
                     <Branch.Else>
@@ -60,7 +60,7 @@ export function CozyMessage(props: IMessageProps) {
             <div class="ln-msg__message">
                 <Show when={props.msg.sg}>
                     <div class="ln-msg__title">
-                        <MessageUserName name={nickname()} user={props.msg.msg.author} />
+                        <MessageUserName name={nickname()} user={props.msg.msg.author} party_id={props.msg.msg.party_id} />
 
                         <span class="ln-separator"> - </span>
 

@@ -1,6 +1,37 @@
 @import "lib/variables";
 
 .ln-user-card {
+    &.has-avatar {
+        .avatar-box {
+            margin-block-start: calc(1.25em - 0.25em);
+            margin-inline-start: calc(1.25em - 0.25em);
+            background-color: $lnx-primary-surface-color;
+            padding: 0.25em;
+        }
+    }
+
+    &.has-banner {
+        .ln-user-card__header {
+            height: 12em;
+        }
+
+        .banner {
+            height: 8em;
+        }
+
+        .avatar-box {
+            margin-block-start: calc(1.25em - 0.25em);
+        }
+    }
+
+    &.has-banner.has-avatar {
+        .avatar-box {
+            margin-block-start: calc(5.25em - 0.25em);
+        }
+    }
+}
+
+.ln-user-card {
     display: flex;
     flex-direction: column;
     position: relative;
@@ -28,13 +59,24 @@
         position: absolute;
         width: 100%;
         height: 4em;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+        }
+    }
+
+    .avatar-box {
+        position: absolute;
+
+        margin-block-start: 1.25em;
+        margin-inline-start: 1.25em;
     }
 
     .ln-user-avatar {
-        position: absolute;
         font-size: 2.5em;
-        margin-block-start: 0.5em;
-        margin-inline-start: 0.5em;
 
         .ln-avatar {
             font-size: 1.5em;
@@ -65,19 +107,20 @@
 
     .ln-user-biography {
         &__title {
-            font-size: .8em;
+            font-size: 0.8em;
             font-weight: bold;
             margin-bottom: 1em;
             display: block;
         }
     }
 
-    .ln-user-custom-status, .ln-user-biography {
+    .ln-user-custom-status,
+    .ln-user-biography {
         color: $lnx-secondary-text-color;
     }
 
     h4 {
         font-weight: bold;
-        margin-bottom: .3em;
+        margin-bottom: 0.3em;
     }
 }

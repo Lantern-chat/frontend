@@ -19,12 +19,13 @@ import { BotLabel } from "../misc/bot_label";
 
 import { Icons } from "lantern-icons";
 
-import "./member_list.scss";
-import { UIText } from "ui/components/common/ui-text";
-import { pickColorFromHash } from "lib/palette";
 import { AnchoredModal } from "ui/components/modal/anchored";
 import { UserCard } from "../menus/user_card";
 import { createSimpleToggleOnClick } from "ui/hooks/useMain";
+import { selectCachedUser } from "state/selectors/selectCachedUser";
+
+
+import "./member_list.scss";
 export function MemberList() {
     let state = useStructuredSelector({
         party: (state: RootState) => {
@@ -106,17 +107,20 @@ export function MemberList() {
                 <For each={grouped_members().hoisted}>
                     {hoisted => <RoleMemberList
                         role={hoisted.role.name}
+                        party_id={state.party!.party.id}
                         members={hoisted.members}
                         owner={state.party!.party.owner} />}
                 </For>
 
                 <RoleMemberList
                     role={LL().main.ONLINE()}
+                    party_id={state.party!.party.id}
                     members={grouped_members().online}
                     owner={state.party!.party.owner} />
 
                 <RoleMemberList
                     role={LL().main.OFFLINE()}
+                    party_id={state.party!.party.id}
                     members={grouped_members().offline}
                     owner={state.party!.party.owner} />
             </div>
@@ -128,6 +132,7 @@ interface IRoleMemberListProps {
     role: string,
     members: Array<PartyMember>,
     owner: Snowflake,
+    party_id: Snowflake,
 }
 
 // TODO: Localized number formatting for length
@@ -140,7 +145,7 @@ function RoleMemberList(props: IRoleMemberListProps) {
                 <h4 class="ui-text" textContent={LL().main.member_list.ROLE({ role: props.role, length: props.members.length })} />
                 <ul>
                     <For each={props.members}>
-                        {member => <ListedMember member={member} owner={props.owner} />}
+                        {member => <ListedMember member={member} owner={props.owner} party_id={props.party_id} />}
                     </For>
                 </ul>
             </div>
@@ -151,6 +156,7 @@ function RoleMemberList(props: IRoleMemberListProps) {
 interface IListedMemberProps {
     owner: Snowflake,
     member: PartyMember,
+    party_id: Snowflake,
 }
 
 function ListedMember(props: IListedMemberProps) {
@@ -169,43 +175,43 @@ function ListedMember(props: IListedMemberProps) {
         return;
     });
 
-    let display_name = createMemo(() => props.member.nick || props.member.user.username);
-
-    let presence = createMemo(() => parse_presence(props.member.presence));
+    let cached_user = useRootSelector(state => selectCachedUser(state, props.member.user.id, props.party_id)!);
+    let presence = createMemo(() => parse_presence(cached_user().presence));
 
     let [show, main_click_props] = createSimpleToggleOnClick();
 
     return (
         <li class="ln-member-list__item" {...main_click_props}>
             <AnchoredModal show={show()}>
-                <UserCard user={props.member.user} />
+                <UserCard user_id={props.member.user.id} party_id={props.party_id} />
             </AnchoredModal>
 
-            <UserAvatar nickname={display_name()}
-                user={props.member.user}
-                status={presence().status}
-                is_mobile={presence().is_mobile} />
+            <UserAvatar nickname={cached_user().nick}
+                user_id={props.member.user.id}
+                profile={cached_user().profile}
+                presence={cached_user().presence}
+                roundness={cached_user().bits?.roundedness} />
 
             <div class="ln-member__meta">
                 <div class="ln-member__title">
 
                     <div class="ln-member__name">
-                        <span class="ui-text" style={{ color: color() }} textContent={display_name()} />
+                        <span class="ui-text" style={{ color: color() }} textContent={cached_user().nick} />
                     </div>
 
-                    <Show when={props.member.user.id == props.owner}>
+                    <Show when={cached_user().user.id == props.owner}>
                         <div class="ln-member__spacer" />
                         <div class="ln-member__crown" title={LL().main.OWNER()}>
                             <VectorIcon id={Icons.Crown} />
                         </div>
                     </Show>
 
-                    <Show when={user_is_bot(props.member.user)}>
+                    <Show when={user_is_bot(cached_user().user)}>
                         <BotLabel />
                     </Show>
                 </div>
 
-                <Show when={presence().status != PresenceStatus.Offline && props.member.user.profile?.status}>
+                <Show when={presence().status != PresenceStatus.Offline && cached_user().profile?.status}>
                     {status => (
                         <div class="ln-member__status">
                             <span class="chat-text" textContent={status} />

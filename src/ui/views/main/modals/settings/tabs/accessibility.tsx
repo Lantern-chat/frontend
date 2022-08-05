@@ -18,6 +18,10 @@ export function AccessibilitySettingsTab() {
             <TogglePrefsFlag for="low_bandwidth"
                 label={LL().main.settings.accessibility.LOW_BANDWIDTH()}
                 flag={UserPreferenceFlags.LowBandwidthMode} />
+
+            <TogglePrefsFlag for="force_constrast"
+                label={LL().main.settings.accessibility.FORCE_COLOR_CONTRAST()}
+                flag={UserPreferenceFlags.ForceColorConstrast} />
         </form>
     );
 }

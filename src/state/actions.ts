@@ -1,5 +1,5 @@
 import type { IHistoryState } from "./mutators";
-import type { Snowflake, Room, Message, PartyMember, UserPreferences } from "./models";
+import type { Snowflake, Room, Message, PartyMember, UserPreferences, UserProfile } from "./models";
 import type { RootState } from "state/root";
 import type { ISession } from "lib/session";
 
@@ -42,6 +42,9 @@ export enum Type {
     MESSAGE_EDIT_NEXT = "MESSAGE_EDIT_NEXT",
     MESSAGE_DISCARD_EDIT = "MESSAGE_DISCARD_EDIT",
 
+    PROFILE_FETCHED = "PROFILE_FETCHED",
+    CACHE_USER = "CACHE_USER",
+
     MESSAGE_DRAFT = "MESSAGE_DRAFT",
 
     UPDATE_QUOTA = "UPDATE_QUOTA",
@@ -78,6 +81,8 @@ export type Action =
     | MessageEditNext
     | MessageSendEdit
     | MessageDraft
+    | ProfileFetched
+    | CacheUser
     | UpdateQuota;
 
 // HISTORY ACTIONS
@@ -224,6 +229,19 @@ export interface MessageDraft {
 }
 
 // MISC ACTIONS
+
+export interface ProfileFetched {
+    type: Type.PROFILE_FETCHED,
+    user_id: Snowflake,
+    party_id?: Snowflake,
+    profile: UserProfile,
+}
+
+import { CachedUser } from "./mutators/cache";
+export interface CacheUser {
+    type: Type.CACHE_USER,
+    cached: CachedUser,
+}
 
 export interface CleanupTyping {
     type: Type.CLEANUP_TYPING
