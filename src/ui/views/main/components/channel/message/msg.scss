@@ -170,11 +170,19 @@
 
         color: white;
 
+        .ln-enhanced-contrast & {
+            filter: drop-shadow(0 0 1px black);
+        }
+
+        .ln-light-theme.ln-enhanced-contrast & {
+            filter: drop-shadow(0 0 1px white);
+        }
+
         .ln-light-theme & {
             color: black;
 
             // TODO: Improve this style
-            filter: brightness(0.75) saturate(1.7) contrast(1.2);
+            //filter: brightness(0.75) saturate(1.7) contrast(1.2);
         }
 
         &:hover {

@@ -111,6 +111,7 @@ const idID_main: NamespaceMainTranslation = {
             REDUCE_MOTION: "Reduce Motion",
             UNFOCUS_PAUSE: "Jeda GIFs pada saat tidak fokus",
             LOW_BANDWIDTH: "Aktifkan Mode Bandwidth Rendah",
+            FORCE_COLOR_CONTRAST: "Paksakan Warna Kontras",
         }
     },
     system: {

@@ -532,6 +532,10 @@ export type NamespaceMainTranslation = {
 			 * Enable Low-Bandwidth Mode
 			 */
 			LOW_BANDWIDTH: string
+			/**
+			 * Force Constrasting Colors
+			 */
+			FORCE_COLOR_CONTRAST: string
 		}
 	}
 	system: {
@@ -1056,6 +1060,10 @@ export type TranslationFunctions = {
 				 * Enable Low-Bandwidth Mode
 				 */
 				LOW_BANDWIDTH: () => LocalizedString
+				/**
+				 * Force Constrasting Colors
+				 */
+				FORCE_COLOR_CONTRAST: () => LocalizedString
 			}
 		}
 		system: {

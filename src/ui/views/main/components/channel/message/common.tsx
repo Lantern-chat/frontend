@@ -32,7 +32,9 @@ export function MessageUserName(props: IUserNameProps) {
         let party = state.party.parties[party_id];
         if(!party) return;
 
-        return party.member_colors[user.id];
+        let color = party.member_colors[user.id];
+        if(color == null) return;
+        return formatRgbBinary(adjustUserColor(color)());
     });
 
     return (

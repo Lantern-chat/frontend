@@ -44,6 +44,8 @@ export function mainEffect(state: RootState, action: Action, dispatch: Dispatch<
                 pad = getPad(prefs),
                 font_changed = false;
 
+            de.classList.toggle('ln-enhanced-contrast', hasUserPrefFlag(prefs, UserPreferenceFlags.ForceColorConstrast));
+
             // 16px == 1em, /2 for both sides
             de.style.setProperty('--ln-chat-group-padding', (pad / 32).toFixed(2) + 'em');
 

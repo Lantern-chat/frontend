@@ -35,6 +35,55 @@ export interface HSLColor {
     l: number,
 }
 
+export const lab = (L: number, a: number, b: number): LabColor => ({ L, a, b });
+export interface LabColor {
+    L: number,
+    a: number,
+    b: number,
+}
+
+// https://bottosson.github.io/posts/oklab/
+export function linear_srgb2oklab(c: RGBColor): LabColor {
+    let l = 0.4122214708 * c.r + 0.5363325363 * c.g + 0.0514459929 * c.b,
+        m = 0.2119034982 * c.r + 0.6806995451 * c.g + 0.1073969566 * c.b,
+        s = 0.0883024619 * c.r + 0.2817188376 * c.g + 0.6299787005 * c.b;
+
+    let l_ = Math.cbrt(l), m_ = Math.cbrt(m), s_ = Math.cbrt(s);
+
+    return {
+        L: 0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_,
+        a: 1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_,
+        b: 0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_,
+    }
+}
+
+// https://bottosson.github.io/posts/oklab/
+export function oklab2linear_srgb(c: LabColor): RGBColor {
+    let l_ = c.L + 0.3963377774 * c.a + 0.2158037573 * c.b,
+        m_ = c.L - 0.1055613458 * c.a - 0.0638541728 * c.b,
+        s_ = c.L - 0.0894841775 * c.a - 1.2914855480 * c.b;
+
+    let l = l_ * l_ * l_, m = m_ * m_ * m_, s = s_ * s_ * s_;
+
+    return {
+        r: +4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+        g: -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+        b: -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s,
+    };
+}
+
+export const saturate_lab = ({ L, a, b }: LabColor, s: number): LabColor => ({
+    L,
+    a: a * s,
+    b: b * s,
+});
+
+export const polar2lab = (hue: number, chroma: number, lightness: number): LabColor => ({
+    L: lightness,
+    a: chroma * Math.sin(hue),
+    b: chroma * Math.cos(hue),
+});
+
 export function any2rgb(color: Color): RGBColor {
     let c = color as any;
     if(c.r !== undefined) {
@@ -310,6 +359,19 @@ export function kelvin2(t: number): RGBColor {
     ));
 }
 
+export const unpack_rgb = (rgb: number): RGBColor => ({
+    b: rgb & 0xFF,
+    g: (rgb >> 8) & 0xFF,
+    r: (rgb >> 16) & 0xFF,
+});
+
+export const pack_rgb = ({ r, g, b }: RGBColor): number => (b | (g << 8) | (r << 16));
+
+export function parseRgb(hex: string): RGBColor {
+    hex = hex.startsWith('#') ? hex.slice(1) : hex;
+
+    return unpack_rgb(parseInt(hex, 16));
+}
 
 export function formatRGB(c: RGBColor, alpha?: number, srgb?: boolean): string {
     if(__DEV__) {
@@ -342,7 +404,6 @@ export function formatRGBHex(c: RGBColor, srgb?: boolean): string {
 }
 
 export function formatRgbBinary(value: number): string {
-    let r = value & 0xff, g = (value >> 8) & 0xff, b = (value >> 16) & 0xff;
-
+    let { r, g, b } = unpack_rgb(value);
     return 'rgb(' + [r, g, b].join(',') + ')';
 }

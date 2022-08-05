@@ -15,11 +15,8 @@ export interface IParty {
     rooms: Room[],
     members: Record<Snowflake, PartyMember>,
 
-    /// Cached colors for users
-    ///
-    /// TODO: Maybe store a reference to an object containing the string,
-    /// instead of the string itself? Depends on how string refs work.
-    member_colors: Record<Snowflake, string>,
+    /// Cached colors for users (packed)
+    member_colors: Record<Snowflake, number>,
 
     /// Reverse lookup mapping role_id -> Set of user_ids
     ///
@@ -121,7 +118,7 @@ export const partyMutator = mutatorWithDefault(
 
                     // if a color was found, cache it
                     if(highest_role.color != null) {
-                        party.member_colors[user.id] = computeRoleColor(highest_role)!;
+                        party.member_colors[user.id] = highest_role.color;
                     }
                 }
 
@@ -284,7 +281,7 @@ export const partyMutator = mutatorWithDefault(
                                             }
 
                                             if(highest_role.color != null) {
-                                                party.member_colors[member.user.id] = computeRoleColor(highest_role)!;
+                                                party.member_colors[member.user.id] = highest_role.color;
                                             }
                                         }
                                     }
@@ -357,7 +354,7 @@ export const partyMutator = mutatorWithDefault(
                                     }
 
                                     if(highest_role.color != null) {
-                                        party.member_colors[id] = computeRoleColor(highest_role)!;
+                                        party.member_colors[id] = highest_role.color;
                                     }
                                 }
 

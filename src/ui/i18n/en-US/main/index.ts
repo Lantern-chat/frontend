@@ -111,6 +111,7 @@ const enUS_main: BaseTranslation = {
             REDUCE_MOTION: "Reduce Motion",
             UNFOCUS_PAUSE: "Pause GIFs on Unfocus",
             LOW_BANDWIDTH: "Enable Low-Bandwidth Mode",
+            FORCE_COLOR_CONTRAST: "Force Constrasting Colors",
         }
     },
     system: {

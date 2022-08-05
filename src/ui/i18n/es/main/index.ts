@@ -110,6 +110,7 @@ const es_main: NamespaceMainTranslation = {
 			REDUCE_MOTION: "Reducir Movimiento",
 			UNFOCUS_PAUSE: "Pausar GIF en Desenfocar",
 			LOW_BANDWIDTH: "Habilitar el modo de ancho de banda bajo",
+			FORCE_COLOR_CONTRAST: "Forzar colores contrastantes",
 		}
 	},
 	system: {

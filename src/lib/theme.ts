@@ -1,4 +1,4 @@
-import { change_color, darken, lighten, lightness, RGBColor, desaturate, formatRGB, adjust_color, kelvin2, rgb, rgb2hsl, hue, saturation, hsl2rgb, formatRGBHex } from "./color";
+import { change_color, darken, lighten, lightness, RGBColor, formatRGB, adjust_color, kelvin2, rgb, rgb2hsl, hsl2rgb, formatRGBHex } from "./color";
 
 const { min, max, round } = Math;
 
@@ -128,13 +128,8 @@ export function setThemeColors(colors: IThemeColors, animate: boolean, is_light:
         de.classList.add("ln-theme-transition");
     }
 
-    if(is_light) {
-        de.classList.remove('ln-dark-theme');
-        de.classList.add('ln-light-theme');
-    } else {
-        de.classList.add('ln-dark-theme');
-        de.classList.remove('ln-light-theme');
-    }
+    de.classList.toggle('ln-dark-theme', !is_light);
+    de.classList.toggle('ln-light-theme', is_light);
 
     let metaThemeColor = document.querySelector("meta[name=theme-color]");
     let appleThemeColor = document.querySelector("meta[name=apple-mobile-web-app-status-bar-style]");

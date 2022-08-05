@@ -8,6 +8,10 @@ import { parse_presence, PartyMember, PresenceStatus, Role, Snowflake, UserPrefe
 import { RootState, useRootSelector } from "state/root";
 import { activeParty } from "state/selectors/active";
 
+
+import { formatRgbBinary } from "lib/color";
+import { adjustUserColor } from "state/selectors/color";
+
 import { VectorIcon } from "ui/components/common/icon";
 
 import { UserAvatar } from "../user_avatar";
@@ -157,7 +161,9 @@ function ListedMember(props: IListedMemberProps) {
 
         if(party_id = activeParty(state)) {
             if(party = state.party.parties[party_id]) {
-                return party.member_colors[props.member.user.id];
+                let color = party.member_colors[props.member.user.id];
+                if(color == null) return;
+                return formatRgbBinary(adjustUserColor(color)());
             }
         }
         return;
