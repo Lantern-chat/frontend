@@ -101,6 +101,7 @@ function ThemeSetting() {
             <Toggle for="oled_mode"
                 label={LL().main.settings.appearance.OLED_THEME()}
                 checked={interactive.oled}
+                disabled={interactive.is_light}
                 onChange={(checked: boolean) => doSetTheme(interactive.temperature, interactive.is_light, checked)}
             />
         </>
