@@ -27,10 +27,17 @@ $active: #47c05b;
         display: flex;
         flex-direction: column;
         justify-content: center;
+        max-width: 85%;
+    }
+
+    .subtext {
+        font-size: 0.8em;
+        color: $lnx-secondary-text-color;
     }
 
     input[type="checkbox"] {
         font-size: 0.5em;
+        flex-shrink: 0;
 
         transition: none !important;
         font-family: sans-serif;

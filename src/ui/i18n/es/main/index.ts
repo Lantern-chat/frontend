@@ -108,9 +108,15 @@ const es_main: NamespaceMainTranslation = {
 		},
 		accessibility: {
 			REDUCE_MOTION: "Reducir Movimiento",
+			REDUCE_MOTION_SUBTEXT: "Reduce o elimina animaciones y transiciones",
+
 			UNFOCUS_PAUSE: "Pausar GIF en Desenfocar",
+
 			LOW_BANDWIDTH: "Habilitar el modo de ancho de banda bajo",
+			LOW_BANDWIDTH_SUBTEXT: "Utiliza recursos de menor calidad y no muestra los archivos adjuntos hasta que se solicita",
+
 			FORCE_COLOR_CONTRAST: "Forzar colores contrastantes",
+			FORCE_COLOR_CONTRAST_SUBTEXT: "Ajusta los colores personalizados de los usuarios o roles para que sean visibles contra el fondo",
 		}
 	},
 	system: {

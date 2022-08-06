@@ -109,9 +109,15 @@ const idID_main: NamespaceMainTranslation = {
         },
         accessibility: {
             REDUCE_MOTION: "Reduce Motion",
+            REDUCE_MOTION_SUBTEXT: "Mengurangi atau menghapus animasi dan transisi",
+
             UNFOCUS_PAUSE: "Jeda GIFs pada saat tidak fokus",
+
             LOW_BANDWIDTH: "Aktifkan Mode Bandwidth Rendah",
+            LOW_BANDWIDTH_SUBTEXT: "Menggunakan aset berkualitas lebih rendah dan tidak akan menampilkan lampiran sampai diminta",
+
             FORCE_COLOR_CONTRAST: "Paksakan Warna Kontras",
+            FORCE_COLOR_CONTRAST_SUBTEXT: "Menyesuaikan warna khusus dari pengguna atau peran agar terlihat di latar belakang",
         }
     },
     system: {

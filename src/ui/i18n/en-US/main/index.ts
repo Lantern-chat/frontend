@@ -105,13 +105,19 @@ const enUS_main: BaseTranslation = {
             MUTE_MEDIA: "Mute Media by Default",
             HIDE_UNKNOWN: "Disable Attachments of Unknown Size",
             USE_PLATFORM_EMOJIS: "Use Platform Emojis",
-            ENABLE_SPELLCHECK: "Enable Spellcheck"
+            ENABLE_SPELLCHECK: "Enable Spellcheck",
         },
         accessibility: {
             REDUCE_MOTION: "Reduce Motion",
+            REDUCE_MOTION_SUBTEXT: "Reduces or removes animations and transitions",
+
             UNFOCUS_PAUSE: "Pause GIFs on Unfocus",
+
             LOW_BANDWIDTH: "Enable Low-Bandwidth Mode",
+            LOW_BANDWIDTH_SUBTEXT: "Uses lower quality assets and will not display attachments until requested",
+
             FORCE_COLOR_CONTRAST: "Force Constrasting Colors",
+            FORCE_COLOR_CONTRAST_SUBTEXT: "Adjusts custom colors from users or roles to be visible against the background",
         }
     },
     system: {

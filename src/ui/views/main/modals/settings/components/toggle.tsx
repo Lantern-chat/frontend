@@ -1,4 +1,4 @@
-import { createRenderEffect, createSignal, JSX } from "solid-js";
+import { createRenderEffect, createSignal, JSX, Show } from "solid-js";
 
 import { savePrefsFlag } from "state/commands/prefs";
 import { UserPreferenceFlags } from "state/models";
@@ -13,6 +13,7 @@ export interface IToggleProps {
     checked?: boolean,
     onChange: (checked: boolean) => void,
     disabled?: boolean,
+    subtext?: string,
 }
 
 export function Toggle(props: IToggleProps) {
@@ -29,7 +30,12 @@ export function Toggle(props: IToggleProps) {
 
     return (
         <div class="ln-settings-toggle">
-            <label for={props.for}>{props.label}</label>
+            <label for={props.for} class="ui-text">
+                {props.label}
+                <Show when={props.subtext}>
+                    <span class="ui-text subtext">{props.subtext}</span>
+                </Show>
+            </label>
             <span class="spacer" />
             <input type="checkbox" name={props.for} id={props.for}
                 checked={checked() && !props.disabled} onChange={onChange} disabled={props.disabled} />
@@ -41,6 +47,7 @@ export interface ITogglePrefsFlagProps {
     for: string,
     label: JSX.Element,
     flag: UserPreferenceFlags,
+    subtext?: string,
 }
 
 export function TogglePrefsFlag(props: ITogglePrefsFlagProps) {
@@ -51,6 +58,6 @@ export function TogglePrefsFlag(props: ITogglePrefsFlagProps) {
         };
 
     return (
-        <Toggle for={props.for} label={props.label} checked={current_flag()} onChange={onChange} />
+        <Toggle for={props.for} label={props.label} checked={current_flag()} onChange={onChange} subtext={props.subtext} />
     );
 }

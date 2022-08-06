@@ -9,7 +9,8 @@ export function AccessibilitySettingsTab() {
         <form class="ln-settings-form">
             <TogglePrefsFlag for="reduce_motion"
                 label={LL().main.settings.accessibility.REDUCE_MOTION()}
-                flag={UserPreferenceFlags.ReduceAnimations} />
+                flag={UserPreferenceFlags.ReduceAnimations}
+                subtext={LL().main.settings.accessibility.REDUCE_MOTION_SUBTEXT()} />
 
             <TogglePrefsFlag for="unfocus_pause"
                 label={LL().main.settings.accessibility.UNFOCUS_PAUSE()}
@@ -17,11 +18,13 @@ export function AccessibilitySettingsTab() {
 
             <TogglePrefsFlag for="low_bandwidth"
                 label={LL().main.settings.accessibility.LOW_BANDWIDTH()}
-                flag={UserPreferenceFlags.LowBandwidthMode} />
+                flag={UserPreferenceFlags.LowBandwidthMode}
+                subtext={LL().main.settings.accessibility.LOW_BANDWIDTH_SUBTEXT()} />
 
             <TogglePrefsFlag for="force_constrast"
                 label={LL().main.settings.accessibility.FORCE_COLOR_CONTRAST()}
-                flag={UserPreferenceFlags.ForceColorConstrast} />
+                flag={UserPreferenceFlags.ForceColorConstrast}
+                subtext={LL().main.settings.accessibility.FORCE_COLOR_CONTRAST_SUBTEXT()} />
         </form>
     );
 }

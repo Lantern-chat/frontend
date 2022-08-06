@@ -525,6 +525,10 @@ export type NamespaceMainTranslation = {
 			 */
 			REDUCE_MOTION: string
 			/**
+			 * Reduces or removes animations and transitions
+			 */
+			REDUCE_MOTION_SUBTEXT: string
+			/**
 			 * Pause GIFs on Unfocus
 			 */
 			UNFOCUS_PAUSE: string
@@ -533,9 +537,17 @@ export type NamespaceMainTranslation = {
 			 */
 			LOW_BANDWIDTH: string
 			/**
+			 * Uses lower quality assets and will not display attachments until requested
+			 */
+			LOW_BANDWIDTH_SUBTEXT: string
+			/**
 			 * Force Constrasting Colors
 			 */
 			FORCE_COLOR_CONTRAST: string
+			/**
+			 * Adjusts custom colors from users or roles to be visible against the background
+			 */
+			FORCE_COLOR_CONTRAST_SUBTEXT: string
 		}
 	}
 	system: {
@@ -1053,6 +1065,10 @@ export type TranslationFunctions = {
 				 */
 				REDUCE_MOTION: () => LocalizedString
 				/**
+				 * Reduces or removes animations and transitions
+				 */
+				REDUCE_MOTION_SUBTEXT: () => LocalizedString
+				/**
 				 * Pause GIFs on Unfocus
 				 */
 				UNFOCUS_PAUSE: () => LocalizedString
@@ -1061,9 +1077,17 @@ export type TranslationFunctions = {
 				 */
 				LOW_BANDWIDTH: () => LocalizedString
 				/**
+				 * Uses lower quality assets and will not display attachments until requested
+				 */
+				LOW_BANDWIDTH_SUBTEXT: () => LocalizedString
+				/**
 				 * Force Constrasting Colors
 				 */
 				FORCE_COLOR_CONTRAST: () => LocalizedString
+				/**
+				 * Adjusts custom colors from users or roles to be visible against the background
+				 */
+				FORCE_COLOR_CONTRAST_SUBTEXT: () => LocalizedString
 			}
 		}
 		system: {
