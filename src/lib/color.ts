@@ -235,11 +235,11 @@ export function normalize({ r, g, b }: RGBColor): RGBColor {
 }
 
 
-function linear2u8({ r, g, b }: RGBColor): RGBColor {
+export function linear2u8({ r, g, b }: RGBColor): RGBColor {
     let l2u = (u: number) => min(255, max(0, 255 * u)) | 0;
     return { r: l2u(r), g: l2u(g), b: l2u(b) };
 }
-function u82linear({ r, g, b }: RGBColor): RGBColor {
+export function u82linear({ r, g, b }: RGBColor): RGBColor {
     let k = (x: number) => x /= 255.0;
     return { r: k(r), g: k(g), b: k(b) }
 }

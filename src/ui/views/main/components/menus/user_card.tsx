@@ -1,6 +1,6 @@
 import { createEffect, createMemo, onMount, Show } from "solid-js";
 import { useStructuredSelector } from "solid-mutant";
-import { PartyMember, Snowflake, User, parse_presence, UserPreferenceFlags, user_is_bot, PresenceStatus, UserProfile, split_profile_bits, UserPresence } from "state/models";
+import { PartyMember, Snowflake, User, parse_presence, UserPreferenceFlags, user_is_bot, PresenceStatus, UserProfile, split_profile_bits, UserPresence, UserProfileSplitBits } from "state/models";
 import { RootState, useRootDispatch, useRootSelector, useRootStore } from "state/root";
 import { selectCachedUser } from "state/selectors/selectCachedUser";
 import { useI18nContext } from "ui/i18n/i18n-solid";
@@ -36,6 +36,7 @@ export function UserCard(props: IUserCardProps) {
                 <SimpleUserCard
                     user={cached_user.user}
                     nick={cached_user.nick}
+                    bits={cached_user.bits}
                     profile={cached_user.profile}
                     presence={cached_user.presence} />
             )}
@@ -48,6 +49,7 @@ export interface ISimpleUserCardProps {
     nick: string | undefined,
     presence?: UserPresence,
     profile: UserProfile | undefined | null,
+    bits?: UserProfileSplitBits,
     banner_url?: string,
     avatar_url?: string,
 }
@@ -60,7 +62,7 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
     let prefs = usePrefs();
     const { LL } = useI18nContext();
 
-    let bits = createMemo(() => props.profile && split_profile_bits(props.profile));
+    let bits = createMemo(() => props.bits || (props.profile && split_profile_bits(props.profile)));
 
     let banner_url = () => {
         if(props.banner_url) return props.banner_url;
