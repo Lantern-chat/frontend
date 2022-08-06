@@ -12,7 +12,7 @@ export interface CachedUser {
     roles?: Snowflake[],
     presence?: UserPresence,
     profile?: UserProfile | null,
-    bits?: UserProfileSplitBits,
+    bits: UserProfileSplitBits,
 }
 
 export interface ICacheState {
