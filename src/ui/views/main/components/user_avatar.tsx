@@ -38,7 +38,7 @@ export function UserAvatar(props: IUserAvatarProps) {
         status: PresenceStatus.Offline,
     });
 
-    let url_or_color = createMemo(() => {
+    let url_or_color = () => {
         let url = props.url, backgroundColor;
 
         if(!url) {
@@ -50,7 +50,7 @@ export function UserAvatar(props: IUserAvatarProps) {
         }
 
         return { url, backgroundColor };
-    });
+    };
 
     let status = createMemo(() => {
         switch(presence().status) {

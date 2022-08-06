@@ -18,8 +18,8 @@ export function Mention(props: IMentionProps) {
         return;
     });
 
-    let room = createMemo(() => party()?.rooms.find(room => room.id == props.id)),
-        member = createMemo(() => party()?.members[props.id]);
+    let room = () => party()?.rooms.find(room => room.id == props.id),
+        member = () => party()?.members[props.id];
 
     return (
         <Switch>

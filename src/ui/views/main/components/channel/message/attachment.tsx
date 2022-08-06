@@ -35,9 +35,9 @@ export function MsgAttachment(props: IMsgAttachmentProps) {
 
     let eat = createClickEater();
 
-    let src = createMemo(() => message_attachment_url(props.msg.room_id, props.attachment.id, props.attachment.filename));
+    let src = () => message_attachment_url(props.msg.room_id, props.attachment.id, props.attachment.filename);
 
-    let common = createMemo(() => {
+    let common = () => {
         let a = props.attachment;
         return {
             id: a.id,
@@ -46,7 +46,7 @@ export function MsgAttachment(props: IMsgAttachmentProps) {
             onContextMenu: eat,
             onError: () => setErrored(true),
         };
-    });
+    };
 
     let mime_prefix = createMemo(() => props.attachment.mime?.slice(0, 5));
 
@@ -77,7 +77,6 @@ export function MsgAttachment(props: IMsgAttachmentProps) {
 function GenericAttachment(props: IMsgAttachmentProps) {
     let url = createMemo(() => message_attachment_url(props.msg.room_id, props.attachment.id, props.attachment.filename));
     let title = createMemo(() => (props.attachment.filename + ' (' + props.attachment.size + ')'));
-    let category = createMemo(() => categorize_mime(props.attachment.filename, props.attachment.mime));
 
     let eat = createClickEater();
 
@@ -86,7 +85,7 @@ function GenericAttachment(props: IMsgAttachmentProps) {
     return (
         <div class="ln-msg-attachment__generic">
             <div>
-                <MimeIcon category={category()} />
+                <MimeIcon category={categorize_mime(props.attachment.filename, props.attachment.mime)} />
             </div>
 
             <div class="ln-attachment-link ui-text">

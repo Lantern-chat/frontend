@@ -18,27 +18,19 @@ import { useI18nContext } from "ui/i18n/i18n-solid";
 export function CozyMessage(props: IMessageProps) {
     let { LL, locale } = useI18nContext();
 
-    let cached_member = useRootSelector(state => {
-        return selectCachedUser(state, props.msg.msg.author.id, props.msg.msg.party_id)
-            || { user: props.msg.msg.author, nick: props.msg.msg.member?.nick };
-    });
+    let cached_member = useRootSelector(state => selectCachedUser(state, props.msg.msg.author.id, props.msg.msg.party_id));
 
     let ts = createTimestamp(() => props.msg.ts);
     let ets = createTimestamp(() => props.msg.et);
 
-    let nickname = createMemo(() => {
-        let cached = cached_member();
-        return cached.nick || cached.user.username;
-    });
-
-    let extra = createMemo(() => {
+    let extra = () => {
         if(!props.msg.sg && props.msg.et) {
             return <span class="ui-text ln-system-sub" title={LL().main.EDITED_ON({ ts: ets() })}>
                 ({LL().main.EDITED().toLocaleLowerCase(locale())})
             </span>;
         }
         return;
-    });
+    };
 
     return (
         <>
@@ -46,7 +38,7 @@ export function CozyMessage(props: IMessageProps) {
                 <Branch>
                     <Branch.If when={props.msg.sg}>
                         {/*if first message in the group, give it the user avatar and title*/}
-                        <MessageUserAvatar user={cached_member().user} name={nickname()} party_id={props.msg.msg.party_id} />
+                        <MessageUserAvatar user={cached_member().user} name={cached_member().nick} party_id={props.msg.msg.party_id} />
                     </Branch.If>
 
                     <Branch.Else>
@@ -60,7 +52,7 @@ export function CozyMessage(props: IMessageProps) {
             <div class="ln-msg__message">
                 <Show when={props.msg.sg}>
                     <div class="ln-msg__title">
-                        <MessageUserName name={nickname()} user={props.msg.msg.author} party_id={props.msg.msg.party_id} />
+                        <MessageUserName name={cached_member().nick} user={props.msg.msg.author} party_id={props.msg.msg.party_id} />
 
                         <span class="ln-separator"> - </span>
 

@@ -6,7 +6,7 @@ import { Icons } from "lantern-icons";
 import { VectorIcon } from "ui/components/common/icon";
 
 export function MimeIcon(props: { category: MimeCategory }) {
-    let icon = createMemo(() => {
+    let icon = () => {
         switch(props.category) {
             case MimeCategory.PlainText: return Icons.PlainTextFile;
             case MimeCategory.RichText: return Icons.RichTextFile;
@@ -25,7 +25,7 @@ export function MimeIcon(props: { category: MimeCategory }) {
             case MimeCategory.Zip: return Icons.ZipFile;
             default: return Icons.UnknownFile;
         }
-    });
+    };
 
     return (<VectorIcon id={icon()} extra={{ 'data-category': MimeCategory[props.category].toLowerCase() }} />);
 }

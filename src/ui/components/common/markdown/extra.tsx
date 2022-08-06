@@ -30,7 +30,7 @@ var ASTCache = window['AST_CACHE'] = new Map();
 export function SolidMarkdownExtra(props: SolidMarkdownProps): SolidElement {
     let [local, div] = splitProps(props, ['source', 'inline', 'extra']);
 
-    let res = createMemo(() => {
+    let res = () => {
         let state = { inline: !!local.inline, extra: local.extra };
         let ast = ASTCache.get(local.source);
         if(!ast) {
@@ -40,7 +40,7 @@ export function SolidMarkdownExtra(props: SolidMarkdownProps): SolidElement {
         if(ASTCache.size > 500) ASTCache.clear();
 
         return extraSolidOutput(ast, state);
-    });
+    };
 
     return <div {...div} children={res()} />
 }

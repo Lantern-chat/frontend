@@ -1319,10 +1319,10 @@ export interface SolidMarkdownProps extends JSX.HTMLAttributes<HTMLDivElement> {
 export function SolidMarkdown(props: SolidMarkdownProps): SolidElement {
     let [local, div] = splitProps(props, ['source', 'inline', 'extra']);
 
-    let res = createMemo(() => {
+    let res = () => {
         let state = { inline: !!local.inline, extra: local.extra };
         return defaultSolidOutput(defaultRawParse(local.source, state), state);
-    });
+    };
 
     return <div {...div} children={res()} />;
 };

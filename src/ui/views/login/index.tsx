@@ -143,7 +143,7 @@ export default function LoginView() {
         on_password_change = (e: InputEvent) => on_input(e, LoginActionType.UpdatePass),
         on_totp_change = (e: InputEvent) => on_input(e, LoginActionType.UpdatedTOTP);
 
-    let mfa_toggle = createMemo(() => {
+    let mfa_toggle = () => {
         let mfa_toggle_text = LL().MFA_TOGGLE_TEXT({ h: state.have_2fa as any }),
             mfa_toggle_flavor = LL().MFA_TOGGLE_FLAVOR({ h: state.have_2fa as any });
 
@@ -154,7 +154,7 @@ export default function LoginView() {
                 textContent={mfa_toggle_text}
             />
         );
-    });
+    };
 
     let valid_email = createMemo(() => validateEmail(state.email));
 

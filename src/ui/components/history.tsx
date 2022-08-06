@@ -33,7 +33,7 @@ function callEventHandler<T extends UIEvent>(event: T, handler?: JSX.EventHandle
 //}
 
 export function Link(props: ILinkProps) {
-    let method = createMemo(() => props.replace ? HISTORY.replace : HISTORY.pm);
+    let method = () => props.replace ? HISTORY.replace : HISTORY.pm;
 
     let onClick = (event: MouseEvent) => {
         if(!props.href) {

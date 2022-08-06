@@ -1,4 +1,4 @@
-import { createMemo, JSX, Show } from "solid-js";
+import { JSX, Show } from "solid-js";
 import { ErrorBoundary } from "solid-js/web";
 
 import { DisplayError } from "ui/components/common/error";

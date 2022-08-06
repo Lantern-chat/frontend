@@ -12,31 +12,22 @@ import { Message as MessageBody } from "./msg";
 export function CompactMessage(props: IMessageProps) {
     let { LL, locale } = useI18nContext();
 
-    let cached_member = useRootSelector(state => {
-        return selectCachedUser(state, props.msg.msg.author.id, props.msg.msg.party_id)
-            || { user: props.msg.msg.author, nick: props.msg.msg.member?.nick };
-    });
+    let cached_member = useRootSelector(state => selectCachedUser(state, props.msg.msg.author.id, props.msg.msg.party_id));
 
     let ts = createTimestamp(() => props.msg.ts);
-    let ets = createTimestamp(() => props.msg.et);
 
-    let nickname = createMemo(() => {
-        let cached = cached_member();
-        return cached.nick || cached.user.username;
-    });
-
-    let edited = createMemo(() => LL().main.EDITED().toLocaleLowerCase(locale()));
-
-    let extra = createMemo(() => {
+    let extra = () => {
         if(props.msg.et) {
+            let ets = createTimestamp(() => props.msg.et);
+
             return (
                 <span class="ui-text ln-system-sub" title={LL().main.EDITED_ON({ ts: ets() })}>
-                    ({edited()})
+                    ({LL().main.EDITED().toLocaleLowerCase(locale())})
                 </span>
             );
         }
         return;
-    });
+    };
 
     return (
         <div class="ln-msg--compact" classList={{ 'no-text': !props.msg.msg.content }}>
@@ -48,7 +39,7 @@ export function CompactMessage(props: IMessageProps) {
                     </div>
                 </div>
 
-                <MessageUserName name={nickname()} user={props.msg.msg.author} party_id={props.msg.msg.party_id} />
+                <MessageUserName name={cached_member().nick} user={props.msg.msg.author} party_id={props.msg.msg.party_id} />
             </div>
 
             <MessageBody msg={props.msg.msg} extra={extra()} />

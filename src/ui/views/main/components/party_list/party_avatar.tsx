@@ -33,9 +33,9 @@ export function PartyAvatar(props: IPartyAvatarProps) {
     let dispatch = useRootDispatch();
     let prefs = usePrefs();
 
-    let last = createMemo(() => props.last_channel[props.party.id]),
-        url = createMemo(() => props.party.avatar ? asset_url('party', props.party.id, props.party.avatar, 'avatar', prefs.LowBandwidthMode()) : void 0),
-        should_navigate = createMemo(() => props.can_navigate && props.party.id != props.active_party);
+    let last = () => props.last_channel[props.party.id],
+        url = () => props.party.avatar ? asset_url('party', props.party.id, props.party.avatar, 'avatar', prefs.LowBandwidthMode()) : void 0,
+        should_navigate = () => props.can_navigate && props.party.id != props.active_party;
 
     let on_navigate = () => { should_navigate() && dispatch(activateParty(props.party.id, last())) };
 

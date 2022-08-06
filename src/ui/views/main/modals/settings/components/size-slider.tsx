@@ -31,14 +31,14 @@ export function SizeSlider(props: ISizeSliderProps) {
         return { min, max };
     });
 
-    let background = createMemo(() => {
+    let background = () => {
         let { min, max } = bounds(),
             vp = (props.value - min) / (max - min) * 100;
 
         return `linear-gradient(to right, ${B_ACTIVE} 0% ${vp}%, ${B_INACTIVE} ${vp}% 100%)`;
-    });
+    };
 
-    let steps = createMemo(() => {
+    let steps = () => {
         let { min, max } = bounds();
 
         return props.steps.map((step, i) => {
@@ -47,7 +47,7 @@ export function SizeSlider(props: ISizeSliderProps) {
 
             return (<span style={style} textContent={LL().units.PX(step)} />);
         });
-    });
+    };
 
     return (
         <div class="ln-settings-size-slider">
