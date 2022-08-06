@@ -1,6 +1,12 @@
-import { Snowflake, split_profile_bits, User } from "state/models";
+import { Snowflake, split_profile_bits, User, UserProfileSplitBits } from "state/models";
 import { CachedUser, cache_key } from "state/mutators/cache";
 import { RootState, Type, useRootDispatch } from "state/root";
+
+const DEFAULT_PROFILE_BITS: UserProfileSplitBits = {
+    roundedness: 0,
+    override_color: false,
+    color: 0,
+}
 
 export function selectCachedUser(state: RootState, user_id: Snowflake, party_id?: Snowflake): CachedUser {
     let cached = state.cache.users[cache_key(user_id, party_id)];
@@ -20,37 +26,28 @@ export function selectCachedUser(state: RootState, user_id: Snowflake, party_id?
                     nick: fallback.username,
                     profile: fallback.profile,
                     presence: state.user.user?.id == fallback.id ? state.user.presence : undefined,
+                    bits: DEFAULT_PROFILE_BITS,
                 };
             }
         } else {
-            let party = state.party.parties[party_id];
+            let member = state.party.parties[party_id]?.members[user_id];
 
-            if(party) {
-                let member = party.members[user_id];
-
-                if(member) {
-                    cached = {
-                        user: member.user,
-                        nick: member.nick || member.user.username,
-                        profile: member.user.profile,
-                        presence: member.presence,
-                        party_id,
-                    };
-                }
+            if(member) {
+                cached = {
+                    user: member.user,
+                    nick: member.nick || member.user.username,
+                    profile: member.user.profile,
+                    presence: member.presence,
+                    party_id,
+                    bits: DEFAULT_PROFILE_BITS,
+                };
             }
         }
 
         if(cached) {
-            if(cached.profile) {
-                cached.bits = split_profile_bits(cached.profile);
-            }
+            cached.bits = cached.profile ? split_profile_bits(cached.profile) : DEFAULT_PROFILE_BITS;
 
-            __DEV__ && console.log("Caching", cached);
-
-            useRootDispatch()({
-                type: Type.CACHE_USER,
-                cached,
-            });
+            useRootDispatch()({ type: Type.CACHE_USER, cached });
         }
     }
 

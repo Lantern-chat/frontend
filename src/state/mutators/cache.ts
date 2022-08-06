@@ -2,6 +2,7 @@ import { PartyMemberEvent } from "client-sdk/src/models/gateway";
 import { mutatorWithDefault } from "solid-mutant";
 import { Action, Type } from "state/actions";
 import { PartyMember, ServerMsgOpcode, Snowflake, split_profile_bits, User, UserPresence, UserProfile, UserProfileSplitBits } from "state/models";
+import { merge } from "state/util";
 import { GatewayMessageDiscriminator } from "worker/gateway/msg";
 
 export interface CachedUser {
@@ -31,29 +32,19 @@ export const cacheMutator = mutatorWithDefault(
 
                 let key = cache_key(cached.user.id, cached.party_id);
 
-                let existing = state.users[key];
-                if(existing) {
-                    Object.assign(existing, cached);
-                } else {
-                    state.users[key] = cached;
-                }
+                merge(state.users, key, cached);
 
-                console.log("Cached", key);
+                __DEV__ && console.log("Cached", key);
 
                 break;
             }
             case Type.PROFILE_FETCHED: {
                 let { user_id, party_id, profile } = action,
                     key = cache_key(user_id, party_id),
-                    cached: CachedUser | undefined = state.users[key],
-                    existing = cached?.profile;
+                    cached: CachedUser | undefined = state.users[key];
 
                 if(cached) {
-                    if(existing) {
-                        Object.assign(existing, profile);
-                    } else {
-                        cached.profile = profile;
-                    }
+                    merge(cached, 'profile', profile);
 
                     cached.bits = split_profile_bits(profile);
                 } else {
@@ -79,14 +70,8 @@ export const cacheMutator = mutatorWithDefault(
                             cached = state.users[key];
 
                         if(cached) {
-                            Object.assign(cached.user, p.user);
-
-                            let profile = cached.profile;
-                            if(profile) {
-                                Object.assign(profile, p.user.profile);
-                            } else {
-                                cached.profile = p.user.profile;
-                            }
+                            merge(cached, 'user', p.user);
+                            merge(cached, 'profile', p.user.profile);
 
                             if(event.o == ServerMsgOpcode.MemberUpdate) {
                                 let p = event.p;

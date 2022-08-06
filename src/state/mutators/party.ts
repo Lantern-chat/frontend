@@ -8,6 +8,7 @@ import { shallowEqualArrays } from "lib/compare";
 import { mutatorWithDefault } from "solid-mutant";
 import { erase } from "lib/util";
 import { ArraySet, ObjectMap } from "state/util/map_set";
+import { merge } from "state/util";
 
 
 export interface IParty {
@@ -296,14 +297,9 @@ export const partyMutator = mutatorWithDefault(
 
                                 if(!party) return;
 
-                                let existing: Partial<PartyMember> = party.members[id],
-                                    old_roles = existing?.roles;
+                                let old_roles = party.members[id]?.roles;
 
-                                if(!existing) {
-                                    party.members[id] = member;
-                                } else {
-                                    Object.assign(party.members[id], member);
-                                }
+                                merge(party.members, id, member);
 
                                 // handle updating roles
                                 {
