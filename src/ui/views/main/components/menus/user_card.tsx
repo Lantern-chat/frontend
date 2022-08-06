@@ -14,6 +14,7 @@ import { asset_url } from "config/urls";
 import { formatRgbBinary } from "lib/color";
 import { fetch_profile } from "state/commands/profile";
 import { CachedUser } from "state/mutators/cache";
+import { Discriminator } from "../misc/discriminator";
 
 export interface IUserCardProps {
     user_id: Snowflake,
@@ -58,8 +59,6 @@ false && eat;
 export function SimpleUserCard(props: ISimpleUserCardProps) {
     let prefs = usePrefs();
     const { LL } = useI18nContext();
-
-    let discriminator = () => props.user.discriminator.toString(16).toUpperCase().padStart(4, '0');
 
     let bits = createMemo(() => props.profile && split_profile_bits(props.profile));
 
@@ -107,10 +106,10 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
                     <Branch>
                         <Branch.If when={props.nick}>
                             <h4>{props.nick}</h4>
-                            <span>{props.user.username}<span class="ln-username__discriminator">#{discriminator()}</span></span>
+                            <span>{props.user.username}<Discriminator discriminator={props.user.discriminator} /></span>
                         </Branch.If>
                         <Branch.Else>
-                            <h4>{props.user.username}<span class="ln-username__discriminator">#{discriminator()}</span></h4>
+                            <h4>{props.user.username}<Discriminator discriminator={props.user.discriminator} /></h4>
                         </Branch.Else>
                     </Branch>
                     <Show when={user_is_bot(props.user)}>

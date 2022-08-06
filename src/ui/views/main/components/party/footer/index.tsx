@@ -4,6 +4,7 @@ import { useStructuredSelector } from "solid-mutant";
 import { HISTORY } from "state/global";
 import { RootState, useRootSelector } from "state/root";
 import { activeParty } from "state/selectors/active";
+import { selectCachedUser } from "state/selectors/selectCachedUser";
 import { parse_presence, PresenceStatus } from "state/models";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
@@ -12,12 +13,11 @@ import { VectorIcon } from "ui/components/common/icon";
 import { Link } from "ui/components/history";
 import { Spinner } from "ui/components/common/spinners/spinner";
 import { UserAvatar } from "ui/views/main/components/user_avatar";
+import { Discriminator } from "../../misc/discriminator";
 
 import { Icons } from "lantern-icons";
 
 import "./footer.scss";
-import { copyText } from "lib/clipboard";
-import { selectCachedUser } from "state/selectors/selectCachedUser";
 export function PartyFooter() {
     let { LL } = useI18nContext();
 
@@ -31,17 +31,12 @@ export function PartyFooter() {
             <div class="ln-party-footer__user">
                 <Show when={cached_user()} fallback={<Spinner size="100%" />}>
                     {user => {
-                        let user_discriminator = createMemo(() => user.user.discriminator.toString(16).toUpperCase().padStart(4, '0'))
                         return (<>
                             <UserAvatar nickname={user.user.username} user_id={user.user.id} profile={user.profile} presence={user.presence} />
 
-                            <div class="ln-username" onClick={() => copyText(user.user.username + '#' + user_discriminator())}>
-                                <span class="ln-username__name ui-text">
-                                    {user.user.username}
-                                </span>
-                                <span class="ln-username__discrim ui-text">
-                                    #{user_discriminator()}
-                                </span>
+                            <div class="ln-username ui-text">
+                                <span class="ln-username__name">{user.user.username}</span>
+                                <Discriminator discriminator={user.user.discriminator} />
                             </div>
                         </>)
                     }}

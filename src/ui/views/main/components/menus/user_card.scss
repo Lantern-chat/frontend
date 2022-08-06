@@ -94,10 +94,6 @@
     .ln-username {
         cursor: pointer;
         padding-block: 0.4em;
-
-        &__discriminator {
-            color: $lnx-secondary-text-color;
-        }
     }
 
     .ln-user-custom-status {

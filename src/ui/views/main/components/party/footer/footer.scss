@@ -46,10 +46,6 @@
         margin-inline-start: 0.5em;
         overflow: hidden;
 
-        &__discrim {
-            color: $lnx-secondary-text-color;
-        }
-
         &__name {
             text-overflow: ellipsis;
             overflow: hidden;
