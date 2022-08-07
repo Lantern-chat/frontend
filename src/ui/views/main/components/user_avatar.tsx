@@ -2,6 +2,7 @@ import { Accessor, createMemo, Show } from 'solid-js';
 import { useI18nContext } from 'ui/i18n/i18n-solid';
 
 import { pickColorFromHash } from 'lib/palette';
+import { formatRgbBinary } from 'lib/color';
 
 import { parse_presence, PresenceStatus, Snowflake, User, UserPresence, UserProfile } from 'state/models';
 
@@ -17,7 +18,6 @@ export interface IUserAvatarProps {
     user_id: Snowflake,
     profile: UserProfile | null | undefined,
     nickname: string,
-    color?: Accessor<string>,
 
     presence: UserPresence | null | undefined,
 
@@ -38,19 +38,19 @@ export function UserAvatar(props: IUserAvatarProps) {
         status: PresenceStatus.Offline,
     });
 
-    let url_or_color = () => {
-        let url = props.url, backgroundColor;
+    let url_or_color = createMemo(() => {
+        let url = props.url, backgroundColor, profile = props.profile;;
 
         if(!url) {
             if(props.profile?.avatar) {
                 url = asset_url('user', props.user_id, props.profile.avatar, 'avatar', prefs.LowBandwidthMode());
             } else {
-                backgroundColor = props.color?.() || pickColorFromHash(props.user_id, prefs.LightMode());
+                backgroundColor = (profile && (profile.bits & (1 << 7))) ? formatRgbBinary(profile.bits >> 8) : 'black';
             }
         }
 
         return { url, backgroundColor };
-    };
+    });
 
     let status = createMemo(() => {
         switch(presence().status) {

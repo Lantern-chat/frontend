@@ -96,7 +96,13 @@ export const cacheMutator = mutatorWithDefault(
 
                         if(cached) {
                             merge(cached, 'user', user);
-                            merge(cached, 'profile', user.profile);
+
+                            // will only be truly null if there is no profile whatsoever
+                            if(user.profile === null) {
+                                cached.profile = null;
+                            } else {
+                                merge(cached, 'profile', user.profile);
+                            }
 
                             // any member events should also update cache parts
                             switch(event.o) {

@@ -32,14 +32,12 @@ export function UserCard(props: IUserCardProps) {
 
     return (
         <Show when={cached_user()} fallback={<span class="ui-text">User Not Found</span>}>
-            {cached_user => (
-                <SimpleUserCard
-                    user={cached_user.user}
-                    nick={cached_user.nick}
-                    bits={cached_user.bits}
-                    profile={cached_user.profile}
-                    presence={cached_user.presence} />
-            )}
+            <SimpleUserCard
+                user={cached_user()!.user}
+                nick={cached_user()!.nick}
+                bits={cached_user()!.bits}
+                profile={cached_user()!.profile}
+                presence={cached_user()!.presence} />
         </Show>
     );
 }
@@ -88,7 +86,7 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
                 <div class="banner"
                     style={{ "background-color": color() }}>
                     <Show when={banner_url()}>
-                        {banner => <img src={banner} />}
+                        <img src={banner_url()!} />
                     </Show>
                 </div>
                 <div class="avatar-box" style={{ 'border-radius': ((bits()?.roundedness || 0) * 50 + '%') }}>
@@ -96,7 +94,6 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
                         user_id={props.user.id}
                         profile={props.profile}
                         url={avatar_url()}
-                        color={color}
                         roundness={bits()?.roundedness}
                         presence={props.presence}
                     />
@@ -119,21 +116,17 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
                     </Show>
                 </div>
 
-                <Show when={props.user.profile?.status}>
-                    {status => <div class="ln-user-custom-status" textContent={status} />}
+                <Show when={props.profile?.status}>
+                    <div class="ln-user-custom-status" textContent={props.profile!.status!} />
                 </Show>
 
-                <Show when={props.user.profile?.bio}>
-                    {bio => (
-                        <>
-                            <hr />
-                            <div class="ln-user-biography">
-                                <span class="ln-user-biography__title">ABOUT ME</span>
+                <Show when={props.profile?.bio}>
+                    <hr />
+                    <div class="ln-user-biography">
+                        <span class="ln-user-biography__title">ABOUT ME</span>
 
-                                <Markdown source={bio} />
-                            </div>
-                        </>
-                    )}
+                        <Markdown source={props.profile!.bio!} />
+                    </div>
                 </Show>
             </div>
         </div>
