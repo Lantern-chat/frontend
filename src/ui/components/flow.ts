@@ -6,11 +6,11 @@ export interface BranchProps {
 }
 
 export function Branch(props: BranchProps): JSX.Element {
-    let tail = props.children, branch: any = tail.shift();
+    let [branch, ...tail]: any[] = props.children;
 
     if(branch) {
         if(branch.i) {
-            let fallback = tail.length ? () => <Branch>{tail}</Branch> : () => null;
+            let fallback = tail.length ? () => createComponent(Branch, { children: tail }) : () => null;
 
             return createComponent(Show, {
                 get when() { return branch.props.when; },
@@ -18,7 +18,7 @@ export function Branch(props: BranchProps): JSX.Element {
                 get fallback() { return fallback(); }
             });
         } else if(branch.e) {
-            return branch.props.children;
+            return () => branch.props.children;
         } else if(__DEV__) {
             throw new Error("Child of Branch not an If/ElseIf/Else!");
         }
