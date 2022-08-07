@@ -37,9 +37,7 @@ export const cacheMutator = mutatorWithDefault(
                 let cached = action.cached;
 
                 let key = cache_key(cached.user.id, cached.party_id);
-
                 merge(cache.users, key, cached);
-
                 __DEV__ && console.log("Cached", key);
 
                 break;
@@ -51,7 +49,6 @@ export const cacheMutator = mutatorWithDefault(
 
                 if(cached) {
                     merge(cached, 'profile', profile);
-
                     cached.bits = split_profile_bits(profile);
                 } else {
                     __DEV__ && console.log("Not caching profile", key);
@@ -89,6 +86,8 @@ export const cacheMutator = mutatorWithDefault(
                     case ServerMsgOpcode.MessageUpdate:
                     case ServerMsgOpcode.PresenceUpdate:
                     case ServerMsgOpcode.UserUpdate:
+                    case ServerMsgOpcode.MemberAdd:
+                    case ServerMsgOpcode.MemberRemove:
                     case ServerMsgOpcode.MemberUpdate: {
                         let p = event.p,
                             user = (p as Message).author || (p as UserPresenceUpdateEvent).user,
@@ -96,24 +95,25 @@ export const cacheMutator = mutatorWithDefault(
                             cached = cache.users[key];
 
                         if(cached) {
-                            console.log("MERGING", p);
-
                             merge(cached, 'user', user);
                             merge(cached, 'profile', user.profile);
 
-                            if(event.o == ServerMsgOpcode.MemberUpdate) {
-                                let p = event.p;
+                            // any member events should also update cache parts
+                            switch(event.o) {
+                                case ServerMsgOpcode.MemberAdd:
+                                case ServerMsgOpcode.MemberUpdate:
+                                case ServerMsgOpcode.MemberRemove: {
+                                    let p = event.p;
 
-                                cached.nick = p.nick || p.user.username;
-                                cached.presence = p.presence || cached.presence;
-                                cached.roles = p.roles;
+                                    cached.nick = p.nick || p.user.username;
+                                    cached.presence = p.presence || cached.presence;
+                                    cached.roles = p.roles;
+                                }
                             }
 
                             if(cached.profile) {
                                 cached.bits = split_profile_bits(cached.profile);
                             }
-                        } else {
-                            console.log("IGNORING", p);
                         }
 
                         break;
