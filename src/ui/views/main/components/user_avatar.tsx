@@ -63,7 +63,7 @@ export function UserAvatar(props: IUserAvatarProps) {
 
     return (
         <div class="ln-user-avatar">
-            <Avatar username={props.nickname} text={props.nickname.charAt(0)} {...url_or_color()} rounded={props.roundness} />
+            <Avatar username={props.nickname} text={props.nickname.charAt(0)} url={url_or_color().url} backgroundColor={url_or_color().backgroundColor} rounded={props.roundness} />
 
             <div class="ln-user-status" title={status()[0]}>
                 <Show
