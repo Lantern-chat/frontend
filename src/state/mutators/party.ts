@@ -210,7 +210,7 @@ export const partyMutator = mutatorWithDefault(
                                 break;
                             }
                             case ServerMsgOpcode.PresenceUpdate: {
-                                let { user, party: party_id, presence } = p.p;
+                                let { user, party_id, presence } = p.p;
                                 if(party_id) {
                                     let party = state.parties[party_id!];
                                     if(party) {

@@ -2,6 +2,7 @@ const ctx: Worker = self as any;
 
 import { GatewaySocket, GatewayError } from "client-sdk/src/gateway";
 import { ServerMsg, ClientMsg, ServerMsgOpcode, ClientMsgOpcode } from "client-sdk/src/models/gateway";
+import { UserPresenceFlags } from "client-sdk/src/models";
 
 import { GatewayMessage, GatewayMessageDiscriminator } from "./msg";
 import { GatewayCommand, GatewayCommandDiscriminator } from "./cmd";
@@ -174,7 +175,7 @@ class Gateway {
     set_presence(away: boolean, mobile: boolean) {
         this.send({
             o: ClientMsgOpcode.SetPresence, p: {
-                flags: (away ? 2 : 1) | (mobile ? 8 : 0),
+                flags: (away ? UserPresenceFlags.Away : ((mobile ? 8 : 0) | UserPresenceFlags.Online)),
             }
         });
     }

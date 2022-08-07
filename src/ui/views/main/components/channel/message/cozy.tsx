@@ -3,7 +3,7 @@ import { Icons } from "lantern-icons";
 import { createMemo, For, Show } from "solid-js";
 
 import { useRootSelector } from "state/root";
-import { selectCachedUser } from "state/selectors/selectCachedUser";
+import { selectCachedUserFromMessage } from "state/selectors/selectCachedUser";
 import { VectorIcon } from "ui/components/common/icon";
 import { Branch } from "ui/components/flow";
 import { BotLabel } from "../../misc/bot_label";
@@ -18,7 +18,7 @@ import { useI18nContext } from "ui/i18n/i18n-solid";
 export function CozyMessage(props: IMessageProps) {
     let { LL, locale } = useI18nContext();
 
-    let cached_member = useRootSelector(state => selectCachedUser(state, props.msg.msg.author.id, props.msg.msg.party_id));
+    let cached_member = useRootSelector(state => selectCachedUserFromMessage(state, props.msg.msg));
 
     let ts = createTimestamp(() => props.msg.ts);
     let ets = createTimestamp(() => props.msg.et);

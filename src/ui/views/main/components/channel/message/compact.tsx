@@ -1,6 +1,6 @@
 import { createMemo, For } from "solid-js";
 import { useRootSelector } from "state/root";
-import { selectCachedUser } from "state/selectors/selectCachedUser";
+import { selectCachedUserFromMessage } from "state/selectors/selectCachedUser";
 import { UITimestamp } from "ui/components/common/timestamp";
 import { createTimestamp } from "ui/hooks/createTimestamp";
 import { useI18nContext } from "ui/i18n/i18n-solid";
@@ -12,7 +12,7 @@ import { Message as MessageBody } from "./msg";
 export function CompactMessage(props: IMessageProps) {
     let { LL, locale } = useI18nContext();
 
-    let cached_member = useRootSelector(state => selectCachedUser(state, props.msg.msg.author.id, props.msg.msg.party_id));
+    let cached_member = useRootSelector(state => selectCachedUserFromMessage(state, props.msg.msg));
 
     let ts = createTimestamp(() => props.msg.ts);
 

@@ -1,7 +1,7 @@
-import { PartyMemberEvent } from "client-sdk/src/models/gateway";
+import { PartyMemberEvent, UserPresenceUpdateEvent } from "client-sdk/src/models/gateway";
 import { mutatorWithDefault } from "solid-mutant";
 import { Action, Type } from "state/actions";
-import { PartyMember, ServerMsgOpcode, Snowflake, split_profile_bits, User, UserPresence, UserProfile, UserProfileSplitBits } from "state/models";
+import { Message, PartyMember, ServerMsgOpcode, Snowflake, split_profile_bits, User, UserPresence, UserProfile, UserProfileSplitBits } from "state/models";
 import { merge } from "state/util";
 import { GatewayMessageDiscriminator } from "worker/gateway/msg";
 
@@ -23,16 +23,22 @@ export function cache_key(user_id: Snowflake, party_id?: Snowflake): string {
     return (party_id && party_id != '@me') ? (party_id + '_' + user_id) : user_id;
 }
 
+export const DEFAULT_PROFILE_BITS: UserProfileSplitBits = {
+    roundedness: 0,
+    override_color: false,
+    color: 0,
+}
+
 export const cacheMutator = mutatorWithDefault(
     () => ({ users: {} }),
-    (state: ICacheState, action: Action) => {
+    (cache: ICacheState, action: Action) => {
         switch(action.type) {
             case Type.CACHE_USER: {
                 let cached = action.cached;
 
                 let key = cache_key(cached.user.id, cached.party_id);
 
-                merge(state.users, key, cached);
+                merge(cache.users, key, cached);
 
                 __DEV__ && console.log("Cached", key);
 
@@ -41,7 +47,7 @@ export const cacheMutator = mutatorWithDefault(
             case Type.PROFILE_FETCHED: {
                 let { user_id, party_id, profile } = action,
                     key = cache_key(user_id, party_id),
-                    cached: CachedUser | undefined = state.users[key];
+                    cached: CachedUser | undefined = cache.users[key];
 
                 if(cached) {
                     merge(cached, 'profile', profile);
@@ -63,15 +69,37 @@ export const cacheMutator = mutatorWithDefault(
                 let event = ap.p;
 
                 switch(event.o) {
+                    case ServerMsgOpcode.Ready: {
+                        let user = event.p.user;
+
+                        let cached_user = cache.users[user.id] = {
+                            user,
+                            nick: user.username,
+                            profile: user.profile,
+                            bits: user.profile ? split_profile_bits(user.profile) : DEFAULT_PROFILE_BITS,
+                        };
+
+                        for(let party of event.p.parties) {
+                            cache.users[cache_key(user.id, party.id)] = cached_user;
+                        }
+
+                        break;
+                    }
+                    case ServerMsgOpcode.MessageCreate:
+                    case ServerMsgOpcode.MessageUpdate:
+                    case ServerMsgOpcode.PresenceUpdate:
                     case ServerMsgOpcode.UserUpdate:
                     case ServerMsgOpcode.MemberUpdate: {
                         let p = event.p,
-                            key = cache_key(p.user.id, (p as PartyMemberEvent).party_id),
-                            cached = state.users[key];
+                            user = (p as Message).author || (p as UserPresenceUpdateEvent).user,
+                            key = cache_key(user.id, (p as PartyMemberEvent | Message).party_id),
+                            cached = cache.users[key];
 
                         if(cached) {
-                            merge(cached, 'user', p.user);
-                            merge(cached, 'profile', p.user.profile);
+                            console.log("MERGING", p);
+
+                            merge(cached, 'user', user);
+                            merge(cached, 'profile', user.profile);
 
                             if(event.o == ServerMsgOpcode.MemberUpdate) {
                                 let p = event.p;
@@ -84,7 +112,11 @@ export const cacheMutator = mutatorWithDefault(
                             if(cached.profile) {
                                 cached.bits = split_profile_bits(cached.profile);
                             }
+                        } else {
+                            console.log("IGNORING", p);
                         }
+
+                        break;
                     }
                 }
 
