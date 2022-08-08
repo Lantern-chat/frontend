@@ -45,7 +45,9 @@ export function UserAvatar(props: IUserAvatarProps) {
             if(props.profile?.avatar) {
                 url = asset_url('user', props.user_id, props.profile.avatar, 'avatar', prefs.LowBandwidthMode());
             } else {
-                backgroundColor = (profile && (profile.bits & (1 << 7))) ? formatRgbBinary(profile.bits >> 8) : 'black';
+                backgroundColor = (profile && (profile.bits & (1 << 7)))
+                    ? formatRgbBinary(profile.bits >> 8)
+                    : pickColorFromHash(props.user_id, prefs.LightMode());
             }
         }
 
@@ -63,7 +65,7 @@ export function UserAvatar(props: IUserAvatarProps) {
 
     return (
         <div class="ln-user-avatar">
-            <Avatar username={props.nickname} text={props.nickname.charAt(0)} url={url_or_color().url} backgroundColor={url_or_color().backgroundColor} rounded={props.roundness} />
+            <Avatar username={props.nickname} text={props.nickname.charAt(0)} {...url_or_color()} rounded={props.roundness} />
 
             <div class="ln-user-status" title={status()[0]}>
                 <Show
