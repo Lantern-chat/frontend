@@ -1,3 +1,5 @@
+@use "sass:math";
+
 @import "lib/variables";
 
 .ln-logo {
@@ -67,11 +69,11 @@
 @keyframes pulse_flame {
     @for $i from 0 through 100 {
         $rng: 1 - random() * 0.2;
-        $a: random() * $TWO_PI;
+        $a: random() * math.$pi * 2;
         $scale: $rng + 0.4;
 
-        $s: sin($a) * 3;
-        $c: cos($a) * 3;
+        $s: math.sin($a) * 3;
+        $c: math.cos($a) * 3;
 
         #{$i}% {
             transform: translateY(4.5em) scale($scale) translateY(#{$s}px) translateX(#{$c}px);
