@@ -60,45 +60,64 @@ function compute_crop(width: number, height: number, max_width: number, max_heig
     return { x: 0, y: 0, h: height, w: width };
 }
 
-export async function resize_image(url: string, width: number, height: number, lossy: boolean = false): Promise<Blob | null> {
+export async function resize_image(url: string, width: number, height: number, lossy: boolean = false): Promise<Blob | undefined> {
     let img = new Image();
     img.src = url;
 
-    let decoding = img.decode(), canvas = document.createElement('canvas')
+    let decoding = img.decode(),
+        src: HTMLCanvasElement | HTMLImageElement = document.createElement('canvas'),
+        dst = document.createElement('canvas');
 
     try {
-        let ctx = canvas.getContext('2d');
+        let [{ default: pica }] = await Promise.all([import('pica'), decoding]),
+            p = new pica();
 
-        if(!ctx) { return null; }
+        let nw = img.naturalWidth, nh = img.naturalHeight,
+            { x, y, w, h } = compute_crop(nw, nh, width, height),
+            dw = Math.min(w, width), dh = Math.min(h, height),
+            needs_crop = (x + y) > 0 || w != nw || h != nh,
+            needs_resize = dw >= width || dh >= height;
 
-        await decoding;
-
-        let { x, y, w, h } = compute_crop(img.naturalWidth, img.naturalHeight, width, height),
-            dw = Math.min(w, width), dh = Math.min(h, height);
-
-        __DEV__ && console.log("Cropping to: ", x, y, w, h, dw, dh);
-
-        canvas.width = dw;
-        canvas.height = dh;
-
-        if(typeof window.createImageBitmap === 'function') {
-            let bitmap = await createImageBitmap(img, x, y, w, h, {
-                resizeHeight: dh,
-                resizeWidth: dw,
-                resizeQuality: 'high',
-            });
-
-            ctx.drawImage(bitmap, 0, 0);
-        } else {
-            ctx.drawImage(img, x, y, w, h, 0, 0, dw, dh);
+        if(!needs_crop && !needs_resize) {
+            return;
         }
 
-        return await new Promise(resolve => {
-            let format = (!lossy || has_alpha(ctx!)) ? 'image/png' : 'image/jpeg';
-            canvas.toBlob(resolve, format, 95);
-        });
+        __DEV__ && console.log("Resizing to: ", x, y, w, h, dw, dh);
+
+        if(needs_crop) {
+            src.width = w;
+            src.height = h;
+
+            let ctx = src.getContext('2d');
+            if(!ctx) { return; }
+
+            ctx.drawImage(img, x, y, w, h, 0, 0, w, h);
+
+            img.remove(); // free memory after cropping
+        } else {
+            src = img;
+        }
+
+        if(needs_resize) {
+            dst.width = dw;
+            dst.height = dh;
+
+            await p.resize(src, dst);
+
+            src.remove(); // try to free up memory before encode
+        } else {
+            dst = src as HTMLCanvasElement;
+        }
+
+        let ctx = dst.getContext('2d');
+        if(!ctx) return;
+
+        let format = (!lossy || has_alpha(ctx)) ? 'image/png' : 'image/jpeg';
+        return p.toBlob(dst, format, 95);
+
     } finally {
         img.remove();
-        canvas.remove();
+        src.remove();
+        dst.remove();
     }
 }
