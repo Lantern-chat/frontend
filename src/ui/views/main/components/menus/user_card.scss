@@ -1,32 +1,29 @@
+@use "sass:math";
+
 @import "lib/variables";
+
+$CARD_WIDTH: 21em;
+$BANNER_ASPECT: math.div(21, 9);
+$BANNER_HEIGHT: math.div($CARD_WIDTH, $BANNER_ASPECT);
+$SHORT_BANNER_HEIGHT: 4em;
+$AVATAR_PADDING: 0.3em;
+$AVATAR_HORIZONTAL_SHIFT: 1.25em;
 
 .ln-user-card {
     &.has-avatar {
         .avatar-box {
-            margin-block-start: calc(1.25em - 0.25em);
-            margin-inline-start: calc(1.25em - 0.25em);
+            bottom: math.div(5em, -2);
+            //margin-block-start: calc(math.div($SHORT_BANNER_HEIGHT, 2) - $AVATAR_PADDING);
+            margin-inline-start: calc($AVATAR_HORIZONTAL_SHIFT - $AVATAR_PADDING);
             background-color: $lnx-primary-surface-color;
-            padding: 0.25em;
+            padding: $AVATAR_PADDING;
         }
     }
 
     &.has-banner {
-        .ln-user-card__header {
-            height: 12em;
-        }
-
         .banner {
-            height: 8em;
-        }
-
-        .avatar-box {
-            margin-block-start: calc(5em);
-        }
-    }
-
-    &.has-banner.has-avatar {
-        .avatar-box {
-            margin-block-start: calc(5.25em - 0.25em);
+            height: $BANNER_HEIGHT;
+            aspect-ratio: $BANNER_ASPECT;
         }
     }
 }
@@ -36,7 +33,14 @@
     flex-direction: column;
     position: relative;
 
-    width: min(20rem, 80vw);
+    max-width: 80vw;
+
+    font-size: 15px;
+    width: $CARD_WIDTH;
+
+    &.ln-contextmenu {
+        width: calc($CARD_WIDTH + 2px);
+    }
 
     hr {
         color: $lnx-tertiary-surface-color;
@@ -45,54 +49,49 @@
     }
 
     &__header {
-        font-size: 0.75rem;
-        height: 8em;
         width: 100%;
+        position: relative;
     }
 
     &__info {
-        padding-inline: 0.8em;
-        padding-block-end: 0.8em;
+        padding-inline: 0.8rem;
+        padding-block-end: 0.8rem;
+        padding-block-start: 2.5rem;
+        font-size: 1rem;
     }
 
     .banner {
-        position: absolute;
         width: 100%;
-        height: 4em;
-
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: top;
-        }
+        min-height: $SHORT_BANNER_HEIGHT;
+        background-size: cover;
+        background-position: top;
     }
 
     .avatar-box {
         position: absolute;
+        bottom: math.div(4.5em, -2);
 
-        margin-block-start: 1.25em;
-        margin-inline-start: 1.25em;
+        margin-inline-start: $AVATAR_HORIZONTAL_SHIFT;
     }
 
     .ln-user-avatar {
-        font-size: 2.5em;
-
-        .ln-avatar {
-            font-size: 1.5em;
-        }
+        font-size: 3em;
 
         .ln-user-status {
-            font-size: 0.75em;
+            font-size: 0.5em;
         }
     }
 
-    .ln-avatar__text {
-        box-shadow: -5px -5px $lnx-primary-surface-color;
+    .ln-avatar {
+        &__wrapper {
+            cursor: default;
+        }
+        &__text {
+            box-shadow: -5px -5px $lnx-primary-surface-color;
+        }
     }
 
     .ln-username {
-        cursor: pointer;
         padding-block: 0.4em;
     }
 

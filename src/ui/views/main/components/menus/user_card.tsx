@@ -63,9 +63,11 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
     let bits = createMemo(() => props.bits || (props.profile && split_profile_bits(props.profile)));
 
     let banner_url = () => {
-        if(props.banner_url) return props.banner_url;
-        let banner = props.profile?.banner;
-        return banner && asset_url('user', props.user.id, banner, 'banner', prefs.LowBandwidthMode());
+        let banner, url = props.banner_url;
+        if(!url && (banner = props.profile?.banner)) {
+            url = asset_url('user', props.user.id, banner, 'banner', prefs.LowBandwidthMode());
+        }
+        return url && `url("${url}")`;
     };
     let avatar_url = () => {
         if(props.avatar_url) return props.avatar_url;
@@ -83,12 +85,10 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
             classList={{ 'has-banner': !!banner_url(), 'has-avatar': !!avatar_url() }}
         >
             <div class="ln-user-card__header">
-                <div class="banner"
-                    style={{ "background-color": color() }}>
-                    <Show when={banner_url()}>
-                        <img src={banner_url()!} />
-                    </Show>
-                </div>
+                <div class="banner" style={{
+                    "background-color": color(),
+                    'background-image': banner_url()
+                }} />
                 <div class="avatar-box" style={{ 'border-radius': ((bits()?.roundedness || 0) * 50 + '%') }}>
                     <UserAvatar nickname={props.nick || props.user.username}
                         user_id={props.user.id}
