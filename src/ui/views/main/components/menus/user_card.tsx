@@ -26,9 +26,13 @@ import "./user_card.scss";
 export function UserCard(props: IUserCardProps) {
     let store = useRootStore();
 
-    onMount(() => store.dispatch(fetch_profile(props.user_id, props.party_id)));
-
     let cached_user = createMemo(() => selectCachedUser(store.state, props.user_id, props.party_id));
+
+    onMount(() => {
+        if(cached_user().profile) {
+            store.dispatch(fetch_profile(props.user_id, props.party_id));
+        }
+    });
 
     return (
         <Show when={cached_user()} fallback={<span class="ui-text">User Not Found</span>}>
