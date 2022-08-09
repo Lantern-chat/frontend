@@ -178,7 +178,6 @@ export const MainContext = createContext<IMainContext>({
     consumeKey: () => false,
 });
 
-
 const EVENTS = ['onClick', 'onContextMenu', 'onTouch'] as const;
 
 type ClickEventHandlers = Partial<ObjectFromList<typeof EVENTS, OnClickHandler>>;
@@ -194,8 +193,8 @@ export function useMainClick(opt: IMainClickOptions) {
     let props: ClickEventHandlers = {};
 
     for(let key of EVENTS) {
-        let cb: OnClickHandler | undefined;
-        if(cb = opt[key]) {
+        let cb: OnClickHandler | undefined = opt[key];
+        if(cb) {
             props[key] = (e: MouseEvent) => {
                 main.clickAll(e);
                 if(!main.consumeKey('Shift')) {
@@ -255,12 +254,11 @@ export interface ISimpleMainClickOptions {
     onMainClick: OnClickHandler,
 }
 
-
 export function createSimplePositionedContextMenu(opts?: ISimpleMainClickOptions): [get: Accessor<Position | null>, props: ClickEventHandlers] {
     let [pos, setPos] = createSignal<Position | null>(null);
 
     let props = useMainClick({
-        active: createMemo(() => !!pos()),
+        active: () => !!pos(),
         onMainClick: e => { setPos(null); opts?.onMainClick(e); },
         onContextMenu: e => {
             setPos({ top: e.clientY, left: e.clientX });

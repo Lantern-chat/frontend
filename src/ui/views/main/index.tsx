@@ -209,7 +209,7 @@ export default function Main() {
     let is_right_view = useRootSelector(state => state.window.use_mobile_view && state.window.show_panel == Panel.RightUserList);
 
     return (
-        <div class="ln-main" ref={main} onClick={clickAll} onContextMenu={onContextMenu}>
+        <div class="ln-main" ref={main} oncapture:click={clickAll} onContextMenu={onContextMenu}>
             <MainContext.Provider value={main_value}>
                 <TimeProvider>
                     <Show when={!is_right_view()}>

@@ -11,7 +11,9 @@ module.exports = {
                 //esmodules: true
             }
         }],
-        ["solid", {}],
+        ["solid", {
+            delegateEvents: false,
+        }],
         ['@babel/preset-typescript', {
             optimizeConstEnums: true,
         }],

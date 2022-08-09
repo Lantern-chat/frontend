@@ -33,7 +33,7 @@ export function PositionedModal(props: IPositionedModalProps) {
         onCleanup(() => window.removeEventListener('resize', listener));
     });
 
-    let eaten = createMemo(() => {
+    let eaten = () => {
         let eaten = {};
 
         if(Array.isArray(props.eat) && props.eat.length) {
@@ -43,7 +43,7 @@ export function PositionedModal(props: IPositionedModalProps) {
         }
 
         return eaten;
-    });
+    };
 
     let computed = createMemo(() => {
         let d = dim(),
