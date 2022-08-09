@@ -8,6 +8,7 @@ import { IMessageState, IRoomState } from "state/mutators/chat";
 import { useRootDispatch, useRootSelector } from "state/root";
 import { activeRoom } from "state/selectors/active";
 import { createOnPredicate } from "ui/hooks/createOnChange";
+import { runBatched } from "ui/hooks/runBatched";
 
 function searchRoom(room: IRoomState, id: Snowflake): number {
     let { idx } = binarySearch(room.msgs as Array<IMessageState>,
@@ -103,16 +104,16 @@ export function createVirtualizedFeed(): [
         let r = room(), l: number | undefined;
 
         // NOTE: This tracks `length`
-        if(l = r?.msgs.length) {
-            untrack(() => setEnd(r!.msgs[l! - 1].msg.id));
+        if(r && !r.locked && (l = r.msgs.length)) {
+            runBatched(() => setEnd(r!.msgs[l! - 1].msg.id), 0);
         }
     });
 
     let dispatch = useRootDispatch();
 
     let on_loading_end = createOnPredicate(
-        () => room()?.is_loading,
-        loading => loading === false
+        () => room()?.locked,
+        locked => locked === false
     );
 
     let on_load_prev = async () => {
@@ -140,7 +141,7 @@ export function createVirtualizedFeed(): [
             new_start_id = r.msgs[new_start_idx].msg.id;
         }
 
-        setStart(new_start_id);
+        runBatched(() => setStart(new_start_id), 0);
     };
 
     let on_load_next = async () => {

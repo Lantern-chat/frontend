@@ -51,15 +51,7 @@ export function MessageFeed() {
         room: (state: RootState) => {
             let active_room = activeRoom(state);
             if(active_room) {
-                let room_state = state.chat.rooms[active_room];
-                if(room_state) {
-                    return {
-                        room: room_state.room,
-                        fully_loaded: room_state.fully_loaded,
-                        msgs: room_state.msgs,
-                        is_loading: room_state.is_loading
-                    }
-                }
+                return state.chat.rooms[active_room];
             }
             return;
         }
@@ -96,7 +88,7 @@ export function MessageFeed() {
                 <Timeline direction={0} position={0} />
             </Show>
 
-            <Show when={__DEV__ && state.room?.is_loading}>
+            <Show when={__DEV__ && state.room?.locked}>
                 Room is Loading
             </Show>
 

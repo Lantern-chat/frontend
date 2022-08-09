@@ -32,7 +32,7 @@ export enum Type {
     GATEWAY_RETRY = "GATEWAY_RETRY",
 
     PARTY_LOADED = "PARTY_LOADED",
-    MESSAGES_LOADING = "MESSAGES_LOADING",
+    LOCK_ROOM = "LOCK_ROOM",
     MESSAGES_LOADED = "MESSAGES_LOADED",
     MEMBERS_LOADED = "MEMBERS_LOADED",
 
@@ -70,7 +70,7 @@ export type Action =
     | GatewayEvent
     | GatewayRetry
     | PartyLoaded
-    | MessagesLoading
+    | LockRoom
     | MessagesLoaded
     | MembersLoaded
     | RefreshActive
@@ -174,8 +174,8 @@ export interface PartyLoaded {
     rooms: Room[],
 }
 
-export interface MessagesLoading {
-    type: Type.MESSAGES_LOADING,
+export interface LockRoom {
+    type: Type.LOCK_ROOM,
     room_id: Snowflake,
 }
 

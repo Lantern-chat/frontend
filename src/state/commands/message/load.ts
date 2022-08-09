@@ -13,9 +13,9 @@ export function loadMessages(room_id: Snowflake, search?: Snowflake, mode: Searc
     return async (dispatch, state) => {
         let msgs: undefined | Message[];
         try {
-            if(false !== state.chat.rooms[room_id]?.is_loading) return;
+            if(false !== state.chat.rooms[room_id]?.locked) return;
 
-            dispatch({ type: Type.MESSAGES_LOADING, room_id });
+            dispatch({ type: Type.LOCK_ROOM, room_id });
 
             msgs = await CLIENT.execute(GetMessages({
                 room_id,

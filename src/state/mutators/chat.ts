@@ -37,7 +37,7 @@ export interface IRoomState {
     pending: IMessageState[],
     current_edit: null | Snowflake,
     typing: ITypingState[],
-    is_loading: boolean,
+    locked: boolean,
     fully_loaded: boolean,
     draft: string,
 }
@@ -96,7 +96,7 @@ export const chatMutator = mutatorWithDefault(
                             pending: [],
                             current_edit: null,
                             typing: [],
-                            is_loading: false,
+                            locked: false,
                             fully_loaded: false,
                             draft: "",
                         };
@@ -122,9 +122,9 @@ export const chatMutator = mutatorWithDefault(
                 if(room) { room.draft = action.draft; }
                 break;
             }
-            case Type.MESSAGES_LOADING: {
+            case Type.LOCK_ROOM: {
                 let room = state.rooms[action.room_id];
-                if(room) room.is_loading = true;
+                if(room) room.locked = true;
                 break;
             }
             case Type.MESSAGES_LOADED: {
@@ -132,7 +132,7 @@ export const chatMutator = mutatorWithDefault(
                     room = state.rooms[action.room_id];
 
                 if(room) {
-                    room.is_loading = false;
+                    room.locked = false;
 
                     if(raw_msgs) {
                         if(raw_msgs.length == 0) {
