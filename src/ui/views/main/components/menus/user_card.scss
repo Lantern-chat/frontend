@@ -93,9 +93,19 @@ $AVATAR_HORIZONTAL_SHIFT: 1.25em;
 
     .ln-username {
         padding-block: 0.4em;
+
+        span,
+        h4 {
+            user-select: all;
+        }
+    }
+
+    .ln-markdown {
+        user-select: text;
     }
 
     .ln-user-custom-status {
+        user-select: text;
         display: block;
         padding-block-start: 0.4em;
     }
