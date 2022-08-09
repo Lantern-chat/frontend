@@ -178,9 +178,19 @@ export const MainContext = createContext<IMainContext>({
     consumeKey: () => false,
 });
 
-const EVENTS = ['onClick', 'onContextMenu', 'onTouch'] as const;
+const EVENTS = {
+    'onClick': 'on:click',
+    'onContextMenu': 'on:contextmenu',
+    'onTouch': 'on:touch',
+} as const;
 
-type ClickEventHandlers = Partial<ObjectFromList<typeof EVENTS, OnClickHandler>>;
+type ClickEventHandlers = {
+    [K in keyof typeof EVENTS]?: OnClickHandler;
+};
+
+type ClickEventProps = {
+    [K in keyof typeof EVENTS as typeof EVENTS[K]]?: OnClickHandler;
+};
 
 export interface IMainClickOptions extends ClickEventHandlers {
     active: Accessor<boolean>,
@@ -190,13 +200,12 @@ export interface IMainClickOptions extends ClickEventHandlers {
 export function useMainClick(opt: IMainClickOptions) {
     let main = useContext(MainContext);
 
-    let props: ClickEventHandlers = {};
+    let props: ClickEventProps = {};
 
-    for(let key of EVENTS) {
+    for(let key in EVENTS) {
         let cb: OnClickHandler | undefined = opt[key];
         if(cb) {
-            props[key] = (e: MouseEvent) => {
-                main.clickAll(e);
+            props[EVENTS[key]] = (e: MouseEvent) => {
                 if(!main.consumeKey('Shift')) {
                     cb!(e);
                 } else {
@@ -254,7 +263,7 @@ export interface ISimpleMainClickOptions {
     onMainClick: OnClickHandler,
 }
 
-export function createSimplePositionedContextMenu(opts?: ISimpleMainClickOptions): [get: Accessor<Position | null>, props: ClickEventHandlers] {
+export function createSimplePositionedContextMenu(opts?: ISimpleMainClickOptions): [get: Accessor<Position | null>, props: ClickEventProps] {
     let [pos, setPos] = createSignal<Position | null>(null);
 
     let props = useMainClick({
@@ -270,7 +279,7 @@ export function createSimplePositionedContextMenu(opts?: ISimpleMainClickOptions
     return [pos, props];
 }
 
-export function createSimpleToggleOnClick(opts?: ISimpleMainClickOptions): [Accessor<boolean>, ClickEventHandlers, Setter<boolean>] {
+export function createSimpleToggleOnClick(opts?: ISimpleMainClickOptions): [Accessor<boolean>, ClickEventProps, Setter<boolean>] {
     let [show, setShow] = createSignal(false);
 
     // track element this is listening to
@@ -288,11 +297,7 @@ export function createSimpleToggleOnClick(opts?: ISimpleMainClickOptions): [Acce
 }
 
 export function createClickEater(): (e: MouseEvent) => void {
-    let main = useContext(MainContext);
-    return e => {
-        main.clickAll(e);
-        e.stopPropagation();
-    };
+    return e => e.stopPropagation();
 }
 
 export function clickEater(el: HTMLElement, events: Accessor<Array<"click" | "contextmenu" | "touch">>) {

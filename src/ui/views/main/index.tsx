@@ -190,12 +190,12 @@ export default function Main() {
         if(main.current) {
             let blur = () => main.current?.click();
 
-            w.addEventListener('blur', blur);
+            __DEV__ || w.addEventListener('blur', blur);
             w.addEventListener('keydown', on_keydown);
             w.addEventListener('keyup', on_keyup);
 
             onCleanup(() => {
-                w.removeEventListener('blur', blur);
+                __DEV__ || w.removeEventListener('blur', blur);
                 w.removeEventListener('keydown', on_keydown);
                 w.removeEventListener('keyup', on_keyup);
             });
@@ -203,13 +203,17 @@ export default function Main() {
     });
 
     let onContextMenu = (e: MouseEvent) => {
-        if(!e.shiftKey && !hasKey('Shift')) { e.preventDefault(); e.stopPropagation(); }
+        if(!e.shiftKey && !hasKey('Shift')) { e.preventDefault(); }
     };
 
     let is_right_view = useRootSelector(state => state.window.use_mobile_view && state.window.show_panel == Panel.RightUserList);
 
     return (
-        <div class="ln-main" ref={main} oncapture:click={clickAll} onContextMenu={onContextMenu}>
+        <div class="ln-main" ref={main}
+            oncapture:click={clickAll}
+            oncapture:contextmenu={clickAll}
+            on:contextmenu={onContextMenu}
+        >
             <MainContext.Provider value={main_value}>
                 <TimeProvider>
                     <Show when={!is_right_view()}>
