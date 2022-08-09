@@ -54,6 +54,9 @@ export interface ISimpleUserCardProps {
     bits?: UserProfileSplitBits,
     banner_url?: string,
     avatar_url?: string,
+
+    onAvatarClick?(e: MouseEvent): void;
+    onBannerClick?(e: MouseEvent): void;
 }
 
 // NOTE: USED IN DIRECTIVE BELOW
@@ -89,10 +92,14 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
             classList={{ 'has-banner': !!banner_url(), 'has-avatar': !!avatar_url() }}
         >
             <div class="ln-user-card__header">
-                <div class="banner" style={{
-                    "background-color": color(),
-                    'background-image': banner_url()
-                }} />
+                <div class="banner"
+                    onClick={props.onBannerClick}
+                    style={{
+                        "background-color": color(),
+                        'background-image': banner_url()
+                    }}
+                />
+
                 <div class="avatar-box" style={{ 'border-radius': ((bits()?.roundedness || 0) * 50 + '%') }}>
                     <UserAvatar nickname={props.nick || props.user.username}
                         user_id={props.user.id}
@@ -100,6 +107,7 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
                         url={avatar_url()}
                         roundness={bits()?.roundedness}
                         presence={props.presence}
+                        onClick={props.onAvatarClick}
                     />
                 </div>
             </div>

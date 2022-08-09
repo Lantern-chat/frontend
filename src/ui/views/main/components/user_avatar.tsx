@@ -25,6 +25,8 @@ export interface IUserAvatarProps {
 
     /// Override the avatar URL
     url?: string | null,
+
+    onClick?(e: MouseEvent): void;
 }
 
 import "./user_avatar.scss";
@@ -64,8 +66,13 @@ export function UserAvatar(props: IUserAvatarProps) {
     });
 
     return (
-        <div class="ln-user-avatar">
-            <Avatar username={props.nickname} text={props.nickname.charAt(0)} {...url_or_color()} rounded={props.roundness} />
+        <div class="ln-user-avatar" onClick={props.onClick}>
+            <Avatar
+                username={props.nickname}
+                text={props.nickname.charAt(0)}
+                {...url_or_color()}
+                rounded={props.roundness}
+            />
 
             <div class="ln-user-status" title={status()[0]}>
                 <Show
