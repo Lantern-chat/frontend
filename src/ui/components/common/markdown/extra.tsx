@@ -5,7 +5,7 @@ export interface ExtraRules extends DefaultRules {
 }
 
 import { Mention } from "./components/mention";
-import { createMemo, splitProps } from "solid-js";
+import { splitProps } from "solid-js";
 
 export const extraRules: ExtraRules = {
     ...defaultRules,

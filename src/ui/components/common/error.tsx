@@ -1,7 +1,5 @@
-import { createMemo } from "solid-js";
-
 export function DisplayError(props: { error: any }) {
-    let children = createMemo(() => {
+    let children = () => {
         let error = props.error;
         if(error instanceof Error) {
             return (
@@ -14,7 +12,7 @@ export function DisplayError(props: { error: any }) {
         } else {
             return error.toString();
         }
-    });
+    };
 
     return (
         <div class="ln-error">

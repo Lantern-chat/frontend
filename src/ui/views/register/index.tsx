@@ -201,11 +201,11 @@ export default function RegisterView() {
         }
     });
 
-    let valid_email = createMemo(() => state.email ? validateEmail(state.email) : null);
-    let valid_user = createMemo(() => state.user ? validateUsername(state.user) : null);
+    let valid_email = () => state.email ? validateEmail(state.email) : null;
+    let valid_user = () => state.user ? validateUsername(state.user) : null;
     let valid_pass = createMemo(() => state.pass ? validatePass(state.pass) : null);
 
-    let passwordClass = createMemo(() => {
+    let passwordClass = () => {
         let pass_strength = state.pass && valid_pass() ? calc_pass_strength(state.pass) : 0;
 
         let passwordClass: string = 'ln-password-';
@@ -217,7 +217,7 @@ export default function RegisterView() {
             default: passwordClass += 'none';
         }
         return passwordClass;
-    });
+    };
 
     let on_submit = async (e: Event) => {
         e.preventDefault();
@@ -386,10 +386,8 @@ export default function RegisterView() {
 function HCaptchaTerms() {
     let { LL } = useI18nContext();
 
-    let text = createMemo(() => LL().hCaptcha());
-
     return createMemo(() => {
-        let t = text();
+        let t = LL().hCaptcha();
         let segments: Array<JSX.Element> = [];
         let re = /([^<]+)|<[@#](.+?)>/g, match;
 

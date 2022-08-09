@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createRenderEffect, createUniqueId, JSX, onCleanup, Show } from "solid-js";
+import { createMemo, createUniqueId, JSX, Show } from "solid-js";
 import { Modal } from "ui/components/modal";
 import { createRef } from "ui/hooks/createRef";
 import { createTrigger } from "ui/hooks/createTrigger";

@@ -1,5 +1,3 @@
-import { createMemo } from "solid-js";
-
 import { MimeCategory } from "lib/mime";
 
 import { Icons } from "lantern-icons";

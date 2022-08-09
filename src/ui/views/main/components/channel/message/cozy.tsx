@@ -1,6 +1,6 @@
 import { MessageFlags, user_is_bot } from "state/models";
 import { Icons } from "lantern-icons";
-import { createMemo, For, Show } from "solid-js";
+import { For, Show } from "solid-js";
 
 import { useRootSelector } from "state/root";
 import { selectCachedUserFromMessage } from "state/selectors/selectCachedUser";

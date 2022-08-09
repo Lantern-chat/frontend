@@ -1,4 +1,4 @@
-import { createMemo, createRenderEffect, Show } from "solid-js";
+import { createRenderEffect, Show } from "solid-js";
 
 import { fetch_quota } from "state/commands/sendfile";
 import { useRootStore } from "state/root";
@@ -19,7 +19,7 @@ export const AccountSettingsTab = () => {
         }
     });
 
-    let quota = createMemo(() => {
+    let quota = () => {
         let user = state.user;
         if(user.quota_total !== undefined && user.quota_used !== undefined) {
             return {
@@ -29,7 +29,7 @@ export const AccountSettingsTab = () => {
             };
         }
         return;
-    });
+    };
 
     return (
         <Show when={state.user.user} fallback={<div textContent={LL().LOADING()} />}>
@@ -39,9 +39,11 @@ export const AccountSettingsTab = () => {
             <div>2-Factor Authentication</div>
 
             <Show when={quota()}>
-                <div>
-                    <span>{LL().main.settings.account.QUOTA(quota()!)}</span>
-                </div>
+                {quota => (
+                    <div>
+                        <span>{LL().main.settings.account.QUOTA(quota)}</span>
+                    </div>
+                )}
             </Show>
 
             <TogglePrefsFlag flag={UserPreferenceFlags.DeveloperMode} for="dev_mode"

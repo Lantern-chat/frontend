@@ -1,6 +1,6 @@
 
 import { Dynamic, Suspense } from "solid-js/web";
-import { createEffect, createMemo, createRenderEffect, createResource, createSignal, lazy, Match, on, Switch, untrack, useContext } from "solid-js";
+import { createRenderEffect, lazy, Match, Switch } from "solid-js";
 import { MutantProvider } from "solid-mutant";
 
 import { HISTORY, STORE } from "state/global";
@@ -26,7 +26,7 @@ const LOGIN_ROUTES = ['login', 'register'] as const; //, 'register', 'verify', '
 const MAIN_ROUTES = ['channels', 'invite', 'settings'] as const;
 
 function LoginRoutes(props: { which: typeof LOGIN_ROUTES[number] }) {
-    let View = createMemo(() => {
+    let View = () => {
         switch(props.which) {
             case 'login': return LoginView;
             case 'register': return RegisterView;
@@ -34,7 +34,7 @@ function LoginRoutes(props: { which: typeof LOGIN_ROUTES[number] }) {
             //case 'verify': View = VerifyView; break;
             //case 'reset': View = ResetView; break;
         }
-    });
+    };
 
     let { LL } = /*#__PURE__*/useI18nContext();
 

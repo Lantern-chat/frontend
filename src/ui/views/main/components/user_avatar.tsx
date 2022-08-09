@@ -56,21 +56,24 @@ export function UserAvatar(props: IUserAvatarProps) {
         return { url, backgroundColor };
     });
 
-    let status = createMemo(() => {
+    // in the <Show> below, switching to the fallback would require recomputing this anyway,
+    // so do not memoize it
+    let status = () => {
         switch(presence().status) {
             case PresenceStatus.Online: return [LL().main.ONLINE(), "online"];
             case PresenceStatus.Busy: return [LL().main.BUSY(), "busy"];
             case PresenceStatus.Away: return [LL().main.AWAY(), "away"];
             default: return [LL().main.OFFLINE(), "offline"];
         }
-    });
+    };
 
     return (
         <div class="ln-user-avatar" onClick={props.onClick}>
             <Avatar
                 username={props.nickname}
                 text={props.nickname.charAt(0)}
-                {...url_or_color()}
+                url={url_or_color().url}
+                backgroundColor={url_or_color().backgroundColor}
                 rounded={props.roundness}
             />
 

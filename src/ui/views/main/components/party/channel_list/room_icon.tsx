@@ -1,4 +1,4 @@
-import { createMemo, Show } from "solid-js";
+import { Show } from "solid-js";
 
 import type { Room } from "state/models";
 import { usePrefs } from "state/contexts/prefs";
@@ -29,7 +29,7 @@ export function RoomIcon(props: IRoomIconProps) {
 }
 
 function RoomHashIcon(props: IRoomIconProps) {
-    let subicon = createMemo(() => {
+    let subicon = () => {
         let flags = props.room.flags;
 
         // TODO: Rooms with overwrites
@@ -39,7 +39,7 @@ function RoomHashIcon(props: IRoomIconProps) {
             return Icons.Lock;
         }
         return;
-    });
+    };
 
     return (
         <>

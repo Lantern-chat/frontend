@@ -1,4 +1,4 @@
-import { createEffect, createMemo } from "solid-js";
+import { createEffect } from "solid-js";
 import { createRef } from "ui/hooks/createRef";
 
 import { usePrefs } from "state/contexts/prefs";

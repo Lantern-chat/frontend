@@ -54,6 +54,8 @@ export function MemberList() {
         return;
     });
 
+    // TODO: Ensure the properties of the returned object are properly memoized
+    // as they may not be given they are new objects each time
     let grouped_members = createMemo(() => {
         let members = sorted_members(),
             party = state.party?.party;
@@ -73,7 +75,6 @@ export function MemberList() {
             outer: for(let member of members) {
                 let presence = parse_presence(member.presence);
 
-                // TODO: Replace with member.flags != 0 ?
                 if(presence.status != PresenceStatus.Offline) {
                     // if the member is in any roles AND if there are any roles to hoist
                     if(hoisted && member.roles?.length) {

@@ -1,11 +1,8 @@
-import { createMemo, createSignal, Show } from "solid-js";
-import { useStructuredSelector } from "solid-mutant";
+import { createSignal, Show } from "solid-js";
 
-import { HISTORY } from "state/global";
-import { RootState, useRootSelector } from "state/root";
+import { useRootSelector } from "state/root";
 import { activeParty } from "state/selectors/active";
 import { selectCachedUser } from "state/selectors/selectCachedUser";
-import { parse_presence, PresenceStatus } from "state/models";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
 

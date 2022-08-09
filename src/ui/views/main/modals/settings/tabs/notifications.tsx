@@ -1,5 +1,5 @@
 import { HAS_NOTIFICATIONS } from "lib/notification";
-import { createEffect, createMemo, createSignal, onMount } from "solid-js";
+import { createEffect, createSignal, onMount } from "solid-js";
 import { StorageKey } from "state/storage";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 import { Toggle } from "../components/toggle";
@@ -68,10 +68,10 @@ export function NotificationsSettingsTab() {
 
     let { LL } = useI18nContext();
 
-    let label = createMemo(() => {
+    let label = () => {
         let offset = HAS_NOTIFICATIONS ? (HAS_QUERY ? 0 : 1) : 2;
         return LL().main.settings.notifications.ENABLE_DESKTOP_NOTIFICATIONS[offset]();
-    });
+    };
 
     return (
         <form class="ln-settings-form">

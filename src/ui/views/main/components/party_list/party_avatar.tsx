@@ -1,10 +1,10 @@
-import { createMemo, Show } from "solid-js";
+import { Show } from "solid-js";
 
 import { copyText } from "lib/clipboard";
 
-import { useRootDispatch, useRootSelector } from "state/root";
+import { useRootDispatch } from "state/root";
 import { activateParty } from "state/commands";
-import { Party, Snowflake, UserPreferenceFlags } from "state/models";
+import { Party, Snowflake } from "state/models";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 import { usePrefs } from "state/contexts/prefs";
 

@@ -1,4 +1,4 @@
-import { createMemo, Match, Show, Switch } from "solid-js";
+import { Match, Show, Switch } from "solid-js";
 import { Snowflake } from "state/models";
 import { useRootSelector } from "state/root";
 import { Link } from "ui/components/history";

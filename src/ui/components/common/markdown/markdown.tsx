@@ -1,4 +1,4 @@
-import { createMemo, JSX, splitProps } from "solid-js";
+import { JSX, splitProps } from "solid-js";
 
 import { Spoiler } from "./components/spoiler";
 import { Math } from "./lazy";

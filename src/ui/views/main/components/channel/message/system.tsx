@@ -1,5 +1,3 @@
-import { createMemo } from "solid-js";
-import dayjs from "dayjs";
 import { MessageKind } from "state/models";
 import { VectorIcon } from "ui/components/common/icon";
 import { IMessageProps } from "./common";

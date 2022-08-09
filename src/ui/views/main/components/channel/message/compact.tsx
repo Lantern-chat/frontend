@@ -1,4 +1,4 @@
-import { createMemo, For } from "solid-js";
+import { For } from "solid-js";
 import { useRootSelector } from "state/root";
 import { selectCachedUserFromMessage } from "state/selectors/selectCachedUser";
 import { UITimestamp } from "ui/components/common/timestamp";

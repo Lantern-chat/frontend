@@ -1,5 +1,5 @@
 import { linear2srgb, linear_srgb2oklab, oklab2linear_srgb, pack_rgb, srgb2linear, formatRgbBinary, unpack_rgb, clamp_linear, saturate_lab } from "lib/color";
-import { Accessor, createMemo } from "solid-js";
+import { Accessor } from "solid-js";
 import { usePrefs, UserPreferenceAccessors } from "state/contexts/prefs";
 
 export function adjustUserColor(color: number, prefs: UserPreferenceAccessors = usePrefs()): Accessor<number> {
