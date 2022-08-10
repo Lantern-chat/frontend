@@ -5,6 +5,9 @@ import { createRef } from "ui/hooks/createRef";
 export interface IColorPickerProps {
     value: HSVColor,
     onChange?(color: HSVColor): void;
+
+    onStartEdit?(): void;
+    onEndEdit?(): void;
 }
 
 import "./color_picker.scss";
@@ -13,6 +16,8 @@ export function SaturationValuePicker(props: IColorPickerProps) {
     let controller = createRef<HTMLDivElement>();
 
     let [moving, setMoving] = createSignal(false);
+
+    createEffect(() => moving() ? props.onStartEdit?.() : props.onEndEdit?.());
 
     let compute = (x: number, y: number) => {
         let rect = controller.current!.getBoundingClientRect();
@@ -48,7 +53,7 @@ export function SaturationValuePicker(props: IColorPickerProps) {
             onMouseMove={e => moving() && onMouse(e)}
             onMouseUp={e => { setMoving(false); onMouse(e); }}
             onTouchMove={onTouch}
-            style={{ cursor: moving() ? 'grabbing' : void 0 }}
+            style={{ cursor: moving() ? 'grabbing' : 'pointer' }}
         >
             <div class="sl-controller"
                 ref={controller}
@@ -75,6 +80,8 @@ export function SaturationValuePicker(props: IColorPickerProps) {
 export function HuePicker(props: IColorPickerProps) {
     let controller = createRef<HTMLDivElement>();
     let [moving, setMoving] = createSignal(false);
+
+    createEffect(() => moving() ? props.onStartEdit?.() : props.onEndEdit?.());
 
     let compute = (x: number) => {
         let rect = controller.current!.getBoundingClientRect();
@@ -104,7 +111,7 @@ export function HuePicker(props: IColorPickerProps) {
             onMouseMove={e => moving() && onMouse(e)}
             onMouseUp={e => { setMoving(false); onMouse(e); }}
             onTouchMove={onTouch}
-            style={{ cursor: moving() ? 'grabbing' : void 0 }}
+            style={{ cursor: moving() ? 'grabbing' : 'pointer' }}
         >
             <div class="h-controller" ref={controller}
                 onMouseDown={e => { setMoving(true); onMouse(e) }}
@@ -170,25 +177,14 @@ export function HueSaturationPicker(props: IColorPickerProps) {
 }
 
 export function ColorPicker(props: IColorPickerProps) {
-    let hsl = createMemo(() => {
-        let { h, s, l } = hsv2hsl(props.value);
-        return `hsl(${h}, ${s * 100}%, ${l * 100}%)`;
-    });
-
     return (
-        <>
-            <div style={{ width: '100%', height: '3em', "background-color": hsl() }}>
+        <div class="ln-color-picker">
+            <div style={{ height: '10em' }}><SaturationValuePicker {...props} /></div>
 
-            </div>
-            <div class="ln-color-picker">
-                <div style={{ height: '10em' }}><SaturationValuePicker {...props} /></div>
+            <div style={{ height: '2em' }}><HuePicker {...props} /></div>
 
-                <div style={{ height: '2em' }}><HuePicker {...props} /></div>
+            {/* <div style={{ height: '10em' }}><HueSaturationPicker {...props} /></div> */}
 
-                {/* <div style={{ height: '10em' }}><HueSaturationPicker {...props} /></div> */}
-
-            </div>
-
-        </>
+        </div>
     );
 }

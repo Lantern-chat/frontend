@@ -1,4 +1,4 @@
-import { Accessor, createMemo, Show } from 'solid-js';
+import { Accessor, createMemo, JSXElement, Show } from 'solid-js';
 import { useI18nContext } from 'ui/i18n/i18n-solid';
 
 import { pickColorFromHash } from 'lib/palette';
@@ -25,8 +25,9 @@ export interface IUserAvatarProps {
 
     /// Override the avatar URL
     url?: string | null,
+    color?: string | undefined,
 
-    onClick?(e: MouseEvent): void;
+    cover?: JSXElement,
 }
 
 import "./user_avatar.scss";
@@ -41,16 +42,14 @@ export function UserAvatar(props: IUserAvatarProps) {
     });
 
     let url_or_color = createMemo(() => {
-        let url = props.url, backgroundColor, profile = props.profile;;
+        let url = props.url, backgroundColor = props.color, profile = props.profile;
 
-        if(!url) {
-            if(props.profile?.avatar) {
-                url = asset_url('user', props.user_id, props.profile.avatar, 'avatar', prefs.LowBandwidthMode());
-            } else {
-                backgroundColor = (profile && (profile.bits & (1 << 7)))
-                    ? formatRgbBinary(profile.bits >> 8)
-                    : pickColorFromHash(props.user_id, prefs.LightMode());
-            }
+        if(props.profile?.avatar && url === undefined) {
+            url = asset_url('user', props.user_id, props.profile.avatar, 'avatar', prefs.LowBandwidthMode());
+        } else if(!url && !props.color) {
+            backgroundColor = (profile && (profile.bits & (1 << 7)))
+                ? formatRgbBinary(profile.bits >> 8)
+                : pickColorFromHash(props.user_id, prefs.LightMode());
         }
 
         return { url, backgroundColor };
@@ -68,7 +67,7 @@ export function UserAvatar(props: IUserAvatarProps) {
     };
 
     return (
-        <div class="ln-user-avatar" onClick={props.onClick}>
+        <div class="ln-user-avatar">
             <Avatar
                 username={props.nickname}
                 text={props.nickname.charAt(0)}
@@ -76,6 +75,8 @@ export function UserAvatar(props: IUserAvatarProps) {
                 backgroundColor={url_or_color().backgroundColor}
                 rounded={props.roundness}
             />
+
+            {props.cover}
 
             <div class="ln-user-status" title={status()[0]}>
                 <Show

@@ -1,4 +1,4 @@
-import { createEffect, createMemo, onMount, Show } from "solid-js";
+import { createEffect, createMemo, JSXElement, onMount, Show } from "solid-js";
 import { useStructuredSelector } from "solid-mutant";
 import { PartyMember, Snowflake, User, parse_presence, UserPreferenceFlags, user_is_bot, PresenceStatus, UserProfile, split_profile_bits, UserPresence, UserProfileSplitBits } from "state/models";
 import { RootState, useRootDispatch, useRootSelector, useRootStore } from "state/root";
@@ -11,10 +11,11 @@ import { Branch } from "ui/components/flow";
 import { UserAvatar } from "../user_avatar";
 import { BotLabel } from "../misc/bot_label";
 import { asset_url } from "config/urls";
-import { formatRgbBinary } from "lib/color";
+import { formatRgbBinary, formatRGBHex, hsv2rgb, HSVColor } from "lib/color";
 import { fetch_profile } from "state/commands/profile";
 import { CachedUser } from "state/mutators/cache";
 import { Discriminator } from "../misc/discriminator";
+import { br } from "ui/utils";
 
 export interface IUserCardProps {
     user_id: Snowflake,
@@ -52,16 +53,17 @@ export interface ISimpleUserCardProps {
     presence?: UserPresence,
     profile: UserProfile | undefined | null,
     bits?: UserProfileSplitBits,
-    banner_url?: string,
-    avatar_url?: string,
+    banner_url?: string | null,
+    avatar_url?: string | null,
 
-    onAvatarClick?(e: MouseEvent): void;
-    onBannerClick?(e: MouseEvent): void;
+    avatarCover?: JSXElement,
+    bannerCover?: JSXElement,
+    hideBanner?: boolean,
+    statusExt?: JSXElement,
+    bioExt?: JSXElement,
+    color?: HSVColor,
+    roundness?: number,
 }
-
-// NOTE: USED IN DIRECTIVE BELOW
-import { eat } from "ui/hooks/useEater";
-false && eat;
 
 export function SimpleUserCard(props: ISimpleUserCardProps) {
     let prefs = usePrefs();
@@ -71,43 +73,50 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
 
     let banner_url = () => {
         let banner, url = props.banner_url;
-        if(!url && (banner = props.profile?.banner)) {
+        if(url === undefined && (banner = props.profile?.banner)) {
             url = asset_url('user', props.user.id, banner, 'banner', prefs.LowBandwidthMode());
         }
         return url && `url("${url}")`;
     };
     let avatar_url = () => {
-        if(props.avatar_url) return props.avatar_url;
+        if(props.avatar_url !== undefined) return props.avatar_url;
         let avatar = props.profile?.avatar;
         return avatar && asset_url('user', props.user.id, avatar, 'avatar', prefs.LowBandwidthMode());
     };
     let color = () => {
+        if(props.color) {
+            return formatRGBHex(hsv2rgb(props.color));
+        }
+
         let b = bits();
         return !b?.override_color ? pickColorFromHash(props.user.id, prefs.LightMode())
             : formatRgbBinary(b.color);
     };
+    let roundness = () => props.roundness || bits()?.roundedness || 0;
 
     return (
-        <div class="ln-user-card ln-contextmenu" use:eat={["click", "contextmenu"]}
+        <div class="ln-user-card ln-contextmenu"
             classList={{ 'has-banner': !!banner_url(), 'has-avatar': !!avatar_url() }}
         >
             <div class="ln-user-card__header">
                 <div class="banner"
-                    onClick={props.onBannerClick}
                     style={{
                         "background-color": color(),
-                        'background-image': banner_url()
+                        'background-image': props.hideBanner ? null : banner_url(),
                     }}
-                />
+                >
+                    {props.bannerCover}
+                </div>
 
-                <div class="avatar-box" style={{ 'border-radius': ((bits()?.roundedness || 0) * 50 + '%') }}>
+                <div class="avatar-box" style={{ 'border-radius': br(roundness()) }}>
                     <UserAvatar nickname={props.nick || props.user.username}
                         user_id={props.user.id}
                         profile={props.profile}
                         url={avatar_url()}
-                        roundness={bits()?.roundedness}
+                        roundness={roundness()}
                         presence={props.presence}
-                        onClick={props.onAvatarClick}
+                        cover={props.avatarCover}
+                        color={color()}
                     />
                 </div>
             </div>
@@ -129,7 +138,11 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
                 </div>
 
                 <Show when={props.profile?.status}>
-                    <div class="ln-user-custom-status" textContent={props.profile!.status!} />
+                    <div class="ln-user-custom-status">
+                        <span class="chat-text" textContent={props.profile!.status!} />
+
+                        {props.statusExt}
+                    </div>
                 </Show>
 
                 <Show when={props.profile?.bio}>
@@ -138,6 +151,8 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
                         <span class="ln-user-biography__title">ABOUT ME</span>
 
                         <Markdown source={props.profile!.bio!} />
+
+                        {props.bioExt}
                     </div>
                 </Show>
             </div>

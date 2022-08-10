@@ -5,6 +5,10 @@ export function px(value: string | number | undefined): string | undefined {
     return value;
 }
 
+export function br(value: number | boolean | undefined): undefined | string {
+    return value ? (+value * 50 + '%') : '0%';
+}
+
 import type { JSX } from "solid-js";
 
 // This list is incomplete, see https://developer.mozilla.org/en-US/docs/Web/CSS/Reference for full list

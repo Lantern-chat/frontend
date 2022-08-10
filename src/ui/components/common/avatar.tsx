@@ -1,5 +1,6 @@
 import { createRenderEffect, createSignal, JSX, Show } from "solid-js";
 import { runBatched } from "ui/hooks/runBatched";
+import { br } from "ui/utils";
 import { Branch } from "../flow";
 
 export interface IAvatarProps {
@@ -17,10 +18,6 @@ export interface IAvatarProps {
 // The skeleton system here kicks in after 100ms of load time on each avatar.
 // Once images are loaded, they are batched together in 5ms increments
 // to avoid thrashing the UI
-
-function br(value: number | boolean | undefined): undefined | string {
-    return value ? (+value * 50 + '%') : '0%';
-}
 
 import "./avatar.scss";
 export function Avatar(props: IAvatarProps) {
