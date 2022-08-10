@@ -175,7 +175,9 @@ class Gateway {
     set_presence(away: boolean, mobile: boolean) {
         this.send({
             o: ClientMsgOpcode.SetPresence, p: {
-                flags: (away ? UserPresenceFlags.Away : ((mobile ? 8 : 0) | UserPresenceFlags.Online)),
+                flags: away
+                    ? UserPresenceFlags.Away
+                    : ((mobile ? UserPresenceFlags.Mobile : 0) | UserPresenceFlags.Online),
             }
         });
     }
