@@ -3,7 +3,7 @@ import { createSignal, onMount, createMemo, Show, createEffect, Accessor, onClea
 import { resize_image } from "lib/image";
 import { hsv2rgb, HSVColor, pack_rgb, unpack_rgb, rgb2hsv, u82linear, linear2u8 } from "lib/color";
 import { saturate } from "lib/math";
-import { createFixedPercentFormatter, createNumberFormatter } from "ui/hooks/createFormatter";
+import { createPercentFormatter } from "ui/hooks/createFormatter";
 import { br } from "ui/utils";
 
 import { CLIENT } from "state/global";
@@ -16,6 +16,7 @@ import { selectCachedUser } from "state/selectors/selectCachedUser";
 import { createRef } from "ui/hooks/createRef";
 import { ColorPicker } from "ui/components/common/color_picker";
 import { SimpleUserCard } from "ui/views/main/components/menus/user_card";
+import { TextareaAutosize } from "ui/components/input/textarea";
 
 export function ProfileSettingsTab() {
     let store = useRootStore();
@@ -70,14 +71,6 @@ function ProfileSettingsTabInner() {
         setColor(color); setNewColor(color);
     };
 
-    let reset = () => {
-        setAvatarFile();
-        setBannerFile();
-        setNewColor();
-        setColor(initial_color());
-        setRoundness(bits() & 0x7F);
-    };
-
     let can_show_remove_avatar = () => localAvatarUrl() !== null && (localAvatarUrl() || cached_user().profile?.avatar);
     let can_show_remove_banner = () => localBannerUrl() !== null && (localBannerUrl() || cached_user().profile?.banner);
 
@@ -85,7 +78,20 @@ function ProfileSettingsTabInner() {
 
     let [roundness, setRoundness] = createSignal(bits() & 0x7F);
 
-    let percent = createFixedPercentFormatter();
+    let percent = createPercentFormatter(0);
+
+    let [status, setStatus] = createSignal(cached_user().profile?.status || '');
+    let [bio, setBio] = createSignal(cached_user().profile?.bio || '');
+
+    let reset = () => {
+        setAvatarFile();
+        setBannerFile();
+        setNewColor();
+        setColor(initial_color());
+        setRoundness(bits() & 0x7F);
+        setStatus(cached_user().profile?.status || '');
+        setBio(cached_user().profile?.bio || '');
+    };
 
     return (
         <div class="ln-settings-profile">
@@ -94,7 +100,6 @@ function ProfileSettingsTabInner() {
 
             <form>
                 <div class="ln-settings-profile__inner">
-                    <h4>Color</h4>
                     <ColorPicker
                         value={color()} onChange={update_color}
                         onStartEdit={() => setEditingColor(true)}
@@ -122,9 +127,15 @@ function ProfileSettingsTabInner() {
                         <SquircleButton style={{ left: 0 }} which="square" onInput={() => setRoundness(r => Math.max(0, r - 1))} />
                         <SquircleButton style={{ right: 0 }} which="circle" onInput={() => setRoundness(r => Math.min(127, r + 1))} />
                     </div>
+
+                    <h4>Status</h4>
+                    <TextInput class="chat-text status-input" maxRows={2} value={status()} onChange={setStatus} denyNewlines />
+
+                    <h4>Biography</h4>
+                    <TextInput class="ui-text bio-input" maxRows={8} minRows={4} value={bio()} onChange={setBio} />
                 </div>
 
-                <div>
+                <div class="ln-settings-profile__user-card">
                     <SimpleUserCard
                         user={cached_user()!.user}
                         nick={cached_user()!.nick}
@@ -152,11 +163,11 @@ function ProfileSettingsTabInner() {
                         avatarCover={(
                             <div class="avatar-cover"
                                 onClick={e => avatar_input.current?.click()}
-                                style={{ 'border-radius': br(cached_user().bits.roundedness) }}>
+                                style={{ 'border-radius': br(roundness() / 127) }}>
                                 Change Avatar
                             </div>
                         )}
-                        profile={cached_user()!.profile}
+                        profile={Object.assign({}, cached_user()!.profile, { bio: bio(), status: status() })}
                         presence={cached_user()!.presence}
                         avatar_url={localAvatarUrl()}
                         banner_url={localBannerUrl()} />
@@ -168,6 +179,36 @@ function ProfileSettingsTabInner() {
             </div>
         </div>
     );
+}
+
+interface ITextInputProps {
+    value: string;
+    onChange(value: string): void;
+    class: string,
+    maxRows?: number;
+    minRows?: number,
+    denyNewlines?: boolean;
+}
+
+function TextInput(props: ITextInputProps) {
+    let onInput = (e: InputEvent) => {
+        let ta = e.currentTarget as HTMLTextAreaElement;
+        if(props.denyNewlines) {
+            ta.value = ta.value.replace(/\n/g, '');
+        }
+        console.log("HERE")
+        props.onChange(ta.value);
+    };
+
+    let stop = (e: KeyboardEvent) => {
+        e.stopPropagation();
+    };
+
+    return (
+        <div class={"profile-textarea " + props.class} onKeyDown={stop} onKeyUp={stop}>
+            <TextareaAutosize maxRows={props.maxRows} minRows={props.minRows} value={props.value} onInput={onInput} />
+        </div>
+    )
 }
 
 interface ISquircleButtonProps {

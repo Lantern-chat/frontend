@@ -6,6 +6,7 @@
     }
 
     form {
+        // using inline-flex allows it to stay shrunk to the left when on one line
         display: inline-flex;
         flex-wrap: wrap-reverse;
         justify-content: space-around;
@@ -16,11 +17,16 @@
 
     &__inner {
         width: min(80vw, 25em);
-        padding: min(2em, 2vw);
+        padding-inline: min(2em, 2vw);
+        padding-block-end: 2em;
 
         h4 {
             text-align: center;
         }
+    }
+
+    &__user-card {
+        padding-block-end: 2em;
     }
 
     input[type="file"] {
@@ -95,8 +101,40 @@
         flex-basis: 100%;
     }
 
+    .profile-textarea {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        flex: 1;
+        color: $lnx-primary-text-color;
+        background-color: rgba(128, 128, 128, 0.5);
+
+        .ln-light-theme &,
+        .ln-oled-theme & {
+            background-color: rgba(128, 128, 128, 0.2);
+        }
+
+        margin-block: 1em;
+        border-radius: 0.5rem;
+
+        textarea {
+            tab-size: $lnx-chat-tabsize;
+            margin: 0.25em;
+            color: $lnx-primary-text-color;
+            width: 100%;
+            resize: none;
+            border: none;
+            outline: none;
+            background-color: transparent;
+            font-size: inherit;
+            font-family: inherit;
+            caret-color: $lnx-primary-text-color;
+        }
+    }
+
     label[for="avatar_roundness"] {
-        width: 2.75em;
+        width: 2.5em;
         display: inline-block;
     }
 }
