@@ -90,7 +90,7 @@ function ProfileSettingsTabInner() {
     });
 
     return (
-        <div class="ln-settings-profile" onMouseUp={() => setEditingColor(false)} onTouchEnd={() => setEditingColor(false)}>
+        <div class="ln-settings-profile">
             <input type="file" ref={avatar_input} onChange={e => on_file(e, setAvatarFile)} accept="image/*" />
             <input type="file" ref={banner_input} onChange={e => on_file(e, setBannerFile)} accept="image/*" />
 
@@ -103,21 +103,25 @@ function ProfileSettingsTabInner() {
                         onEndEdit={() => setEditingColor(false)}
                     />
 
+                    <h4>
+                        Avatar Roundness (<label for="avatar_roundness">{num_format(roundness() / 127 * 100)}%</label>)
+                    </h4>
+
                     <div class="roundness-setting">
-                        <label>{num_format(roundness() / 127 * 100)}%</label>
+                        <SquircleButton which="square" onInput={() => setRoundness(r => Math.max(0, r - 1))} />
 
-                        <span>[]</span>
+                        <div>
+                            <input id="avatar_roundness" type="range" min="0" max="127" step="1"
+                                list="roundness-snap"
+                                value={roundness()}
+                                onInput={e => setRoundness(parseInt((e.currentTarget as HTMLInputElement).value))} />
 
-                        <input type="range" min="0" max="127" step="1"
-                            list="roundness-snap"
-                            value={roundness()}
-                            onInput={e => setRoundness(parseInt((e.currentTarget as HTMLInputElement).value))} />
+                            <datalist id="roundness-snap">
+                                <option value="64" />
+                            </datalist>
+                        </div>
 
-                        <datalist id="roundness-snap">
-                            <option value="64" />
-                        </datalist>
-
-                        <span>O</span>
+                        <SquircleButton which="circle" onInput={() => setRoundness(r => Math.min(127, r + 1))} />
                     </div>
                 </div>
 
@@ -164,4 +168,51 @@ function ProfileSettingsTabInner() {
         </div>
     );
 }
+
+interface ISquircleButtonProps {
+    which: 'square' | 'circle',
+    onInput(): void;
 }
+
+function SquircleButton(props: ISquircleButtonProps) {
+    let [holding, setHolding] = createSignal(false);
+
+    let timer: number;
+
+    let update = () => {
+        if(holding()) {
+            props.onInput();
+            timer = setTimeout(update, 50);
+        }
+    };
+
+    let start = () => {
+        setHolding(true);
+        props.onInput();
+        timer = setTimeout(update, 500);
+    };
+
+    let mousedown = (e: MouseEvent) => {
+        if(e.buttons & 1) { start(); }
+    };
+
+    let touchstart = (e: TouchEvent) => { e.preventDefault(); start(); };
+    let touchend = (e: TouchEvent) => { e.preventDefault(); cancel(); };
+
+    let cancel = () => { setHolding(false); clearTimeout(timer); };
+
+    return (
+        <svg class="squircle" viewBox="0 0 8 8"
+            onMouseDown={mousedown}
+            onMouseUp={cancel}
+            onMouseLeave={cancel}
+            onTouchStart={touchstart}
+            onTouchEnd={touchend}
+        >
+            {props.which == 'circle'
+                ? <circle cx="4" cy="4" r="3.5" />
+                : <rect x="0.5" y="0.5" width="7" height="7" />}
+        </svg>
+    );
+}
+

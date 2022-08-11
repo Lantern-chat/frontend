@@ -48,10 +48,13 @@ export function SaturationValuePicker(props: IColorPickerProps) {
         return `hsl(${h}, ${s * 100}%, ${l * 100}%)`;
     });
 
+    let stop_edit = (e: MouseEvent) => { setMoving(false); onMouse(e); };
+
     return (
         <div class="ln-2d-sat-value-picker"
             onMouseMove={e => moving() && onMouse(e)}
-            onMouseUp={e => { setMoving(false); onMouse(e); }}
+            onMouseUp={stop_edit}
+            onMouseLeave={stop_edit}
             onTouchMove={onTouch}
             style={{ cursor: moving() ? 'grabbing' : 'pointer' }}
         >
@@ -106,10 +109,13 @@ export function HuePicker(props: IColorPickerProps) {
         e.preventDefault();
     };
 
+    let stop_edit = (e: MouseEvent) => { setMoving(false); onMouse(e); };
+
     return (
         <div class="ln-linear-hue-picker"
             onMouseMove={e => moving() && onMouse(e)}
-            onMouseUp={e => { setMoving(false); onMouse(e); }}
+            onMouseUp={stop_edit}
+            onMouseLeave={stop_edit}
             onTouchMove={onTouch}
             style={{ cursor: moving() ? 'grabbing' : 'pointer' }}
         >
@@ -145,8 +151,6 @@ export function HueSaturationPicker(props: IColorPickerProps) {
         let saturation = Math.hypot(x, y) / (0.5 * rect.width);
         let hue = (180 + Math.atan2(y, x) * 180.0 / Math.PI) % 360;
 
-        console.log("Hue", hue, "Saturation", saturation);
-
         props.onChange?.({ h: hue, s: saturation, v: props.value.v });
     };
 
@@ -155,10 +159,6 @@ export function HueSaturationPicker(props: IColorPickerProps) {
     };
 
     let lightness = createMemo(() => hsv2hsl(props.value).l);
-
-    createEffect(() => {
-        console.log("Lightness", lightness());
-    })
 
     return (
         <div class="ln-hue-sat-picker">

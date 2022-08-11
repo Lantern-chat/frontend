@@ -92,3 +92,47 @@
         }
     }
 }
+
+.roundness-setting {
+    input[type="range"] {
+    }
+
+    display: flex;
+    max-width: 25em;
+    padding-block: 1em;
+    user-select: none;
+
+    > div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        flex-grow: 1;
+        padding-inline: 0.25em;
+    }
+
+    .squircle {
+        flex-shrink: 0;
+        fill: none;
+        stroke: currentColor;
+        font-size: 2rem;
+        width: 2rem;
+        height: 2rem;
+        overflow: visible;
+        display: inline-block;
+        cursor: pointer;
+
+        user-select: none;
+
+        * {
+            user-select: none;
+        }
+
+        &:hover {
+            fill: rgba(128, 128, 128, 0.25);
+        }
+
+        &:active {
+            fill: rgba(128, 128, 128, 0.75);
+        }
+    }
+}
