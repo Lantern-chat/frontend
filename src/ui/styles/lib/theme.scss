@@ -16,6 +16,7 @@ $ln-primary-text-color: change-color(
     $lightness: 110% - lightness($ln-primary-surface-color)
 );
 $ln-secondary-text-color: darken($ln-primary-text-color, 20%);
+$ln-accent-color: $ln-primary-surface-color;
 
 $ln-info-btn-color: change-color(purple, $saturation: 20%, $lightness: 40%);
 $ln-info-btn-hover: change-color(purple, $saturation: 25%, $lightness: 45%);
@@ -36,6 +37,7 @@ $lnx-secondary-surface-color: varx(--ln-secondary-surface-color, $ln-secondary-s
 $lnx-tertiary-surface-color: varx(--ln-tertiary-surface-color, $ln-tertiary-surface-color);
 $lnx-primary-text-color: varx(--ln-primary-text-color, $ln-primary-text-color);
 $lnx-secondary-text-color: varx(--ln-secondary-text-color, $ln-secondary-text-color);
+$lnx-accent-color: varx(--ln-accent-color, $ln-accent-color);
 $lnx-success-color: varx(--ln-success-color, $ln-success-color);
 $lnx-warning-color: varx(--ln-warning-color, $ln-warning-color);
 $lnx-failure-color: varx(--ln-failure-color, $ln-failure-color);

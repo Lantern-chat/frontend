@@ -1,4 +1,5 @@
 import { change_color, darken, lighten, lightness, RGBColor, formatRGB, adjust_color, kelvin2, rgb, rgb2hsl, hsl2rgb, formatRGBHex } from "./color";
+import { gaussian2, mix } from "./math";
 
 const { min, max, round } = Math;
 
@@ -8,6 +9,7 @@ export interface IThemeColors {
     tertiary_surface_color: RGBColor,
     primary_text_color: RGBColor,
     secondary_text_color: RGBColor,
+    accent_color: RGBColor,
 }
 
 export interface ITheme {
@@ -25,7 +27,7 @@ export var LIGHT_THEME: boolean = false;
 
 export function genDarkTheme(temperature: number, oled: boolean): IThemeColors {
     temperature = clamp_temp(temperature);
-    let k = kelvin2(temperature);
+    let k = kelvin2(temperature), ka = kelvin2(max(6000, min(temperature, 12000)));
 
     // compute saturation
     let s = (temperature - 7000) / 20000;
@@ -56,7 +58,17 @@ export function genDarkTheme(temperature: number, oled: boolean): IThemeColors {
         secondary_surface_color,
         tertiary_surface_color,
         primary_text_color,
-        secondary_text_color
+        secondary_text_color,
+        accent_color: (() => {
+            // lopsided upside-down gaussian, slower to rise on the hotter side
+            let t = 1 - gaussian2(temperature - 6500, (temperature - MIN_TEMP) * 0.1);
+            t *= t; // flatten it out a bit
+
+            s = mix(0.05, 0.65, t);
+            l = mix(0.25, 0.55, t);
+
+            return change_color(ka, { s, l });
+        })(),
     };
 }
 
@@ -70,7 +82,7 @@ Tertiary is lightest
 
 export function genLightTheme(temperature: number): IThemeColors {
     temperature = clamp_temp(temperature);
-    let k = kelvin2(temperature);
+    let k = kelvin2(temperature), ka = kelvin2(max(6000, min(temperature, 12000)));
 
     let s = (temperature - 7000) / 19000;
     s *= s;
@@ -106,6 +118,18 @@ export function genLightTheme(temperature: number): IThemeColors {
         tertiary_surface_color,
         primary_text_color,
         secondary_text_color,
+        accent_color: (() => {
+            // TODO: Improve this light theme color
+            s = (temperature - 7000) / 19000;
+            s *= s;
+            s += 0.5;
+
+            l = (temperature - 6500) / (1.5 * MAX_TEMP - MIN_TEMP);
+            l *= -l;
+            l += 0.99;
+
+            return change_color(ka, { s, l })
+        })()
     }
 }
 

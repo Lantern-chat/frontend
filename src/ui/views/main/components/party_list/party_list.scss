@@ -43,7 +43,7 @@
         &.selected {
             .ln-avatar {
                 &__text {
-                    background-color: var(--ln-home-color, inherit);
+                    background-color: var(--ln-accent-color, inherit);
 
                     .ln-enable-motion & {
                         transition: background-color 0.1s ease-in, color 0.1s ease-in;
@@ -51,7 +51,7 @@
                 }
 
                 &__wrapper:hover .ln-avatar__text {
-                    background-color: var(--ln-home-color, inherit);
+                    background-color: var(--ln-accent-color, inherit);
                 }
             }
         }

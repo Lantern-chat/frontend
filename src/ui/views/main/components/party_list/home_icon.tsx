@@ -1,7 +1,4 @@
-import { createEffect } from "solid-js";
 import { createRef } from "ui/hooks/createRef";
-
-import { usePrefs } from "state/contexts/prefs";
 
 import { Avatar } from "ui/components/common/avatar";
 import { VectorIcon } from "ui/components/common/icon";
@@ -15,16 +12,7 @@ export interface IHomeProps {
 }
 
 export function Home(props: IHomeProps) {
-    let prefs = usePrefs();
-
     let ref = createRef<HTMLLIElement>();
-
-    createEffect(() => {
-        let li = ref.current;
-        if(li) {
-            li.style.setProperty('--ln-home-color', compute_color(prefs.Theme()));
-        }
-    });
 
     let onNavigate = (e: Event) => {
         ('@me' != props.active_party && props.can_navigate) || e.preventDefault()
@@ -39,35 +27,4 @@ export function Home(props: IHomeProps) {
             </Link>
         </li>
     )
-}
-
-import { ITheme, MAX_TEMP, MIN_TEMP } from "lib/theme";
-import { change_color, formatRGBHex, kelvin2 } from "lib/color";
-import { gaussian2, mix } from "lib/math";
-
-function compute_color(theme: ITheme): string {
-    let { temperature, is_light } = theme;
-
-    let s, l, c = kelvin2(Math.max(6000, Math.min(theme.temperature, 12000)));
-
-    if(!is_light) {
-        // lopsided upside-down gaussian, slower to rise on the hotter side
-        let t = 1 - gaussian2(temperature - 6500, (temperature - MIN_TEMP) * 0.1);
-        t *= t; // flatten it out a bit
-
-        s = mix(0.05, 0.65, t);
-        l = mix(0.25, 0.55, t);
-
-    } else {
-        // TODO: Improve this light theme color
-        s = (temperature - 7000) / 19000;
-        s *= s;
-        s += 0.5;
-
-        l = (temperature - 6500) / (1.5 * MAX_TEMP - MIN_TEMP);
-        l *= -l;
-        l += 0.99;
-    }
-
-    return formatRGBHex(change_color(c, { s, l }))
 }
