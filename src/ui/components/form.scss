@@ -139,6 +139,7 @@
 $btn-scale: 1.1;
 
 .ln-btn {
+    user-select: none;
     color: $lnx-primary-text-color;
     display: inline-block;
     line-height: 1;
