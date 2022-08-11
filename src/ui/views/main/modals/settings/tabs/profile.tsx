@@ -1,8 +1,10 @@
-import { createSignal, onMount, createMemo, Show, createEffect, Accessor, onCleanup, Setter } from "solid-js";
+import { createSignal, onMount, createMemo, Show, createEffect, Accessor, onCleanup, Setter, JSX } from "solid-js";
 
 import { resize_image } from "lib/image";
 import { hsv2rgb, HSVColor, pack_rgb, unpack_rgb, rgb2hsv, u82linear, linear2u8 } from "lib/color";
 import { saturate } from "lib/math";
+import { createFixedPercentFormatter, createNumberFormatter } from "ui/hooks/createFormatter";
+import { br } from "ui/utils";
 
 import { CLIENT } from "state/global";
 
@@ -26,8 +28,6 @@ export function ProfileSettingsTab() {
 }
 
 import "./profile.scss";
-import { br } from "ui/utils";
-import { createNumberFormatter } from "ui/hooks/createFormatter";
 function createUrl(file: Accessor<File | null | undefined>): [Accessor<string | undefined | null>, Setter<string | undefined | null>] {
     let [getUrl, setUrl] = createSignal<string | undefined | null>();
 
@@ -85,9 +85,7 @@ function ProfileSettingsTabInner() {
 
     let [roundness, setRoundness] = createSignal(bits() & 0x7F);
 
-    let num_format = createNumberFormatter({
-        maximumFractionDigits: 0,
-    });
+    let percent = createFixedPercentFormatter();
 
     return (
         <div class="ln-settings-profile">
@@ -95,23 +93,23 @@ function ProfileSettingsTabInner() {
             <input type="file" ref={banner_input} onChange={e => on_file(e, setBannerFile)} accept="image/*" />
 
             <form>
-                <div>
-                    <h4 class="section-header">Color</h4>
+                <div class="ln-settings-profile__inner">
+                    <h4>Color</h4>
                     <ColorPicker
                         value={color()} onChange={update_color}
                         onStartEdit={() => setEditingColor(true)}
                         onEndEdit={() => setEditingColor(false)}
                     />
 
+                    <hr />
+
                     <h4>
-                        Avatar Roundness (<label for="avatar_roundness">{num_format(roundness() / 127 * 100)}%</label>)
+                        Avatar Roundness (<label for="avatar_roundness" textContent={percent(roundness() / 127)} />)
                     </h4>
-
                     <div class="roundness-setting">
-                        <SquircleButton which="square" onInput={() => setRoundness(r => Math.max(0, r - 1))} />
-
                         <div>
                             <input id="avatar_roundness" type="range" min="0" max="127" step="1"
+                                style={{ '--avatar-roundness': br(roundness() / 127) }}
                                 list="roundness-snap"
                                 value={roundness()}
                                 onInput={e => setRoundness(parseInt((e.currentTarget as HTMLInputElement).value))} />
@@ -121,7 +119,8 @@ function ProfileSettingsTabInner() {
                             </datalist>
                         </div>
 
-                        <SquircleButton which="circle" onInput={() => setRoundness(r => Math.min(127, r + 1))} />
+                        <SquircleButton style={{ left: 0 }} which="square" onInput={() => setRoundness(r => Math.max(0, r - 1))} />
+                        <SquircleButton style={{ right: 0 }} which="circle" onInput={() => setRoundness(r => Math.min(127, r + 1))} />
                     </div>
                 </div>
 
@@ -164,7 +163,9 @@ function ProfileSettingsTabInner() {
                 </div>
             </form>
 
-            <div class="ln-btn" onClick={reset}>Reset</div>
+            <div class="profile-submit">
+                <div class="ln-btn" onClick={reset}>Reset</div>
+            </div>
         </div>
     );
 }
@@ -172,6 +173,7 @@ function ProfileSettingsTabInner() {
 interface ISquircleButtonProps {
     which: 'square' | 'circle',
     onInput(): void;
+    style: JSX.CSSProperties,
 }
 
 function SquircleButton(props: ISquircleButtonProps) {
@@ -208,10 +210,11 @@ function SquircleButton(props: ISquircleButtonProps) {
             onMouseLeave={cancel}
             onTouchStart={touchstart}
             onTouchEnd={touchend}
+            style={props.style}
         >
             {props.which == 'circle'
-                ? <circle cx="4" cy="4" r="3.5" />
-                : <rect x="0.5" y="0.5" width="7" height="7" />}
+                ? <circle cx="4.25" cy="3.75" r="4" />
+                : <rect x="0" y="0" width="7.5" height="7.5" />}
         </svg>
     );
 }
