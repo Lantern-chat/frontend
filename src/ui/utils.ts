@@ -5,8 +5,8 @@ export function px(value: string | number | undefined): string | undefined {
     return value;
 }
 
-export function br(value: number | boolean | undefined): undefined | string {
-    return value ? (+value * 50 + '%') : '0%';
+export function br(value: number | boolean | undefined, digits: number = 1): undefined | string {
+    return value ? ((+value * 50).toFixed(digits) + '%') : '0%';
 }
 
 import type { JSX } from "solid-js";
