@@ -92,7 +92,7 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
         return !b?.override_color ? pickColorFromHash(props.user.id, prefs.LightMode())
             : formatRgbBinary(b.color);
     };
-    let roundness = () => props.roundness || bits()?.roundedness || 0;
+    let roundness = () => props.roundness ?? (bits()?.roundedness || 0);
 
     return (
         <div class="ln-user-card ln-contextmenu"
