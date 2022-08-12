@@ -182,6 +182,11 @@ function ProfileSettingsTabInner() {
 
                     <h4>Biography</h4>
                     <TextInput class="ui-text bio-input" maxRows={8} minRows={4} value={bio()} onChange={setBio} />
+
+                    <div class="profile-submit">
+                        <div class="ln-btn" onClick={reset}>Reset</div>
+                        <div class="ln-btn" onClick={save}>Save</div>
+                    </div>
                 </div>
 
                 <div class="ln-settings-profile__user-card">
@@ -222,11 +227,6 @@ function ProfileSettingsTabInner() {
                         banner_url={localBannerUrl()} />
                 </div>
             </form>
-
-            <div class="profile-submit">
-                <div class="ln-btn" onClick={reset}>Reset</div>
-                <div class="ln-btn" onClick={save}>Save</div>
-            </div>
         </div>
     );
 }

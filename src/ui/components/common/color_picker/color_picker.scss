@@ -11,6 +11,10 @@
         height: 100%;
 
         position: relative;
+
+        .ln-oled-theme & {
+            border: 1px solid gray;
+        }
     }
 
     .ln-linear-hue-picker {
@@ -165,6 +169,10 @@
 
             &:last-child {
                 margin-inline-start: 0.25em;
+            }
+
+            .ln-oled-theme & {
+                border: 1px solid gray;
             }
         }
 
