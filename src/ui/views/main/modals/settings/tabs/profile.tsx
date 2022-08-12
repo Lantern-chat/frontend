@@ -1,8 +1,7 @@
 import { createSignal, onMount, createMemo, Show, createEffect, Accessor, onCleanup, Setter, JSX } from "solid-js";
 
 import { resize_image } from "lib/image";
-import { hsv2rgb, HSVColor, pack_rgb, unpack_rgb, rgb2hsv, u82linear, linear2u8 } from "lib/color";
-import { saturate } from "lib/math";
+import { unpack_rgb, u82linear, RGBColor } from "lib/color";
 import { createPercentFormatter } from "ui/hooks/createFormatter";
 import { br } from "ui/utils";
 
@@ -63,11 +62,11 @@ function ProfileSettingsTabInner() {
     let avatar_input = createRef();
     let banner_input = createRef();
 
-    let initial_color = () => rgb2hsv(u82linear(unpack_rgb(bits() >> 8)));
+    let initial_color = () => u82linear(unpack_rgb(bits() >> 8));
     let [color, setColor] = createSignal(initial_color());
-    let [newColor, setNewColor] = createSignal<HSVColor>();
+    let [newColor, setNewColor] = createSignal<RGBColor>();
 
-    let update_color = (color: HSVColor) => {
+    let update_color = (color: RGBColor) => {
         setColor(color); setNewColor(color);
     };
 
@@ -196,7 +195,6 @@ function TextInput(props: ITextInputProps) {
         if(props.denyNewlines) {
             ta.value = ta.value.replace(/\n/g, '');
         }
-        console.log("HERE")
         props.onChange(ta.value);
     };
 

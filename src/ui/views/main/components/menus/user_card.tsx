@@ -11,7 +11,7 @@ import { Branch } from "ui/components/flow";
 import { UserAvatar } from "../user_avatar";
 import { BotLabel } from "../misc/bot_label";
 import { asset_url } from "config/urls";
-import { formatRgbBinary, formatRGBHex, hsv2rgb, HSVColor } from "lib/color";
+import { formatRgbBinary, formatRGBHex, hsv2rgb, HSVColor, RGBColor } from "lib/color";
 import { fetch_profile } from "state/commands/profile";
 import { CachedUser } from "state/mutators/cache";
 import { Discriminator } from "../misc/discriminator";
@@ -61,7 +61,7 @@ export interface ISimpleUserCardProps {
     hideBanner?: boolean,
     statusExt?: JSXElement,
     bioExt?: JSXElement,
-    color?: HSVColor,
+    color?: RGBColor,
     roundness?: number,
 }
 
@@ -85,7 +85,7 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
     };
     let color = () => {
         if(props.color) {
-            return formatRGBHex(hsv2rgb(props.color));
+            return formatRGBHex(props.color);
         }
 
         let b = bits();

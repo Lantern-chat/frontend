@@ -1,10 +1,10 @@
-import { HSLColor, hsv, hsv2hsl, hsv2rgb, HSVColor, linear2u8, parseRgb, rgb2hsl, rgb2hsv, RGBColor, u82linear } from "lib/color";
-import { createEffect, createMemo, createSignal } from "solid-js";
+import { Color, HSLColor, hsv, hsv2hsl, hsv2rgb, HSVColor, linear2u8, parseRgb, rgb2hsl, rgb2hsv, RGBColor, u82linear } from "lib/color";
+import { createEffect, createMemo, createRenderEffect, createSignal, splitProps } from "solid-js";
 import { createRef } from "ui/hooks/createRef";
 
-export interface IColorPickerProps {
-    value: HSVColor,
-    onChange?(color: HSVColor): void;
+export interface IColorPickerProps<C extends Color> {
+    value: C,
+    onChange?(color: C): void;
 
     onStartEdit?(): void;
     onEndEdit?(): void;
@@ -12,7 +12,7 @@ export interface IColorPickerProps {
 
 import "./color_picker.scss";
 
-export function SaturationValuePicker(props: IColorPickerProps) {
+export function SaturationValuePicker(props: IColorPickerProps<HSVColor>) {
     let controller = createRef<HTMLDivElement>();
 
     let [moving, setMoving] = createSignal(false);
@@ -43,10 +43,10 @@ export function SaturationValuePicker(props: IColorPickerProps) {
         e.preventDefault();
     };
 
-    let hsl = createMemo(() => {
+    let hsl = () => {
         let { h, s, l } = hsv2hsl(props.value);
         return `hsl(${h}, ${s * 100}%, ${l * 100}%)`;
-    });
+    };
 
     let stop_edit = (e: MouseEvent) => { setMoving(false); onMouse(e); };
 
@@ -80,7 +80,7 @@ export function SaturationValuePicker(props: IColorPickerProps) {
     )
 }
 
-export function HuePicker(props: IColorPickerProps) {
+export function HuePicker(props: IColorPickerProps<HSVColor>) {
     let controller = createRef<HTMLDivElement>();
     let [moving, setMoving] = createSignal(false);
 
@@ -134,6 +134,7 @@ export function HuePicker(props: IColorPickerProps) {
     )
 }
 
+/*
 export function HueSaturationPicker(props: IColorPickerProps) {
     let controller = createRef<HTMLDivElement>();
 
@@ -175,30 +176,53 @@ export function HueSaturationPicker(props: IColorPickerProps) {
         </div>
     )
 }
+*/
 
-export function ColorPicker(props: IColorPickerProps) {
+export function ColorPicker(props: IColorPickerProps<RGBColor>) {
+    // RGB Values suck, and can reset the hue when they reach black/white/edges of the editor
+    // So below we track HSV separately, and only update it from the RGB value if the update
+    // coming through isn't just controlled feedback from the HSV value.
+
+    let [hsv, setHsv] = createSignal(rgb2hsv(props.value));
+
+    let hsv_changes = 1;
+
+    let update_hsv = (hsv: HSVColor) => {
+        hsv_changes = 0;
+        setHsv(hsv);
+        props.onChange?.(hsv2rgb(hsv));
+    };
+
+    createRenderEffect(() => {
+        let rgb = props.value;
+        if(hsv_changes > 0) {
+            setHsv(rgb2hsv(rgb));
+        } else {
+            hsv_changes++;
+        }
+    });
+
+    let [hsv_props] = splitProps(props, ['onStartEdit', 'onEndEdit']);
+
     return (
         <div class="ln-color-picker">
-            <div style={{ height: '10em' }}><SaturationValuePicker {...props} /></div>
+            <div style={{ height: '10em' }}><SaturationValuePicker {...hsv_props} value={hsv()} onChange={update_hsv} /></div>
 
-            <div style={{ height: '2em' }}><HuePicker {...props} /></div>
+            <div style={{ height: '2em' }}><HuePicker {...hsv_props} value={hsv()} onChange={update_hsv} /></div>
 
             <RGBInput {...props} />
-
-            {/* <div style={{ height: '10em' }}><HueSaturationPicker {...props} /></div> */}
-
         </div>
     );
 }
 
-function RGBInput(props: IColorPickerProps) {
-    let rgb = createMemo(() => linear2u8(hsv2rgb(props.value)));
+function RGBInput(props: IColorPickerProps<RGBColor>) {
+    let rgb = createMemo(() => linear2u8(props.value));
     let hex = () => {
         let { r, g, b } = rgb(), crgb = [r, g, b];
         return '#' + crgb.map(c => c.toString(16).padStart(2, '0')).join('');
     };
 
-    let on_change = (rgb: RGBColor) => props.onChange?.(rgb2hsv(u82linear(rgb)));
+    let on_change = (rgb: RGBColor) => props.onChange?.(u82linear(rgb));
 
     let on_rgb_value = (w: 'r' | 'g' | 'b', value: string) => {
         let c = rgb();
@@ -213,8 +237,8 @@ function RGBInput(props: IColorPickerProps) {
 
     let on_scroll = (e: WheelEvent) => {
         let i = e.currentTarget as HTMLInputElement;
-        let c = rgb();
-        c[i.parentElement!.id] += e.deltaY < 0 ? 1 : -1;
+        let c = rgb(), k = i.parentElement!.id;
+        c[k] = Math.max(0, Math.min(255, c[k] + (e.deltaY < 0 ? 1 : -1)));
         on_change(c);
         e.preventDefault();
     };
