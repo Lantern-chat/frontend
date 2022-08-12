@@ -228,28 +228,44 @@ function RGBInput(props: IColorPickerProps<RGBColor>) {
         let c = rgb();
         c[w] = Math.max(0, Math.min(255, parseInt('0' + value, 10)));
         on_change(c);
-    }
+    };
+
+    let timer: number;
 
     let on_rgb_input = (e: InputEvent) => {
+        clearTimeout(timer);
+        props.onStartEdit?.();
+
         let i = e.currentTarget as HTMLInputElement;
         on_rgb_value(i.parentElement!.id as any, i.value);
+
+        timer = setTimeout(() => props.onEndEdit?.(), 1000);
     };
 
     let on_scroll = (e: WheelEvent) => {
+        e.preventDefault();
+
+        clearTimeout(timer);
+        props.onStartEdit?.();
+
         let i = e.currentTarget as HTMLInputElement;
         let c = rgb(), k = i.parentElement!.id;
         c[k] = Math.max(0, Math.min(255, c[k] + (e.deltaY < 0 ? 1 : -1)));
         on_change(c);
-        e.preventDefault();
+
+        timer = setTimeout(() => props.onEndEdit?.(), 500);
     };
 
     let on_hex_input = (e: InputEvent) => {
+        clearTimeout(timer);
+        props.onStartEdit?.();
+
         on_change(parseRgb((e.currentTarget as HTMLInputElement).value));
+
+        timer = setTimeout(() => props.onEndEdit?.(), 1000);
     };
 
-    let select_all = (e: MouseEvent) => {
-        (e.currentTarget as HTMLInputElement).select();
-    };
+    let select_all = (e: MouseEvent) => (e.currentTarget as HTMLInputElement).select();
 
     return (
         <div class="rgb_input">
