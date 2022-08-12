@@ -2,9 +2,7 @@ const { min, max, round } = Math;
 
 import { saturate as clamp01 } from "./math";
 
-const clamp0360 = (x: number) => max(0, x % 360);
-
-const DEGREES = 360;
+const TWO_PI_DEGREES = 360, wrap0360 = (h: number) => h < 0 ? h + TWO_PI_DEGREES : (h > TWO_PI_DEGREES ? h - TWO_PI_DEGREES : h);
 
 export interface IChangeColorOptions {
     h?: number,
@@ -144,9 +142,7 @@ export function hsv2rgb({ h, s, v }: HSVColor): RGBColor {
 }
 
 function rgb2hslv({ r, g, b }: RGBColor, is_hsv: boolean): HSVColor | HSLColor {
-    let maximum = max(r, g, b);
-
-    let p: number[];
+    let maximum = max(r, g, b), p: number[];
     switch(maximum) {
         case r: { p = [0, g - b]; break; }
         case g: { p = [2, b - r]; break; }
@@ -156,7 +152,7 @@ function rgb2hslv({ r, g, b }: RGBColor, is_hsv: boolean): HSVColor | HSLColor {
 
     let minimum = min(r, g, b),
         c = maximum - minimum,
-        h = c === 0 ? 0 : 60 * (p[0] + p[1] / c),
+        h = c === 0 ? 0 : wrap0360(60 * (p[0] + p[1] / c)),
         lv = maximum,
         constructor,
         s: number;
@@ -202,7 +198,7 @@ export function adjust_color(rgb: RGBColor, { h: hue, s: saturation, l: lightnes
         k = (v: number, s: number | undefined) => s !== undefined ? clamp01(s + v) : v;
 
     return hsl2rgb({
-        h: hue != undefined ? clamp0360(h + hue) : h,
+        h: hue != undefined ? wrap0360(h + hue) : h,
         s: k(s, saturation),
         l: k(l, lightness),
     });
@@ -214,7 +210,7 @@ export function scale_color(rgb: RGBColor, { h: hue, s: saturation, l: lightness
         k = (v: number, s: number | undefined) => s !== undefined ? clamp01(j(v, s)) : v;
 
     return hsl2rgb({
-        h: hue != undefined ? clamp0360(j(hue, h)) : h,
+        h: hue != undefined ? wrap0360(j(hue, h)) : h,
         s: k(s, saturation),
         l: k(l, lightness),
     });
@@ -236,11 +232,11 @@ export function normalize({ r, g, b }: RGBColor): RGBColor {
 
 
 export function linear2u8({ r, g, b }: RGBColor): RGBColor {
-    let l2u = (u: number) => min(255, max(0, 255 * u)) | 0;
+    let l2u = (u: number) => min(255, max(0, round(255 * u))) | 0;
     return { r: l2u(r), g: l2u(g), b: l2u(b) };
 }
 export function u82linear({ r, g, b }: RGBColor): RGBColor {
-    let k = (x: number) => x /= 255.0;
+    let k = (x: number) => x / 255.0;
     return { r: k(r), g: k(g), b: k(b) }
 }
 
