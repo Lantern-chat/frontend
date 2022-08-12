@@ -1,15 +1,16 @@
-import { createSignal, onMount, createMemo, Show, createEffect, Accessor, onCleanup, Setter, JSX } from "solid-js";
+import { createSignal, onMount, createMemo, Show, createEffect, Accessor, onCleanup, Setter, JSX, createRenderEffect } from "solid-js";
 
 import { resize_image } from "lib/image";
-import { unpack_rgb, u82linear, RGBColor } from "lib/color";
+import { unpack_rgb, u82linear, RGBColor, pack_rgb, linear2u8 } from "lib/color";
 import { createPercentFormatter } from "ui/hooks/createFormatter";
 import { br } from "ui/utils";
 
 import { CLIENT } from "state/global";
 
 import { UpdateUserProfile } from "client-sdk/src/api/commands/user";
-import { useRootDispatch, useRootStore } from "state/root";
+import { useRootStore } from "state/root";
 import { fetch_profile } from "state/commands/profile";
+import { sendBlob } from "state/commands/sendfile";
 import { selectCachedUser } from "state/selectors/selectCachedUser";
 
 import { createRef } from "ui/hooks/createRef";
@@ -49,7 +50,7 @@ function ProfileSettingsTabInner() {
     onMount(() => store.dispatch(fetch_profile(store.state.user.user!.id)));
     let cached_user = createMemo(() => selectCachedUser(store.state, store.state.user.user!.id));
 
-    let bits = () => cached_user()?.profile?.bits || 0;
+    let bits = createMemo(() => cached_user()?.profile?.bits || 0);
 
     let [avatarFile, setAvatarFile] = createSignal<File | undefined | null>();
     let [bannerFile, setBannerFile] = createSignal<File | undefined | null>();
@@ -64,11 +65,6 @@ function ProfileSettingsTabInner() {
 
     let initial_color = () => u82linear(unpack_rgb(bits() >> 8));
     let [color, setColor] = createSignal(initial_color());
-    let [newColor, setNewColor] = createSignal<RGBColor>();
-
-    let update_color = (color: RGBColor) => {
-        setColor(color); setNewColor(color);
-    };
 
     let can_show_remove_avatar = () => localAvatarUrl() !== null && (localAvatarUrl() || cached_user().profile?.avatar);
     let can_show_remove_banner = () => localBannerUrl() !== null && (localBannerUrl() || cached_user().profile?.banner);
@@ -85,11 +81,65 @@ function ProfileSettingsTabInner() {
     let reset = () => {
         setAvatarFile();
         setBannerFile();
-        setNewColor();
         setColor(initial_color());
         setRoundness(bits() & 0x7F);
         setStatus(cached_user().profile?.status || '');
         setBio(cached_user().profile?.bio || '');
+    };
+
+    createRenderEffect(() => {
+        cached_user();
+        reset();
+    });
+
+    let save = async () => {
+        let limits = window.config.limits;
+
+        let [resized_avatar, resized_banner] = await Promise.all([
+            localAvatarUrl() != null ? resize_image(localAvatarUrl()!, limits.avatar_width, limits.avatar_width) : (localAvatarUrl() as null | undefined),
+            localBannerUrl() != null ? resize_image(localBannerUrl()!, limits.banner_width, limits.banner_height) : (localBannerUrl() as null | undefined),
+        ]);
+
+        let [avatar, banner] = await Promise.all([
+            resized_avatar ? sendBlob(avatarFile()!.name, resized_avatar) : resized_avatar,
+            resized_banner ? sendBlob(bannerFile()!.name, resized_banner) : resized_banner,
+        ]);
+
+        let new_bits = bits() | 0x80;
+
+        // combine new roundness value
+        new_bits = (new_bits & ~0x7F) | (roundness() & 0x7F);
+
+        // combine new color
+        new_bits = (new_bits & 0xFF) | (pack_rgb(linear2u8(color())) << 8);
+
+        // only set if the bio/status changed, and a zero-length value indicates removal, so null.
+
+        let new_bio, new_status, profile = cached_user().profile;
+
+        if(bio() != profile?.bio) { new_bio = bio(); }
+        if(status() != profile?.status) { new_status = status(); }
+
+        if(typeof new_bio === 'string' && new_bio.length == 0) {
+            new_bio = null;
+        }
+        if(typeof new_status === 'string' && new_status.length == 0) {
+            new_status = null;
+        }
+
+        if(new_bits == bits() && avatar === undefined && banner === undefined && new_bio === undefined && new_status === undefined) {
+            return;
+        }
+
+        await CLIENT.execute(UpdateUserProfile({
+            profile: {
+                bits: new_bits,
+                avatar,
+                banner,
+                bio: new_bio,
+                status: new_status,
+            }
+        }));
     };
 
     return (
@@ -100,7 +150,7 @@ function ProfileSettingsTabInner() {
             <form>
                 <div class="ln-settings-profile__inner">
                     <ColorPicker
-                        value={color()} onChange={update_color}
+                        value={color()} onChange={setColor}
                         onStartEdit={() => setEditingColor(true)}
                         onEndEdit={() => setEditingColor(false)}
                     />
@@ -175,6 +225,7 @@ function ProfileSettingsTabInner() {
 
             <div class="profile-submit">
                 <div class="ln-btn" onClick={reset}>Reset</div>
+                <div class="ln-btn" onClick={save}>Save</div>
             </div>
         </div>
     );
@@ -257,4 +308,3 @@ function SquircleButton(props: ISquircleButtonProps) {
         </svg>
     );
 }
-

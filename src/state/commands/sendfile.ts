@@ -31,6 +31,13 @@ export function sendFile(opts: IFileUploadOptions): Promise<Snowflake | undefine
     }, file);
 }
 
+export function sendBlob(filename: string, blob: Blob): Promise<Snowflake | undefined> {
+    return CLIENT.upload_stream({
+        filename,
+        mime: blob.type,
+    }, blob);
+}
+
 export function fetch_quota(): DispatchableAction {
     return async (dispatch) => {
         let fs_status = await CLIENT.execute(GetFilesystemStatus({}));
