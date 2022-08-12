@@ -134,6 +134,7 @@
     }
 
     .rgb_input {
+        font-size: 1rem;
         display: flex;
         justify-content: center;
         margin-block-start: 0.75em;
@@ -141,7 +142,7 @@
         input,
         span {
             font-size: 0.85rem;
-            font-family: monospace;
+            font-family: $ln-font-family-monospace;
 
             color: $lnx-primary-text-color;
             outline: none;
@@ -149,16 +150,21 @@
         }
 
         span {
-            background-color: rgba(128, 128, 128, 0.5);
+            flex-shrink: 0;
+            background-color: $lnx-primary-surface-color;
+            border: 1px solid $lnx-secondary-surface-color;
             border-radius: 0.25em;
+            display: inline-block;
+
+            padding-inline: 0.35em;
+            padding-block: 0.125em;
 
             &:not(:last-child) {
-                margin-inline-start: 0.25em;
-                padding-inline-start: 0.35em;
+                margin-inline-end: 0.25em;
             }
 
             &:last-child {
-                margin-inline-start: 0.5em;
+                margin-inline-start: 0.25em;
             }
         }
 
@@ -166,6 +172,9 @@
             background-color: transparent;
             text-align: center;
             user-select: all;
+            display: inline;
+            margin: 0;
+            padding: 0;
         }
 
         #r,

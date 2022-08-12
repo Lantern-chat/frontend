@@ -218,8 +218,8 @@ export function ColorPicker(props: IColorPickerProps<RGBColor>) {
 function RGBInput(props: IColorPickerProps<RGBColor>) {
     let rgb = createMemo(() => linear2u8(props.value));
     let hex = () => {
-        let { r, g, b } = rgb(), crgb = [r, g, b];
-        return '#' + crgb.map(c => c.toString(16).padStart(2, '0')).join('');
+        let { r, g, b } = rgb();
+        return '#' + [r, g, b].map(c => c.toString(16).padStart(2, '0')).join('').toUpperCase();
     };
 
     let on_change = (rgb: RGBColor) => props.onChange?.(u82linear(rgb));
