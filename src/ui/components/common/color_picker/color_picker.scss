@@ -132,4 +132,52 @@
             }
         }
     }
+
+    .rgb_input {
+        display: flex;
+        justify-content: center;
+        margin-block-start: 0.75em;
+
+        input,
+        span {
+            font-size: 0.85rem;
+            font-family: monospace;
+
+            color: $lnx-primary-text-color;
+            outline: none;
+            border: none;
+        }
+
+        span {
+            background-color: rgba(128, 128, 128, 0.5);
+            border-radius: 0.25em;
+
+            &:not(:last-child) {
+                margin-inline-start: 0.25em;
+                padding-inline-start: 0.35em;
+            }
+
+            &:last-child {
+                margin-inline-start: 0.5em;
+            }
+        }
+
+        input {
+            background-color: transparent;
+            text-align: center;
+            user-select: all;
+        }
+
+        #r,
+        #g,
+        #b {
+            input {
+                width: 2.25em;
+            }
+        }
+
+        #h {
+            width: 4.5em;
+        }
+    }
 }

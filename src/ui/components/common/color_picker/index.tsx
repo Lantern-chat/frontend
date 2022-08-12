@@ -1,4 +1,4 @@
-import { HSLColor, hsv, hsv2hsl, HSVColor, rgb2hsl, RGBColor } from "lib/color";
+import { HSLColor, hsv, hsv2hsl, hsv2rgb, HSVColor, linear2u8, parseRgb, rgb2hsl, rgb2hsv, RGBColor, u82linear } from "lib/color";
 import { createEffect, createMemo, createSignal } from "solid-js";
 import { createRef } from "ui/hooks/createRef";
 
@@ -183,8 +183,56 @@ export function ColorPicker(props: IColorPickerProps) {
 
             <div style={{ height: '2em' }}><HuePicker {...props} /></div>
 
+            <RGBInput {...props} />
+
             {/* <div style={{ height: '10em' }}><HueSaturationPicker {...props} /></div> */}
 
         </div>
     );
+}
+
+function RGBInput(props: IColorPickerProps) {
+    let rgb = createMemo(() => linear2u8(hsv2rgb(props.value)));
+    let hex = () => {
+        let { r, g, b } = rgb(), crgb = [r, g, b];
+        return '#' + crgb.map(c => c.toString(16).padStart(2, '0')).join('');
+    };
+
+    let on_change = (rgb: RGBColor) => props.onChange?.(rgb2hsv(u82linear(rgb)));
+
+    let on_rgb_value = (w: 'r' | 'g' | 'b', value: string) => {
+        let c = rgb();
+        c[w] = Math.max(0, Math.min(255, parseInt('0' + value, 10)));
+        on_change(c);
+    }
+
+    let on_rgb_input = (e: InputEvent) => {
+        let i = e.currentTarget as HTMLInputElement;
+        on_rgb_value(i.parentElement!.id as any, i.value);
+    };
+
+    let on_scroll = (e: WheelEvent) => {
+        let i = e.currentTarget as HTMLInputElement;
+        let c = rgb();
+        c[i.parentElement!.id] += e.deltaY < 0 ? 1 : -1;
+        on_change(c);
+        e.preventDefault();
+    };
+
+    let on_hex_input = (e: InputEvent) => {
+        on_change(parseRgb((e.currentTarget as HTMLInputElement).value));
+    };
+
+    let select_all = (e: MouseEvent) => {
+        (e.currentTarget as HTMLInputElement).select();
+    };
+
+    return (
+        <div class="rgb_input">
+            <span id="r">R<input pattern="^\\d{0,3}$" type="text" value={rgb().r.toFixed(0).padStart(3, '0')} placeholder="128" onInput={on_rgb_input} onWheel={on_scroll} onClick={select_all} /></span>
+            <span id="g">G<input pattern="^\\d{0,3}$" type="text" value={rgb().g.toFixed(0).padStart(3, '0')} placeholder="128" onInput={on_rgb_input} onWheel={on_scroll} onClick={select_all} /></span>
+            <span id="b">B<input pattern="^\\d{0,3}$" type="text" value={rgb().b.toFixed(0).padStart(3, '0')} placeholder="128" onInput={on_rgb_input} onWheel={on_scroll} onClick={select_all} /></span>
+            <span><input pattern="^#?\\d{6}$" id="h" type="text" placeholder="#000000" value={hex()} onInput={on_hex_input} onClick={select_all} /></span>
+        </div>
+    )
 }
