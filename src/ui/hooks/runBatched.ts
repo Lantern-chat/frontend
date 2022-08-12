@@ -1,8 +1,8 @@
 import { batch } from "solid-js";
 
-var max_t = Number.MAX_SAFE_INTEGER;
-var pending: Set<() => void> = new Set();
-var last_t = max_t;
+var max_t = Number.MAX_SAFE_INTEGER,
+    pending: Set<() => void> = new Set(),
+    last_t = max_t;
 
 function run_pending() {
     if(pending.size) {
