@@ -186,6 +186,29 @@ $btn-scale: 1.1;
             border-color: change-color($ln-info-btn-activ, $lightness: 100% - lightness($ln-info-btn-color));
         }
     }
+
+    &.disabled {
+        color: $lnx-secondary-text-color;
+        text-decoration: none;
+        cursor: not-allowed;
+
+        &,
+        &:hover,
+        &:focus,
+        &:active,
+        &:focus-visible {
+            background-color: change-color($ln-info-btn-hover, $saturation: 10%);
+            border-color: transparent;
+
+            .ln-light-theme & {
+                background-color: change-color(
+                    $ln-info-btn-color,
+                    $lightness: 100% - lightness($ln-info-btn-color),
+                    $saturation: 10%
+                );
+            }
+        }
+    }
 }
 
 .ln-select-group {

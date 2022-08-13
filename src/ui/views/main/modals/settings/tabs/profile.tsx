@@ -1,4 +1,4 @@
-import { createSignal, onMount, createMemo, Show, createEffect, Accessor, onCleanup, Setter, JSX, createRenderEffect } from "solid-js";
+import { createSignal, onMount, createMemo, Show, createEffect, Accessor, onCleanup, Setter, JSX, on } from "solid-js";
 
 import { resize_image } from "lib/image";
 import { unpack_rgb, u82linear, RGBColor, pack_rgb, linear2u8 } from "lib/color";
@@ -16,6 +16,7 @@ import { selectCachedUser } from "state/selectors/selectCachedUser";
 import { createRef } from "ui/hooks/createRef";
 import { ColorPicker } from "ui/components/common/color_picker";
 import { SimpleUserCard } from "ui/views/main/components/menus/user_card";
+import { Spinner } from "ui/components/common/spinners/spinner";
 import { TextareaAutosize } from "ui/components/input/textarea";
 
 export function ProfileSettingsTab() {
@@ -45,6 +46,10 @@ function createUrl(file: Accessor<File | null | undefined>): [Accessor<string | 
     return [getUrl, setUrl];
 }
 
+function compare_color(x: RGBColor, y: RGBColor): boolean {
+    return x.r == y.r && x.g == y.g && x.b == y.b;
+}
+
 function ProfileSettingsTabInner() {
     let store = useRootStore();
     onMount(() => store.dispatch(fetch_profile(store.state.user.user!.id)));
@@ -63,7 +68,7 @@ function ProfileSettingsTabInner() {
     let avatar_input = createRef();
     let banner_input = createRef();
 
-    let initial_color = () => u82linear(unpack_rgb(bits() >> 8));
+    let initial_color = createMemo(() => u82linear(unpack_rgb(bits() >> 8)));
     let [color, setColor] = createSignal(initial_color());
 
     let can_show_remove_avatar = () => localAvatarUrl() !== null && (localAvatarUrl() || cached_user().profile?.avatar);
@@ -71,75 +76,119 @@ function ProfileSettingsTabInner() {
 
     let [editingColor, setEditingColor] = createSignal(false);
 
-    let [roundness, setRoundness] = createSignal(bits() & 0x7F);
+    let initial_roundness = () => bits() & 0x7F;
+    let [roundness, setRoundness] = createSignal(initial_roundness());
 
     let percent = createPercentFormatter(0);
 
-    let [status, setStatus] = createSignal(cached_user().profile?.status || '');
-    let [bio, setBio] = createSignal(cached_user().profile?.bio || '');
+    let initial_status = () => cached_user().profile?.status || '';
+    let initial_bio = () => cached_user().profile?.bio || '';
+
+    let [status, setStatus] = createSignal(initial_status());
+    let [bio, setBio] = createSignal(initial_bio());
+
+    let [hasChanges, setHasChanges] = createSignal(false);
 
     let reset = () => {
-        setAvatarFile();
-        setBannerFile();
+        console.log("RESETTING");
+
+        setAvatarFile(undefined);
+        setBannerFile(undefined);
         setColor(initial_color());
-        setRoundness(bits() & 0x7F);
-        setStatus(cached_user().profile?.status || '');
-        setBio(cached_user().profile?.bio || '');
+        setRoundness(initial_roundness());
+        setStatus(initial_status());
+        setBio(initial_bio());
     };
 
-    createRenderEffect(() => {
-        cached_user();
-        reset();
+    let reset_if_changed = () => { if(hasChanges() && !saving()) reset() };
+
+    createEffect(() => {
+        let af = avatarFile(),
+            bf = bannerFile(),
+            r = roundness(),
+            c = color(),
+            s = status(),
+            b = bio();
+
+        setHasChanges(af !== undefined || bf !== undefined
+            || r != initial_roundness()
+            || !compare_color(c, initial_color())
+            || s != initial_status()
+            || b != initial_bio());
     });
 
+    // whenever the actual user object changes, reset all the values
+    createEffect(on(() => {
+        let p = cached_user().profile;
+        if(p) { p.avatar; p.banner; p.bits; p.bio; p.status; }
+    }, reset));
+
+    let [saving, setSaving] = createSignal(false);
+
     let save = async () => {
-        let limits = window.config.limits;
+        if(!hasChanges() || saving()) return;
 
-        let [resized_avatar, resized_banner] = await Promise.all([
-            localAvatarUrl() != null ? resize_image(localAvatarUrl()!, limits.avatar_width, limits.avatar_width) : (localAvatarUrl() as null | undefined),
-            localBannerUrl() != null ? resize_image(localBannerUrl()!, limits.banner_width, limits.banner_height) : (localBannerUrl() as null | undefined),
-        ]);
+        setSaving(true);
 
-        let [avatar, banner] = await Promise.all([
-            resized_avatar ? sendBlob(avatarFile()!.name, resized_avatar) : resized_avatar,
-            resized_banner ? sendBlob(bannerFile()!.name, resized_banner) : resized_banner,
-        ]);
+        try {
+            let limits = window.config.limits;
 
-        let new_bits = bits() | 0x80;
+            let [resized_avatar, resized_banner] = await Promise.all([
+                localAvatarUrl() != null ? resize_image(localAvatarUrl()!, limits.avatar_width, limits.avatar_width) : (localAvatarUrl() as null | undefined),
+                localBannerUrl() != null ? resize_image(localBannerUrl()!, limits.banner_width, limits.banner_height) : (localBannerUrl() as null | undefined),
+            ]);
 
-        // combine new roundness value
-        new_bits = (new_bits & ~0x7F) | (roundness() & 0x7F);
+            let [avatar, banner] = await Promise.all([
+                resized_avatar ? sendBlob(avatarFile()!.name, resized_avatar) : resized_avatar,
+                resized_banner ? sendBlob(bannerFile()!.name, resized_banner) : resized_banner,
+            ]);
 
-        // combine new color
-        new_bits = (new_bits & 0xFF) | (pack_rgb(linear2u8(color())) << 8);
+            let new_bits = bits() | 0x80;
 
-        // only set if the bio/status changed, and a zero-length value indicates removal, so null.
+            // combine new roundness value
+            new_bits = (new_bits & ~0x7F) | (roundness() & 0x7F);
 
-        let new_bio, new_status, profile = cached_user().profile;
+            // combine new color
+            new_bits = (new_bits & 0xFF) | (pack_rgb(linear2u8(color())) << 8);
 
-        if(bio() != profile?.bio) { new_bio = bio(); }
-        if(status() != profile?.status) { new_status = status(); }
+            // only set if the bio/status changed, and a zero-length value indicates removal, so null.
 
-        if(typeof new_bio === 'string' && new_bio.length == 0) {
-            new_bio = null;
-        }
-        if(typeof new_status === 'string' && new_status.length == 0) {
-            new_status = null;
-        }
+            let new_bio, new_status, profile = cached_user().profile;
 
-        if(new_bits == bits() && avatar === undefined && banner === undefined && new_bio === undefined && new_status === undefined) {
-            return;
-        }
+            if(bio() != profile?.bio) { new_bio = bio(); }
+            if(status() != profile?.status) { new_status = status(); }
 
-        await CLIENT.execute(UpdateUserProfile({
-            profile: {
-                bits: new_bits,
-                avatar,
-                banner,
-                bio: new_bio,
-                status: new_status,
+            if(typeof new_bio === 'string' && new_bio.length == 0) {
+                new_bio = null;
             }
-        }));
+            if(typeof new_status === 'string' && new_status.length == 0) {
+                new_status = null;
+            }
+
+            if(new_bits == bits() && avatar === undefined && banner === undefined && new_bio === undefined && new_status === undefined) {
+                reset(); // no actual changes?
+                return;
+            }
+
+            await CLIENT.execute(UpdateUserProfile({
+                profile: {
+                    bits: new_bits,
+                    avatar,
+                    banner,
+                    bio: new_bio,
+                    status: new_status,
+                }
+            }));
+
+            setAvatarFile();
+            setBannerFile();
+
+            store.dispatch(fetch_profile(store.state.user.user!.id));
+
+            // TODO: Catch errors
+        } finally {
+            setSaving(false);
+        }
     };
 
     return (
@@ -184,8 +233,12 @@ function ProfileSettingsTabInner() {
                     <TextInput class="ui-text bio-input" maxRows={8} minRows={4} value={bio()} onChange={setBio} />
 
                     <div class="profile-submit">
-                        <div class="ln-btn" onClick={reset}>Reset</div>
-                        <div class="ln-btn" onClick={save}>Save</div>
+                        <div class="ln-btn" onClick={save} classList={{ 'disabled': !hasChanges() }}>
+                            <Show fallback="Save" when={saving()}>
+                                <Spinner size="2em" />
+                            </Show>
+                        </div>
+                        <div class="ln-btn" onClick={reset_if_changed} classList={{ 'disabled': !hasChanges() || saving() }}>Reset</div>
                     </div>
                 </div>
 
