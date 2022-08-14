@@ -13,7 +13,7 @@ import { merge } from "state/util";
 
 export interface IParty {
     party: Party,
-    rooms: Room[],
+    rooms: Record<Snowflake, Room>,
     members: Record<Snowflake, PartyMember>,
 
     /// Cached colors for users (packed)
@@ -55,13 +55,7 @@ export const partyMutator = mutatorWithDefault(
                     party = state.parties[party_id];
 
                 if(party) {
-                    rooms.sort((a, b) => a.position - b.position);
-                    for(let room of rooms) {
-                        if(__DEV__ && room.party_id !== party_id) {
-                            alert("Mismatch in fetched rooms!");
-                        }
-                        party.rooms.push(room);
-                    }
+                    Object.assign(party.rooms, rooms);
                     party.needs_refresh = false;
                 }
 
@@ -72,7 +66,7 @@ export const partyMutator = mutatorWithDefault(
                     party = state.parties[party_id];
                 if(party) {
                     // if the new room exists, set last_channel
-                    let room = party.rooms.find(room => room.id == channel_id);
+                    let room = party.rooms[channel_id];
                     if(room) { state.last_channel[party_id] = channel_id; }
                 }
                 break;
@@ -136,7 +130,7 @@ export const partyMutator = mutatorWithDefault(
                         for(let party of p.parties) {
                             parties[party.id] = {
                                 party,
-                                rooms: [],
+                                rooms: {},
                                 members: {},
                                 needs_refresh: true,
                                 member_colors: {},
@@ -176,7 +170,7 @@ export const partyMutator = mutatorWithDefault(
                                     // create party
                                     state.parties[party.id] = {
                                         party: party as Party,
-                                        rooms: [],
+                                        rooms: {},
                                         members: {},
                                         needs_refresh: true,
                                         member_colors: {},

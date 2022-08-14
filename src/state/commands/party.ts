@@ -8,16 +8,15 @@ import { GetPartyMembers, GetPartyRooms } from "client-sdk/src/api/commands/part
 import { loadMessages } from "./message/load";
 
 function get_default_room(rooms: Room[]): Snowflake | undefined {
-    let default_room, any_room;
+    let any_room;
     for(let room of rooms) {
         any_room = room.id;
         if((room.flags & (1 << 5)) != 0) {
-            default_room = room.id;
-            break;
+            return room.id;
         }
     }
 
-    return default_room || any_room;
+    return any_room;
 }
 
 export function activateParty(party_id: Snowflake, room_id?: Snowflake): DispatchableAction {
@@ -25,7 +24,7 @@ export function activateParty(party_id: Snowflake, room_id?: Snowflake): Dispatc
         let party = state.party.parties[party_id];
 
         if(party && !party.needs_refresh) {
-            HISTORY.pm(room_url(party_id, room_id || get_default_room(party.rooms)));
+            HISTORY.pm(room_url(party_id, room_id || get_default_room(Object.values(party.rooms))));
             return;
         }
 

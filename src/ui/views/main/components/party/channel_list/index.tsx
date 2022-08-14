@@ -1,4 +1,4 @@
-import { createSelector, For, Show } from "solid-js";
+import { createMemo, createSelector, For, Show } from "solid-js";
 
 import { copyText } from "lib/clipboard";
 
@@ -31,7 +31,7 @@ export function ChannelList() {
 
         let res = { party_id } as {
             party_id: Snowflake | undefined,
-            rooms?: Array<Room>,
+            rooms?: Record<Snowflake, Room>,
         };
 
         if(party_id) {
@@ -54,10 +54,15 @@ export function ChannelList() {
 
     let is_room_selected = createSelector(selected);
 
+    let rooms = createMemo(() => {
+        let r = state().rooms;
+        return r && Object.values(r).sort((a, b) => a.position - b.position)
+    });
+
     return (
         <ul class="ln-channel-list ln-scroll-y ln-scroll-fixed" {...main_click_props} >
-            <Show when={state().rooms?.length} fallback={<div style={{ height: "100%", paddingTop: '1em' }}><Bounce size="auto" /></div>}>
-                <For each={state().rooms}>
+            <Show when={rooms()?.length} fallback={<div style={{ height: "100%", paddingTop: '1em' }}><Bounce size="auto" /></div>}>
+                <For each={rooms()}>
                     {room => <ListedChannel room={room} selected={is_room_selected(room.id)} onNavigate={on_navigate} />}
                 </For>
             </Show>
