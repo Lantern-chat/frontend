@@ -212,6 +212,21 @@ export const partyMutator = mutatorWithDefault(
                                 }
                                 break;
                             }
+                            case ServerMsgOpcode.RoomDelete:
+                            case ServerMsgOpcode.RoomCreate:
+                            case ServerMsgOpcode.RoomUpdate: {
+                                let room = p.p, party, party_id = room.party_id;
+
+                                if(party_id && (party = state.parties[party_id])) {
+                                    if(p.o == ServerMsgOpcode.RoomDelete) {
+                                        delete party.rooms[room.id];
+                                    } else {
+                                        merge(party.rooms, room.id, room as Room);
+                                    }
+                                }
+
+                                break;
+                            }
                             case ServerMsgOpcode.RoleDelete:
                             case ServerMsgOpcode.RoleUpdate:
                             case ServerMsgOpcode.RoleCreate: {
