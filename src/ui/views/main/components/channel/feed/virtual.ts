@@ -91,14 +91,14 @@ export function createVirtualizedFeed(): [
     let start_idx = createMessageIndex(room, start),
         end_idx = createMessageIndex(room, end);
 
-    let feed = createMemo(() => {
+    let feed = () => {
         let r = room(), s = start_idx(), e = end_idx();
 
         if(r && s != null && e != null) {
             return r.msgs.slice(s, e + 1);
         }
         return [];
-    });
+    };
 
     createRenderEffect(() => {
         let r = room(), l: number | undefined;

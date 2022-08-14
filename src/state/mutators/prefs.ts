@@ -21,11 +21,7 @@ export const prefsMutator = mutatorWithDefault(
     }),
     (state: IPrefsState, action: Action) => {
         if(action.type == Type.UPDATE_PREFS) {
-            // copy new preferences to state
-            let prefs = action.prefs;
-            for(let key in prefs) {
-                state[key] = prefs[key];
-            }
+            Object.assign(state, action.prefs);
         }
     }
 );

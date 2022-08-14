@@ -88,7 +88,7 @@ export const partyMutator = mutatorWithDefault(
                     for(let role_id of member_roles) {
                         let role_members = party.role_members[role_id];
                         if(!role_members) {
-                            party.role_members[role_id] = role_members = [];
+                            role_members = party.role_members[role_id] = [];
                         }
 
                         // ensure ordered insertion
@@ -158,13 +158,9 @@ export const partyMutator = mutatorWithDefault(
 
                                 // PartyPositionUpdate only
                                 if(!party.name) {
-                                    if(existing) {
-                                        existing.party.position = party.position;
-                                    }
-                                    return;
-                                }
-
-                                if(existing) {
+                                    if(existing) { existing.party.position = party.position; }
+                                } else if(existing) {
+                                    // update existing party
                                     Object.assign(existing.party, party);
                                 } else {
                                     // create party

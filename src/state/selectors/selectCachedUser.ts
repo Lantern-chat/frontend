@@ -51,7 +51,5 @@ export function selectCachedUser(state: RootState, user_id: Snowflake, party_id?
         }
     }
 
-    console.log(cached, user_id, party_id);
-
     return cached;
 }
