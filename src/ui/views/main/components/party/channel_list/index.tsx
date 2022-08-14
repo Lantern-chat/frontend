@@ -2,8 +2,9 @@ import { createMemo, createSelector, For, Show } from "solid-js";
 
 import { copyText } from "lib/clipboard";
 
+import { createShallowMemo } from "ui/hooks/createShallowMemo";
 import { useI18nContext } from "ui/i18n/i18n-solid";
-import { Type, useRootDispatch, useRootSelector } from "state/root";
+import { Type, useRootStore } from "state/root";
 import { activeParty, activeRoom } from "state/selectors/active";
 import { Room, Snowflake } from "state/models";
 import { usePrefs } from "state/contexts/prefs";
@@ -22,11 +23,9 @@ import { RoomIcon } from "./room_icon";
 
 import "./channel_list.scss";
 export function ChannelList() {
-    let dispatch = useRootDispatch();
+    let { dispatch, state } = useRootStore();
 
-    let selected = useRootSelector(activeRoom);
-
-    let state = useRootSelector(state => {
+    let party = createMemo(() => {
         let party_id = activeParty(state);
 
         let res = { party_id } as {
@@ -41,23 +40,18 @@ export function ChannelList() {
         return res;
     });
 
-    let show_panel = useRootSelector(state => state.window.show_panel);
-
     let on_navigate = () => {
         // if on the room list, go to main to display channel.
-        if(show_panel() == Panel.LeftRoomList) {
+        if(state.window.show_panel == Panel.LeftRoomList) {
             dispatch({ type: Type.WINDOW_SET_PANEL, panel: Panel.Main });
         }
     };
 
     let [pos, main_click_props] = createSimplePositionedContextMenu();
 
-    let is_room_selected = createSelector(selected);
+    let rooms = createShallowMemo(() => Object.values(party().rooms || {}).sort((a, b) => a.position - b.position), 'array');
 
-    let rooms = createMemo(() => {
-        let r = state().rooms;
-        return r && Object.values(r).sort((a, b) => a.position - b.position)
-    });
+    let is_room_selected = createSelector(() => activeRoom(state));
 
     return (
         <ul class="ln-channel-list ln-scroll-y ln-scroll-fixed" {...main_click_props} >
@@ -67,10 +61,10 @@ export function ChannelList() {
                 </For>
             </Show>
 
-            <Show when={!!state().party_id && pos()}>
+            <Show when={!!party().party_id && pos()}>
                 {pos => (
                     <PositionedModal rect={pos}>
-                        <RoomListContextMenu party_id={state().party_id!} />
+                        <RoomListContextMenu party_id={party().party_id!} />
                     </PositionedModal>
                 )}
             </Show>
