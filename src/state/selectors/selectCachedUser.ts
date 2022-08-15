@@ -10,6 +10,7 @@ export function selectCachedUser(state: RootState, user_id: Snowflake, party_id?
     let cached = state.cache.users[cache_key(user_id, party_id)];
 
     if(!cached) {
+        // try to find a valid party with a member entry to take from
         if(party_id && party_id != '@me') {
             let member = state.party.parties[party_id]?.members[user_id];
 
@@ -25,12 +26,19 @@ export function selectCachedUser(state: RootState, user_id: Snowflake, party_id?
             }
         }
 
-        // if there was no party id or no member entry for said party, try any regular user info
-        if(!(cached = cached || state.cache.users[user_id])) {
-
+        // otherwise, try fallbacks or just base user information, if any
+        if(!cached) {
             // TODO: Search through DMs and friendlist
-            if(user_id == state.user.user?.id) {
-                fallback = state.user.user;
+            if(!fallback) {
+                let self = state.user.user;
+                if(user_id == self?.id) {
+                    fallback = self;
+                } else {
+                    // NOTE: There is no point in trying to re-cache an already cached plain user,
+                    // so just return this.
+                    let user = state.cache.users[user_id];
+                    if(user) { return user; }
+                }
             }
 
             if(fallback) {
