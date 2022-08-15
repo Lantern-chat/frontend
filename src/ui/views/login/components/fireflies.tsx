@@ -30,10 +30,10 @@ function gen_gradient({ r, g, b }: color.RGBColor, stops: number): GradientStop[
 }
 
 const DARK_PALETTE_HUES: number[] = [50, 60, 70];
-const DARK_PALETTE: GradientStop[][] = DARK_PALETTE_HUES.map(hue => gen_gradient(color.linear2srgb(color.hsv2rgb({ h: hue, s: 1, v: 1 })), 8));
+const DARK_PALETTE: GradientStop[][] = DARK_PALETTE_HUES.map(hue => gen_gradient(color.linear2srgbu8(color.hsv2rgb({ h: hue, s: 1, v: 1 })), 8));
 
 const LIGHT_PALETTE_HUES: number[] = [0, 40, 80, 120, 160, 200, 240, 280, 320];
-const LIGHT_PALETTE: GradientStop[][] = LIGHT_PALETTE_HUES.map(hue => gen_gradient(color.linear2srgb(color.hsl2rgb({ h: hue, s: 0.7, l: 0.5 })), 8));
+const LIGHT_PALETTE: GradientStop[][] = LIGHT_PALETTE_HUES.map(hue => gen_gradient(color.linear2srgbu8(color.hsl2rgb({ h: hue, s: 0.7, l: 0.5 })), 8));
 
 // TODO: Ease between palettes using EASE_IN and [0.5 * (D % 3 + L % 9)] merging
 //function genPalette(t: number): GradientStop[][] {

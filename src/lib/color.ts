@@ -40,6 +40,8 @@ export interface LabColor {
     b: number,
 }
 
+const map_rgb = ({ r, g, b }: RGBColor, f: (channel: number) => number): RGBColor => ({ r: f(r), g: f(g), b: f(b) });
+
 // https://bottosson.github.io/posts/oklab/
 export function linear_srgb2oklab(c: RGBColor): LabColor {
     let l = 0.4122214708 * c.r + 0.5363325363 * c.g + 0.0514459929 * c.b,
@@ -231,29 +233,17 @@ export function normalize({ r, g, b }: RGBColor): RGBColor {
 }
 
 
-export function linear2u8({ r, g, b }: RGBColor): RGBColor {
-    let l2u = (u: number) => min(255, max(0, round(255 * u))) | 0;
-    return { r: l2u(r), g: l2u(g), b: l2u(b) };
-}
-export function u82linear({ r, g, b }: RGBColor): RGBColor {
-    let k = (x: number) => x / 255.0;
-    return { r: k(r), g: k(g), b: k(b) }
-}
+export const float2u8 = (rgb: RGBColor): RGBColor => map_rgb(rgb, u => min(255, max(0, round(255 * u))) | 0);
+export const u82float = (rgb: RGBColor): RGBColor => map_rgb(rgb, u => u / 255.0);
 
-/// Transforms a linear (0-1) RGB color into sRGB 0-255 (inclusive)
-export function linear2srgb({ r, g, b }: RGBColor): RGBColor {
-    let l2s = (u: number) => u <= 0.0031308 ? (12.92 * u) : (1.055 * Math.pow(u, 1 / 2.4) - 0.055);
-    return linear2u8({ r: l2s(r), g: l2s(g), b: l2s(b) });
-}
-function linearsrgb2linear({ r, g, b }: RGBColor): RGBColor {
-    let s2l = (u: number) => u <= 0.04045 ? (u / 12.92) : Math.pow((u + 0.055) / 1.055, 2.4);
-    return { r: s2l(r), g: s2l(g), b: s2l(b) };
-}
-export const srgb2linear = (c: RGBColor): RGBColor => linearsrgb2linear(u82linear(c));
-export const clamp_linear = ({ r, g, b }: RGBColor): RGBColor => ({
-    r: clamp01(r), g: clamp01(g), b: clamp01(b),
-});
+// both of these operate on 0-1 range
+export const linear2srgb = (rgb: RGBColor): RGBColor => map_rgb(rgb, u => u <= 0.0031308 ? (12.92 * u) : (1.055 * Math.pow(u, 1 / 2.4) - 0.055));
+export const srgb2linear = (rgb: RGBColor): RGBColor => map_rgb(rgb, u => u <= 0.04045 ? (u / 12.92) : Math.pow((u + 0.055) / 1.055, 2.4));
 
+export const u8srgb2linear = (c: RGBColor): RGBColor => srgb2linear(u82float(c));
+export const linear2srgbu8 = (c: RGBColor): RGBColor => float2u8(linear2srgb(c));
+
+export const clamp_linear = (rgb: RGBColor): RGBColor => map_rgb(rgb, clamp01);
 
 // https://tannerhelland.com/2012/09/18/convert-temperature-rgb-algorithm-code.html
 export function kelvin(temp: number): RGBColor {
@@ -272,7 +262,7 @@ export function kelvin(temp: number): RGBColor {
     }
 
     // TODO: Check if this is correct? Original only returned 0-255, unsure if sRGB
-    return srgb2linear({ r, g, b });
+    return u8srgb2linear({ r, g, b });
 }
 
 
@@ -343,7 +333,7 @@ export function formatRGB(c: RGBColor, alpha?: number, srgb?: boolean): string {
         if(l(c.r) || l(c.g) || l(c.b)) console.log("Invalid color: ", c);
     }
 
-    let { r, g, b } = srgb ? linear2srgb(c) : linear2u8(c),
+    let { r, g, b } = float2u8(srgb ? linear2srgb(c) : c),
         rgb = [r, g, b],
         prefix = 'rgb';
 
@@ -361,7 +351,7 @@ export function formatRGBHex(c: RGBColor, srgb?: boolean): string {
         if(l(c.r) || l(c.g) || l(c.b)) console.log("Invalid color: ", c);
     }
 
-    let { r, g, b } = srgb ? linear2srgb(c) : linear2u8(c),
+    let { r, g, b } = float2u8(srgb ? linear2srgb(c) : c),
         rgb = [r, g, b];
 
     return '#' + rgb.map(c => c.toString(16).padStart(2, '0')).join('');

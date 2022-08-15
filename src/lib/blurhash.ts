@@ -1,11 +1,11 @@
-import { srgb2linear, linear2srgb, RGBColor } from "./color";
+import { u8srgb2linear, linear2srgbu8, RGBColor } from "./color";
 
 const { PI, sign, cos, abs, sqrt, round, min, max } = Math;
 
 const BYTE_MASK: number = 0xFF;
 
 function decode_dc(value: number): RGBColor {
-    return srgb2linear({
+    return u8srgb2linear({
         r: value >> 16,
         g: (value >> 8) & BYTE_MASK,
         b: value & BYTE_MASK
@@ -13,7 +13,7 @@ function decode_dc(value: number): RGBColor {
 }
 
 function encode_dc(color: RGBColor): number {
-    let { r, g, b } = linear2srgb(color);
+    let { r, g, b } = linear2srgbu8(color);
     return (r << 16) | (g << 8) | b;
 }
 
@@ -77,7 +77,7 @@ export function decode(hash: ArrayBuffer, w: number, h: number, punch: number): 
                 }
             }
 
-            let idx = 4 * (x + p), cl = linear2srgb(c);
+            let idx = 4 * (x + p), cl = linear2srgbu8(c);
             out[idx] = cl.r;
             out[idx + 1] = cl.g;
             out[idx + 2] = cl.b;
@@ -100,7 +100,7 @@ function multiply_basis_function(xc: number, yc: number, w: number, h: number, r
             let basis = cos(x * nx) * cos(y * ny),
                 i = bpp * (x + y * w);
 
-            let c = srgb2linear({ r: rgb[i], g: rgb[i + 1], b: rgb[i + 2] });
+            let c = u8srgb2linear({ r: rgb[i], g: rgb[i + 1], b: rgb[i + 2] });
 
             r += basis * c.r;
             g += basis * c.g;

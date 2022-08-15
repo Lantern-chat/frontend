@@ -1,11 +1,11 @@
-import { linear2srgb, linear_srgb2oklab, oklab2linear_srgb, pack_rgb, srgb2linear, formatRgbBinary, unpack_rgb, clamp_linear, saturate_lab } from "lib/color";
+import { linear2srgbu8, linear_srgb2oklab, oklab2linear_srgb, pack_rgb, u8srgb2linear, formatRgbBinary, unpack_rgb, clamp_linear, saturate_lab } from "lib/color";
 import { Accessor } from "solid-js";
 import { usePrefs, UserPreferenceAccessors } from "state/contexts/prefs";
 
 export function adjustUserColor(color: number, prefs: UserPreferenceAccessors = usePrefs()): Accessor<number> {
     return () => {
         if(prefs.ForceColorConstrast()) {
-            let lab = linear_srgb2oklab(srgb2linear(unpack_rgb(color))), is_light = prefs.LightMode();
+            let lab = linear_srgb2oklab(u8srgb2linear(unpack_rgb(color))), is_light = prefs.LightMode();
 
             if(prefs.LightMode()) {
                 if(lab.L > 0.6) {
@@ -16,7 +16,7 @@ export function adjustUserColor(color: number, prefs: UserPreferenceAccessors = 
                 lab.L = Math.max(lab.L, 0.65);
             }
 
-            color = pack_rgb(linear2srgb(clamp_linear(oklab2linear_srgb(lab))));
+            color = pack_rgb(linear2srgbu8(clamp_linear(oklab2linear_srgb(lab))));
         }
 
         return color;

@@ -1,11 +1,11 @@
 //import * as d3 from "d3-color";
-import { clamp_linear, formatRGB, formatRGBHex, lighten_lab, linear2srgb, linear_srgb2oklab, oklab2linear_srgb, parseRgb, polar2lab, saturate_lab, srgb2linear } from "./color";
+import { clamp_linear, formatRGB, formatRGBHex, lighten_lab, linear2srgbu8, linear_srgb2oklab, oklab2linear_srgb, parseRgb, polar2lab, saturate_lab, u8srgb2linear } from "./color";
 import { fnv1a } from "./fnv";
 import { mix } from "./math";
 
 //const DARK = ['goldenrod', 'royalblue', 'darkgreen', 'crimson', 'darkmagenta'];
 const PALETTE = ['#b8860b', '#4169e1', '#006400', '#dc143c', '#8b008b'].map(c => {
-    let l = linear_srgb2oklab(srgb2linear(parseRgb(c)));
+    let l = linear_srgb2oklab(u8srgb2linear(parseRgb(c)));
     l.L = 1;
     return saturate_lab(l, 1 / Math.hypot(l.a, l.b) * 0.2);
 });

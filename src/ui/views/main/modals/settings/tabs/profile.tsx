@@ -1,7 +1,7 @@
 import { createSignal, onMount, createMemo, Show, createEffect, Accessor, onCleanup, Setter, JSX, on } from "solid-js";
 
 import { resize_image } from "lib/image";
-import { unpack_rgb, u82linear, RGBColor, pack_rgb, linear2u8 } from "lib/color";
+import { unpack_rgb, u82float, RGBColor, pack_rgb, float2u8 } from "lib/color";
 import { createPercentFormatter } from "ui/hooks/createFormatter";
 import { br } from "ui/utils";
 
@@ -68,7 +68,7 @@ function ProfileSettingsTabInner() {
     let avatar_input = createRef();
     let banner_input = createRef();
 
-    let initial_color = createMemo(() => u82linear(unpack_rgb(bits() >> 8)));
+    let initial_color = createMemo(() => u82float(unpack_rgb(bits() >> 8)));
     let [color, setColor] = createSignal(initial_color());
 
     let can_show_remove_avatar = () => localAvatarUrl() !== null && (localAvatarUrl() || cached_user().profile?.avatar);
@@ -149,7 +149,7 @@ function ProfileSettingsTabInner() {
             new_bits = (new_bits & ~0x7F) | (roundness() & 0x7F);
 
             // combine new color
-            new_bits = (new_bits & 0xFF) | (pack_rgb(linear2u8(color())) << 8);
+            new_bits = (new_bits & 0xFF) | (pack_rgb(float2u8(color())) << 8);
 
             // only set if the bio/status changed, and a zero-length value indicates removal, so null.
 

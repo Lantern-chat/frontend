@@ -1,4 +1,4 @@
-import { Color, HSLColor, hsv, hsv2hsl, hsv2rgb, HSVColor, linear2u8, parseRgb, rgb2hsl, rgb2hsv, RGBColor, u82linear } from "lib/color";
+import { Color, HSLColor, hsv, hsv2hsl, hsv2rgb, HSVColor, float2u8, parseRgb, rgb2hsl, rgb2hsv, RGBColor, u82float } from "lib/color";
 import { createEffect, createMemo, createRenderEffect, createSignal, splitProps } from "solid-js";
 import { createRef } from "ui/hooks/createRef";
 
@@ -216,13 +216,13 @@ export function ColorPicker(props: IColorPickerProps<RGBColor>) {
 }
 
 function RGBInput(props: IColorPickerProps<RGBColor>) {
-    let rgb = createMemo(() => linear2u8(props.value));
+    let rgb = createMemo(() => float2u8(props.value));
     let hex = () => {
         let { r, g, b } = rgb();
         return '#' + [r, g, b].map(c => c.toString(16).padStart(2, '0')).join('').toUpperCase();
     };
 
-    let on_change = (rgb: RGBColor) => props.onChange?.(u82linear(rgb));
+    let on_change = (rgb: RGBColor) => props.onChange?.(u82float(rgb));
 
     let on_rgb_value = (w: 'r' | 'g' | 'b', value: string) => {
         let c = rgb();
