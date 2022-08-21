@@ -4,6 +4,7 @@ import { resize_image } from "lib/image";
 import { unpack_rgb, u82float, RGBColor, pack_rgb, float2u8 } from "lib/color";
 import { createPercentFormatter } from "ui/hooks/createFormatter";
 import { br } from "ui/utils";
+import { createFileUrl } from "ui/hooks/createFileUrl";
 
 import { CLIENT } from "state/global";
 
@@ -19,6 +20,7 @@ import { SimpleUserCard } from "ui/views/main/components/menus/user_card";
 import { Spinner } from "ui/components/common/spinners/spinner";
 import { TextareaAutosize } from "ui/components/input/textarea";
 
+import "./profile.scss";
 export function ProfileSettingsTab() {
     let store = useRootStore();
 
@@ -27,23 +29,6 @@ export function ProfileSettingsTab() {
             <ProfileSettingsTabInner />
         </Show>
     )
-}
-
-import "./profile.scss";
-function createUrl(file: Accessor<File | null | undefined>): [Accessor<string | undefined | null>, Setter<string | undefined | null>] {
-    let [getUrl, setUrl] = createSignal<string | undefined | null>();
-
-    createEffect(() => {
-        let f = file(), url: string | undefined;
-        if(f) {
-            url = URL.createObjectURL(f);
-            onCleanup(() => URL.revokeObjectURL(url!))
-        }
-
-        setUrl(f === null ? null : url);
-    });
-
-    return [getUrl, setUrl];
 }
 
 function compare_color(x: RGBColor, y: RGBColor): boolean {
@@ -57,11 +42,8 @@ function ProfileSettingsTabInner() {
 
     let bits = createMemo(() => cached_user()?.profile?.bits || 0);
 
-    let [avatarFile, setAvatarFile] = createSignal<File | undefined | null>();
-    let [bannerFile, setBannerFile] = createSignal<File | undefined | null>();
-
-    let [localAvatarUrl, setLocalAvatarUrl] = createUrl(avatarFile);
-    let [localBannerUrl, setLocalBannerUrl] = createUrl(bannerFile);
+    let [localAvatarUrl, avatarFile, setAvatarFile] = createFileUrl();
+    let [localBannerUrl, bannerFile, setBannerFile] = createFileUrl();
 
     let on_file = (e: Event, cb: Setter<File | undefined>) => cb((e.currentTarget as HTMLInputElement).files?.[0]);
 
@@ -90,8 +72,6 @@ function ProfileSettingsTabInner() {
     let [hasChanges, setHasChanges] = createSignal(false);
 
     let reset = () => {
-        console.log("RESETTING");
-
         setAvatarFile(undefined);
         setBannerFile(undefined);
         setColor(initial_color());
