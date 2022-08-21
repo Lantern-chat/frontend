@@ -1,4 +1,4 @@
-import { Accessor, createContext, createMemo, JSX, createComponent, onCleanup, useContext, createEffect, createRenderEffect } from "solid-js";
+import { Accessor, createContext, createMemo, JSX, createComponent, onCleanup, useContext, createEffect } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import dayjs from "lib/time";
@@ -15,6 +15,8 @@ export interface TimeStore {
 
 const DEFAULT_TIME: TimeStore = { s: 0, m: 0, h: 0, d: 0 };
 
+var now = dayjs();
+
 export const TimeContext = /*#__PURE__*/createContext<TimeStore>(DEFAULT_TIME);
 
 export function createTimestamp(ts: Accessor<NonNullable<dayjs.ConfigType> | null | undefined>, format?: string | Accessor<string | undefined>): Accessor<string> {
@@ -28,8 +30,8 @@ export function createTimestamp(ts: Accessor<NonNullable<dayjs.ConfigType> | nul
 export function createCalendar(ts: Accessor<NonNullable<dayjs.ConfigType> | null | undefined>): Accessor<string> {
     const { locale } = useI18nContext(), time = useContext(TimeContext);
 
-    // track locale and current day
-    return createMemo(() => (locale(), time.d, dayjs(ts()).calendar()));
+    // track locale and current day, reusing `now` to avoid recomputing it
+    return createMemo(() => (locale(), time.d, dayjs(ts()).calendar(now)));
 }
 
 // passthrough function that would subscribe to the relevant time component
@@ -49,31 +51,37 @@ function subscribe(time: TimeStore, t: dayjs.Dayjs): dayjs.Dayjs {
     return t;
 }
 
-var now = new Date();
-
 export function TimeProvider(props: { children: JSX.Element }) {
     let [time, setTime] = createStore(DEFAULT_TIME);
 
-    function update() {
-        now = new Date();
+    let update = () => {
+        now = dayjs();
 
         setTime({
-            s: now.getSeconds(),
-            m: now.getMinutes(),
-            h: now.getHours(),
-            d: now.getDate(),
+            s: now.second(),
+            m: now.minute(),
+            h: now.hour(),
+            d: now.date(),
         });
-    }
+    };
 
-    let timer: ReturnType<typeof setInterval>;
-    let visible = usePageVisible();
+    update();
 
-    let cleanup = () => { __DEV__ && console.log("Stopping timer"); clearInterval(timer); },
-        start = () => { __DEV__ && console.log("Starting timer"); update(); timer = setInterval(update, 1000); };
+    let visible = usePageVisible(), timer: ReturnType<typeof setInterval>;
 
-    createRenderEffect(() => visible() ? start() : cleanup());
+    createEffect(() => {
+        if(visible()) {
+            __DEV__ && console.log("Starting timer");
 
-    onCleanup(cleanup);
+            update();
+            timer = setInterval(update, 1000);
+            onCleanup(() => {
+                __DEV__ && console.log("Stopping timer");
+
+                clearInterval(timer);
+            });
+        }
+    });
 
     return createComponent(TimeContext.Provider, {
         value: time,
