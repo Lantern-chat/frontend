@@ -18,7 +18,7 @@ export function Mention(props: IMentionProps) {
         return;
     });
 
-    let room = () => party()?.rooms.find(room => room.id == props.id),
+    let room = () => party()?.rooms[props.id],
         member = () => party()?.members[props.id];
 
     return (
