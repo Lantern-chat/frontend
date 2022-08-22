@@ -5,7 +5,7 @@ import { useI18nContext } from "ui/i18n/i18n-solid";
 import { useLocale } from "ui/i18n";
 
 import { parse_presence, PartyMember, PresenceStatus, Role, Snowflake, UserPreferenceFlags, user_is_bot } from "state/models";
-import { RootState, useRootSelector } from "state/root";
+import { RootState, useRootStore } from "state/root";
 import { activeParty } from "state/selectors/active";
 
 
@@ -160,10 +160,14 @@ interface IListedMemberProps {
     party_id: Snowflake,
 }
 
+// TODO: Inline this component?
 function ListedMember(props: IListedMemberProps) {
     let { LL } = useI18nContext();
 
-    let color = useRootSelector(state => {
+    let { state } = useRootStore();
+
+    // only called once, don't `createMemo`
+    let color = () => {
         let party_id, party;
 
         if(party_id = activeParty(state)) {
@@ -174,15 +178,18 @@ function ListedMember(props: IListedMemberProps) {
             }
         }
         return;
-    });
+    };
 
-    let cached_user = useRootSelector(state => selectCachedUser(state, props.member.user.id, props.party_id)!);
+    let cached_user = createMemo(() => selectCachedUser(state, props.member.user.id, props.party_id)!);
     let presence = createMemo(() => parse_presence(cached_user().presence));
 
     let [show, main_click_props] = createSimpleToggleOnClick();
 
     return (
-        <li class="ln-member-list__item" {...main_click_props}>
+        <li class="ln-member-list__item" {...main_click_props}
+            data-username={cached_user().user.username}
+            data-userid={props.member.user.id}
+        >
             <AnchoredModal show={show()}>
                 <UserCard user_id={props.member.user.id} party_id={props.party_id} />
             </AnchoredModal>

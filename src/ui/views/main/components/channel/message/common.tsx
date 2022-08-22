@@ -40,7 +40,10 @@ export function MessageUserName(props: IUserNameProps) {
     });
 
     return (
-        <h2 class="ln-msg__username" {...main_click_props} style={{ color: color() }}>
+        <h2 class="ln-msg__username" {...main_click_props} style={{ color: color() }}
+            data-username={props.user.username}
+            data-userid={props.user.id}
+        >
             <AnchoredModal show={show()}>
                 <UserCard user_id={user.id} party_id={props.party_id} />
             </AnchoredModal>

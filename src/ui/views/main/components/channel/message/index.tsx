@@ -36,6 +36,7 @@ export function Message(props: { msg: IMessageState }) {
 
             <li
                 id={props.msg.msg.id}
+                data-author={props.msg.msg.author.id}
                 class="ln-msg__outer"
                 classList={{
                     "highlighted": !!pos(),
@@ -44,7 +45,7 @@ export function Message(props: { msg: IMessageState }) {
                 }}
                 {...main_click_props}
             >
-                <div class="ln-msg__wrapper">
+                <div class="ln-msg__wrapper" role="article">
                     <Dynamic component={System || (prefs.CompactView() ? CompactMessage : CozyMessage)} {...props} />
 
                     <Show when={pos()}>

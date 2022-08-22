@@ -42,7 +42,9 @@ export function PartyAvatar(props: IPartyAvatarProps) {
     let [pos, main_click_props] = createSimplePositionedContextMenu();
 
     return (
-        <li classList={{ 'selected': props.is_active }} {...main_click_props}>
+        <li classList={{ 'selected': props.is_active }} {...main_click_props}
+            data-party-name={props.party.name}
+        >
             <Link noAction href={room_url(props.party.id, last())} onNavigate={on_navigate}>
                 <Avatar rounded url={url()} text={props.party.name.charAt(0)}
                     username={props.party.name} wrapper={{ title: props.party.name }}

@@ -82,7 +82,10 @@ function ListedChannel(props: IListedChannelProps) {
     let [pos, main_click_props] = createSimplePositionedContextMenu();
 
     return (
-        <li classList={{ 'selected': props.selected }} {...main_click_props}>
+        <li classList={{ 'selected': props.selected }} {...main_click_props}
+            data-room-name={props.room.name}
+            data-roomid={props.room.id}
+        >
             <Link
                 class="ln-channel-list__channel"
                 href={`/channels/${props.room.party_id || '@me'}/${props.room.id}`}
