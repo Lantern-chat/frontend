@@ -22,6 +22,7 @@ import { UIText } from "ui/components/common/ui-text";
 import { VectorIcon } from "ui/components/common/icon";
 import { IMsgTextareaController, MsgTextarea } from "ui/components/input/msg_textarea";
 import { EmotePicker } from "../common/emote_picker";
+import { IFileUploadController, UploadPanel } from "./upload";
 
 import { Icons } from "lantern-icons";
 import { createController } from "ui/hooks/createController";
@@ -44,6 +45,7 @@ export function MessageBox() {
 
     let ta = createRef<HTMLTextAreaElement>();
     let [tac, setTAC] = createController<IMsgTextareaController>();
+    let [fc, setFC] = createController<IFileUploadController>();
 
     let [value, setValue] = createSignal("");
     let ts = 0, skip = false;
@@ -70,7 +72,10 @@ export function MessageBox() {
             });
 
             skip = true; // skip the change event this will emit
-            untrack(() => tac()!.setValue(store.state.chat.rooms[state.active_room!]?.draft || ""));
+            untrack(() => {
+                tac()!.setValue(store.state.chat.rooms[state.active_room!]?.draft || "");
+                fc()!.reset();
+            });
         }
     });
 
@@ -80,9 +85,14 @@ export function MessageBox() {
         }
     });
 
-    let do_send = () => {
-        if(state.active_room) {
-            dispatch(sendMessage(state.active_room, value().trim()));
+    let [files, setFiles] = createSignal<number>();
+
+    let is_empty = createMemo(() => value().length == 0 && files() == 0);
+
+    let do_send = async () => {
+        if(state.active_room && !is_empty()) {
+            let attachments = await fc()!.upload();
+            dispatch(sendMessage(state.active_room, value().trim(), attachments));
             tac()!.setValue("");
             ts = 0; // reset typing timestamp
         }
@@ -103,8 +113,17 @@ export function MessageBox() {
 
     let eat = createClickEater();
 
+    let file_input = createRef<HTMLInputElement>();
+
+    let click_file = (e: MouseEvent) => {
+        eat(e);
+        file_input.current?.click();
+        e.preventDefault();
+        e.stopPropagation();
+    };
+
     let on_send_click = (e: MouseEvent) => {
-        eat(e); if(value()) {
+        eat(e); if(!is_empty()) {
             let f = focused;
 
             do_send();
@@ -144,6 +163,8 @@ export function MessageBox() {
     };
 
     let on_click_focus = (e: MouseEvent) => {
+        if(e.defaultPrevented) return;
+
         eat(e); if(state.active_room) { tac()!.focus(); }
     };
 
@@ -151,48 +172,54 @@ export function MessageBox() {
         debug_node = (<div class="ln-msg-box__debug"><span textContent={debug()} /></div>);
     }
 
-    let is_empty = createMemo(() => value().length == 0);
-
     return (
         <>
-            <div
-                onClick={on_click_focus}
-                class="ln-msg-box"
+            <div class="ln-msg-box__wrapper"
                 classList={{
-                    'ln-msg-box--disabled': !state.active_room,
-                    'focused': show_focus_border(),
                     'with-footers': state.showing_footers,
+                    'focused': show_focus_border(),
+                    'ln-msg-box--disabled': !state.active_room,
                 }}
             >
-                <div class="ln-typing ln-typing__top">
-                    <Show when={prefs.UseMobileView()}>
-                        <UsersTyping />
+                <UploadPanel input={file_input} onChange={setFiles} fc={setFC} />
+
+                <div on:click={on_click_focus} class="ln-msg-box">
+                    <div class="ln-typing ln-typing__top">
+                        <Show when={prefs.UseMobileView()}>
+                            <UsersTyping />
+                        </Show>
+                    </div>
+
+                    <EmotePicker />
+
+                    <MsgTextarea
+                        onBlur={on_blur}
+                        onFocus={on_focus}
+                        ta={ta}
+                        tac={setTAC}
+                        onKeyDown={on_keydown}
+                        onChange={on_change}
+                        mobile={prefs.UseMobileView()}
+                        onContextMenu={eat}
+                        spellcheck={prefs.EnableSpellcheck()}
+                    />
+
+                    {/* {debug_node} */}
+
+                    <div class="ln-msg-box__send visible" on:click={click_file} title="Attach File">
+                        <VectorIcon id={Icons.Plus} />
+                    </div>
+
+                    <div class="ln-msg-box__send" on:click={on_send_click} title="Send Message"
+                        classList={{ 'visible': !is_empty() }}
+                    >
+                        <VectorIcon id={Icons.Send} />
+                    </div>
+
+                    <Show when={!state.active_room}>
+                        <span class="ln-msg-box__disable" />
                     </Show>
                 </div>
-
-                <EmotePicker />
-
-                <MsgTextarea
-                    onBlur={on_blur}
-                    onFocus={on_focus}
-                    ta={ta}
-                    tac={setTAC}
-                    onKeyDown={on_keydown}
-                    onChange={on_change}
-                    mobile={prefs.UseMobileView()}
-                    onContextMenu={eat}
-                    spellcheck={prefs.EnableSpellcheck()}
-                />
-
-                {debug_node}
-
-                <div class="ln-msg-box__send" onClick={on_send_click}>
-                    <VectorIcon id={is_empty() ? Icons.Plus : Icons.Send} />
-                </div>
-
-                <Show when={!state.active_room}>
-                    <span class="ln-msg-box__disable" />
-                </Show>
             </div>
 
             <div class="ln-typing ln-typing__bottom">
@@ -200,6 +227,7 @@ export function MessageBox() {
                     <UsersTyping />
                 </Show>
             </div>
+
         </>
     )
 }

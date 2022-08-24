@@ -40,42 +40,50 @@
 }
 
 .ln-msg-box {
-    cursor: text;
-    display: flex;
-    flex-wrap: nowrap;
-    text-align: center;
-    flex-shrink: 0;
-    color: $lnx-primary-text-color;
-    background-color: rgba(128, 128, 128, 0.5);
-
-    .ln-light-theme &,
-    .ln-oled-theme & {
-        background-color: rgba(128, 128, 128, 0.2);
+    .ln-msg-textarea {
+        margin-inline-end: 1em;
     }
 
-    min-height: 3em;
-    position: relative;
+    &__wrapper {
+        flex-shrink: 0;
+        color: $lnx-primary-text-color;
+        background-color: rgba(128, 128, 128, 0.5);
 
-    // TODO: Fix textarea background color bleeding over border-radius in mobile-view and showing the sidebar
-    @media (min-width: $ln-min-channel-width) {
-        border-radius: 0.5rem;
-        margin: 0 1rem;
-
-        &.with-footers {
-            border-top-left-radius: 0;
+        .ln-light-theme &,
+        .ln-oled-theme & {
+            background-color: rgba(128, 128, 128, 0.2);
         }
 
-        margin: 0 calc(1rem - 2.5px);
-        border: 2.5px solid transparent;
+        // TODO: Fix textarea background color bleeding over border-radius in mobile-view and showing the sidebar
+        @media (min-width: $ln-min-channel-width) {
+            border-radius: 0.5rem;
+            margin-inline: 1rem;
 
-        &.focused {
-            border-color: hsl(240, 80%, 70%);
+            &.with-footers {
+                border-top-left-radius: 0;
+            }
+
+            margin-inline: calc(1rem - 2.5px);
+            border: 2.5px solid transparent;
+
+            &.focused {
+                border-color: hsl(240, 80%, 70%);
+            }
         }
     }
 
     &--disabled * {
         cursor: not-allowed !important;
     }
+
+    cursor: text;
+    display: flex;
+    flex-wrap: nowrap;
+    text-align: center;
+    align-items: center;
+
+    min-height: 3em;
+    position: relative;
 
     &__disable {
         position: absolute;
@@ -102,9 +110,6 @@
     &__send {
         //text-align: center;
         flex: 0 0 auto;
-        display: inline-flex;
-        flex-direction: column;
-        justify-content: center;
         cursor: pointer;
         fill: $lnx-secondary-text-color;
         &:hover,
@@ -118,33 +123,34 @@
     }
 
     &__emoji {
-        font-size: 1.5em;
-        padding: 0 0.5em 0 0.5em;
+        .ln-icon {
+            font-size: 1.5em;
+        }
+        margin-inline: 1em;
     }
-    &__send {
-        font-size: 1.75em;
-        padding: 0 0.5em 0 0.5em;
-        position: relative;
 
-        input {
-            display: block;
-            position: absolute;
-            opacity: 0;
-            max-width: 100%;
-            left: 0;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            z-index: 3;
-            cursor: pointer;
+    &__send {
+        .ln-icon {
+            font-size: 1.75em;
+        }
+
+        width: 0;
+        overflow: hidden;
+
+        .ln-enable-motion & {
+            transition-duration: 0.2s;
+            transition-property: all;
+            transition-timing-function: ease-out;
+        }
+
+        &.visible {
+            width: auto;
+            margin-inline-end: 1em;
         }
     }
 
     &__box {
         width: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
         textarea {
             tab-size: $lnx-chat-tabsize;
             margin: 0.5em 0;

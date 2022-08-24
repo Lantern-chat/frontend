@@ -28,7 +28,7 @@ export function sendFile(opts: IFileUploadOptions): Promise<Snowflake | undefine
         width,
         height,
         preview,
-    }, file);
+    }, file, opts.onProgress);
 }
 
 export function sendBlob(filename: string, blob: Blob): Promise<Snowflake | undefined> {

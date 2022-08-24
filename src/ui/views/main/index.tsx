@@ -206,13 +206,16 @@ export default function Main() {
         if(!e.shiftKey && !hasKey('Shift')) { e.preventDefault(); }
     };
 
-    let is_right_view = useRootSelector(state => state.window.use_mobile_view && state.window.show_panel == Panel.RightUserList);
+    let cancel_drop = (e: DragEvent) => {
+        e.preventDefault();
+    };
 
     return (
         <div class="ln-main" ref={main}
             oncapture:click={clickAll}
             oncapture:contextmenu={clickAll}
             on:contextmenu={onContextMenu}
+            on:drop={cancel_drop}
         >
             <MainContext.Provider value={main_value}>
                 <TimeProvider>
