@@ -16,7 +16,7 @@ export function Modal(props: ModalProps) {
 export function FullscreenModal(props: JSX.HTMLAttributes<HTMLDivElement>) {
     let [local, rest] = splitProps(props, ['class']);
 
-    let cn = createMemo(() => [local.class, "ln-fullscreen-modal"].join(" "));
+    let cn = () => [local.class, "ln-fullscreen-modal"].join(" ");
 
     return (
         <Modal>

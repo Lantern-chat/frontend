@@ -1,7 +1,7 @@
 import { createEffect, onCleanup, Show } from "solid-js";
 import throttle from 'lodash/throttle';
 
-import { Action, useRootDispatch, useRootSelector } from "state/root";
+import { Action, useRootStore } from "state/root";
 import { mainMutator, Type } from "state/main";
 import { GLOBAL, STORE, HISTORY, type IGatewayWorker } from "state/global";
 import { mainEffect } from "state/effects/main";
@@ -85,7 +85,7 @@ import MainModals from "./modals";
 
 import "./main.scss";
 export default function Main() {
-    let dispatch = useRootDispatch();
+    let { dispatch, state } = useRootStore();
 
     /// AWAY/ONLINE PRESENCE SETUP
 
@@ -172,7 +172,10 @@ export default function Main() {
         triggerAnyHotkey(e);
     };
 
+    let main = createRef<HTMLDivElement>();
+
     let main_value: IMainContext = {
+        main,
         addOnClick,
         addOnHotkey,
         removeOnClick,
@@ -183,8 +186,6 @@ export default function Main() {
         hasKey,
         consumeKey,
     };
-
-    let main = createRef<HTMLDivElement>();
 
     createEffect(() => {
         if(main.current) {
@@ -205,6 +206,8 @@ export default function Main() {
     let onContextMenu = (e: MouseEvent) => {
         if(!e.shiftKey && !hasKey('Shift')) { e.preventDefault(); }
     };
+
+    let is_right_view = () => state.window.use_mobile_view && state.window.show_panel == Panel.RightUserList;
 
     let cancel_drop = (e: DragEvent) => {
         e.preventDefault();

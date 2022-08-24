@@ -1,4 +1,4 @@
-import { createSignal, onCleanup, createEffect, untrack, batch } from "solid-js";
+import { createSignal, onMount, onCleanup, createEffect, untrack, batch } from "solid-js";
 
 import type { SignalOptions } from "solid-js/types/reactive/signal";
 
@@ -80,4 +80,25 @@ export function composeRefs<T extends Refable>(any_own: AnyRef<T> | undefined | 
     }
 
     return own;
+}
+
+/**
+ * Variant of `onMount` that takes a `Ref<T>`, and will invoke the callback
+ * as soon as that ref has been set.
+ *
+ * @param ref
+ * @param cb
+ */
+export function onMountRef<T extends Refable>(ref: Ref<T>, cb: (t: T) => void) {
+    onMount(() => {
+        if(ref.current) {
+            cb(ref.current);
+        } else {
+            createEffect(() => {
+                if(ref.current) {
+                    untrack(() => cb(ref.current));
+                }
+            });
+        }
+    });
 }

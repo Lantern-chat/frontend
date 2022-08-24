@@ -1,4 +1,5 @@
 import { Accessor, createContext, createEffect, createMemo, createSignal, onCleanup, Setter, useContext } from "solid-js";
+import { createRef, Ref } from "./createRef";
 
 export const enum Hotkey {
     __NONE = 1,// start at 1 to simplify logic
@@ -153,6 +154,8 @@ export type OnClickHandler = (e: MouseEvent) => void;
 export type OnKeyHandler = (e: KeyboardEvent) => void;
 
 export interface IMainContext {
+    main: Ref<HTMLElement | undefined>,
+
     addOnClick(listener: OnClickHandler): void;
     removeOnClick(listener: OnClickHandler): void;
     addOnHotkey(hotkey: Hotkey, listener: OnKeyHandler): void;
@@ -167,6 +170,7 @@ export interface IMainContext {
 
 const noop = () => { };
 export const MainContext = createContext<IMainContext>({
+    main: createRef(),
     addOnClick: noop,
     removeOnClick: noop,
     clickAll: noop,
