@@ -29,20 +29,79 @@
     overflow-y: hidden;
 
     padding-inline: 0.5em;
+    border-radius: 0.5em;
+
+    li {
+        height: calc(100% - 1em);
+        flex: 0 0 auto;
+        position: relative;
+
+        display: flex;
+        flex-direction: column;
+        margin-block: 0.5em;
+    }
+}
+
+.ln-attachment-controls {
+    justify-content: center;
+    display: flex;
+    position: absolute;
+    bottom: calc(100% + 2px);
+
+    @media (max-width: $ln-max-channel-width) {
+        bottom: calc(100% - 1px);
+    }
+
+    //left: 10%;
+    background-color: var(--ln-tertiary-surface-color);
+    z-index: 1;
+    border-top-left-radius: 1em;
+    border-top-right-radius: 1em;
+
+    right: 10%;
+    width: fit-content;
+    overflow: hidden;
+
+    border: 1px solid rgba(128, 128, 128, 0.3);
+    border-bottom: none;
+
+    box-shadow: 0px 0 0.2em rgba(0, 0, 0, 0.5);
+
+    opacity: 0.8;
+
+    &:hover {
+        opacity: 1;
+    }
+
+    .ln-icon {
+        font-size: 3em;
+    }
+
+    &__remove {
+        svg {
+            color: #ff5555;
+            fill: #ff5555;
+        }
+    }
+
+    > div {
+        cursor: pointer;
+
+        &:hover {
+            background-color: rgba(128, 128, 128, 0.3);
+        }
+
+        &:not(:last-child) {
+            border-right: 1px solid rgba(128, 128, 128, 0.3);
+        }
+        padding: 0.125em;
+    }
 }
 
 .ln-attachment-preview {
-    display: inline-block;
-    height: calc(100% - 1em);
     width: min(15em, 30vw);
-    flex: 0 0 auto;
-    position: relative;
-
-    display: flex;
-    flex-direction: column;
     justify-content: end;
     padding: 0.5em;
-    margin-block: 0.5em;
     margin-inline-end: 1em;
 
     background-color: rgba(0, 0, 0, 0.2);
@@ -119,6 +178,7 @@
     }
 
     &__controls {
+        overflow: hidden;
         z-index: 1;
         position: absolute;
         //top: -0.125em;
@@ -128,7 +188,10 @@
         font-size: 2em;
 
         opacity: 0.3;
-        cursor: pointer;
+
+        > div {
+            cursor: pointer;
+        }
 
         &:hover {
             opacity: 1;
@@ -140,7 +203,7 @@
 
         > div {
             &:not(:last-child) {
-                border-right: 1px solid #888;
+                border-right: 1px solid rgba(128, 128, 128, 0.3);
             }
 
             &:hover {

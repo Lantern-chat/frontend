@@ -45,6 +45,7 @@
     }
 
     &__wrapper {
+        position: relative;
         flex-shrink: 0;
         color: $lnx-primary-text-color;
         background-color: rgba(128, 128, 128, 0.5);

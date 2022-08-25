@@ -3,8 +3,7 @@ import type { IStreamUpload } from "client-sdk/src/client";
 import { Icons } from "lantern-icons";
 import { categorize_mime } from "lib/mime";
 import { createEffect, createMemo, createSignal, For, JSX, Match, onCleanup, onMount, Show, Switch, useContext } from "solid-js"
-import { createStore, unwrap } from "solid-js/store";
-import { sendFile } from "state/commands/sendfile";
+import { createStore, produce, unwrap } from "solid-js/store";
 import { usePrefs } from "state/contexts/prefs";
 import { CLIENT } from "state/global";
 import { Snowflake } from "state/models";
@@ -13,9 +12,7 @@ import { UIText } from "ui/components/common/ui-text";
 import { MimeIcon } from "ui/components/mime";
 import { FullscreenModal } from "ui/components/modal";
 import { SetController } from "ui/hooks/createController";
-import { createFileUrl } from "ui/hooks/createFileUrl";
 import { createRef, Ref } from "ui/hooks/createRef";
-import { createTrigger } from "ui/hooks/createTrigger";
 
 import "./upload.scss";
 
@@ -177,7 +174,22 @@ export function UploadPanel(props: IUploadPanelProps) {
         if(files.has(id)) {
             update_file_meta(id, { spoiler });
         }
-    }
+
+        let s = 0, n = 0;
+        for(let f of file_meta) {
+            f.spoiler ? s++ : n++;
+        }
+
+        setSpoileredAll(s > n);
+    };
+
+    let [spoileredAll, setSpoileredAll] = createSignal(false);
+
+    let spoiler_all = () => setFileMeta(produce((arr: Array<IFileMeta>) => {
+        let s = !spoileredAll();
+        arr.forEach(f => f.spoiler = s);
+        setSpoileredAll(s);
+    }));
 
     let stop = (e: Event) => e.stopPropagation();
 
@@ -188,6 +200,18 @@ export function UploadPanel(props: IUploadPanelProps) {
                 add_input();
             }} />
             <UploadDropper on_drop={on_drop} />
+
+            <Show when={file_meta.length > 1}>
+                <div class="ln-attachment-controls">
+                    <div class="ln-attachment-controls__spoiler" title={(spoileredAll() ? "Unspoiler" : "Spoiler") + " All"}
+                        onClick={spoiler_all}>
+                        <VectorIcon id={spoileredAll() ? Icons.Unspoiler : Icons.Spoiler} />
+                    </div>
+                    <div class="ln-attachment-controls__remove" onClick={reset} title="Remove All">
+                        <VectorIcon id={Icons.Trash} />
+                    </div>
+                </div>
+            </Show>
 
             <ul class="ln-attachment-previews ln-scroll-x" onWheel={on_wheel} onTouchMove={stop} onTouchStart={stop} onTouchEnd={stop}>
                 <For each={file_meta}>
@@ -245,7 +269,7 @@ function UploadPreview(props: IUploadPreviewProps) {
     return (
         <li class="ln-attachment-preview" classList={{ 'removing': removing(), 'uploading': props.uploading }}>
             <div class="ln-attachment-preview__controls">
-                <div class="ln-attachment-preview__spoiler" title="Spoiler"
+                <div class="ln-attachment-preview__spoiler" title={props.meta.spoiler ? "Unspoiler" : "Spoiler"}
                     onClick={() => props.onSpoiler(props.meta.id, !props.meta.spoiler)}>
                     <VectorIcon id={props.meta.spoiler ? Icons.Unspoiler : Icons.Spoiler} />
                 </div>
