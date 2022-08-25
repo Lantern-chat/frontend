@@ -2,6 +2,7 @@
 
 .ln-msg-attachment {
     text-indent: 0;
+    position: relative;
 
     //padding-left: 1em;
     //border-left: 2px solid rgb(160, 160, 160);
@@ -25,8 +26,41 @@
     //     margin-top: 0;
     // }
 
+    .spoiler-label {
+        text-align: center;
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+
+        .ui-text {
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            width: fit-content;
+            margin: auto;
+            padding: 0.75em 1em;
+            border-radius: 2em;
+        }
+
+        &:hover .ui-text {
+            background-color: rgba(0, 0, 0, 0.75);
+        }
+
+        cursor: pointer;
+    }
+
     &.spoiler {
         overflow: hidden;
+        width: fit-content;
+
+        // temporary fix for ios..
+        @supports (-webkit-touch-callout: none) {
+            width: auto;
+        }
 
         img,
         video {

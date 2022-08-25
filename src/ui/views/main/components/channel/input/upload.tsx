@@ -19,6 +19,11 @@ import { createTrigger } from "ui/hooks/createTrigger";
 
 import "./upload.scss";
 
+let eat = (e: Event) => {
+    e.preventDefault();
+    e.stopPropagation();
+};
+
 export interface IFileUploadController {
     reset(): void;
     upload(): Promise<Array<Snowflake | undefined>>;
@@ -33,11 +38,12 @@ export interface IUploadPanelProps {
     fc: SetController<IFileUploadController>;
 }
 
-interface ITrackedFile {
+interface IFileMeta {
     id: number,
     width?: number,
     height?: number,
     progress: number,
+    spoiler: boolean,
 }
 
 interface IMappedFile {
@@ -49,23 +55,23 @@ var COUNTER = 0;
 
 export function UploadPanel(props: IUploadPanelProps) {
     let files: Map<number, IMappedFile> = new Map();
-    let [file_meta, setFileMeta] = createStore<Array<ITrackedFile>>([]);
+    let [file_meta, setFileMeta] = createStore<Array<IFileMeta>>([]);
 
-    let update_file_meta = (id: number, meta: Partial<ITrackedFile>) => {
+    let update_file_meta = (id: number, meta: Partial<IFileMeta>) => {
         setFileMeta(file_meta.findIndex(v => v.id == id), meta);
     };
 
     createEffect(() => props.onChange(file_meta.length))
 
     let on_drop = (new_files: Array<File>) => setFileMeta(arr => {
-        let new_arr = [];
+        let new_arr: Array<IFileMeta> = [];
 
         new_files.sort((a, b) => a.lastModified - b.lastModified);
 
         for(let file of new_files) {
             let id = COUNTER++;
             files.set(id, { file, ref: createRef() });
-            new_arr.push({ id, progress: 0 });
+            new_arr.push({ id, progress: 0, spoiler: file.name.startsWith("SPOILER_") });
         }
 
         return [...arr, ...new_arr];
@@ -91,9 +97,11 @@ export function UploadPanel(props: IUploadPanelProps) {
     };
 
     let on_wheel = (e: WheelEvent) => {
-        let div = e.currentTarget as HTMLDivElement;
-        div.scrollBy({ left: e.deltaY });
-        eat(e);
+        if(!e.ctrlKey) {
+            let div = e.currentTarget as HTMLDivElement;
+            div.scrollBy({ left: e.deltaY });
+            eat(e);
+        }
     };
 
     let [uploading, setUploading] = createSignal(false);
@@ -123,13 +131,20 @@ export function UploadPanel(props: IUploadPanelProps) {
             files.forEach(({ file }, id) => {
                 let meta = file_meta.find(v => v.id == id)!;
 
+                let name = file.name, was_spoilered = name.startsWith("SPOILER_");
+                if(was_spoilered && !meta.spoiler) {
+                    name = name.slice("SPOILER_".length);
+                } else if(!was_spoilered && meta.spoiler) {
+                    name = "SPOILER_" + name;
+                }
+
                 streams.push({
                     id,
                     meta: {
                         width: meta.width,
                         height: meta.height,
                         mime: file.type,
-                        filename: file.name,
+                        filename: name,
                     },
                     stream: file,
                 });
@@ -158,6 +173,14 @@ export function UploadPanel(props: IUploadPanelProps) {
         }
     };
 
+    let set_spoiler = (id: number, spoiler: boolean) => {
+        if(files.has(id)) {
+            update_file_meta(id, { spoiler });
+        }
+    }
+
+    let stop = (e: Event) => e.stopPropagation();
+
     return (
         <>
             <div class="ln-upload-inputs" ref={r => {
@@ -166,9 +189,10 @@ export function UploadPanel(props: IUploadPanelProps) {
             }} />
             <UploadDropper on_drop={on_drop} />
 
-            <ul class="ln-attachment-previews" onWheel={on_wheel}>
+            <ul class="ln-attachment-previews ln-scroll-x" onWheel={on_wheel} onTouchMove={stop} onTouchStart={stop} onTouchEnd={stop}>
                 <For each={file_meta}>
-                    {file => <UploadPreview meta={file} file={files.get(file.id)!} onLoad={update_meta} onRemove={remove_file} uploading={uploading()} />}
+                    {file => <UploadPreview meta={file} file={files.get(file.id)!} uploading={uploading()}
+                        onLoad={update_meta} onRemove={remove_file} onSpoiler={set_spoiler} />}
                 </For>
             </ul>
         </>
@@ -177,8 +201,9 @@ export function UploadPanel(props: IUploadPanelProps) {
 
 interface IUploadPreviewProps {
     file: IMappedFile,
-    meta: ITrackedFile,
+    meta: IFileMeta,
     onLoad(e: Event, id: number): void;
+    onSpoiler(id: number, spoiler: boolean): void;
     onRemove(id: number): void;
     uploading: boolean,
 }
@@ -220,15 +245,16 @@ function UploadPreview(props: IUploadPreviewProps) {
     return (
         <li class="ln-attachment-preview" classList={{ 'removing': removing(), 'uploading': props.uploading }}>
             <div class="ln-attachment-preview__controls">
-                <div class="ln-attachment-preview__spoiler" title="Spoiler">
-                    <VectorIcon id={Icons.Spoiler} />
+                <div class="ln-attachment-preview__spoiler" title="Spoiler"
+                    onClick={() => props.onSpoiler(props.meta.id, !props.meta.spoiler)}>
+                    <VectorIcon id={props.meta.spoiler ? Icons.Unspoiler : Icons.Spoiler} />
                 </div>
                 <div class="ln-attachment-preview__remove" onClick={remove} title="Remove">
                     <VectorIcon id={Icons.Trash} />
                 </div>
             </div>
 
-            <div class="ln-attachment-preview__preview">
+            <div class="ln-attachment-preview__preview" classList={{ 'spoilered': props.meta.spoiler }}>
                 <Show when={!errored()} fallback={icon}>
                     <Switch fallback={icon}>
                         <Match when={mime_prefix() === 'image'}>
@@ -251,11 +277,6 @@ function UploadPreview(props: IUploadPreviewProps) {
         </li>
     )
 }
-
-let eat = (e: Event) => {
-    e.preventDefault();
-    e.stopPropagation();
-};
 
 interface IUploadDropperProps {
     on_drop(files: Array<File>): void;

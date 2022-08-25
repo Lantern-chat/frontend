@@ -16,6 +16,7 @@ import { createInfiniteScrollIntersectionTrigger } from "ui/components/infinite_
 import { px } from "ui/utils";
 
 //import { LightBox } from "ui/views/main/modals/lightbox/index_img";
+import { UIText } from "ui/components/common/ui-text";
 import { AnimatedGif } from "ui/components/common/gif";
 import { VectorIcon } from "ui/components/common/icon";
 import { MimeIcon } from "ui/components/mime";
@@ -53,8 +54,11 @@ export function MsgAttachment(props: IMsgAttachmentProps) {
     let unknown = () => prefs.HideUnknown() && !(props.attachment.width && props.attachment.height);
     let large = () => props.attachment.size >= (1024 * 1024 * 30);
 
+    let [revealed, setRevealed] = createSignal(false);
+    let spoilered = createMemo(() => (props.attachment.filename.startsWith("SPOILER_") || 0 != (props.msg.flags & AttachmentFlags.Spoiler)) && !revealed());
+
     return (
-        <div class="ln-msg-attachment" classList={{ 'spoiler': 0 != (props.msg.flags & AttachmentFlags.Spoiler) }}>
+        <div class="ln-msg-attachment" classList={{ 'spoiler': spoilered() }} onClick={() => setRevealed(true)}>
             <Show when={!errored() && !prefs.LowBandwidthMode()} fallback={<GenericAttachment {...props} />}>
                 <Switch fallback={<GenericAttachment {...props} />}>
                     <Match when={mime_prefix() === 'image' && !unknown() && !large()}>
@@ -69,6 +73,9 @@ export function MsgAttachment(props: IMsgAttachmentProps) {
                         <AudioAttachment audio={common()} src={src()} attachment={props.attachment} />
                     </Match>
                 </Switch>
+                <Show when={spoilered()}>
+                    <span class="spoiler-label"><UIText text="Spoiler" /></span>
+                </Show>
             </Show>
         </div>
     )

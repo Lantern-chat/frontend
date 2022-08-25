@@ -10,7 +10,9 @@
 }
 
 .ln-attachment-previews {
-    height: min(15em, 40vh);
+    @include scrollbar($lnx-secondary-text-color, $lnx-tertiary-surface-color);
+
+    height: min(15em, 30vw);
     background-color: rgba(0, 0, 0, 0.15);
     .ln-light-theme & {
         background-color: rgba(255, 255, 255, 0.15);
@@ -32,7 +34,7 @@
 .ln-attachment-preview {
     display: inline-block;
     height: calc(100% - 1em);
-    width: min(15em, 40vh);
+    width: min(15em, 30vw);
     flex: 0 0 auto;
     position: relative;
 
@@ -60,6 +62,11 @@
         line-height: 1;
 
         margin-block-start: 0.5em;
+        margin-block-end: 0.25em;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 
     &.removing {
@@ -92,6 +99,18 @@
             height: 100%;
             object-fit: contain;
         }
+
+        &.spoilered {
+            overflow: hidden;
+            width: fit-content;
+            margin: auto auto;
+            flex: 0 1 fit-content;
+
+            img,
+            video {
+                filter: blur(1em);
+            }
+        }
     }
 
     &.removing &__controls,
@@ -100,6 +119,7 @@
     }
 
     &__controls {
+        z-index: 1;
         position: absolute;
         //top: -0.125em;
         top: 0;
@@ -112,11 +132,23 @@
 
         &:hover {
             opacity: 1;
+            box-shadow: 0 0 0.25em rgba(0, 0, 0, 0.5);
         }
 
+        background-color: $lnx-primary-surface-color;
+        border-radius: 0.25em;
+
         > div {
-            background-color: $lnx-primary-surface-color;
-            border-radius: 25%;
+            &:not(:last-child) {
+                border-right: 1px solid #888;
+            }
+
+            &:hover {
+                background-color: rgba(128, 128, 128, 0.3);
+            }
+
+            font-size: min(1em, 8vw);
+
             padding: 0.125em;
             display: inline-block;
         }

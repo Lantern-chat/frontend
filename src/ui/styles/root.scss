@@ -261,3 +261,50 @@ a {
         }
     }
 }
+
+.ln-scroll-x {
+    overflow-y: hidden;
+    overflow-x: auto;
+    scrollbar-width: thin;
+
+    -webkit-overflow-scrolling: touch;
+
+    transform: translateZ(0);
+    backface-visibility: hidden;
+
+    &::-webkit-scrollbar {
+        height: 7px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background-color: $lnx-primary-surface-color;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border-radius: 1ex;
+        box-shadow: none;
+        filter: none;
+        background-color: rgba(128, 128, 128, 0.35);
+
+        .ln-dark-theme & {
+            background-color: rgba(255, 255, 255, 0.35);
+        }
+
+        &:hover {
+            background-color: rgba(128, 128, 128, 0.25);
+
+            .ln-dark-theme & {
+                background-color: rgba(255, 255, 255, 0.25);
+            }
+        }
+
+        //&:hover {
+        //    opacity: 0.5;
+        //}
+    }
+
+    &.ln-scroll-fixed {
+        overflow-x: scroll;
+        padding-block-end: 7px;
+    }
+}
