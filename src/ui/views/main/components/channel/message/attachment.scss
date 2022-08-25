@@ -102,6 +102,12 @@
         .ln-icon {
             font-size: 2.75em;
             display: inline-flex;
+
+            .ln-light-theme & {
+                svg {
+                    fill: $lnx-secondary-text-color;
+                }
+            }
         }
 
         // both links
