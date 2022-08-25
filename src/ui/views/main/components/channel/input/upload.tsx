@@ -210,7 +210,7 @@ export function UploadPanel(props: IUploadPanelProps) {
                         <VectorIcon id={spoileredAll() ? Icons.Unspoiler : Icons.Spoiler} />
                     </div>
                     <div class="ln-attachment-controls__remove" onClick={reset} title="Remove All">
-                        <VectorIcon id={Icons.CircleEmptyRemove} />
+                        <VectorIcon id={Icons.Close} />
                     </div>
                 </div>
             </Show>
@@ -276,7 +276,7 @@ function UploadPreview(props: IUploadPreviewProps) {
                     <VectorIcon id={props.meta.spoiler ? Icons.Unspoiler : Icons.Spoiler} />
                 </div>
                 <div class="ln-attachment-preview__remove" onClick={remove} title="Remove">
-                    <VectorIcon id={Icons.CircleEmptyMinus} />
+                    <VectorIcon id={Icons.Close} />
                 </div>
             </div>
 
