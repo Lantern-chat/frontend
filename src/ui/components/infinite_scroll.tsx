@@ -159,14 +159,21 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
 
     let [scrollHeight, setScrollHeight] = createSignal(height);
 
+    let cheight = 0;
+
     let do_resize = () => {
         polling = false;
         velocity = 0;
 
         let container = container_ref.current!,
+            new_cheight = container.clientHeight,
             new_height = container.scrollHeight;
 
-        if(new_height == height || paused) {
+        // don't adjust position if the container height is the same
+        // OR even if it did change don't fix if it's not at the start.
+        let ignore_cheight_change = cheight == new_cheight || anchor != props.start;
+
+        if((ignore_cheight_change && new_height == height) || paused) {
             pos = container.scrollTop;
             return;
         }
@@ -181,6 +188,7 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
         }
 
         pos = top;
+        cheight = new_cheight;
         setScrollHeight(height = new_height);
 
         if(top != container.scrollTop) {
