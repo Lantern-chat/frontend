@@ -82,9 +82,11 @@ export function MessageFeed() {
 
     let [feed, on_load_prev, on_load_next] = createVirtualizedFeed();
 
+    let has_timeline = () => false && !prefs.UseMobileView();
+
     return (
         <div class="ln-msg-list__flex-container">
-            <Show when={!prefs.UseMobileView()}>
+            <Show when={has_timeline()}>
                 <Timeline direction={0} position={0} />
             </Show>
 
@@ -98,7 +100,7 @@ export function MessageFeed() {
                 onScroll={on_scroll}
                 load_prev={on_load_prev}
                 containerClassList={{
-                    'has-timeline': !prefs.UseMobileView(),
+                    'has-timeline': has_timeline(),
                     'compact': prefs.CompactView(),
                     'group-lines': prefs.GroupLines(),
                 }}
@@ -116,7 +118,7 @@ export function MessageFeed() {
                 </InfiniteScrollContext.Provider>
             </InfiniteScroll>
 
-            <div class="ln-feed-footers" classList={{ 'has-timeline': !prefs.UseMobileView() }}>
+            <div class="ln-feed-footers" classList={{ 'has-timeline': has_timeline() }}>
                 <Show when={goto()}>
                     <GotoBottomFooter onClick={on_goto_click} use_mobile_view={prefs.UseMobileView()} />
                 </Show>

@@ -78,7 +78,7 @@
     right: 0;
 
     z-index: 2;
-    margin-inline-start: calc(1rem - 2.5px); // same as margin for input box, which is offset by 2.5px for the border
+    margin-inline: calc(1rem - 2.5px); // same as margin for input box, which is offset by 2.5px for the border
 }
 
 .ln-feed-footer {
@@ -93,6 +93,7 @@
 
     &:first-child {
         border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
     }
 
     #goto-now {
