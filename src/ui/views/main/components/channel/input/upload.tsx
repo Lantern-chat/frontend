@@ -50,7 +50,7 @@ interface IMappedFile {
 
 var COUNTER = 0;
 
-const SPOILER = "SPOILER_", DEFAULT_MIME = "application/octet-stream";
+const SPOILER = "SPOILER_";
 
 export function UploadPanel(props: IUploadPanelProps) {
     let files: Map<number, IMappedFile> = new Map();
@@ -142,7 +142,7 @@ export function UploadPanel(props: IUploadPanelProps) {
                     meta: {
                         width: meta.width,
                         height: meta.height,
-                        mime: file.type || DEFAULT_MIME,
+                        mime: file.type.includes('/') ? file.type : undefined,
                         filename: name,
                     },
                     stream: file,
@@ -282,7 +282,7 @@ function UploadPreview(props: IUploadPreviewProps) {
 
             <div class="ln-attachment-preview__preview"
                 classList={{ 'spoilered': props.meta.spoiler }}
-                title={file().type || DEFAULT_MIME}
+                title={file().type}
             >
                 <Show when={!errored()} fallback={icon}>
                     <Switch fallback={icon}>

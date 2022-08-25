@@ -91,7 +91,7 @@ function GenericAttachment(props: IMsgAttachmentProps) {
 
     return (
         <div class="ln-msg-attachment__generic">
-            <div>
+            <div title={props.attachment.mime}>
                 <MimeIcon category={categorize_mime(props.attachment.filename, props.attachment.mime)} />
             </div>
 
