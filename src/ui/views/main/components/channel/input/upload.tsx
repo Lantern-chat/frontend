@@ -50,6 +50,8 @@ interface IMappedFile {
 
 var COUNTER = 0;
 
+const SPOILER = "SPOILER_", DEFAULT_MIME = "application/octet-stream";
+
 export function UploadPanel(props: IUploadPanelProps) {
     let files: Map<number, IMappedFile> = new Map();
     let [file_meta, setFileMeta] = createStore<Array<IFileMeta>>([]);
@@ -68,7 +70,7 @@ export function UploadPanel(props: IUploadPanelProps) {
         for(let file of new_files) {
             let id = COUNTER++;
             files.set(id, { file, ref: createRef() });
-            new_arr.push({ id, progress: 0, spoiler: file.name.startsWith("SPOILER_") });
+            new_arr.push({ id, progress: 0, spoiler: file.name.startsWith(SPOILER) });
         }
 
         return [...arr, ...new_arr];
@@ -128,11 +130,11 @@ export function UploadPanel(props: IUploadPanelProps) {
             files.forEach(({ file }, id) => {
                 let meta = file_meta.find(v => v.id == id)!;
 
-                let name = file.name, was_spoilered = name.startsWith("SPOILER_");
+                let name = file.name, was_spoilered = name.startsWith(SPOILER);
                 if(was_spoilered && !meta.spoiler) {
-                    name = name.slice("SPOILER_".length);
+                    name = name.slice(SPOILER.length);
                 } else if(!was_spoilered && meta.spoiler) {
-                    name = "SPOILER_" + name;
+                    name = SPOILER + name;
                 }
 
                 streams.push({
@@ -140,7 +142,7 @@ export function UploadPanel(props: IUploadPanelProps) {
                     meta: {
                         width: meta.width,
                         height: meta.height,
-                        mime: file.type,
+                        mime: file.type || DEFAULT_MIME,
                         filename: name,
                     },
                     stream: file,
@@ -208,7 +210,7 @@ export function UploadPanel(props: IUploadPanelProps) {
                         <VectorIcon id={spoileredAll() ? Icons.Unspoiler : Icons.Spoiler} />
                     </div>
                     <div class="ln-attachment-controls__remove" onClick={reset} title="Remove All">
-                        <VectorIcon id={Icons.Trash} />
+                        <VectorIcon id={Icons.CircleEmptyRemove} />
                     </div>
                 </div>
             </Show>
@@ -274,11 +276,14 @@ function UploadPreview(props: IUploadPreviewProps) {
                     <VectorIcon id={props.meta.spoiler ? Icons.Unspoiler : Icons.Spoiler} />
                 </div>
                 <div class="ln-attachment-preview__remove" onClick={remove} title="Remove">
-                    <VectorIcon id={Icons.Trash} />
+                    <VectorIcon id={Icons.CircleEmptyMinus} />
                 </div>
             </div>
 
-            <div class="ln-attachment-preview__preview" classList={{ 'spoilered': props.meta.spoiler }}>
+            <div class="ln-attachment-preview__preview"
+                classList={{ 'spoilered': props.meta.spoiler }}
+                title={file().type || DEFAULT_MIME}
+            >
                 <Show when={!errored()} fallback={icon}>
                     <Switch fallback={icon}>
                         <Match when={mime_prefix() === 'image'}>
@@ -292,7 +297,7 @@ function UploadPreview(props: IUploadPreviewProps) {
                 </Show>
             </div>
 
-            <UIText text={file().name} />
+            <span class="ui-text" textContent={file().name} title={file().name} />
 
             <span class="ln-attachment-preview__progress"
                 style={{ 'display': props.meta.progress > 0 ? 'inline-block' : 'none' }}>
