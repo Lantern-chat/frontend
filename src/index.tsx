@@ -1,7 +1,8 @@
-import { render, DelegatedEvents } from "solid-js/web";
-
 import "lib/polyfills";
 
+import { render, DelegatedEvents } from "solid-js/web";
+
+// we aren't using event delegation
 DelegatedEvents.clear();
 
 import "ui/styles/root.scss";

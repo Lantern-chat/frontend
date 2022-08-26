@@ -139,6 +139,8 @@
 $btn-scale: 1.1;
 
 .ln-btn {
+    flex-shrink: 0;
+    text-align: center;
     user-select: none;
     color: $lnx-primary-text-color;
     display: inline-flex;
