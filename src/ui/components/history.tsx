@@ -10,13 +10,12 @@ export interface ILinkProps extends JSX.AnchorHTMLAttributes<HTMLElement> {
     state?: State,
     replace?: boolean,
     useDiv?: boolean,
-    onNavigate?: JSX.EventHandler<HTMLElement, UIEvent>,
+    onNavigate?(): void,
     ref?: HTMLElement | ((el: HTMLElement) => void),
 }
 
 export function canNavigate(target: string | undefined, event: MouseEvent | TouchEvent): boolean {
-    return !event.defaultPrevented && // onClick prevented default
-        (!target || target === "_self") && // let browser handle "target=_blank" etc.
+    return (!target || target === "_self") && // let browser handle "target=_blank" etc.
         !(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey); // ignore clicks with modifier keys
 }
 
@@ -36,8 +35,9 @@ export function Link(props: ILinkProps) {
     let method = () => props.replace ? HISTORY.replace : HISTORY.pm;
 
     let onClick = async (event: MouseEvent) => {
+        event.preventDefault(); // must be called before any async parts
+
         if(!(await main.tryNav(props.href))) {
-            event.preventDefault();
             return;
         }
 
@@ -45,21 +45,19 @@ export function Link(props: ILinkProps) {
             return callEventHandler(event, props.onClick as any);
         }
 
-        callEventHandler(event, props.onNavigate);
+        props.onNavigate?.();
         callEventHandler(event, props.onClick as any);
 
-        if(props.noAction) { event.preventDefault(); }
-
         // canNavigate + ignore everything but left clicks
-        else if(canNavigate(props.target, event) && event.button === 0) {
-            event.preventDefault();
+        if(!props.noAction && canNavigate(props.target, event) && event.button === 0) {
             method()(props.href!, props.state);
         }
     };
 
     let onTouchEnd = async (event: MouseEvent) => {
+        event.preventDefault(); // must be called before any async parts
+
         if(!(await main.tryNav(props.href))) {
-            event.preventDefault();
             return;
         }
 
@@ -67,12 +65,10 @@ export function Link(props: ILinkProps) {
             return callEventHandler(event, props.onTouchEnd as any);
         }
 
-        callEventHandler(event, props.onNavigate);
+        props.onNavigate?.();
         callEventHandler(event, props.onTouchEnd as any);
 
-        if(props.noAction) { event.preventDefault(); }
-        else if(canNavigate(props.target, event)) {
-            event.preventDefault();
+        if(!props.noAction && canNavigate(props.target, event)) {
             method()(props.href!, props.state);
         }
     };

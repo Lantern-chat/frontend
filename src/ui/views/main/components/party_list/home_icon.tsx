@@ -14,13 +14,9 @@ export interface IHomeProps {
 export function Home(props: IHomeProps) {
     let ref = createRef<HTMLLIElement>();
 
-    let onNavigate = (e: Event) => {
-        ('@me' != props.active_party && props.can_navigate) || e.preventDefault()
-    };
-
     return (
         <li id="user-home" class={'@me' == props.active_party ? 'selected' : ''} ref={ref}>
-            <Link title="Home" href="/channels/@me" onNavigate={onNavigate} >
+            <Link title="Home" href="/channels/@me" >
                 <Avatar rounded username="Home">
                     <VectorIcon id={Icons.Home} />
                 </Avatar>

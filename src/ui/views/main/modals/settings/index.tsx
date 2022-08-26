@@ -7,6 +7,7 @@ import { RootState, useRootDispatch, useRootSelector } from "state/root";
 import { HISTORY } from "state/global";
 import { activeParty, activeRoom } from "state/selectors/active";
 import { room_url } from "config/urls";
+import { MainContext } from "ui/hooks/useMain";
 
 import { Link } from "ui/components/history";
 import { Modal } from "ui/components/modal";
@@ -107,6 +108,15 @@ function SettingsTabs(props: ISettingsTabsProps) {
 
     let is_tab_selected = createSelector(() => tab().p);
 
+    let main = useContext(MainContext);
+
+    let on_click_return = async () => {
+        if(!(await main.tryNav(undefined))) {
+            return;
+        }
+        props.do_return();
+    };
+
     return (
         <>
             <Show when={!state.use_mobile_view || !state.active_tab}>
@@ -151,7 +161,7 @@ function SettingsTabs(props: ISettingsTabsProps) {
 
                         <h3>{LL().main.settings[tab().n]()}</h3>
 
-                        <div onClick={props.do_return}>
+                        <div onClick={on_click_return}>
                             <span textContent={LL().main.settings.RETURN()} />
                         </div>
                     </div>

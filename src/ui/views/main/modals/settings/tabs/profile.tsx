@@ -14,7 +14,11 @@ import { fetch_profile } from "state/commands/profile";
 import { sendBlob } from "state/commands/sendfile";
 import { selectCachedUser } from "state/selectors/selectCachedUser";
 
+import { useOnNav } from "ui/hooks/useMain";
 import { createRef } from "ui/hooks/createRef";
+import { createOnPredicate } from "ui/hooks/createOnChange";
+import { FullscreenModal } from "ui/components/modal";
+import { UIText } from "ui/components/common/ui-text";
 import { ColorPicker } from "ui/components/common/color_picker";
 import { SimpleUserCard } from "ui/views/main/components/menus/user_card";
 import { Spinner } from "ui/components/common/spinners/spinner";
@@ -35,6 +39,8 @@ function compare_color(x: RGBColor, y: RGBColor): boolean {
     return x.r == y.r && x.g == y.g && x.b == y.b;
 }
 
+let on_file = (e: Event, cb: Setter<File | undefined>) => cb((e.currentTarget as HTMLInputElement).files?.[0]);
+
 function ProfileSettingsTabInner() {
     let store = useRootStore();
     onMount(() => store.dispatch(fetch_profile(store.state.user.user!.id)));
@@ -42,34 +48,62 @@ function ProfileSettingsTabInner() {
 
     let bits = createMemo(() => cached_user()?.profile?.bits || 0);
 
+    let initial_color = createMemo(() => u82float(unpack_rgb(bits() >> 8)));
+    let initial_roundness = () => bits() & 0x7F;
+    let initial_status = () => cached_user().profile?.status || '';
+    let initial_bio = () => cached_user().profile?.bio || '';
+
+    let [color, setColor] = createSignal(initial_color());
+    let [roundness, setRoundness] = createSignal(initial_roundness());
+    let [status, setStatus] = createSignal(initial_status());
+    let [bio, setBio] = createSignal(initial_bio());
+
+
     let [localAvatarUrl, avatarFile, setAvatarFile] = createFileUrl();
     let [localBannerUrl, bannerFile, setBannerFile] = createFileUrl();
 
-    let on_file = (e: Event, cb: Setter<File | undefined>) => cb((e.currentTarget as HTMLInputElement).files?.[0]);
-
     let avatar_input = createRef();
     let banner_input = createRef();
-
-    let initial_color = createMemo(() => u82float(unpack_rgb(bits() >> 8)));
-    let [color, setColor] = createSignal(initial_color());
 
     let can_show_remove_avatar = () => localAvatarUrl() !== null && (localAvatarUrl() || cached_user().profile?.avatar);
     let can_show_remove_banner = () => localBannerUrl() !== null && (localBannerUrl() || cached_user().profile?.banner);
 
     let [editingColor, setEditingColor] = createSignal(false);
 
-    let initial_roundness = () => bits() & 0x7F;
-    let [roundness, setRoundness] = createSignal(initial_roundness());
-
     let percent = createPercentFormatter(0);
 
-    let initial_status = () => cached_user().profile?.status || '';
-    let initial_bio = () => cached_user().profile?.bio || '';
-
-    let [status, setStatus] = createSignal(initial_status());
-    let [bio, setBio] = createSignal(initial_bio());
-
     let [hasChanges, setHasChanges] = createSignal(false);
+
+    let [saving, setSaving] = createSignal(false);
+    let [pendingAction, setPendingAction] = createSignal(false);
+
+    let wait_for_not_pending = createOnPredicate(pendingAction, v => !v);
+    let wait_for_not_saving = createOnPredicate(saving, v => !v);
+    let canceled_nav = false;
+
+    useOnNav(async (url) => {
+        // may as well just avoid extra navigation...
+        if(url == '/settings/profile') {
+            return false;
+        }
+
+        if(hasChanges()) {
+            if(saving()) {
+                await wait_for_not_saving();
+            } else {
+                setPendingAction(true);
+
+                await wait_for_not_pending();
+            }
+        }
+
+        if(canceled_nav) {
+            // reset `canceled_nav` and return false in one swoop.
+            return canceled_nav = false;
+        }
+
+        return true;
+    });
 
     let reset = () => {
         setAvatarFile(undefined);
@@ -78,11 +112,13 @@ function ProfileSettingsTabInner() {
         setRoundness(initial_roundness());
         setStatus(initial_status());
         setBio(initial_bio());
+        setPendingAction(false);
     };
 
     let reset_if_changed = () => { if(hasChanges() && !saving()) reset() };
 
     createEffect(() => {
+        // acquire all these first to make this effect dependent on them
         let af = avatarFile(),
             bf = bannerFile(),
             r = roundness(),
@@ -90,6 +126,7 @@ function ProfileSettingsTabInner() {
             s = status(),
             b = bio();
 
+        // actually check for changes
         setHasChanges(af !== undefined || bf !== undefined
             || r != initial_roundness()
             || !compare_color(c, initial_color())
@@ -103,8 +140,7 @@ function ProfileSettingsTabInner() {
         if(p) { p.avatar; p.banner; p.bits; p.bio; p.status; }
     }, reset));
 
-    let [saving, setSaving] = createSignal(false);
-
+    // TODO: If a navigation is attempted, make sure to cancel that if an error occurs
     let save = async () => {
         if(!hasChanges() || saving()) return;
 
@@ -113,6 +149,7 @@ function ProfileSettingsTabInner() {
         try {
             let limits = window.config.limits;
 
+            // ensure null values are passed through
             let [resized_avatar, resized_banner] = await Promise.all([
                 localAvatarUrl() != null ? resize_image(localAvatarUrl()!, limits.avatar_width, limits.avatar_width) : (localAvatarUrl() as null | undefined),
                 localBannerUrl() != null ? resize_image(localBannerUrl()!, limits.banner_width, limits.banner_height) : (localBannerUrl() as null | undefined),
@@ -168,6 +205,7 @@ function ProfileSettingsTabInner() {
             // TODO: Catch errors
         } finally {
             setSaving(false);
+            setPendingAction(false);
         }
     };
 
@@ -175,6 +213,28 @@ function ProfileSettingsTabInner() {
         <div class="ln-settings-profile">
             <input type="file" ref={avatar_input} onChange={e => on_file(e, setAvatarFile)} accept="image/*" />
             <input type="file" ref={banner_input} onChange={e => on_file(e, setBannerFile)} accept="image/*" />
+
+            <Show when={pendingAction()}>
+                <FullscreenModal blur>
+                    <div class="ln-settings-profile__confirm">
+                        <div>
+                            <UIText text="You have unsaved changes to your profile!" />
+
+                            <div class="profile-submit">
+                                <div class="ln-btn" onClick={save} classList={{ 'disabled': !hasChanges() }}>
+                                    <Show fallback="Save" when={saving()}>
+                                        <Spinner size="2em" />
+                                    </Show>
+                                </div>
+
+                                <div class="ln-btn" onClick={() => { canceled_nav = true; setPendingAction(false); }}>Stay on Page</div>
+
+                                <div class="ln-btn" onClick={reset_if_changed} classList={{ 'disabled': !hasChanges() || saving() }}>Discard</div>
+                            </div>
+                        </div>
+                    </div>
+                </FullscreenModal>
+            </Show>
 
             <form>
                 <div class="ln-settings-profile__inner">

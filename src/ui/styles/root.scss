@@ -40,6 +40,17 @@ body {
     background-color: $lnx-primary-surface-color;
 }
 
+#ln-root > *,
+#ln-modal-root > div:not(:last-child) > * {
+    .ln-enable-motion & {
+        transition: 0.2s filter ease-out;
+    }
+
+    .ln-root-blur.ln-enable-motion & {
+        filter: blur(4px);
+    }
+}
+
 #ln-modal-root {
     &:empty {
         display: none;
