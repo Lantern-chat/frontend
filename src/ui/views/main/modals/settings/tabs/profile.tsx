@@ -250,9 +250,12 @@ function ProfileSettingsTabInner() {
                         Avatar Roundness (<label for="avatar_roundness" textContent={percent(roundness() / 127)} />)
                     </h4>
                     <div class="roundness-setting">
-                        <div>
+                        <div style={{
+                            '--avatar-roundness-raw': roundness() / 127,
+                            '--avatar-roundness': br(roundness() / 127),
+                            '--avatar-roundness-formatted': '"' + percent(roundness() / 127) + '"'
+                        }}>
                             <input id="avatar_roundness" type="range" min="0" max="127" step="1"
-                                style={{ '--avatar-roundness': br(roundness() / 127) }}
                                 list="roundness-snap"
                                 value={roundness()}
                                 onInput={e => setRoundness(parseInt((e.currentTarget as HTMLInputElement).value))} />

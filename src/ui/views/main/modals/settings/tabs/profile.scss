@@ -184,6 +184,34 @@
 }
 
 .roundness-setting {
+    > div {
+        position: relative;
+        &::after {
+            content: var(--avatar-roundness-formatted, "");
+            position: absolute;
+            width: 2rem;
+            height: 2rem;
+            left: calc(2 * var(--avatar-roundness, 50%));
+            font-size: 0.75em;
+            touch-action: none;
+
+            pointer-events: none;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            margin-left: calc(-2rem * var(--avatar-roundness-raw));
+            z-index: 1;
+
+            color: #333;
+
+            .ln-light-theme & {
+                color: #eee;
+            }
+        }
+    }
+
     input[type="range"] {
         appearance: none;
         background: rgba(128, 128, 128, 0.5);
