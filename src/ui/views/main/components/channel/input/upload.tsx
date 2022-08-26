@@ -12,6 +12,7 @@ import { UIText } from "ui/components/common/ui-text";
 import { MimeIcon } from "ui/components/mime";
 import { FullscreenModal } from "ui/components/modal";
 import { SetController } from "ui/hooks/createController";
+import { createBytesFormatter } from "ui/hooks/createFormatter";
 import { createRef, Ref } from "ui/hooks/createRef";
 import { useLocale } from "ui/i18n";
 
@@ -236,7 +237,7 @@ interface IUploadPreviewProps {
 }
 
 function UploadPreview(props: IUploadPreviewProps) {
-    const { LL } = useLocale();
+    const L = useLocale(), { LL } = L;
 
     const prefs = usePrefs();
 
@@ -271,6 +272,13 @@ function UploadPreview(props: IUploadPreviewProps) {
         }
     };
 
+    let bytes = createBytesFormatter(L);
+
+    let title = () => {
+        let t = file().type, b = bytes(file().size);
+        return t ? (t + ' - ' + b) : b;
+    };
+
     return (
         <li class="ln-attachment-preview" classList={{ 'removing': removing(), 'uploading': props.uploading }}>
             <div class="ln-attachment-preview__controls">
@@ -285,7 +293,7 @@ function UploadPreview(props: IUploadPreviewProps) {
 
             <div class="ln-attachment-preview__preview"
                 classList={{ 'spoilered': props.meta.spoiler }}
-                title={file().type}
+                title={title()}
             >
                 <Show when={!errored()} fallback={icon}>
                     <Switch fallback={icon}>

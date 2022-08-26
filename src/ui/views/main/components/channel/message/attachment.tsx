@@ -67,17 +67,21 @@ export function MsgAttachment(props: IMsgAttachmentProps) {
             <Show when={!errored() && !prefs.LowBandwidthMode()} fallback={<GenericAttachment {...props} />}>
                 <Switch fallback={<GenericAttachment {...props} />}>
                     <Match when={mime_prefix() === 'image' && !unknown() && !large()}>
+                        <Show when={prefs.ShowMediaMetadata()}><MediaMetadata {...props} /></Show>
                         <ImageAttachment img={common()} src={src()} attachment={props.attachment} use_mobile_view={prefs.UseMobileView()} />
                     </Match>
 
                     <Match when={mime_prefix() === 'video' && !unknown()}>
+                        <Show when={prefs.ShowMediaMetadata()}><MediaMetadata {...props} /></Show>
                         <VideoAttachment vid={common()} src={src()} attachment={props.attachment} use_mobile_view={prefs.UseMobileView()} />
                     </Match>
 
                     <Match when={mime_prefix() === 'audio'}>
+                        <Show when={prefs.ShowMediaMetadata()}><MediaMetadata {...props} /></Show>
                         <AudioAttachment audio={common()} src={src()} attachment={props.attachment} />
                     </Match>
                 </Switch>
+
                 <Show when={spoilered()}>
                     <span class="spoiler-label" title={LL().main.SPOILER_TITLE()}>
                         <UIText text={LL().main.SPOILER(0)} />
@@ -88,13 +92,41 @@ export function MsgAttachment(props: IMsgAttachmentProps) {
     )
 }
 
+function MediaMetadata(props: IMsgAttachmentProps) {
+    let bytes_formatter = createBytesFormatter();
+
+    let metadata = () => {
+        let { mime, size } = props.attachment;
+        let bytes = bytes_formatter(size);
+
+        return '(' + bytes + (mime ? (' - ' + mime) : '') + ')';
+    };
+
+    return (
+        <div class="ui-text ln-attachment-metadata ln-attachment-metadata--full">
+            <span textContent={props.attachment.filename} title={props.attachment.filename} />
+            &nbsp;{metadata()}
+        </div>
+    );
+}
+
 function GenericAttachment(props: IMsgAttachmentProps) {
+    const prefs = usePrefs();
     let url = createMemo(() => message_attachment_url(props.msg.room_id, props.attachment.id, props.attachment.filename));
     let title = createMemo(() => (props.attachment.filename + ' (' + props.attachment.size + ')'));
 
     let eat = createClickEater();
 
     let bytes_formatter = createBytesFormatter();
+
+    let metadata = () => {
+        let bytes = bytes_formatter(props.attachment.size);
+        if(props.attachment.mime && prefs.ShowMediaMetadata()) {
+            return props.attachment.mime + ' - ' + bytes;
+        } else {
+            return bytes;
+        }
+    };
 
     return (
         <div class="ln-msg-attachment__generic">
@@ -104,14 +136,14 @@ function GenericAttachment(props: IMsgAttachmentProps) {
 
             <div class="ln-attachment-link ui-text">
                 <a target="__blank" title={title()} href={url()} onContextMenu={eat} textContent={props.attachment.filename} />
-                <span class="ln-attachment-size" textContent={bytes_formatter(props.attachment.size)} />
+                <span class="ln-attachment-metadata" textContent={metadata()} />
             </div>
 
             <a target="__blank" title={title()} href={url() + '?download'} class="ln-msg-attachment__download">
                 <VectorIcon id={Icons.Save} />
             </a>
         </div>
-    )
+    );
 }
 
 interface IImageAttachmentProps {

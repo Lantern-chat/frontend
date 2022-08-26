@@ -43,7 +43,7 @@ function compare_color(x: RGBColor, y: RGBColor): boolean {
 let on_file = (e: Event, cb: Setter<File | undefined>) => cb((e.currentTarget as HTMLInputElement).files?.[0]);
 
 function ProfileSettingsTabInner() {
-    const { LL } = useLocale();
+    const L = useLocale(), { LL } = L;
 
     let store = useRootStore();
     onMount(() => store.dispatch(fetch_profile(store.state.user.user!.id)));
@@ -73,7 +73,7 @@ function ProfileSettingsTabInner() {
 
     let [editingColor, setEditingColor] = createSignal(false);
 
-    let percent = createPercentFormatter(0);
+    let percent = createPercentFormatter(0, L);
 
     let [hasChanges, setHasChanges] = createSignal(false);
 

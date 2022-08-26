@@ -113,6 +113,8 @@ const es_main: NamespaceMainTranslation = {
 			]
 		},
 		media: {
+			SHOW_MEDIA_METADATA: "Mostrar metadatos multimedia",
+			SHOW_MEDIA_METADATA_SUBTEXT: "Muestra el nombre del archivo, el tipo MIME y el tamaño del archivo en los archivos adjuntos",
 			MUTE_MEDIA: "Silenciar medios por defecto",
 			HIDE_UNKNOWN: "Deshabilitar archivos adjuntos de tamaño desconocido",
 			USE_PLATFORM_EMOJIS: "Usar emojis de plataforma",

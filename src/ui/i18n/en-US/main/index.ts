@@ -114,6 +114,8 @@ const enUS_main: BaseTranslation = {
             ]
         },
         media: {
+            SHOW_MEDIA_METADATA: "Show Media Metadata",
+            SHOW_MEDIA_METADATA_SUBTEXT: "Displays file name, MIME type, and file size on attachments",
             MUTE_MEDIA: "Mute Media by Default",
             HIDE_UNKNOWN: "Disable Attachments of Unknown Size",
             USE_PLATFORM_EMOJIS: "Use Platform Emojis",

@@ -551,6 +551,14 @@ export type NamespaceMainTranslation = {
 		}
 		media: {
 			/**
+			 * Show Media Metadata
+			 */
+			SHOW_MEDIA_METADATA: string
+			/**
+			 * Displays file name, MIME type, and file size on attachments
+			 */
+			SHOW_MEDIA_METADATA_SUBTEXT: string
+			/**
 			 * Mute Media by Default
 			 */
 			MUTE_MEDIA: string
@@ -1168,6 +1176,14 @@ export type TranslationFunctions = {
 				}
 			}
 			media: {
+				/**
+				 * Show Media Metadata
+				 */
+				SHOW_MEDIA_METADATA: () => LocalizedString
+				/**
+				 * Displays file name, MIME type, and file size on attachments
+				 */
+				SHOW_MEDIA_METADATA_SUBTEXT: () => LocalizedString
 				/**
 				 * Mute Media by Default
 				 */

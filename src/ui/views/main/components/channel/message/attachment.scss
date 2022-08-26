@@ -11,15 +11,23 @@
     //    margin-bottom: 0.5em;
     //}
 
-    // spacing between multiple attachments
-    &:not(:first-child) > * {
+    & > * {
         margin-top: 0.5em;
     }
 
-    // first attachments that come after some message text, needs spacing after text
-    .ln-msg ~ & > *:first-child {
-        margin-top: 0.5em;
+    .ln-msg__title + & > div:first-child {
+        margin-top: 0;
     }
+
+    // // spacing between multiple attachments
+    // &:not(:first-child) > * {
+    //     margin-top: 0.5em;
+    // }
+
+    // first attachments that come after some message text, needs spacing after text
+    //.ln-msg ~ & > *:first-child {
+    //    margin-top: 0.5em;
+    //}
 
     // // first attachments with no preceeding text, no spacing (otherwise since it's not the first child in parent the "multiple attachments" rule applies)
     // .ln-msg__title ~ & > *:first-child {
@@ -183,7 +191,20 @@
     min-width: 0; // prevents it from overflowing if text gets too long
 }
 
-.ln-attachment-size {
+.ln-attachment-metadata {
     color: $lnx-secondary-text-color;
     font-size: 0.8em;
+
+    &--full {
+        margin-bottom: -0.25em;
+        display: flex;
+
+        span {
+            overflow: hidden;
+            white-space: nowrap;
+            max-width: min(60%, 70vw);
+            display: inline-block;
+            text-overflow: ellipsis;
+        }
+    }
 }

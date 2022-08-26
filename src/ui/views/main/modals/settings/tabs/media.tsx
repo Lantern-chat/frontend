@@ -8,6 +8,11 @@ export function MediaSettingsTab() {
 
     return (
         <form class="ln-settings-form">
+            <TogglePrefsFlag for="show_metadata"
+                label={LL().main.settings.media.SHOW_MEDIA_METADATA()}
+                flag={UserPreferenceFlags.ShowMediaMetadata}
+                subtext={LL().main.settings.media.SHOW_MEDIA_METADATA_SUBTEXT()} />
+
             <TogglePrefsFlag for="mute_media"
                 label={LL().main.settings.media.MUTE_MEDIA()}
                 flag={UserPreferenceFlags.MuteMedia} />
