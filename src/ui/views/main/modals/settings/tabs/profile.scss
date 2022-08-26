@@ -30,17 +30,27 @@
             padding: 2em;
             border-radius: 2em;
             box-shadow: 0 0 1em rgba(0, 0, 0, 0.3);
+            border: 1px solid $lnx-secondary-surface-color;
         }
 
         .ui-text {
-            font-size: 2rem;
+            font-size: min(2rem, 5vw);
         }
 
         .profile-submit {
-            margin-block-start: 2em;
+            margin-block-start: 1em;
             display: flex;
             justify-content: space-around;
             width: min(100vw, 30em);
+            max-width: 70vw;
+
+            @media (max-width: $ln-max-channel-width) {
+                flex-direction: column;
+            }
+        }
+
+        .ln-btn {
+            margin-block-start: 1em;
         }
     }
 
