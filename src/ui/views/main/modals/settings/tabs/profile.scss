@@ -41,8 +41,9 @@
             margin-block-start: 1em;
             display: flex;
             justify-content: space-around;
-            width: min(100vw, 30em);
+            //width: min(100vw, 30em);
             max-width: 70vw;
+            flex-wrap: wrap;
 
             @media (max-width: $ln-max-channel-width) {
                 flex-direction: column;
@@ -51,6 +52,8 @@
 
         .ln-btn {
             margin-block-start: 1em;
+            margin-inline: 1em;
+            flex: 1 1 auto;
         }
     }
 
