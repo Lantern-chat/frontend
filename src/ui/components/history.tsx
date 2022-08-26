@@ -3,6 +3,7 @@ import { History, State, Location } from 'history';
 
 import { HISTORY, IHistoryExt } from 'state/global';
 import { Dynamic } from "solid-js/web";
+import { MainContext } from "ui/hooks/useMain";
 
 export interface ILinkProps extends JSX.AnchorHTMLAttributes<HTMLElement> {
     noAction?: boolean,
@@ -20,11 +21,9 @@ export function canNavigate(target: string | undefined, event: MouseEvent | Touc
 }
 
 function callEventHandler<T extends UIEvent>(event: T, handler?: JSX.EventHandler<HTMLElement, T>) {
-    if(handler) {
-        try { handler(event as any) } catch(ex) {
-            event.preventDefault();
-            throw ex;
-        }
+    try { handler?.(event as any) } catch(ex) {
+        event.preventDefault();
+        throw ex;
     }
 }
 
@@ -33,9 +32,15 @@ function callEventHandler<T extends UIEvent>(event: T, handler?: JSX.EventHandle
 //}
 
 export function Link(props: ILinkProps) {
+    let main = useContext(MainContext);
     let method = () => props.replace ? HISTORY.replace : HISTORY.pm;
 
-    let onClick = (event: MouseEvent) => {
+    let onClick = async (event: MouseEvent) => {
+        if(!(await main.tryNav(props.href))) {
+            event.preventDefault();
+            return;
+        }
+
         if(!props.href) {
             return callEventHandler(event, props.onClick as any);
         }
@@ -52,7 +57,12 @@ export function Link(props: ILinkProps) {
         }
     };
 
-    let onTouchEnd = (event: MouseEvent) => {
+    let onTouchEnd = async (event: MouseEvent) => {
+        if(!(await main.tryNav(props.href))) {
+            event.preventDefault();
+            return;
+        }
+
         if(!props.href) {
             return callEventHandler(event, props.onTouchEnd as any);
         }
@@ -67,8 +77,8 @@ export function Link(props: ILinkProps) {
         }
     };
 
-    let merged_props = mergeProps(props, { onClick, onTouchEnd });
-
     // NOTE: useDiv is a permenant choice
-    return props.useDiv ? <div {...merged_props as any} /> : <a {...merged_props as any} />;
+    return props.useDiv ?
+        <div {...props as any} onClick={onClick} onTouchEnd={onTouchEnd} /> :
+        <a {...props as any} onClick={onClick} onTouchEnd={onTouchEnd} />;
 }

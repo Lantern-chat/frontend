@@ -1,4 +1,4 @@
-import { Accessor, createContext, createEffect, createMemo, createSignal, onCleanup, Setter, useContext } from "solid-js";
+import { Accessor, createContext, createEffect, createMemo, createSignal, onCleanup, onMount, Setter, useContext } from "solid-js";
 import { createRef, Ref } from "./createRef";
 
 export const enum Hotkey {
@@ -152,6 +152,7 @@ export function parseHotkey(e: KeyboardEvent): Hotkey | undefined {
 
 export type OnClickHandler = (e: MouseEvent) => void;
 export type OnKeyHandler = (e: KeyboardEvent) => void;
+export type OnNavHandler = (url: string | undefined) => (boolean | Promise<boolean>);
 
 export interface IMainContext {
     main: Ref<HTMLElement | undefined>,
@@ -166,6 +167,11 @@ export interface IMainContext {
     triggerAnyHotkey(e: KeyboardEvent): void;
     hasKey(key: string): boolean;
     consumeKey(key: string): boolean;
+
+    addOnNav(listener: OnNavHandler): void;
+    removeOnNav(listener: OnNavHandler): void;
+
+    tryNav(url: string | undefined): boolean | Promise<boolean>;
 }
 
 const noop = () => { };
@@ -180,7 +186,19 @@ export const MainContext = createContext<IMainContext>({
     triggerAnyHotkey: noop,
     hasKey: () => false,
     consumeKey: () => false,
+    addOnNav: noop,
+    removeOnNav: noop,
+    tryNav: () => true,
 });
+
+export function useOnNav(cb: OnNavHandler) {
+    let main = useContext(MainContext);
+
+    onMount(() => {
+        main.addOnNav(cb);
+        onCleanup(() => main.removeOnNav(cb));
+    });
+}
 
 const EVENTS = {
     'onClick': 'on:click',

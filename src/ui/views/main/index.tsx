@@ -56,7 +56,7 @@ if(!GLOBAL.gateway) {
 
 import { setPresence } from "state/commands/presence";
 
-import { Hotkey, IMainContext, MainContext, OnClickHandler, OnKeyHandler, parseHotkey, useMainHotkey } from "ui/hooks/useMain";
+import { Hotkey, IMainContext, MainContext, OnClickHandler, OnKeyHandler, OnNavHandler, parseHotkey, useMainHotkey } from "ui/hooks/useMain";
 import { TimeProvider } from "ui/hooks/createTimestamp";
 
 import { createRef } from "ui/hooks/createRef";
@@ -105,6 +105,29 @@ export default function Main() {
 
     let click_listeners: OnClickHandler[] = [];
     let key_listeners: { [key: number]: OnKeyHandler[] } = {};
+    let nav_listeners: OnNavHandler[] = [];
+
+    let addOnNav = (listener: OnNavHandler) => {
+        nav_listeners.push(listener);
+    };
+    let removeOnNav = (listener: OnNavHandler) => {
+        nav_listeners = nav_listeners.filter(l => l != listener);
+    };
+    let tryNav = (url: string | undefined) => {
+        if(nav_listeners.length == 0) {
+            return true;
+        }
+
+        let tries = nav_listeners.map(l => l(url));
+
+        for(let t of tries) {
+            if(typeof t !== 'boolean') {
+                return Promise.all(tries).then(tries => tries.reduce((a, b) => a && b, true));
+            }
+        }
+
+        return tries.reduce((a, b) => a && b, true);
+    };
 
     let addOnClick = (listener: OnClickHandler) => {
         click_listeners.push(listener);
@@ -185,6 +208,9 @@ export default function Main() {
         triggerAnyHotkey,
         hasKey,
         consumeKey,
+        addOnNav,
+        removeOnNav,
+        tryNav,
     };
 
     createEffect(() => {
