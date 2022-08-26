@@ -113,11 +113,9 @@ export function MessageBox() {
 
     let eat = createClickEater();
 
-    let file_input = createRef<HTMLInputElement>();
-
     let click_file = (e: MouseEvent) => {
         eat(e);
-        file_input.current?.click();
+        fc()?.click();
         e.preventDefault();
         e.stopPropagation();
     };
@@ -181,7 +179,7 @@ export function MessageBox() {
                     'ln-msg-box--disabled': !state.active_room,
                 }}
             >
-                <UploadPanel input={file_input} onChange={setFiles} fc={setFC} />
+                <UploadPanel onChange={setFiles} fc={setFC} />
 
                 <div on:click={on_click_focus} class="ln-msg-box">
                     <div class="ln-typing ln-typing__top">

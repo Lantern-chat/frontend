@@ -24,14 +24,11 @@ let eat = (e: Event) => {
 export interface IFileUploadController {
     reset(): void;
     upload(): Promise<Array<Snowflake | undefined>>;
+    click(): void;
 }
 
 export interface IUploadPanelProps {
-    /// Will be set to the most recent input element.
-    input: Ref<HTMLInputElement | undefined>,
-
     onChange(size: number): void;
-
     fc: SetController<IFileUploadController>;
 }
 
@@ -84,15 +81,14 @@ export function UploadPanel(props: IUploadPanelProps) {
         }
     };
 
-    let inputs: HTMLDivElement | undefined;
+    let inputs: HTMLDivElement | undefined, newest_input: HTMLInputElement;
     let add_input = () => {
-        let new_input = document.createElement('input');
-        new_input.type = 'file';
-        new_input.multiple = true;
-        new_input.addEventListener('input', on_file_input);
+        newest_input = document.createElement('input');
+        newest_input.type = 'file';
+        newest_input.multiple = true;
+        newest_input.addEventListener('input', on_file_input);
 
-        inputs!.appendChild(new_input);
-        props.input(new_input);
+        inputs!.appendChild(newest_input);
     };
 
     let on_wheel = (e: WheelEvent) => {
@@ -111,11 +107,13 @@ export function UploadPanel(props: IUploadPanelProps) {
 
         let child;
         while(child = inputs!.firstChild) { child.remove(); }
+
         add_input();
         setUploading(false);
     };
 
     props.fc({
+        click() { newest_input.click() },
         reset,
         async upload() {
             setUploading(true);
@@ -264,7 +262,7 @@ function UploadPreview(props: IUploadPreviewProps) {
             props.onRemove(props.meta.id);
         } else {
             setRemoving(true);
-            setTimeout(() => props.onRemove(props.meta.id), 200);
+            setTimeout(() => props.onRemove(props.meta.id), 150);
         }
     };
 
