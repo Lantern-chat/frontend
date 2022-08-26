@@ -13,6 +13,7 @@ import { MimeIcon } from "ui/components/mime";
 import { FullscreenModal } from "ui/components/modal";
 import { SetController } from "ui/hooks/createController";
 import { createRef, Ref } from "ui/hooks/createRef";
+import { useLocale } from "ui/i18n";
 
 import "./upload.scss";
 
@@ -50,6 +51,8 @@ var COUNTER = 0;
 const SPOILER = "SPOILER_";
 
 export function UploadPanel(props: IUploadPanelProps) {
+    const { LL } = useLocale();
+
     let files: Map<number, IMappedFile> = new Map();
     let [file_meta, setFileMeta] = createStore<Array<IFileMeta>>([]);
 
@@ -203,11 +206,11 @@ export function UploadPanel(props: IUploadPanelProps) {
 
             <Show when={file_meta.length > 1}>
                 <div class="ln-attachment-controls">
-                    <div class="ln-attachment-controls__spoiler" title={(spoileredAll() ? "Unspoiler" : "Spoiler") + " All"}
+                    <div class="ln-attachment-controls__spoiler" title={LL().main.SPOILER_ALL(spoileredAll())}
                         onClick={spoiler_all}>
                         <VectorIcon id={spoileredAll() ? Icons.Unspoiler : Icons.Spoiler} />
                     </div>
-                    <div class="ln-attachment-controls__remove" onClick={reset} title="Remove All">
+                    <div class="ln-attachment-controls__remove" onClick={reset} title={LL().main.REMOVE_ALL()}>
                         <VectorIcon id={Icons.Close} />
                     </div>
                 </div>
@@ -233,7 +236,9 @@ interface IUploadPreviewProps {
 }
 
 function UploadPreview(props: IUploadPreviewProps) {
-    let prefs = usePrefs();
+    const { LL } = useLocale();
+
+    const prefs = usePrefs();
 
     let [errored, setErrored] = createSignal(false);
 
@@ -269,11 +274,11 @@ function UploadPreview(props: IUploadPreviewProps) {
     return (
         <li class="ln-attachment-preview" classList={{ 'removing': removing(), 'uploading': props.uploading }}>
             <div class="ln-attachment-preview__controls">
-                <div class="ln-attachment-preview__spoiler" title={props.meta.spoiler ? "Unspoiler" : "Spoiler"}
+                <div class="ln-attachment-preview__spoiler" title={LL().main.SPOILER(props.meta.spoiler)}
                     onClick={() => props.onSpoiler(props.meta.id, !props.meta.spoiler)}>
                     <VectorIcon id={props.meta.spoiler ? Icons.Unspoiler : Icons.Spoiler} />
                 </div>
-                <div class="ln-attachment-preview__remove" onClick={remove} title="Remove">
+                <div class="ln-attachment-preview__remove" onClick={remove} title={LL().main.REMOVE()}>
                     <VectorIcon id={Icons.Close} />
                 </div>
             </div>
@@ -310,6 +315,7 @@ interface IUploadDropperProps {
 }
 
 function UploadDropper(props: IUploadDropperProps) {
+    const { LL } = useLocale();
     const [drag, setDrag] = createSignal(0);
 
     const inc = () => setDrag(d => d + 1);
@@ -366,7 +372,7 @@ function UploadDropper(props: IUploadDropperProps) {
             <FullscreenModal>
                 <div class="ln-filedrop-modal" onDrop={on_drop} onDragEnter={on_enter} onDragEnd={on_end} onDragOver={on_over}>
                     <div>
-                        <UIText text="Drop Files" />
+                        <UIText text={LL().main.DROP_FILES()} />
                     </div>
                 </div>
             </FullscreenModal>

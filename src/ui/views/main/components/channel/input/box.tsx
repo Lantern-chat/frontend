@@ -12,6 +12,7 @@ import { Type } from "state/actions";
 import { sendMessage, startTyping } from "state/commands";
 import { activeParty, activeRoom } from "state/selectors/active";
 import { usePrefs } from "state/contexts/prefs";
+import { useLocale } from "ui/i18n";
 import { ITypingState } from "state/mutators/chat";
 
 //import { FileUploadModal } from "ui/views/main/modals/file_upload";
@@ -29,7 +30,8 @@ import { createController } from "ui/hooks/createController";
 
 import "./box.scss";
 export function MessageBox() {
-    let prefs = usePrefs();
+    const prefs = usePrefs(), { LL } = useLocale();
+
     let state = useStructuredSelector({
         active_room: activeRoom,
         //msg: (state: RootState) => ({ messages: [] as any[], current_edit: null }), // TODO
@@ -39,7 +41,7 @@ export function MessageBox() {
 
     let dispatch = useRootDispatch();
 
-    let main = useContext(MainContext);
+    //let main = useContext(MainContext);
 
     let [debug, setDebug] = /*#__PURE__*/ createSignal("");
 
@@ -204,11 +206,11 @@ export function MessageBox() {
 
                     {/* {debug_node} */}
 
-                    <div class="ln-msg-box__send visible" on:click={click_file} title="Attach File">
+                    <div class="ln-msg-box__send visible" on:click={click_file} title={LL().main.ATTACH_FILE()}>
                         <VectorIcon id={Icons.Plus} />
                     </div>
 
-                    <div class="ln-msg-box__send" on:click={on_send_click} title="Send Message"
+                    <div class="ln-msg-box__send" on:click={on_send_click} title={LL().main.SEND_MESSAGE()}
                         classList={{ 'visible': !is_empty() }}
                     >
                         <VectorIcon id={Icons.Send} />

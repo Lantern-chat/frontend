@@ -22,10 +22,22 @@ const enUS_main: BaseTranslation = {
     EDITED_ON: "Edited on {ts:string}",
     PINNED: "Pinned",
     MESSAGE_PINNED: "Message Pinned",
-    SPOILER_TITLE: "Click to reveal spoiler",
     OWNER: "Owner",
     VIEWING_OLDER: "You're viewing older messages.",
     GOTO_NOW: "Go to now",
+    SPOILER_TITLE: "Click to reveal spoiler",
+    SPOILER: "{{Uns|S}}poiler",
+    SPOILER_ALL: "{{Uns|S}}poiler All",
+    REMOVE: "Remove",
+    REMOVE_ALL: "Remove All",
+    SAVE: "Save",
+    CONTINUE: "Continue Editing",
+    DISCARD: "Discard",
+    RESET: "Reset",
+    UNSAVED: "You have unsaved changes!",
+    ATTACH_FILE: "Attach File",
+    SEND_MESSAGE: "Send Message",
+    DROP_FILES: "Drop Files",
     USERS_TYPING: [
         "{0:string} is typing...", // 1 user
         "{0:string} and {1:string} are typing...", // 2 users
@@ -118,6 +130,15 @@ const enUS_main: BaseTranslation = {
 
             FORCE_COLOR_CONTRAST: "Force Constrasting Colors",
             FORCE_COLOR_CONTRAST_SUBTEXT: "Adjusts custom colors from users or roles to be visible against the background",
+        },
+        profile: {
+            AVATAR_ROUNDNESS: "Avatar Roundness",
+            STATUS: "Status",
+            BIO: "Biography",
+            CHANGE_AVATAR: "Change Avatar",
+            CHANGE_BANNER: "Change Banner",
+            REMOVE_AVATAR: "Remove Avatar",
+            REMOVE_BANNER: "Remove Banner",
         }
     },
     system: {

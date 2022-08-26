@@ -242,10 +242,6 @@ export type NamespaceMainTranslation = {
 	 */
 	MESSAGE_PINNED: string
 	/**
-	 * Click to reveal spoiler
-	 */
-	SPOILER_TITLE: string
-	/**
 	 * Owner
 	 */
 	OWNER: string
@@ -257,6 +253,58 @@ export type NamespaceMainTranslation = {
 	 * Go to now
 	 */
 	GOTO_NOW: string
+	/**
+	 * Click to reveal spoiler
+	 */
+	SPOILER_TITLE: string
+	/**
+	 * {{Uns|S}}poiler
+	 */
+	SPOILER: string
+	/**
+	 * {{Uns|S}}poiler All
+	 */
+	SPOILER_ALL: string
+	/**
+	 * Remove
+	 */
+	REMOVE: string
+	/**
+	 * Remove All
+	 */
+	REMOVE_ALL: string
+	/**
+	 * Save
+	 */
+	SAVE: string
+	/**
+	 * Continue Editing
+	 */
+	CONTINUE: string
+	/**
+	 * Discard
+	 */
+	DISCARD: string
+	/**
+	 * Reset
+	 */
+	RESET: string
+	/**
+	 * You have unsaved changes!
+	 */
+	UNSAVED: string
+	/**
+	 * Attach File
+	 */
+	ATTACH_FILE: string
+	/**
+	 * Send Message
+	 */
+	SEND_MESSAGE: string
+	/**
+	 * Drop Files
+	 */
+	DROP_FILES: string
 	USERS_TYPING: {
 		/**
 		 * {0} is typing...
@@ -549,6 +597,36 @@ export type NamespaceMainTranslation = {
 			 */
 			FORCE_COLOR_CONTRAST_SUBTEXT: string
 		}
+		profile: {
+			/**
+			 * Avatar Roundness
+			 */
+			AVATAR_ROUNDNESS: string
+			/**
+			 * Status
+			 */
+			STATUS: string
+			/**
+			 * Biography
+			 */
+			BIO: string
+			/**
+			 * Change Avatar
+			 */
+			CHANGE_AVATAR: string
+			/**
+			 * Change Banner
+			 */
+			CHANGE_BANNER: string
+			/**
+			 * Remove Avatar
+			 */
+			REMOVE_AVATAR: string
+			/**
+			 * Remove Banner
+			 */
+			REMOVE_BANNER: string
+		}
 	}
 	system: {
 		welcome: {
@@ -801,10 +879,6 @@ export type TranslationFunctions = {
 		 */
 		MESSAGE_PINNED: () => LocalizedString
 		/**
-		 * Click to reveal spoiler
-		 */
-		SPOILER_TITLE: () => LocalizedString
-		/**
 		 * Owner
 		 */
 		OWNER: () => LocalizedString
@@ -816,6 +890,58 @@ export type TranslationFunctions = {
 		 * Go to now
 		 */
 		GOTO_NOW: () => LocalizedString
+		/**
+		 * Click to reveal spoiler
+		 */
+		SPOILER_TITLE: () => LocalizedString
+		/**
+		 * {{Uns|S}}poiler
+		 */
+		SPOILER: (arg0: string | number | boolean) => LocalizedString
+		/**
+		 * {{Uns|S}}poiler All
+		 */
+		SPOILER_ALL: (arg0: string | number | boolean) => LocalizedString
+		/**
+		 * Remove
+		 */
+		REMOVE: () => LocalizedString
+		/**
+		 * Remove All
+		 */
+		REMOVE_ALL: () => LocalizedString
+		/**
+		 * Save
+		 */
+		SAVE: () => LocalizedString
+		/**
+		 * Continue Editing
+		 */
+		CONTINUE: () => LocalizedString
+		/**
+		 * Discard
+		 */
+		DISCARD: () => LocalizedString
+		/**
+		 * Reset
+		 */
+		RESET: () => LocalizedString
+		/**
+		 * You have unsaved changes!
+		 */
+		UNSAVED: () => LocalizedString
+		/**
+		 * Attach File
+		 */
+		ATTACH_FILE: () => LocalizedString
+		/**
+		 * Send Message
+		 */
+		SEND_MESSAGE: () => LocalizedString
+		/**
+		 * Drop Files
+		 */
+		DROP_FILES: () => LocalizedString
 		USERS_TYPING: {
 			/**
 			 * {0} is typing...
@@ -1088,6 +1214,36 @@ export type TranslationFunctions = {
 				 * Adjusts custom colors from users or roles to be visible against the background
 				 */
 				FORCE_COLOR_CONTRAST_SUBTEXT: () => LocalizedString
+			}
+			profile: {
+				/**
+				 * Avatar Roundness
+				 */
+				AVATAR_ROUNDNESS: () => LocalizedString
+				/**
+				 * Status
+				 */
+				STATUS: () => LocalizedString
+				/**
+				 * Biography
+				 */
+				BIO: () => LocalizedString
+				/**
+				 * Change Avatar
+				 */
+				CHANGE_AVATAR: () => LocalizedString
+				/**
+				 * Change Banner
+				 */
+				CHANGE_BANNER: () => LocalizedString
+				/**
+				 * Remove Avatar
+				 */
+				REMOVE_AVATAR: () => LocalizedString
+				/**
+				 * Remove Banner
+				 */
+				REMOVE_BANNER: () => LocalizedString
 			}
 		}
 		system: {

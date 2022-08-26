@@ -14,6 +14,7 @@ import { fetch_profile } from "state/commands/profile";
 import { sendBlob } from "state/commands/sendfile";
 import { selectCachedUser } from "state/selectors/selectCachedUser";
 
+import { useLocale } from "ui/i18n";
 import { useOnNav } from "ui/hooks/useMain";
 import { createRef } from "ui/hooks/createRef";
 import { createOnPredicate } from "ui/hooks/createOnChange";
@@ -42,6 +43,8 @@ function compare_color(x: RGBColor, y: RGBColor): boolean {
 let on_file = (e: Event, cb: Setter<File | undefined>) => cb((e.currentTarget as HTMLInputElement).files?.[0]);
 
 function ProfileSettingsTabInner() {
+    const { LL } = useLocale();
+
     let store = useRootStore();
     onMount(() => store.dispatch(fetch_profile(store.state.user.user!.id)));
     let cached_user = createMemo(() => selectCachedUser(store.state, store.state.user.user!.id));
@@ -209,6 +212,8 @@ function ProfileSettingsTabInner() {
         }
     };
 
+    let llp = () => LL().main.settings.profile;
+
     return (
         <div class="ln-settings-profile">
             <input type="file" ref={avatar_input} onChange={e => on_file(e, setAvatarFile)} accept="image/*" />
@@ -218,18 +223,20 @@ function ProfileSettingsTabInner() {
                 <FullscreenModal blur>
                     <div class="ln-settings-profile__confirm">
                         <div>
-                            <UIText text="You have unsaved changes to your profile!" />
+                            <UIText text={LL().main.UNSAVED()} />
 
                             <div class="profile-submit">
                                 <div class="ln-btn" onClick={save} classList={{ 'disabled': !hasChanges() }}>
-                                    <Show fallback="Save" when={saving()}>
+                                    <Show fallback={LL().main.SAVE()} when={saving()}>
                                         <Spinner size="2em" />
                                     </Show>
                                 </div>
 
-                                <div class="ln-btn" onClick={() => { canceled_nav = true; setPendingAction(false); }}>Stay on Page</div>
+                                <div class="ln-btn" onClick={() => { canceled_nav = true; setPendingAction(false); }}
+                                    textContent={LL().main.CONTINUE()} />
 
-                                <div class="ln-btn" onClick={reset_if_changed} classList={{ 'disabled': !hasChanges() || saving() }}>Discard</div>
+                                <div class="ln-btn" onClick={reset_if_changed} classList={{ 'disabled': !hasChanges() || saving() }}
+                                    textContent={LL().main.DISCARD()} />
                             </div>
                         </div>
                     </div>
@@ -246,9 +253,7 @@ function ProfileSettingsTabInner() {
 
                     <hr />
 
-                    <h4>
-                        Avatar Roundness (<label for="avatar_roundness" textContent={percent(roundness() / 127)} />)
-                    </h4>
+                    <h4 textContent={llp().AVATAR_ROUNDNESS()} />
                     <div class="roundness-setting">
                         <div style={{
                             '--avatar-roundness-raw': roundness() / 127,
@@ -269,19 +274,20 @@ function ProfileSettingsTabInner() {
                         <SquircleButton style={{ right: 0 }} which="circle" onInput={() => setRoundness(r => Math.min(127, r + 1))} />
                     </div>
 
-                    <h4>Status</h4>
+                    <h4 textContent={llp().STATUS()} />
                     <TextInput class="chat-text status-input" maxRows={2} value={status()} onChange={setStatus} denyNewlines />
 
-                    <h4>Biography</h4>
+                    <h4 textContent={llp().BIO()} />
                     <TextInput class="ui-text bio-input" maxRows={8} minRows={4} value={bio()} onChange={setBio} />
 
                     <div class="profile-submit">
                         <div class="ln-btn" onClick={save} classList={{ 'disabled': !hasChanges() }}>
-                            <Show fallback="Save" when={saving()}>
+                            <Show fallback={LL().main.SAVE()} when={saving()}>
                                 <Spinner size="2em" />
                             </Show>
                         </div>
-                        <div class="ln-btn" onClick={reset_if_changed} classList={{ 'disabled': !hasChanges() || saving() }}>Reset</div>
+                        <div class="ln-btn" onClick={reset_if_changed} classList={{ 'disabled': !hasChanges() || saving() }}
+                            textContent={LL().main.RESET()} />
                     </div>
                 </div>
 
@@ -297,15 +303,14 @@ function ProfileSettingsTabInner() {
                             <>
                                 <div class="banner-cover"
                                     onClick={e => banner_input.current?.click()}
-                                >
-                                    Change Banner
-                                </div>
+                                    textContent={llp().CHANGE_BANNER()}
+                                />
                                 <div class="remove-buttons ui-text">
                                     <Show when={can_show_remove_avatar()}>
-                                        <div onClick={() => setAvatarFile(null)}>Remove Avatar</div>
+                                        <div onClick={() => setAvatarFile(null)} textContent={llp().REMOVE_AVATAR()} />
                                     </Show>
                                     <Show when={can_show_remove_banner()}>
-                                        <div onClick={() => setBannerFile(null)}>Remove Banner</div>
+                                        <div onClick={() => setBannerFile(null)} textContent={llp().REMOVE_BANNER()} />
                                     </Show>
                                 </div>
                             </>
@@ -313,9 +318,9 @@ function ProfileSettingsTabInner() {
                         avatarCover={(
                             <div class="avatar-cover"
                                 onClick={e => avatar_input.current?.click()}
-                                style={{ 'border-radius': br(roundness() / 127) }}>
-                                Change Avatar
-                            </div>
+                                style={{ 'border-radius': br(roundness() / 127) }}
+                                textContent={llp().CHANGE_AVATAR()}
+                            />
                         )}
                         profile={Object.assign({}, cached_user()!.profile, { bio: bio(), status: status() })}
                         presence={cached_user()!.presence}

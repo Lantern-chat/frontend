@@ -21,10 +21,22 @@ const es_main: NamespaceMainTranslation = {
 	EDITED_ON: "Editado el {ts}",
 	PINNED: "Anclado",
 	MESSAGE_PINNED: "Mensaje Fijado",
-	SPOILER_TITLE: "Haga clic para revelar el spoiler",
 	OWNER: "Dueño",
 	VIEWING_OLDER: "Estás viendo mensajes antiguos.",
 	GOTO_NOW: "Ir a ahora", // Maybe "Ir al más nuevo" for "go to newest"?
+	SPOILER_TITLE: "Haga clic para revelar el spoiler",
+	SPOILER: "{{Revelador|Revelación}}",
+	SPOILER_ALL: "{{Uns|S}}poiler Todo",
+	REMOVE: "Eliminar",
+	REMOVE_ALL: "Eliminar todo",
+	SAVE: "Guardar",
+	CONTINUE: "Continua Editando",
+	DISCARD: "Descartar los Cambios",
+	RESET: "Reinicializar",
+	UNSAVED: "¡Usted tiene cambios no guardados!",
+	ATTACH_FILE: "Adjuntar Archivo",
+	SEND_MESSAGE: "Enviar Mensaje",
+	DROP_FILES: "Soltar Archivos",
 	USERS_TYPING: [
 		"{0} está escribiendo...", // 1 user
 		"{0} y {1} están escribiendo...", // 2 users
@@ -117,6 +129,15 @@ const es_main: NamespaceMainTranslation = {
 
 			FORCE_COLOR_CONTRAST: "Forzar colores contrastantes",
 			FORCE_COLOR_CONTRAST_SUBTEXT: "Ajusta los colores personalizados de los usuarios o roles para que sean visibles contra el fondo",
+		},
+		profile: {
+			AVATAR_ROUNDNESS: "Avatar Redondez",
+			STATUS: "Estado",
+			BIO: "Biografía",
+			CHANGE_AVATAR: "Cambiar Avatar",
+			CHANGE_BANNER: "Cambiar Pancarta",
+			REMOVE_AVATAR: "Quitar Avatar",
+			REMOVE_BANNER: "Quitar Pancarta",
 		}
 	},
 	system: {

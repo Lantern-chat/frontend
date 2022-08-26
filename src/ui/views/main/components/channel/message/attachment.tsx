@@ -9,6 +9,7 @@ import { message_attachment_url } from "config/urls";
 import { createBytesFormatter } from "ui/hooks/createFormatter";
 
 import { createRef } from "ui/hooks/createRef";
+import { useLocale } from "ui/i18n";
 import { MainContext, createClickEater } from "ui/hooks/useMain";
 import { Branch } from "ui/components/flow";
 import { createInfiniteScrollIntersectionTrigger } from "ui/components/infinite_scroll";
@@ -28,8 +29,12 @@ export interface IMsgAttachmentProps {
     attachment: Attachment,
 }
 
+const LARGE_THRESHOLD = 1024 * 1024 * (IS_MOBILE ? 10 : 30);
+
 import "./attachment.scss";
 export function MsgAttachment(props: IMsgAttachmentProps) {
+    const { LL } = useLocale();
+
     let prefs = usePrefs();
 
     let [errored, setErrored] = createSignal(false);
@@ -52,7 +57,7 @@ export function MsgAttachment(props: IMsgAttachmentProps) {
     let mime_prefix = createMemo(() => props.attachment.mime?.slice(0, 5));
 
     let unknown = () => prefs.HideUnknown() && !(props.attachment.width && props.attachment.height);
-    let large = () => props.attachment.size >= (1024 * 1024 * 30);
+    let large = () => props.attachment.size >= LARGE_THRESHOLD;
 
     let [revealed, setRevealed] = createSignal(false);
     let spoilered = createMemo(() => (props.attachment.filename.startsWith("SPOILER_") || 0 != (props.msg.flags & AttachmentFlags.Spoiler)) && !revealed());
@@ -74,7 +79,9 @@ export function MsgAttachment(props: IMsgAttachmentProps) {
                     </Match>
                 </Switch>
                 <Show when={spoilered()}>
-                    <span class="spoiler-label"><UIText text="Spoiler" /></span>
+                    <span class="spoiler-label" title={LL().main.SPOILER_TITLE()}>
+                        <UIText text={LL().main.SPOILER(0)} />
+                    </span>
                 </Show>
             </Show>
         </div>
