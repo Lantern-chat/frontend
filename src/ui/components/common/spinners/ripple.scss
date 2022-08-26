@@ -3,6 +3,7 @@
 .ln-ripple {
     display: inline-block;
     position: relative;
+    flex-shrink: 0;
 
     div {
         border: 4px solid $lnx-primary-text-color;

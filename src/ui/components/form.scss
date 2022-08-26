@@ -141,7 +141,9 @@ $btn-scale: 1.1;
 .ln-btn {
     user-select: none;
     color: $lnx-primary-text-color;
-    display: inline-block;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
     line-height: 1;
     height: 100%;
     font-size: #{$btn-scale * 1em};

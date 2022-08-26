@@ -3,6 +3,7 @@
 .ln-bounce {
     display: flex;
     justify-content: center;
+    flex-shrink: 0;
 
     > div {
         width: 1em;
