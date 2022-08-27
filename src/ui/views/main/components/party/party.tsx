@@ -13,6 +13,8 @@ import { RootState, Type, useRootDispatch } from "state/root";
 import { activeParty, activeRoom } from "state/selectors/active";
 import { Panel } from "state/mutators/window";
 
+import { createRef } from "ui/hooks/createRef";
+
 import "./party.scss";
 export function Party() {
     let state = useStructuredSelector({
@@ -101,19 +103,35 @@ export function Party() {
         }
     }));
 
+    let party_ref = createRef<HTMLDivElement>();
+
     // prevent swiping when a user is trying to select text
-    onMount(() => {
-        document.addEventListener('selectionchange', cancel_touch);
-        onCleanup(() => document.removeEventListener('selectionchange', cancel_touch));
+    createEffect(() => {
+        // all of these relate to the swiping with the mobile view
+        if(state.use_mobile_view && party_ref.current) {
+            document.addEventListener('selectionchange', cancel_touch);
+
+            let e = {
+                'touchstart': on_touch_start,
+                'touchend': on_touch_end,
+                'touchcancel': cancel_touch,
+                'contextmenu': cancel_touch,
+            };
+
+            for(let name in e) { party_ref.current.addEventListener(name, e[name]); }
+
+            onCleanup(() => {
+                document.removeEventListener('selectionchange', cancel_touch);
+
+                if(party_ref.current) {
+                    for(let name in e) { party_ref.current.removeEventListener(name, e[name]); }
+                }
+            });
+        }
     });
 
     return (
-        <div class="ln-party"
-            onTouchStart={on_touch_start}
-            onTouchEnd={on_touch_end}
-            onTouchCancel={cancel_touch}
-            onContextMenu={cancel_touch}
-        >
+        <div class="ln-party" ref={party_ref}>
             <Show when={showLeft()}>
                 <div
                     class="ln-party__sidebar"
