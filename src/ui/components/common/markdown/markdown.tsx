@@ -7,7 +7,7 @@ import { CodeWrapper } from "./components/code_wrapper";
 
 import { compareString } from "lib/compare";
 import { Dynamic } from "solid-js/web";
-import { EMOJI_RE } from "lib/emoji";
+import { EMOJI_RE0 } from "lib/emoji";
 import { Emoji } from "../emoji";
 
 export interface Capture extends Array<string> {
@@ -1245,7 +1245,7 @@ export const defaultRules: DefaultRules = {
     emoji: {
         o: currOrder++,
         m: (source, state, prev) => {
-            return EMOJI_RE.exec(source);
+            return EMOJI_RE0.exec(source);
         },
         p: (capture, parse, state) => {
             return { c: capture[0], p: state.pos };
