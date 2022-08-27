@@ -42,5 +42,5 @@ export function SolidMarkdownExtra(props: SolidMarkdownProps): SolidElement {
         return extraSolidOutput(ast, state);
     };
 
-    return <div {...div} children={/* @once */res()} />
+    return <div {...div} children={res()} />
 }

@@ -1331,5 +1331,5 @@ export function SolidMarkdown(props: SolidMarkdownProps): SolidElement {
         return defaultSolidOutput(defaultRawParse(local.source, state), state);
     };
 
-    return <div {...div} children={/* @once */res()} />;
+    return <div {...div} children={res()} />;
 };
