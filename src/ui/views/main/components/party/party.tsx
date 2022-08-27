@@ -1,4 +1,4 @@
-import { batch, createEffect, createRenderEffect, createSignal, Show } from "solid-js";
+import { batch, createEffect, createRenderEffect, createSignal, onCleanup, onMount, Show } from "solid-js";
 import { useStructuredSelector } from "solid-mutant";
 
 import { ChannelList } from "./channel_list";
@@ -24,14 +24,20 @@ export function Party() {
 
     let dispatch = useRootDispatch();
 
-    let swipe_start = [0, 0];
+    let swipe_start: [number, number] | null = null;
 
     let on_touch_start = (e: TouchEvent) => {
         let t = e.changedTouches[0];
         swipe_start = [t.screenX, t.screenY];
     };
 
+    let cancel_touch = () => {
+        swipe_start = null;
+    };
+
     let on_touch_end = (e: TouchEvent) => {
+        if(!swipe_start || !state.use_mobile_view) return;
+
         let t = e.changedTouches[0],
             end_x = t.screenX,
             end_y = t.screenY,
@@ -39,6 +45,8 @@ export function Party() {
             delta_x = end_x - start_x,
             delta_y = end_y - start_y,
             aspect = Math.abs(delta_x / delta_y);
+
+        swipe_start = null;
 
         if(Math.abs(delta_x) > 40 && aspect > 1.5) {
             if(delta_x > 0) {
@@ -93,10 +101,18 @@ export function Party() {
         }
     }));
 
+    // prevent swiping when a user is trying to select text
+    onMount(() => {
+        document.addEventListener('selectionchange', cancel_touch);
+        onCleanup(() => document.removeEventListener('selectionchange', cancel_touch));
+    });
+
     return (
         <div class="ln-party"
-            onTouchStart={state.use_mobile_view ? on_touch_start : undefined}
-            onTouchEnd={state.use_mobile_view ? on_touch_end : undefined}
+            onTouchStart={on_touch_start}
+            onTouchEnd={on_touch_end}
+            onTouchCancel={cancel_touch}
+            onContextMenu={cancel_touch}
         >
             <Show when={showLeft()}>
                 <div
