@@ -34,9 +34,7 @@ export function Emoji(props: IEmojiProps) {
 
     let [errored, setErrored] = createSignal(false);
 
-    let use_system = createMemo(() => {
-        return errored() || !EMOJI_RE.test(value()) || prefs.UsePlatformEmojis();
-    });
+    let use_system = () => errored() || !EMOJI_RE.test(value()) || prefs.UsePlatformEmojis();
 
     let large = () => props.large && !prefs.CompactView();
 

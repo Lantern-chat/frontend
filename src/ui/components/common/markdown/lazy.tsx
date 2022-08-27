@@ -10,12 +10,12 @@ const LazyCode = lazy(() => import(/* webpackChunkName: 'MarkdownCode' */"./comp
 
 function MathFallback(props: IMathProps) {
     return props.inline ?
-        <code textContent={props.src} /> :
-        <pre><code textContent={props.src} /></pre>;
+        <code textContent={/* @once */props.src} /> :
+        <pre><code textContent={/* @once */props.src} /></pre>;
 }
 
 function CodeFallback(props: ICodeProps) {
-    return <pre class="hljs"><code style={{ whiteSpace: 'pre' }} textContent={props.src} /></pre>
+    return <pre class="hljs"><code style={{ whiteSpace: 'pre' }} textContent={/* @once */props.src} /></pre>
 }
 
 export const Math = (props: IMathProps) => (

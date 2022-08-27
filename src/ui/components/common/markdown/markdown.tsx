@@ -6,7 +6,7 @@ import { Math } from "./lazy";
 import { CodeWrapper } from "./components/code_wrapper";
 
 import { compareString } from "lib/compare";
-import { Dynamic } from "solid-js/web";
+import { createComponent, Dynamic } from "solid-js/web";
 import { EMOJI_RE0 } from "lib/emoji";
 import { Emoji } from "../emoji";
 
@@ -846,7 +846,7 @@ export const defaultRules: DefaultRules = {
             };
         },
         h: (node, output, state) => {
-            return <Dynamic component={'h' + node.level} children={output(node.c, state)} />
+            return <Dynamic component={/* @once */'h' + node.level} children={/* @once */output(node.c, state)} />
         },
     },
     nptable: {
@@ -891,13 +891,13 @@ export const defaultRules: DefaultRules = {
                 c: capture[3]
             };
         },
-        h: (node, output, state) => <CodeWrapper src={node.c} language={node.lang} />,
+        h: (node, output, state) => <CodeWrapper src={/* @once */node.c} language={/* @once */node.lang} />,
     },
     blockMath: {
         o: currOrder++,
         m: blockMathMatch,
         p: (capture, parse, state) => ({ c: capture[1] }),
-        h: (node, output, state) => <Math src={node.c} />,
+        h: (node, output, state) => <Math src={/* @once */node.c} />,
     },
     blockQuote: {
         o: currOrder++,
@@ -910,7 +910,7 @@ export const defaultRules: DefaultRules = {
                 c: parse(c, state)
             };
         },
-        h: (node, output, state) => <blockquote children={output(node.c, state)} />,
+        h: (node, output, state) => <blockquote children={/* @once */output(node.c, state)} />,
     },
     table: {
         o: currOrder++,
@@ -926,23 +926,21 @@ export const defaultRules: DefaultRules = {
             // Since the entire AST is rebuilt for every render, don't bother with <For>
 
             let headers = node.header.map((c: ASTNode, i: number) => (
-                <th scope="col" style={getStyle(i)}>{output(c, state)}</th>
+                <th scope="col" style={/* @once */getStyle(i)}>{/* @once */output(c, state)}</th>
             ));
 
             let rows = node.cells.map((row: ASTNode) => (
                 <tr>
-                    {row.map((c: ASTNode, i: number) => <td style={getStyle(i)}>{output(c, state)}</td>)}
+                    {row.map((c: ASTNode, i: number) => <td style={/* @once */getStyle(i)}>{/* @once */output(c, state)}</td>)}
                 </tr>
             ));
 
             return (
                 <table>
                     <thead>
-                        <tr>{headers}</tr>
+                        <tr>{/* @once */headers}</tr>
                     </thead>
-                    <tbody>
-                        {rows}
-                    </tbody>
+                    <tbody>{/* @once */rows}</tbody>
                 </table>
             );
         }
@@ -959,7 +957,7 @@ export const defaultRules: DefaultRules = {
         p: parseCaptureInline,
         h: (node, output, state) => (
             // if last and there is extra data, append that extra data within this node
-            <div class="p">{output(node.c, state)}{state.last ? state.extra : void 0}</div>
+            <div class="p">{/* @once */output(node.c, state)}{state.last ? state.extra : void 0}</div>
         ),
     },
     font: {
@@ -968,7 +966,7 @@ export const defaultRules: DefaultRules = {
         p: (capture, parse, state) => {
             return { f: capture[1], c: parse(capture[2], state) };
         },
-        h: (node, output, state) => <span class={"font-" + node.f}>{output(node.c, state)}</span>,
+        h: (node, output, state) => <span class={/* @once */"font-" + node.f}>{/* @once */output(node.c, state)}</span>,
     },
     color: {
         o: currOrder++,
@@ -976,7 +974,7 @@ export const defaultRules: DefaultRules = {
         p: (capture, parse, state) => {
             return { f: capture[1], c: parse(capture[2], state) };
         },
-        h: (node, output, state) => <span class={"color-" + node.f}>{output(node.c, state)}</span>,
+        h: (node, output, state) => <span class={/* @once */"color-" + node.f}>{/* @once */output(node.c, state)}</span>,
     },
     escape: {
         o: currOrder++,
@@ -1069,7 +1067,7 @@ export const defaultRules: DefaultRules = {
         },
         h: (node, output, state) => {
             return (
-                <Math src={node.c} inline />
+                <Math src={/* @once */node.c} inline />
             )
         },
     },
@@ -1098,7 +1096,7 @@ export const defaultRules: DefaultRules = {
             };
         },
         h: (node, output, state) => {
-            return <a href={sanitizeUrl(node.target)} title={node.title} target="_blank">{output(node.c, state)}</a>;
+            return <a href={/* @once */sanitizeUrl(node.target)} title={/* @once */node.title} target="_blank">{/* @once */output(node.c, state)}</a>;
 
         }
     },
@@ -1115,7 +1113,7 @@ export const defaultRules: DefaultRules = {
             };
         },
         h: (node, output, state) => {
-            return <img src={sanitizeUrl(node.target)} alt={node.alt} title={node.title} />;
+            return <img src={/* @once */sanitizeUrl(node.target)} alt={/* @once */node.alt} title={/* @once */node.title} />;
         }
     },
     em: {
@@ -1157,7 +1155,7 @@ export const defaultRules: DefaultRules = {
                 c: parse(capture[2] || capture[1], state)
             };
         },
-        h: (node, output, state) => <em>{output(node.c, state)}</em>
+        h: (node, output, state) => <em>{/* @once */output(node.c, state)}</em>
     },
     strong: {
         o: currOrder /* same as em */,
@@ -1167,7 +1165,7 @@ export const defaultRules: DefaultRules = {
             return capture[0].length + 0.1;
         },
         p: parseCaptureInline,
-        h: (node, output, state) => <strong>{output(node.c, state)}</strong>,
+        h: (node, output, state) => <strong>{/* @once */output(node.c, state)}</strong>,
     },
     u: {
         o: currOrder++ /* same as em&strong; increment for next rule */,
@@ -1177,13 +1175,13 @@ export const defaultRules: DefaultRules = {
             return capture[0].length;
         },
         p: parseCaptureInline,
-        h: (node, output, state) => <u>{output(node.c, state)}</u>,
+        h: (node, output, state) => <u>{/* @once */output(node.c, state)}</u>,
     },
     del: {
         o: currOrder++,
         m: inlineRegex(/^~~(?=\S)((?:\\[^]|~(?!~)|[^\s~\\]|\s(?!~~))+?)~~/),
         p: parseCaptureInline,
-        h: (node, output, state) => <del>{output(node.c, state)}</del>,
+        h: (node, output, state) => <del>{/* @once */output(node.c, state)}</del>,
     },
     tags: {
         o: currOrder++,
@@ -1210,9 +1208,8 @@ export const defaultRules: DefaultRules = {
                     c: "</" + tag + ">"
                 }
             ];
-
         },
-        h: (node, output, state) => <Dynamic component={node.tag} children={output(node.c, state)} />,
+        h: (node, output, state) => <Dynamic component={/* @once */node.tag} children={/* @once */output(node.c, state)} />,
     },
     spoiler: {
         o: currOrder,
@@ -1223,7 +1220,7 @@ export const defaultRules: DefaultRules = {
             return { c: parse(capture[1], state) };
         },
         h: (node, output, state) => {
-            return <Spoiler>{output(node.c, state)}</Spoiler>;
+            return <Spoiler>{/* @once */output(node.c, state)}</Spoiler>;
         },
     },
     inlineCode: {
@@ -1234,7 +1231,7 @@ export const defaultRules: DefaultRules = {
                 c: capture[2].replace(INLINE_CODE_ESCAPE_BACKTICKS_R, "$1")
             };
         },
-        h: (node, output, state) => <code textContent={node.c} />,
+        h: (node, output, state) => <code textContent={/* @once */ node.c} />,
     },
     br: {
         o: currOrder++,
@@ -1251,7 +1248,8 @@ export const defaultRules: DefaultRules = {
             return { c: capture[0], p: state.pos };
         },
         h: (node, output, state) => {
-            return <Emoji value={node.c} large={node.p == 0 && state.last && !state.inline} />;
+            return <Emoji value={/* @once */node.c}
+                large={/* @once */node.p == 0 && state.last && !state.inline} />;
         }
     },
     text: {
@@ -1260,17 +1258,11 @@ export const defaultRules: DefaultRules = {
         // double newlines, or double-space-newlines
         // We break on any symbol characters so that this grammar
         // is easy to extend without needing to modify this regex
-        m: anyScopeRegex(
-            /^[^]+?(?=[^0-9A-Za-z\s]|\n\n| {2,}\n|\w+:\S|$)/
-        ),
+        m: anyScopeRegex(/^[^]+?(?=[^0-9A-Za-z\s]|\n\n| {2,}\n|\w+:\S|$)/),
         p: (capture, parse, state) => {
-            return {
-                c: capture[0]
-            };
+            return { c: capture[0] };
         },
-        h: (node, output, state) => {
-            return node.c;
-        }
+        h: (node, output, state) => node.c,
     }
 }
 
@@ -1339,5 +1331,5 @@ export function SolidMarkdown(props: SolidMarkdownProps): SolidElement {
         return defaultSolidOutput(defaultRawParse(local.source, state), state);
     };
 
-    return <div {...div} children={res()} />;
+    return <div {...div} children={/* @once */res()} />;
 };

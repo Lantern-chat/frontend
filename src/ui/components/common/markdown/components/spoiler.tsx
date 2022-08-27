@@ -17,7 +17,7 @@ export function Spoiler(props: { children: JSX.Element }) {
             }}
             title={visible() ? void 0 : LL().main.SPOILER_TITLE()}
         >
-            {props.children}
+            {/* @once */props.children}
         </span>
     )
 }

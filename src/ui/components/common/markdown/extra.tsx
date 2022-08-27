@@ -18,7 +18,7 @@ export const extraRules: ExtraRules = {
                 id: capture[2],
             };
         },
-        h: (node, output, state) => <Mention prefix={node.prefix} id={node.id} />,
+        h: (node, output, state) => <Mention prefix={/* @once */node.prefix} id={/* @once */node.id} />,
     },
 };
 
@@ -42,5 +42,5 @@ export function SolidMarkdownExtra(props: SolidMarkdownProps): SolidElement {
         return extraSolidOutput(ast, state);
     };
 
-    return <div {...div} children={res()} />
+    return <div {...div} children={/* @once */res()} />
 }

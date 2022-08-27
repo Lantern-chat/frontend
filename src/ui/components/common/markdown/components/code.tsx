@@ -18,8 +18,8 @@ function hasLang(lang?: string): string | undefined {
 
 export default function Code(props: ICodeProps) {
     return (
-        <Show when={hasLang(props.language)} fallback={<Text src={props.src} />}>
-            {language => <Highlight src={props.src} language={language} />}
+        <Show when={hasLang(props.language)} fallback={<Text src={/* @once */props.src} />}>
+            {language => <Highlight src={/* @once */props.src} language={/* @once */language} />}
         </Show>
     )
 }
@@ -31,7 +31,7 @@ function ignoreTouch(e: TouchEvent) {
 function Text(props: { src: string }) {
     return (
         <pre class="hljs" onTouchStart={ignoreTouch}>
-            <code textContent={props.src.trim()} />
+            <code textContent={/* @once */props.src.trim()} />
         </pre>
     );
 }
@@ -41,7 +41,7 @@ function Highlight(props: Required<ICodeProps>) {
 
     return (
         <pre class="hljs" onTouchStart={ignoreTouch}>
-            <code innerHTML={html()} />
+            <code innerHTML={/* @once */html()} />
         </pre>
     );
 }

@@ -28,5 +28,5 @@ export default function Math(props: IMathProps) {
         maxSize: 5,
     });
 
-    return <Dynamic component={props.inline ? 'span' : 'div'} innerHTML={html()} />;
+    return <Dynamic component={props.inline ? 'span' : 'div'} innerHTML={/* @once */html()} />;
 }
