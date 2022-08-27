@@ -99,13 +99,12 @@ function MediaMetadata(props: IMsgAttachmentProps) {
         let { mime, size } = props.attachment;
         let bytes = bytes_formatter(size);
 
-        return '(' + bytes + (mime ? (' - ' + mime) : '') + ')';
+        return '(' + (mime ? (mime + ' - ' + bytes) : bytes) + ')';
     };
 
     return (
         <div class="ui-text ln-attachment-metadata ln-attachment-metadata--full">
-            <span textContent={props.attachment.filename} title={props.attachment.filename} />
-            &nbsp;{metadata()}
+            <span textContent={props.attachment.filename} title={props.attachment.filename} />&nbsp;{metadata()}
         </div>
     );
 }

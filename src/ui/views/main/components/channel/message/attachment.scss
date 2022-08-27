@@ -3,6 +3,7 @@
 .ln-msg-attachment {
     text-indent: 0;
     position: relative;
+    user-select: none;
 
     //padding-left: 1em;
     //border-left: 2px solid rgb(160, 160, 160);
@@ -48,7 +49,6 @@
         .ui-text {
             color: white;
             background-color: rgba(0, 0, 0, 0.5);
-            width: fit-content;
             margin: auto;
             padding: 0.75em 1em;
             border-radius: 2em;
@@ -166,10 +166,6 @@
         width: 100%;
         max-width: 80%;
     }
-
-    .no-text & {
-        display: inline;
-    }
 }
 
 .ln-audio {
@@ -189,22 +185,29 @@
     max-width: 100%;
     flex: 1 1 auto;
     min-width: 0; // prevents it from overflowing if text gets too long
+    user-select: text;
+
+    a {
+        user-select: all;
+    }
 }
 
 .ln-attachment-metadata {
     color: $lnx-secondary-text-color;
     font-size: 0.8em;
+    user-select: text;
 
     &--full {
         margin-bottom: -0.25em;
         display: flex;
+        white-space: nowrap;
 
         span {
             overflow: hidden;
-            white-space: nowrap;
             max-width: min(60%, 70vw);
             display: inline-block;
             text-overflow: ellipsis;
+            user-select: all;
         }
     }
 }
