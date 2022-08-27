@@ -1,0 +1,14 @@
+.emoji {
+    width: 1em;
+    height: 1em;
+    cursor: default;
+
+    &.large {
+        width: 3em;
+        height: 3em;
+    }
+}
+
+span.emoji.large {
+    font-size: 3em;
+}

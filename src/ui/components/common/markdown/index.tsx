@@ -8,6 +8,7 @@ export interface IMarkdownProps {
     class?: string,
     classList?: { [key: string]: boolean },
     extra?: JSX.Element,
+    inline?: boolean,
 }
 
 import "./markdown.scss";

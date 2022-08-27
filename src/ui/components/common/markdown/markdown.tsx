@@ -7,6 +7,8 @@ import { CodeWrapper } from "./components/code_wrapper";
 
 import { compareString } from "lib/compare";
 import { Dynamic } from "solid-js/web";
+import { EMOJI_RE } from "lib/emoji";
+import { Emoji } from "../emoji";
 
 export interface Capture extends Array<string> {
     index?: number,
@@ -194,6 +196,7 @@ export interface DefaultRules extends DefaultRulesIndexer {
     readonly tags: DefaultInOutRule,
     readonly inlineCode: DefaultInOutRule,
     readonly br: DefaultInOutRule,
+    readonly emoji: DefaultInOutRule,
     readonly text: TextInOutRule,
 }
 
@@ -1239,6 +1242,18 @@ export const defaultRules: DefaultRules = {
         p: ignoreCapture,
         h: (node, output, state) => <br />,
     },
+    emoji: {
+        o: currOrder++,
+        m: (source, state, prev) => {
+            return EMOJI_RE.exec(source);
+        },
+        p: (capture, parse, state) => {
+            return { c: capture[0], p: state.pos };
+        },
+        h: (node, output, state) => {
+            return <Emoji value={node.c} large={node.p == 0 && state.last && !state.inline} />;
+        }
+    },
     text: {
         o: currOrder++,
         // Here we look for anything followed by non-symbols,
@@ -1246,7 +1261,7 @@ export const defaultRules: DefaultRules = {
         // We break on any symbol characters so that this grammar
         // is easy to extend without needing to modify this regex
         m: anyScopeRegex(
-            /^[^]+?(?=[^0-9A-Za-z\s\u00c0-\uffff]|\n\n| {2,}\n|\w+:\S|$)/
+            /^[^]+?(?=[^0-9A-Za-z\s]|\n\n| {2,}\n|\w+:\S|$)/
         ),
         p: (capture, parse, state) => {
             return {

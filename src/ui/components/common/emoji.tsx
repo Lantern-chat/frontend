@@ -1,37 +1,51 @@
-import { createEffect } from "solid-js"
+import { createEffect, createMemo, createSignal, Show } from "solid-js"
 import { createRef, Ref } from "ui/hooks/createRef";
 import { Branch } from "./../flow";
 import { usePrefs } from "state/contexts/prefs";
+import { EMOJI_RE, normalize } from "lib/emoji";
 
 export interface IEmojiProps {
     value: string,
+
+    /// flag for if the emote is in a user-interface string
     ui?: boolean,
+
+    large?: boolean,
 }
 
+import "./emoji.scss";
 export function Emoji(props: IEmojiProps) {
-    let ref: HTMLSpanElement | ((el: HTMLElement) => void) | undefined;
+    const prefs = usePrefs();
+
+    let ref: HTMLElement | ((el: HTMLElement) => void) | undefined;
+
+    // TODO: Map :named: emotes to emoji values
+    let value = () => props.value;
 
     // zero-cost easter egg
-    if(!props.ui && props.value == '🍪') {
+    if(!props.ui && value() == '🍪') {
         ref = createRef();
         createEffect(() => {
             let c = 0; (ref as Ref<HTMLElement>).current?.addEventListener('click', () => {
-                if(++c == 5) { window.open('https://orteil.dashnet.org/cookieclicker/'); }
+                if(++c == 5) { window.open('https://orteil.dashnet.org/cookieclicker/'); c = 0; }
             });
         });
     }
 
-    let use_system = usePrefs().UsePlatformEmojis;;
+    let [errored, setErrored] = createSignal(false);
 
-    // TODO: Resolve emoji to twemoji file
+    let use_system = createMemo(() => {
+        return errored() || !EMOJI_RE.test(value()) || prefs.UsePlatformEmojis();
+    });
+
+    let large = () => props.large && !prefs.CompactView();
+
     return (
-        <Branch>
-            <Branch.If when={use_system() || true}>
-                <span class="emoji" textContent={props.value} ref={ref} />
-            </Branch.If>
-            <Branch.Else>
-                Twemoji
-            </Branch.Else>
-        </Branch>
+        <Show fallback={<span class="emoji" classList={{ 'large': large() }} textContent={value()} ref={ref} />} when={!use_system()}>
+            <img class="emoji" classList={{ 'large': large() }} alt={value()} aria-label={value()}
+                draggable={false} data-type="emoji"
+                src={`https://twemoji.maxcdn.com/v/14.0.2/svg/${normalize(value())}.svg`}
+                onError={() => setErrored(true)} ref={ref as any} />
+        </Show>
     );
 }

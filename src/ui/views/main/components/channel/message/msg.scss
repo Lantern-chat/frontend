@@ -48,9 +48,7 @@
     .ln-math {
         font-size: calc(0.875em / var(--ln-chat-font-size-adjust, 1));
     }
-}
 
-.ln-msg {
     white-space: break-spaces;
 
     .compact & {
