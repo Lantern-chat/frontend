@@ -1,0 +1,106 @@
+@import "lib/variables";
+
+.ln-emoji-picker {
+    font-size: 1rem;
+
+    position: relative;
+    bottom: 0.5rem;
+    left: 0.5rem;
+    width: min(30em, 80vw);
+    height: min(40em, 80vh);
+
+    background-color: $lnx-primary-surface-color;
+    border: 1px solid $lnx-secondary-surface-color;
+    box-shadow: 0.25rem 0.25rem 0.5rem $lnx-primary-surface-color;
+
+    .ln-oled-theme & {
+        border-color: $ln-oled-border-color;
+    }
+
+    .emoji {
+        cursor: pointer;
+        filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.2));
+    }
+
+    display: flex;
+    flex-direction: column;
+
+    &__search {
+        display: flex;
+
+        input {
+            width: 100%;
+            margin-inline: 1em;
+            margin-block: 0.5em;
+            height: 2.5em;
+            border-radius: 0.5em;
+            padding-inline: 1em;
+            background-color: rgba(128, 128, 128, 0.54);
+            border: none;
+            color: $lnx-primary-text-color;
+            outline: none;
+
+            &:focus,
+            &:active,
+            &:focus-within {
+                border: none;
+            }
+        }
+    }
+
+    &__picker {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        min-height: 0; // shrink flex
+    }
+
+    &__categories {
+        font-size: 2.25em;
+        padding-block: 0.25em;
+        background-color: $lnx-secondary-surface-color;
+
+        > div {
+            cursor: pointer;
+            padding-block: 0.125em;
+            padding-inline: 0.25em;
+            display: flex;
+
+            &:hover {
+                background-color: rgba(128, 128, 128, 0.2);
+            }
+
+            &:active,
+            &.selected {
+                background-color: rgba(128, 128, 128, 0.35);
+            }
+        }
+    }
+
+    &__listing {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        height: 100%;
+        align-content: start;
+        justify-content: center;
+
+        .emoji {
+            margin: 0.1em;
+            padding: 0.15em;
+            border-radius: 0.15em;
+
+            width: auto;
+            height: auto;
+            font-size: 2em;
+
+            &:hover {
+                background-color: rgba(128, 128, 128, 0.2);
+            }
+
+            &:active {
+                background-color: rgba(128, 128, 128, 0.35);
+            }
+        }
+    }
+}

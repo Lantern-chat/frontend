@@ -28,6 +28,7 @@ export interface IMsgTextareaProps {
 export interface IMsgTextareaController {
     focus(): void;
     setValue(value: string, change?: boolean): void;
+    append(value: string): void;
 }
 
 import "./textarea.scss";
@@ -38,17 +39,24 @@ export function MsgTextarea(props: IMsgTextareaProps) {
 
     let [local, taprops] = splitProps(props, ['mobile', 'spellcheck', 'onChange', 'onKeyDown', 'onSelectionChange', 'tac']);
 
-    local.tac?.({
-        setValue(value: string, change: boolean = true) {
-            if(ta.current) {
-                ta.current.value = value;
+    let setValue = (value: string, change: boolean = true) => {
+        if(ta.current) {
+            ta.current.value = value;
 
-                // triggers a 'change' event that in-turn triggers a resize
-                change && (ta.current.dispatchEvent(new Event('change', { bubbles: false })), props.onChange(value));
-            }
-        },
+            // triggers a 'change' event that in-turn triggers a resize
+            change && (ta.current.dispatchEvent(new Event('change', { bubbles: false })), props.onChange(value));
+        }
+    };
+
+    local.tac?.({
+        setValue,
         focus() {
             ta.current?.focus();
+        },
+        append(value: string) {
+            if(ta.current) {
+                setValue(ta.current.value + value);
+            }
         }
     });
 

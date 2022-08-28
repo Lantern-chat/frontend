@@ -42,3 +42,44 @@ export function decode_emojis() {
         }
     }
 }
+
+export const SKIN_TONES = ['', "🏻", "🏼", "🏽", "🏾", "🏿"];
+
+export type SKIN_TONE_MODIFIER = undefined | 0 | 1 | 2 | 3 | 4 | 5;
+
+export function emoji_with_skin_tone(e: string, tone?: SKIN_TONE_MODIFIER): string {
+    decode_emojis();
+
+    if(tone && tone < 6) {
+        if(EMOJIS_MAP.get(e)?.s) {
+            e += SKIN_TONES[tone];
+        }
+    }
+
+    return e;
+}
+
+const ENDS_WITH_SKIN_TONE = new RegExp(`(${SKIN_TONES.slice(1).join('|')})$`);
+
+export function emoji_without_skin_tone(e: string): [emoji: string, modifier?: SKIN_TONE_MODIFIER] {
+    let m = ENDS_WITH_SKIN_TONE.exec(e);
+    return m ? [e.slice(0, e.length - m[1].length), SKIN_TONES.indexOf(m[1]) as SKIN_TONE_MODIFIER] : [e];
+}
+
+export function format_emoji_shortcode(value: string, no_modifier: boolean = false): string | undefined {
+    decode_emojis();
+
+    let p = ':', s = p, // prefix and suffix
+        [v, modifier] = no_modifier ? [value] : emoji_without_skin_tone(value),
+        e = EMOJIS_MAP.get(v);
+
+    if(e?.a.length) {
+        if(modifier) {
+            // set suffix
+            s = '::skin-tone-' + modifier.toString() + s;
+        }
+
+        return p + e.a[0] + s;
+    }
+    return;
+}

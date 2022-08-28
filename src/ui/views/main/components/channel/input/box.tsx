@@ -168,6 +168,11 @@ export function MessageBox() {
         eat(e); if(state.active_room) { tac()!.focus(); }
     };
 
+    let on_pick_emote = (e: string, shortcode: string) => {
+        tac()!.append(shortcode || e);
+        tac()!.focus();
+    };
+
     let debug_node; if(__DEV__) {
         debug_node = (<div class="ln-msg-box__debug"><span textContent={debug()} /></div>);
     }
@@ -190,7 +195,7 @@ export function MessageBox() {
                         </Show>
                     </div>
 
-                    <EmotePicker />
+                    <EmotePicker onPick={on_pick_emote} />
 
                     <MsgTextarea
                         onBlur={on_blur}

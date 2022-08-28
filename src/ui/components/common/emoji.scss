@@ -7,4 +7,13 @@
     &.large {
         font-size: 3em;
     }
+
+    svg {
+        width: 1em;
+        height: 1em;
+    }
+
+    .ln-enhanced-contrast & {
+        filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.2));
+    }
 }

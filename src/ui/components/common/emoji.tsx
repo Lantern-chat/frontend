@@ -1,7 +1,7 @@
 import { createEffect, createMemo, createSignal, Show } from "solid-js"
 import { createRef, Ref } from "ui/hooks/createRef";
 import { usePrefs } from "state/contexts/prefs";
-import { EMOJIS_MAP, ALIASES_REV, decode_emojis, EMOJI_RE } from "lib/emoji";
+import { ALIASES_REV, EMOJI_RE, emoji_with_skin_tone, SKIN_TONE_MODIFIER, format_emoji_shortcode } from "lib/emoji";
 import { normalize } from "lib/emoji_lite";
 
 export interface IEmojiProps {
@@ -15,19 +15,8 @@ export interface IEmojiProps {
 
     noTitle?: boolean,
 
-    tone?: 0 | 1 | 2 | 3 | 4 | 5;
+    tone?: SKIN_TONE_MODIFIER;
 }
-
-let skin_tones = [
-    '',
-    "🏻",
-    "🏼",
-    "🏽",
-    "🏾",
-    "🏿",
-];
-
-let ends_with_skin_tone = new RegExp(`(${skin_tones.slice(1).join('|')})$`);
 
 import "./emoji.scss";
 export function Emoji(props: IEmojiProps) {
@@ -42,15 +31,7 @@ export function Emoji(props: IEmojiProps) {
             e = ALIASES_REV.get(e)!;
         }
 
-        if(props.tone) {
-            let m = EMOJIS_MAP.get(e);
-            // if this emote supports skin-tones, append the modifier
-            if(m?.s) {
-                e += skin_tones[props.tone];
-            }
-        }
-
-        return e;
+        return emoji_with_skin_tone(e, props.tone);
     });
 
     // zero-cost easter egg
@@ -72,21 +53,7 @@ export function Emoji(props: IEmojiProps) {
 
     let title = () => {
         if(!props.noTitle) {
-            decode_emojis();
-
-            let m, v = value(), s = ':';
-            if(m = ends_with_skin_tone.exec(v)) {
-                // slice off tone modifier to get raw emoji for alias lookup
-                v = v.slice(0, v.length - m[1].length);
-
-                // set suffix
-                s = '::skin-tone-' + skin_tones.indexOf(m[1]).toString() + s;
-            }
-
-            let e = EMOJIS_MAP.get(v);
-            if(e?.a.length) {
-                return ':' + e.a[0] + s;
-            }
+            return format_emoji_shortcode(value());
         }
         return;
     };
