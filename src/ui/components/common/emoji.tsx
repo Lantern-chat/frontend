@@ -95,7 +95,7 @@ export function Emoji(props: IEmojiProps) {
         <Show when={!use_system()} fallback={
             <span class="emoji" classList={{ 'large': large() }} textContent={value()} ref={ref} title={title()} />
         }>
-            <img class="emoji" classList={{ 'large': large() }}
+            <img loading="lazy" class="emoji" classList={{ 'large': large() }}
                 alt={loaded() ? value() : undefined}
                 aria-label={value()} draggable={false} data-type="emoji"
                 src={`/static/emoji/individual/${normalize(value())}.svg`}

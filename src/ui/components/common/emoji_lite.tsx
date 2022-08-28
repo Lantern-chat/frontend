@@ -26,7 +26,7 @@ export function EmojiLite(props: IEmojiLiteProps) {
         <Show when={!use_system()} fallback={
             <span class="emoji" classList={{ 'large': large() }} textContent={value()} />
         }>
-            <img class="emoji" classList={{ 'large': large() }}
+            <img loading="lazy" class="emoji" classList={{ 'large': large() }}
                 alt={value()} aria-label={value()}
                 draggable={false} data-type="emoji"
                 src={`/static/emoji/individual/${normalize(value())}.svg`}
