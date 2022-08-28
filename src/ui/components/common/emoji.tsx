@@ -1,7 +1,7 @@
-import { createEffect, createSignal, Show } from "solid-js"
+import { createEffect, createMemo, createSignal, Show } from "solid-js"
 import { createRef, Ref } from "ui/hooks/createRef";
 import { usePrefs } from "state/contexts/prefs";
-import { ALIASES, decode_emojis, EMOJI_RE } from "lib/emoji";
+import { EMOJIS_MAP, ALIASES_REV, decode_emojis, EMOJI_RE } from "lib/emoji";
 import { normalize } from "lib/emoji_lite";
 
 export interface IEmojiProps {
@@ -13,7 +13,20 @@ export interface IEmojiProps {
     large?: boolean,
 
     noTitle?: boolean,
+
+    tone?: 0 | 1 | 2 | 3 | 4 | 5;
 }
+
+let skin_tones = [
+    '',
+    "🏻",
+    "🏼",
+    "🏽",
+    "🏾",
+    "🏿",
+];
+
+let ends_with_skin_tone = new RegExp(`(${skin_tones.slice(1).join('|')})$`);
 
 import "./emoji.scss";
 export function Emoji(props: IEmojiProps) {
@@ -21,8 +34,29 @@ export function Emoji(props: IEmojiProps) {
 
     let ref: HTMLElement | ((el: HTMLElement) => void) | undefined;
 
+    let raw_value = () => {
+        let e = props.value;
+
+        if(e.startsWith(':')) {
+            e = ALIASES_REV.get(e.slice(1, e.length - 1))!;
+        }
+
+        return e;
+    };
+
     // TODO: Map :named: emotes to emoji values
-    let value = () => props.value;
+    let value = createMemo(() => {
+        let e = raw_value();
+
+        if(props.tone) {
+            let m = EMOJIS_MAP.get(e);
+            if(m?.s) {
+                e += skin_tones[props.tone];
+            }
+        }
+
+        return e;
+    });
 
     // zero-cost easter egg
     if(!props.ui && value() == '🍪') {
@@ -35,6 +69,7 @@ export function Emoji(props: IEmojiProps) {
     }
 
     let [errored, setErrored] = createSignal(false);
+    let [loaded, setLoaded] = createSignal(false);
 
     let use_system = () => errored() || !EMOJI_RE.test(value()) || prefs.UsePlatformEmojis();
 
@@ -43,9 +78,19 @@ export function Emoji(props: IEmojiProps) {
     let title = () => {
         if(!props.noTitle) {
             decode_emojis();
-            let aliases = ALIASES.get(value());
-            if(aliases && aliases.length) {
-                return ':' + aliases[0] + ':';
+
+            let m, v = value(), s = ':';
+            if(m = ends_with_skin_tone.exec(v)) {
+                // slice off tone modifier to get raw emoji for alias lookup
+                v = v.slice(0, v.length - m[1].length);
+
+                // set suffix
+                s = '::skin-tone-' + skin_tones.indexOf(m[1]).toString() + s;
+            }
+
+            let e = EMOJIS_MAP.get(v);
+            if(e?.a.length) {
+                return ':' + e.a[0] + s;
             }
         }
         return;
@@ -56,10 +101,11 @@ export function Emoji(props: IEmojiProps) {
             <span class="emoji" classList={{ 'large': large() }} textContent={value()} ref={ref} title={title()} />
         }>
             <img class="emoji" classList={{ 'large': large() }}
-                alt={value()} aria-label={value()}
-                draggable={false} data-type="emoji"
+                alt={loaded() ? value() : undefined}
+                aria-label={value()} draggable={false} data-type="emoji"
                 src={`/static/emoji/individual/${normalize(value())}.svg`}
                 title={title()}
+                onLoad={() => setLoaded(true)}
                 onError={() => setErrored(true)} ref={ref as any} />
         </Show>
     );

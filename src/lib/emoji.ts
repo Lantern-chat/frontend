@@ -21,7 +21,7 @@ import RAW_EMOJIS from "lantern-emoji/dist/emojis.json";
 
 export const CATEGORIES = RAW_EMOJIS.c;
 export var EMOJIS: Array<IEmoji> = [];
-export var ALIASES: Map<string, string[]> = new Map();
+export var EMOJIS_MAP: Map<string, IEmoji> = new Map();
 export var ALIASES_REV: Map<string, string> = new Map();
 
 export function decode_emojis() {
@@ -34,11 +34,7 @@ export function decode_emojis() {
         }
 
         for(let e of EMOJIS) {
-            let aliases = ALIASES.get(e.e);
-            if(!aliases) {
-                ALIASES.set(e.e, aliases = []);
-            }
-            aliases.push(...e.a);
+            EMOJIS_MAP.set(e.e, e);
 
             for(let alias of e.a) {
                 ALIASES_REV.set(alias, e.e);

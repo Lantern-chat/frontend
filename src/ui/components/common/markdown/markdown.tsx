@@ -6,8 +6,8 @@ import { Math } from "./lazy";
 import { CodeWrapper } from "./components/code_wrapper";
 
 import { compareString } from "lib/compare";
-import { createComponent, Dynamic } from "solid-js/web";
-import { EMOJI_RE0 } from "lib/emoji";
+import { Dynamic } from "solid-js/web";
+import { ALIASES_REV, EMOJI_RE0 } from "lib/emoji";
 import { Emoji } from "../emoji";
 
 export interface Capture extends Array<string> {
@@ -196,6 +196,7 @@ export interface DefaultRules extends DefaultRulesIndexer {
     readonly tags: DefaultInOutRule,
     readonly inlineCode: DefaultInOutRule,
     readonly br: DefaultInOutRule,
+    readonly emoji_alias: DefaultInOutRule,
     readonly emoji: DefaultInOutRule,
     readonly text: TextInOutRule,
 }
@@ -1238,6 +1239,24 @@ export const defaultRules: DefaultRules = {
         m: anyScopeRegex(/^ {2,}\n/),
         p: ignoreCapture,
         h: (node, output, state) => <br />,
+    },
+    emoji_alias: {
+        o: currOrder++,
+        m: (source, state, prev) => {
+            let m = /^(:([A-Za-z0-9_\-]+)(?:::([A-Za-z_\-]+)([1-5]))?:)/.exec(source);
+            return (m && ALIASES_REV.has(m[2])) ? m : null;
+        },
+        p: (capture, parse, state) => {
+            return {
+                c: ':' + capture[2] + ':',
+                p: state.pos,
+                t: (capture[3]?.toLowerCase() == 'skin-tone-' && capture[4]) ? parseInt(capture[4]) : undefined
+            };
+        },
+        h: (node, output, state) => {
+            return <Emoji value={/* @once */node.c} tone={/* @once */node.t}
+                large={/* @once */node.p == 0 && state.last && !state.inline} />;
+        }
     },
     emoji: {
         o: currOrder++,
