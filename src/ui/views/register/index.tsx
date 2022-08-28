@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal, For, Index, JSX, Show } from "solid-js";
+import { createMemo, createSignal, For, Index, JSX, onMount, Show } from "solid-js";
 
 import { createController } from "ui/hooks/createController";
 
@@ -27,13 +27,11 @@ import { ApiError, ApiErrorCode } from "client-sdk/src/api/error";
 import { UserRegister } from "client-sdk/src/api/commands/user";
 import { DriverError } from "client-sdk/src/driver";
 
-//import { calcPasswordStrength } from "./password";
+import type { ZxcvbnResult } from "@zxcvbn-ts/core";
 
-import type { ZXCVBNResult } from "zxcvbn";
+type zxcvbn_fn = (input: string) => ZxcvbnResult;
 
-type zxcvbn_fn = (input: string) => ZXCVBNResult;
-
-var zxcvbn: { zxcvbn: zxcvbn_fn } | (() => Promise<{ default: zxcvbn_fn }>) = () => import('zxcvbn');
+var zxcvbn: { zxcvbn: zxcvbn_fn } | (() => Promise<{ default: zxcvbn_fn }>) = () => import('lib/password');
 
 // var PRELOADED: boolean = false;
 // function preloadLogin() {
@@ -42,29 +40,6 @@ var zxcvbn: { zxcvbn: zxcvbn_fn } | (() => Promise<{ default: zxcvbn_fn }>) = ()
 //         PRELOADED = true;
 //     }
 // }
-
-
-/*
-function chunkString(str: string, length: number) {
-    return str.match(new RegExp('.{1,' + length + '}', 'g'));
-}
-
-const PASSWORDS = require("../../../../data/filter.json");
-
-const fingerprint_length = PASSWORDS._fingerprintLength;
-const chars_per_entry = fingerprint_length * PASSWORDS._element_size;
-PASSWORDS._filter = chunkString(PASSWORDS._filter, chars_per_entry)?.map((e) => {
-    let _elements = chunkString(e, fingerprint_length)?.map((f) => f.charAt(0) === '.' ? null : f);
-    return {
-        type: "Bucket",
-        _size: PASSWORDS._element_size,
-        _elements,
-    }
-});
-
-import { CuckooFilter } from "bloom-filters";
-const PASSWORD_FILTER: CuckooFilter = (CuckooFilter as any).fromJSON(PASSWORDS);
-*/
 
 const YEARS: string[] = [];
 const CURRENT_YEAR = dayjs().year();
@@ -191,7 +166,7 @@ export default function RegisterView() {
     let [errorMsg, setErrorMsg] = createSignal<string | null>(null);
     let prefs = usePrefs();
 
-    createEffect(() => {
+    onMount(() => {
         if(!SETUP_THEN && typeof zxcvbn == 'function') {
             zxcvbn().then(mod => {
                 zxcvbn = { zxcvbn: mod.default };
