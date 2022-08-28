@@ -1,8 +1,8 @@
-import { createEffect, createMemo, createSignal, Show } from "solid-js"
+import { createEffect, createSignal, Show } from "solid-js"
 import { createRef, Ref } from "ui/hooks/createRef";
-import { Branch } from "./../flow";
 import { usePrefs } from "state/contexts/prefs";
-import { EMOJI_RE, normalize } from "lib/emoji";
+import { ALIASES, decode_emojis, EMOJI_RE } from "lib/emoji";
+import { normalize } from "lib/emoji_lite";
 
 export interface IEmojiProps {
     value: string,
@@ -11,6 +11,8 @@ export interface IEmojiProps {
     ui?: boolean,
 
     large?: boolean,
+
+    noTitle?: boolean,
 }
 
 import "./emoji.scss";
@@ -38,11 +40,26 @@ export function Emoji(props: IEmojiProps) {
 
     let large = () => props.large && !prefs.CompactView();
 
+    let title = () => {
+        if(!props.noTitle) {
+            decode_emojis();
+            let aliases = ALIASES.get(value());
+            if(aliases && aliases.length) {
+                return ':' + aliases[0] + ':';
+            }
+        }
+        return;
+    };
+
     return (
-        <Show fallback={<span class="emoji" classList={{ 'large': large() }} textContent={value()} ref={ref} />} when={!use_system()}>
-            <img class="emoji" classList={{ 'large': large() }} alt={value()} aria-label={value()}
+        <Show when={!use_system()} fallback={
+            <span class="emoji" classList={{ 'large': large() }} textContent={value()} ref={ref} title={title()} />
+        }>
+            <img class="emoji" classList={{ 'large': large() }}
+                alt={value()} aria-label={value()}
                 draggable={false} data-type="emoji"
-                src={`https://twemoji.maxcdn.com/v/14.0.2/svg/${normalize(value())}.svg`}
+                src={`/static/emoji/individual/${normalize(value())}.svg`}
+                title={title()}
                 onError={() => setErrored(true)} ref={ref as any} />
         </Show>
     );

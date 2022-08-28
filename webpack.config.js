@@ -229,7 +229,8 @@ module.exports = (env, argv) => {
             new CopyPlugin({
                 patterns: [
                     { from: "./assets", to: "assets" },
-                    { from: "./manifest.json", to: "manifest.json" }
+                    { from: "./manifest.json", to: "manifest.json" },
+                    { from: "./node_modules/lantern-emoji/dist", to: "emoji" },
                 ]
             }),
         ],

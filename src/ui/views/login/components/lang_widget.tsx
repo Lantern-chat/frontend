@@ -6,6 +6,7 @@ import { loadLocaleAsync } from "ui/i18n/i18n-util.async";
 
 import { VectorIcon } from "ui/components/common/icon";
 import { TranslateIcon } from "lantern-icons";
+import { EmojiLite } from "ui/components/common/emoji_lite";
 
 import "./lang_widget.scss";
 export function LangWidget() {
@@ -40,7 +41,7 @@ export function LangWidget() {
                                     classList={{ selected: selected(key) }}
                                     onClick={() => on_select(key as Locales)}
                                 >
-                                    <div class="ln-lang-widget__emoji">{lang.e}</div>
+                                    <div class="ln-lang-widget__emoji"><EmojiLite value={lang.e} /></div>
                                     <div class="ln-lang-widget__name">{lang.n}</div>
                                 </li>
                             )

@@ -12,8 +12,10 @@ export const LanguageSettingsTab = () => {
 import { LANGUAGES, LANGUAGE_KEYS, useLocale } from "ui/i18n";
 import { loadLocaleAsync, loadNamespaceAsync } from "ui/i18n/i18n-util.async";
 
-import "./language.scss";
 import { Spinner } from "ui/components/common/spinners/spinner";
+import { EmojiLite } from "ui/components/common/emoji_lite";
+
+import "./language.scss";
 function LangPicker() {
     let { locale, setLocale } = useLocale();
 
@@ -51,7 +53,7 @@ function LangPicker() {
                             classList={{ selected: selected(key) }}
                             onClick={() => on_select(key as Locales)}
                         >
-                            <div class="lang-emoji">{lang.e}</div>
+                            <div class="lang-emoji"><EmojiLite value={lang.e} /></div>
                             <div class="lang-name">{lang.n}</div>
                             <Show when={selecting(key)}>
                                 <div class="lang-spinner">

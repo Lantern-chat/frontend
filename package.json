@@ -60,6 +60,7 @@
     "highlight.js": "^11.4.0",
     "history": "^5.3.0",
     "katex": "^0.16.0",
+    "lantern-emoji": "https://github.com/Lantern-chat/emoji",
     "lantern-icons": "https://github.com/Lantern-chat/icons",
     "lodash": "^4.17.21",
     "mime": "^3.0.0",
