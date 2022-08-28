@@ -35,22 +35,16 @@ export function Emoji(props: IEmojiProps) {
 
     let ref: HTMLElement | ((el: HTMLElement) => void) | undefined;
 
-    let raw_value = () => {
+    let value = createMemo(() => {
         let e = props.value;
 
         if(props.named) {
             e = ALIASES_REV.get(e)!;
         }
 
-        return e;
-    };
-
-    // TODO: Map :named: emotes to emoji values
-    let value = createMemo(() => {
-        let e = raw_value();
-
         if(props.tone) {
             let m = EMOJIS_MAP.get(e);
+            // if this emote supports skin-tones, append the modifier
             if(m?.s) {
                 e += skin_tones[props.tone];
             }

@@ -811,6 +811,11 @@ function parseRef(capture: Capture, state: State, refNode: RefNode): RefNode {
     return refNode;
 }
 
+// TODO: Design more prefixes
+const SKIN_TONE_PREFIXES = [
+    'skin-tone-'
+];
+
 var currOrder = 0;
 
 export const defaultRules: DefaultRules = {
@@ -1243,14 +1248,14 @@ export const defaultRules: DefaultRules = {
     emoji_alias: {
         o: currOrder++,
         m: (source, state, prev) => {
-            let m = /^(:([A-Za-z0-9_\-]+)(?:::([A-Za-z_\-]+)([1-5]))?:)/.exec(source);
+            let m = /^(:([A-Za-z0-9_\-]+)(?:::([A-Za-z_\-]+)([0-5]))?:)/.exec(source);
             return (m && ALIASES_REV.has(m[2])) ? m : null;
         },
         p: (capture, parse, state) => {
             return {
                 c: capture[2],
                 p: state.pos,
-                t: (capture[3]?.toLowerCase() == 'skin-tone-' && capture[4]) ? parseInt(capture[4]) : undefined
+                t: (SKIN_TONE_PREFIXES.includes(capture[3]?.toLowerCase()) && capture[4] != null) ? parseInt(capture[4]) : undefined
             };
         },
         h: (node, output, state) => {
