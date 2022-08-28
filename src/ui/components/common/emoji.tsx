@@ -6,6 +6,7 @@ import { normalize } from "lib/emoji_lite";
 
 export interface IEmojiProps {
     value: string,
+    named?: boolean,
 
     /// flag for if the emote is in a user-interface string
     ui?: boolean,
@@ -37,8 +38,8 @@ export function Emoji(props: IEmojiProps) {
     let raw_value = () => {
         let e = props.value;
 
-        if(e.startsWith(':')) {
-            e = ALIASES_REV.get(e.slice(1, e.length - 1))!;
+        if(props.named) {
+            e = ALIASES_REV.get(e)!;
         }
 
         return e;

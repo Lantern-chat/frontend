@@ -1248,13 +1248,13 @@ export const defaultRules: DefaultRules = {
         },
         p: (capture, parse, state) => {
             return {
-                c: ':' + capture[2] + ':',
+                c: capture[2],
                 p: state.pos,
                 t: (capture[3]?.toLowerCase() == 'skin-tone-' && capture[4]) ? parseInt(capture[4]) : undefined
             };
         },
         h: (node, output, state) => {
-            return <Emoji value={/* @once */node.c} tone={/* @once */node.t}
+            return <Emoji named value={/* @once */node.c} tone={/* @once */node.t}
                 large={/* @once */node.p == 0 && state.last && !state.inline} />;
         }
     },
