@@ -44,6 +44,7 @@ export function decode_emojis() {
 }
 
 export const SKIN_TONES = ['', "🏻", "🏼", "🏽", "🏾", "🏿"];
+export const SKIN_TONES_HEX = ['#FFDC5D', '#F7DECE', '#F3D2A2', '#D5AB88', '#AF7E57', '#7C533E'];
 
 export type SKIN_TONE_MODIFIER = undefined | 0 | 1 | 2 | 3 | 4 | 5;
 
