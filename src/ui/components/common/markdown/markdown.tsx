@@ -7,7 +7,7 @@ import { CodeWrapper } from "./components/code_wrapper";
 
 import { compareString } from "lib/compare";
 import { Dynamic } from "solid-js/web";
-import { ALIASES_REV, EMOJI_RE0 } from "lib/emoji";
+import { ALIASES_REV, decode_emojis, EMOJI_RE0 } from "lib/emoji";
 import { Emoji } from "../emoji";
 
 export interface Capture extends Array<string> {
@@ -1249,7 +1249,7 @@ export const defaultRules: DefaultRules = {
         o: currOrder++,
         m: (source, state, prev) => {
             let m = /^(:([A-Za-z0-9_\-]+)(?:::([A-Za-z_\-]+)([0-5]))?:)/.exec(source);
-            return (m && ALIASES_REV.has(m[2])) ? m : null;
+            return (m && (decode_emojis(), ALIASES_REV.has(m[2]))) ? m : null;
         },
         p: (capture, parse, state) => {
             return {

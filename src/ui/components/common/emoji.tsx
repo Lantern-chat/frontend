@@ -1,7 +1,7 @@
 import { createEffect, createMemo, createSignal, Show } from "solid-js"
 import { createRef, Ref } from "ui/hooks/createRef";
 import { usePrefs } from "state/contexts/prefs";
-import { ALIASES_REV, EMOJI_RE, emoji_with_skin_tone, SKIN_TONE_MODIFIER, format_emoji_shortcode } from "lib/emoji";
+import { ALIASES_REV, EMOJI_RE, emoji_with_skin_tone, SKIN_TONE_MODIFIER, format_emoji_shortcode, decode_emojis } from "lib/emoji";
 import { normalize } from "lib/emoji_lite";
 
 export interface IEmojiProps {
@@ -28,6 +28,7 @@ export function Emoji(props: IEmojiProps) {
         let e = props.value;
 
         if(props.named) {
+            decode_emojis();
             e = ALIASES_REV.get(e)!;
         }
 
