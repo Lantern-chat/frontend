@@ -1,4 +1,4 @@
-import { DefaultRules, DefaultInRule, inlineRegex, defaultRules, outputFor, parserFor, SolidOutput, SolidElement, SolidMarkdownProps } from "./markdown";
+import { DefaultRules, DefaultInRule, inlineRegex, defaultRules, outputFor, parserFor, SolidOutput, SolidElement, SolidMarkdownProps, State, clean_text, has_text, SingleASTNode } from "./markdown";
 
 export interface ExtraRules extends DefaultRules {
     readonly mention: DefaultInRule,
@@ -10,7 +10,7 @@ import { splitProps } from "solid-js";
 export const extraRules: ExtraRules = {
     ...defaultRules,
     mention: {
-        o: defaultRules.em.o,
+        o: defaultRules.custom_emote.o + 0.1,
         m: inlineRegex(/^<([@#])(\d+)>/),
         p: (capture, parse, state) => {
             return {
@@ -25,21 +25,38 @@ export const extraRules: ExtraRules = {
 const extraRawParse = parserFor(extraRules);
 const extraSolidOutput: SolidOutput = outputFor(extraRules as any);
 
-var ASTCache = window['AST_CACHE'] = new Map();
+interface CachedAst {
+    state: State,
+    ast: SingleASTNode[],
+}
+
+var ASTCache = window['AST_CACHE'] = new Map<string, CachedAst>();
 
 export function SolidMarkdownExtra(props: SolidMarkdownProps): SolidElement {
     let [local, div] = splitProps(props, ['source', 'inline', 'extra']);
 
     let res = () => {
-        let state = { inline: !!local.inline, extra: local.extra };
-        let ast = ASTCache.get(local.source);
-        if(!ast) {
-            ASTCache.set(local.source, ast = extraRawParse(props.source, state));
+        let state: State = { inline: !!local.inline, extra: local.extra };
+
+        let cached = ASTCache.get(props.source);
+        if(!cached) {
+            let ast = extraRawParse(props.source, state);
+
+            if(state.no_text = !has_text(ast)) {
+                ast = clean_text(ast);
+            }
+
+            ASTCache.set(props.source, cached = {
+                state,
+                ast,
+            });
+        } else {
+            state = Object.assign({}, cached.state, state);
+
+            if(ASTCache.size > 200) ASTCache.clear();
         }
 
-        if(ASTCache.size > 500) ASTCache.clear();
-
-        return extraSolidOutput(ast, state);
+        return extraSolidOutput(cached.ast, state);
     };
 
     return <div {...div} children={res()} />

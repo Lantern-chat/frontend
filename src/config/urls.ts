@@ -11,10 +11,16 @@ const CDN_URL =
 
 const DEFAULT_FORMATS = AssetFlags.FORMAT_PNG | AssetFlags.FORMAT_JPEG | AssetFlags.FORMAT_GIF;
 
-export function asset_url(category: 'user' | 'party' | 'room' | 'role', id: Snowflake, hash: string, asset_kind: 'avatar' | 'banner', lbm: boolean): string {
-    let formats = DEFAULT_FORMATS | (SUPPORTS_AVIF() ? AssetFlags.FORMAT_AVIF : 0) | (SUPPORTS_WEBM() ? AssetFlags.FORMAT_WEBM : 0);
+function gen_formats(lbm: boolean): AssetFlags {
+    return DEFAULT_FORMATS | (SUPPORTS_AVIF() ? AssetFlags.FORMAT_AVIF : 0) | (SUPPORTS_WEBM() ? AssetFlags.FORMAT_WEBM : 0);
+}
 
-    return `${CDN_URL}/${category}/${id}/${asset_kind}/${hash}?f=` + asset_flags(lbm ? 0 : 90, formats, true, true);
+export function asset_url(category: 'user' | 'party' | 'room' | 'role' | 'emote', id: Snowflake, hash: string, asset_kind: 'avatar' | 'banner', lbm: boolean): string {
+    return `${CDN_URL}/${category}/${id}/${asset_kind}${hash && '/'}${hash}?f=` + asset_flags(lbm ? 0 : 90, gen_formats(lbm), true, true);
+}
+
+export function emote_url(category: 'emote' | 'sticker', id: Snowflake, lbm: boolean): string {
+    return `${CDN_URL}/${category}/${id}?f=` + asset_flags(lbm ? 0 : 90, gen_formats(lbm), true, true);
 }
 
 export function message_attachment_url(room_id: Snowflake, attachment_id: Snowflake, filename: string): string {

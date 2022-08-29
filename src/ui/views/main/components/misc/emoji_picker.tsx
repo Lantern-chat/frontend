@@ -112,9 +112,6 @@ export function EmojiPicker(props: IEmojiPickerProps) {
 }
 
 function PickerCategory(props: IEmojiPickerProps & { c: number, all?: boolean, search: string, tone: SKIN_TONE_MODIFIER }) {
-    //let tone = createMemo(() => props.tone);
-    //let cat = createMemo(() => props.c);
-
     let first_letter = createMemo(() => props.search.slice(0, 1));
 
     let emojis = createMemo(() => {

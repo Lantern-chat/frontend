@@ -19,6 +19,8 @@ export interface IEmojiProps {
 }
 
 import "./emoji.scss";
+import { Snowflake } from "client-sdk";
+import { asset_url, emote_url } from "config/urls";
 export function Emoji(props: IEmojiProps) {
     const prefs = usePrefs();
 
@@ -71,5 +73,19 @@ export function Emoji(props: IEmojiProps) {
                 onLoad={() => setLoaded(true)}
                 onError={() => setErrored(true)} ref={ref as any} />
         </Show>
+    );
+}
+
+export function Emote(props: { id: Snowflake, large?: boolean }) {
+    const prefs = usePrefs();
+
+    let large = () => props.large && !prefs.CompactView();
+
+    return (
+        <img loading="lazy" class="emoji" classList={{ 'large': large() }}
+            draggable={false} data-type="emoji"
+            src={emote_url("emote", props.id, prefs.LowBandwidthMode())}
+            alt={'<:' + props.id + ':>'}
+        />
     );
 }

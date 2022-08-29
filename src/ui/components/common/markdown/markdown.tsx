@@ -9,6 +9,7 @@ import { compareString } from "lib/compare";
 import { Dynamic } from "solid-js/web";
 import { ALIASES_REV, decode_emojis, EMOJI_RE0 } from "lib/emoji";
 import { Emoji } from "../emoji";
+import { CustomEmote } from "./components/mention";
 
 export interface Capture extends Array<string> {
     index?: number,
@@ -35,6 +36,7 @@ export interface State {
     pos?: number,
     last?: boolean,
     extra?: JSX.Element,
+    no_text?: boolean,
     [prop: string]: any,
 }
 export type OptionalState = State | null | undefined;
@@ -189,6 +191,7 @@ export interface DefaultRules extends DefaultRulesIndexer {
     //readonly reflink: DefaultInRule,
     //readonly refimage: DefaultInRule,
     readonly em: DefaultInOutRule,
+    readonly custom_emote: DefaultInOutRule,
     readonly strong: DefaultInOutRule,
     readonly u: DefaultInOutRule,
     readonly spoiler: DefaultInOutRule,
@@ -1189,6 +1192,14 @@ export const defaultRules: DefaultRules = {
         p: parseCaptureInline,
         h: (node, output, state) => <del>{/* @once */output(node.c, state)}</del>,
     },
+    custom_emote: {
+        o: currOrder++,
+        m: inlineRegex(/^<:(\d+):>/),
+        p: (capture, parse, state) => {
+            return { id: capture[1] }
+        },
+        h: (node, output, state) => <CustomEmote id={/*@once*/node.id} large={/*@once*/state.no_text} />
+    },
     tags: {
         o: currOrder++,
         m: inlineRegex(/^<(sup|sub)>([^\n]+?)<\/\1>/),
@@ -1260,7 +1271,7 @@ export const defaultRules: DefaultRules = {
         },
         h: (node, output, state) => {
             return <Emoji named value={/* @once */node.c} tone={/* @once */node.t}
-                large={/* @once */node.p == 0 && state.last && !state.inline} />;
+                large={/*@once*/state.no_text} />;
         }
     },
     emoji: {
@@ -1273,7 +1284,7 @@ export const defaultRules: DefaultRules = {
         },
         h: (node, output, state) => {
             return <Emoji value={/* @once */node.c}
-                large={/* @once */node.p == 0 && state.last && !state.inline} />;
+                large={/*@once*/state.no_text} />;
         }
     },
     text: {
@@ -1357,3 +1368,44 @@ export function SolidMarkdown(props: SolidMarkdownProps): SolidElement {
 
     return <div {...div} children={res()} />;
 };
+
+export function clean_text(ast: SingleASTNode[]): SingleASTNode[] {
+    return ast.filter(node => {
+        if(node.type != 'text') {
+            if(Array.isArray(node.c)) {
+                node.c = clean_text(node.c);
+            }
+            return true;
+        }
+
+        return false;
+    });
+}
+
+const NESTED = ['paragraph', 'spoiler', 'em', 'strong', 'u', 'del'];
+
+function has_text_inner(node: SingleASTNode): boolean {
+    if(NESTED.includes(node.type)) {
+        return has_text(node.c);
+    }
+
+    switch(node.type) {
+        // allow separating whitespace, will be cleaned later
+        case 'text': return !/^\s*$/.test(node.c as string);
+
+        case 'custom_emote':
+        case 'emoji_alias':
+        case 'emoji': return false;
+
+        default: return true;
+    }
+}
+
+export function has_text(ast: SingleASTNode[]): boolean {
+    for(let node of ast) {
+        if(has_text_inner(node)) {
+            return true;
+        }
+    }
+    return false;
+}
