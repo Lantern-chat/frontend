@@ -54,17 +54,14 @@ export function EmojiPicker(props: IEmojiPickerProps) {
     });
 
     let on_esc = (e: KeyboardEvent) => {
-        console.log(e.key);
-        if(e.key == 'Escape') {
-            setSearch('');
-        }
+        if(e.key == 'Escape') { setSearch(''); }
     };
 
     return (
         <div class="ln-emoji-picker">
             <div class="ln-emoji-picker__search">
                 <input ref={input} type="text" placeholder="Search" value={search()}
-                    onInput={e => setSearch(e.currentTarget.value.toLowerCase())} onKeyUp={on_esc} />
+                    onInput={e => setSearch(e.currentTarget.value.trim().toLowerCase())} onKeyUp={on_esc} />
 
                 <div class="ln-emoji-picker__tone">
                     <div class="ln-emoji-picker__tone-wrapper">
@@ -114,7 +111,7 @@ function PickerCategory(props: IEmojiPickerProps & { c: number, all?: boolean, s
 
         if(filter) {
             e = e.filter(x => {
-                x.b = x.a.join(' ');
+                x.b ||= x.a.join(' ');
                 return x.b.includes(filter);
             });
         }
@@ -172,7 +169,12 @@ function PickerCategory(props: IEmojiPickerProps & { c: number, all?: boolean, s
     let [none, setNone] = createSignal(false);
 
     createRenderEffect(() => {
-        let children = ref.current?.children, search = props.search.trim();
+        // ensure filter is applied whenever the emoji list refreshes, too.
+        // by using emojis() rather than props.tone or such, this forces emojis() higher up in the graph
+        // and gives it a chance to be inserted into the DOM *first*
+        emojis();
+
+        let children = ref.current?.children, search = props.search;
 
         // if there are children to filter and a search to be done or it needs to be cleared
         if(children && (search || is_filtered)) {
