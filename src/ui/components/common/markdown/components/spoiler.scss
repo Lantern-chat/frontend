@@ -6,10 +6,6 @@
         text-decoration: inherit;
         display: inline-flex;
 
-        @supports (overflow: clip) {
-            display: inline;
-        }
-
         &.hidden {
             cursor: pointer;
 
@@ -18,6 +14,11 @@
             & *::selection,
             & *::-moz-selection {
                 background-color: black;
+            }
+
+            > * {
+                position: relative;
+                z-index: -1;
             }
 
             &,
