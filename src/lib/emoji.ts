@@ -14,6 +14,7 @@ export interface IEmoji {
     s: boolean,
     c: number,
     a: Array<string>,
+    t?: Array<string>,
 }
 
 // TODO: Find a way to deallocate inner JSON string after use
@@ -29,17 +30,21 @@ export function decode_emojis() {
         let fully_packed_emojis = RAW_EMOJIS.e;
 
         for(let packed_emoji of fully_packed_emojis.split('|')) {
-            let [e, c, ...a] = packed_emoji.split(',') as [e: string, c: number, ...a: Array<string>];
-            EMOJIS.push({ e, c: Math.abs(c), s: c < 0, a })
-        }
+            let [e, c, aliases, tags] = packed_emoji.split(',') as [e: string, c: number, aliases: string, tags?: string];
 
-        for(let e of EMOJIS) {
-            EMOJIS_MAP.set(e.e, e);
+            let emoji = { e, c: Math.abs(c) - 1, s: c < 0, a: aliases.split(' '), t: tags?.split(' ') };
 
-            for(let alias of e.a) {
-                ALIASES_REV.set(alias, e.e);
+            EMOJIS.push(emoji);
+            EMOJIS_MAP.set(emoji.e, emoji);
+
+            for(let alias of emoji.a) {
+                ALIASES_REV.set(alias, emoji.e);
             }
         }
+
+        // free up memory, maybe
+        RAW_EMOJIS.e = null!;
+        RAW_EMOJIS.c = null!;
     }
 }
 

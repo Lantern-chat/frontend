@@ -33,10 +33,42 @@
         display: flex;
         box-shadow: 0 0.25em 0.25em rgba(0, 0, 0, 0.1);
 
+        &-input {
+            width: 100%;
+            height: 100%;
+            margin-inline-start: 0.5em;
+            position: relative;
+
+            > span {
+                position: absolute;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                height: 2em;
+                width: 2em;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                margin-block: auto;
+                align-items: center;
+                cursor: pointer;
+
+                svg {
+                    fill: $lnx-secondary-text-color;
+                }
+
+                &:hover,
+                &:active {
+                    svg {
+                        fill: $lnx-primary-text-color;
+                    }
+                }
+            }
+        }
+
         input {
             font: inherit;
             width: 100%;
-            margin-inline-start: 0.5em;
             margin-block: 0.5em;
             height: 2em;
             border-radius: 0.5em;
@@ -96,6 +128,7 @@
             border-radius: 50%;
             flex-shrink: 0;
             margin: 0.5em;
+            box-shadow: inset 0 0 0.125em rgba(0, 0, 0, 0.5);
         }
     }
 

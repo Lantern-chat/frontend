@@ -2,6 +2,8 @@ import { CATEGORIES, decode_emojis, EMOJIS, emoji_with_skin_tone, format_emoji_s
 import { batch, createEffect, createMemo, createRenderEffect, createSelector, createSignal, onMount, Show } from "solid-js";
 import { usePrefs } from "state/contexts/prefs";
 import { EmojiLite } from "ui/components/common/emoji_lite";
+import { VectorIcon } from "ui/components/common/icon";
+import { Icons } from "lantern-icons";
 import { createRef } from "ui/hooks/createRef";
 
 export interface IEmojiPickerProps {
@@ -53,27 +55,43 @@ export function EmojiPicker(props: IEmojiPickerProps) {
         setSearch('');
     });
 
+    let clear_search = () => {
+        setSearch('');
+        input?.focus();
+    };
+
     let on_esc = (e: KeyboardEvent) => {
         if(e.key == 'Escape') { setSearch(''); }
     };
 
+    let has_search = createMemo(() => !!search());
+
     return (
         <div class="ln-emoji-picker">
             <div class="ln-emoji-picker__search">
-                <input ref={input} type="text" placeholder="Search" value={search()}
-                    onInput={e => setSearch(e.currentTarget.value.trim().toLowerCase())} onKeyUp={on_esc} />
+                <div class="ln-emoji-picker__search-input">
+                    <input ref={input} type="text" placeholder="Search" value={search()}
+                        onInput={e => setSearch(e.currentTarget.value.trim().toLowerCase())} onKeyUp={on_esc} />
+                    <Show when={has_search()}>
+                        <span onClick={clear_search}>
+                            <VectorIcon id={Icons.Close} />
+                        </span>
+                    </Show>
+                </div>
 
                 <div class="ln-emoji-picker__tone">
                     <div class="ln-emoji-picker__tone-wrapper">
                         <span style={{ "background-color": SKIN_TONES_HEX[tone()!] }} />
                         <div class="ln-emoji-picker__tone-options">
                             {SKIN_TONES_HEX.map((h, i) => (
-                                i != tone() ? <span style={{ "background-color": h }} on:click={() => setTone(i as SKIN_TONE_MODIFIER)} /> : null
+                                i != tone() ? <span style={{ "background-color": h }}
+                                    onClick={() => setTone(i as SKIN_TONE_MODIFIER)} /> : null
                             ))}
                         </div>
                     </div>
                 </div>
             </div>
+
             <div class="ln-emoji-picker__picker">
                 <div class="ln-emoji-picker__categories">
                     {FORMATTED_CATEGORIES.map(({ p, e }, idx) => {
@@ -86,7 +104,8 @@ export function EmojiPicker(props: IEmojiPickerProps) {
                         )
                     })}
                 </div>
-                <PickerCategory {...props} c={category()} all={!!search()} search={search()} tone={tone()} />
+
+                <PickerCategory {...props} c={category()} all={has_search()} search={search()} tone={tone()} />
             </div>
         </div>
     );
@@ -96,13 +115,10 @@ function PickerCategory(props: IEmojiPickerProps & { c: number, all?: boolean, s
     //let tone = createMemo(() => props.tone);
     //let cat = createMemo(() => props.c);
 
-    // NOTE: As of now, props.all is based on search, so it gets recomputed each time search is updated
-    // so we need to memoize the boolean result to avoid recomputing emojis[] below
-    let all = createMemo(() => props.all);
     let first_letter = createMemo(() => props.search.slice(0, 1));
 
     let emojis = createMemo(() => {
-        let e: Array<IEmoji & { b?: string }> = all() ? EMOJIS : FORMATTED_CATEGORIES[props.c].e;
+        let e: Array<IEmoji & { b?: string }> = props.all ? EMOJIS : FORMATTED_CATEGORIES[props.c].e;
 
         __DEV__ && console.log("Recomputing emoji list");
 
@@ -111,7 +127,7 @@ function PickerCategory(props: IEmojiPickerProps & { c: number, all?: boolean, s
 
         if(filter) {
             e = e.filter(x => {
-                x.b ||= x.a.join(' ');
+                x.b ||= (x.t ? x.t.concat(x.a) : x.a).join(' ');
                 return x.b.includes(filter);
             });
         }
@@ -126,7 +142,7 @@ function PickerCategory(props: IEmojiPickerProps & { c: number, all?: boolean, s
                     aria-label={/*@once*/et}
                     data-emoji={/*@once*/et}
                     title={/*@once*/format_emoji_shortcode(et, !e.s || !tone)}
-                    data-shortcodes={/*@once*/e.b || e.a.join(' ')}
+                    data-search={/*@once*/e.b || (e.t ? e.t.concat(e.a) : e.a).join(' ')}
                 >
                     <svg aria-role="img" aria-labelledby="e">
                         <desc id="e">{/*@once*/et}</desc>
@@ -160,7 +176,7 @@ function PickerCategory(props: IEmojiPickerProps & { c: number, all?: boolean, s
 
     // whenever the category changes, reset scroll to top
     createRenderEffect(() => {
-        props.c;
+        props.c, props.search;
         ref.current?.scrollTo({ top: 0, behavior: 'instant' as any });
     });
 
@@ -182,7 +198,7 @@ function PickerCategory(props: IEmojiPickerProps & { c: number, all?: boolean, s
 
             for(let i = 0; i < children.length; i++) {
                 let child = children[i] as HTMLElement,
-                    matches = child.dataset?.['shortcodes']?.includes(search);
+                    matches = child.dataset?.['search']?.includes(search);
 
                 if(matches != null) {
                     let new_display = matches ? '' : 'none';
