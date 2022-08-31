@@ -12,6 +12,7 @@ import { createSimpleToggleOnClick } from "ui/hooks/useMain";
 import { UserCard } from "../../menus/user_card";
 import { formatRgbBinary } from "lib/color";
 import { adjustUserColor } from "state/selectors/color";
+import { UserText } from "ui/components/common/ui-text-user";
 
 export interface IMessageProps {
     msg: IMessageState,
@@ -48,7 +49,7 @@ export function MessageUserName(props: IUserNameProps) {
                 <UserCard user_id={user.id} party_id={props.party_id} />
             </AnchoredModal>
 
-            <UIText text={props.name} />
+            <UserText class="ui-text" text={props.name} />
         </h2>
     );
 }

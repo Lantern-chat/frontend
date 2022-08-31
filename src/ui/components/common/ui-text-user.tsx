@@ -18,7 +18,7 @@ export function UserText(props: UITextProps) {
     };
 
     return (
-        <span class={/*@once*/props.class || 'ui-text'}>
+        <span class={/*@once*/props.class}>
             {split_user_text(props.text)
                 .map(n => typeof n === 'string' ? n : (prefs().UsePlatformEmojis()
                     ? <span class="emoji" textContent={/*@once*/n.e} />

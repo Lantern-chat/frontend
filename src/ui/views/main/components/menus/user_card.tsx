@@ -124,7 +124,7 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
                     <Show when={props.nick && props.nick != props.user.username} fallback={
                         <h4>{props.user.username}<Discriminator discriminator={props.user.discriminator} /></h4>
                     }>
-                        <h4>{props.nick}</h4>
+                        <h4><UserText text={props.nick!} /></h4>
                         <span>{props.user.username}<Discriminator discriminator={props.user.discriminator} /></span>
                     </Show>
 
