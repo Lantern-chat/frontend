@@ -37,6 +37,7 @@ export interface State {
     last?: boolean,
     extra?: JSX.Element,
     no_text?: boolean,
+    had_emoji?: boolean,
     [prop: string]: any,
 }
 export type OptionalState = State | null | undefined;
@@ -1196,6 +1197,7 @@ export const defaultRules: DefaultRules = {
         o: currOrder++,
         m: inlineRegex(/^<:(\d+):>/),
         p: (capture, parse, state) => {
+            state.had_emoji = true;
             return { id: capture[1] }
         },
         h: (node, output, state) => <CustomEmote id={/*@once*/node.id} large={/*@once*/state.no_text} />
@@ -1263,6 +1265,7 @@ export const defaultRules: DefaultRules = {
             return (m && (decode_emojis(), ALIASES_REV.has(m[2]))) ? m : null;
         },
         p: (capture, parse, state) => {
+            state.had_emoji = true;
             return {
                 c: capture[2],
                 p: state.pos,
@@ -1280,6 +1283,7 @@ export const defaultRules: DefaultRules = {
             return EMOJI_RE0.exec(source);
         },
         p: (capture, parse, state) => {
+            state.had_emoji = true;
             return { c: capture[0], p: state.pos };
         },
         h: (node, output, state) => {

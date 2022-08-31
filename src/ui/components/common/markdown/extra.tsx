@@ -42,7 +42,7 @@ export function SolidMarkdownExtra(props: SolidMarkdownProps): SolidElement {
         if(!cached) {
             let ast = extraRawParse(props.source, state);
 
-            if(state.no_text = !has_text(ast)) {
+            if(state.had_emoji && (state.no_text = !has_text(ast))) {
                 ast = clean_text(ast);
             }
 
