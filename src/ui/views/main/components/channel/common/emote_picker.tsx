@@ -26,7 +26,7 @@ export function EmotePicker(props: IEmotePickerProps) {
             <VectorIcon id={Icons.SmileyHalf} />
 
             <AnchoredModal show={show()} eat={["onClick"]}>
-                <EmojiPicker onPick={on_pick} tone={5} />
+                <EmojiPicker onPick={on_pick} />
             </AnchoredModal>
         </div>
     );

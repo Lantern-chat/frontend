@@ -93,7 +93,7 @@ export function EmojiPicker(props: IEmojiPickerProps) {
             </div>
 
             <div class="ln-emoji-picker__picker">
-                <div class="ln-emoji-picker__categories">
+                <div class="ln-emoji-picker__categories ln-scroll-y">
                     {FORMATTED_CATEGORIES.map(({ p, e }, idx) => {
                         return (
                             <div title={p} onClick={() => on_category(idx)} classList={{

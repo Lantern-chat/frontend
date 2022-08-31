@@ -14,6 +14,7 @@ import { MsgAttachment } from "./attachment";
 import { createTimestamp } from "ui/hooks/createTimestamp";
 import { UICalendar, UITimestamp } from "ui/components/common/timestamp";
 import { useI18nContext } from "ui/i18n/i18n-solid";
+import { Reactions } from "./reaction";
 
 export function CozyMessage(props: IMessageProps) {
     let { LL, locale } = useI18nContext();
@@ -79,6 +80,10 @@ export function CozyMessage(props: IMessageProps) {
                 </Show>
 
                 <MessageBody msg={props.msg.msg} extra={extra()} />
+
+                <Show when={props.msg.msg.reactions?.length}>
+                    <Reactions msg={props.msg.msg} />
+                </Show>
 
                 <For each={props.msg.msg.attachments}>
                     {attachment => <MsgAttachment msg={props.msg.msg} attachment={attachment} />}

@@ -1,4 +1,4 @@
-import { For } from "solid-js";
+import { For, Show } from "solid-js";
 import { useRootSelector } from "state/root";
 import { selectCachedUserFromMessage } from "state/selectors/selectCachedUser";
 import { UITimestamp } from "ui/components/common/timestamp";
@@ -8,6 +8,7 @@ import { MsgAttachment } from "./attachment";
 import { IMessageProps, MessageUserName } from "./common";
 
 import { Message as MessageBody } from "./msg";
+import { Reactions } from "./reaction";
 
 export function CompactMessage(props: IMessageProps) {
     let { LL, locale } = useI18nContext();
@@ -43,6 +44,10 @@ export function CompactMessage(props: IMessageProps) {
             </div>
 
             <MessageBody msg={props.msg.msg} extra={extra()} />
+
+            <Show when={props.msg.msg.reactions?.length}>
+                <Reactions msg={props.msg.msg} />
+            </Show>
 
             <For each={props.msg.msg.attachments}>
                 {attachment => <MsgAttachment msg={props.msg.msg} attachment={attachment} />}
