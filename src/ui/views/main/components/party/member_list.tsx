@@ -16,7 +16,7 @@ import { VectorIcon } from "ui/components/common/icon";
 
 import { UserAvatar } from "../user_avatar";
 import { BotLabel } from "../misc/bot_label";
-
+import { UserText } from "ui/components/common/ui-text-user";
 import { Icons } from "lantern-icons";
 
 import { AnchoredModal } from "ui/components/modal/anchored";
@@ -222,7 +222,7 @@ function ListedMember(props: IListedMemberProps) {
                 <Show when={presence().status != PresenceStatus.Offline && cached_user().profile?.status}>
                     {status => (
                         <div class="ln-member__status">
-                            <span class="chat-text" textContent={status} />
+                            <UserText class="chat-text" text={status} />
                         </div>
                     )}
                 </Show>

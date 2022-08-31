@@ -1,5 +1,4 @@
 import { createEffect, createMemo, JSXElement, onMount, Show } from "solid-js";
-import { useStructuredSelector } from "solid-mutant";
 import { PartyMember, Snowflake, User, parse_presence, UserPreferenceFlags, user_is_bot, PresenceStatus, UserProfile, split_profile_bits, UserPresence, UserProfileSplitBits } from "state/models";
 import { RootState, useRootDispatch, useRootSelector, useRootStore } from "state/root";
 import { selectCachedUser } from "state/selectors/selectCachedUser";
@@ -7,13 +6,12 @@ import { useI18nContext } from "ui/i18n/i18n-solid";
 import { usePrefs } from "state/contexts/prefs";
 import { pickColorFromHash } from "lib/palette";
 import { Markdown } from "ui/components/common/markdown";
-import { Branch } from "ui/components/flow";
+import { UserText } from "ui/components/common/ui-text-user";
 import { UserAvatar } from "../user_avatar";
 import { BotLabel } from "../misc/bot_label";
 import { asset_url } from "config/urls";
 import { formatRgbBinary, formatRGBHex, hsv2rgb, HSVColor, RGBColor } from "lib/color";
 import { fetch_profile } from "state/commands/profile";
-import { CachedUser } from "state/mutators/cache";
 import { Discriminator } from "../misc/discriminator";
 import { br } from "ui/utils";
 
@@ -123,15 +121,13 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
 
             <div class="ln-user-card__info">
                 <div class="ui-text ln-username">
-                    <Branch>
-                        <Branch.If when={props.nick}>
-                            <h4>{props.nick}</h4>
-                            <span>{props.user.username}<Discriminator discriminator={props.user.discriminator} /></span>
-                        </Branch.If>
-                        <Branch.Else>
-                            <h4>{props.user.username}<Discriminator discriminator={props.user.discriminator} /></h4>
-                        </Branch.Else>
-                    </Branch>
+                    <Show when={props.nick && props.nick != props.user.username} fallback={
+                        <h4>{props.user.username}<Discriminator discriminator={props.user.discriminator} /></h4>
+                    }>
+                        <h4>{props.nick}</h4>
+                        <span>{props.user.username}<Discriminator discriminator={props.user.discriminator} /></span>
+                    </Show>
+
                     <Show when={user_is_bot(props.user)}>
                         <BotLabel />
                     </Show>
@@ -139,7 +135,7 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
 
                 <Show when={props.profile?.status}>
                     <div class="ln-user-custom-status">
-                        <span class="chat-text" textContent={props.profile!.status!} />
+                        <UserText class="chat-text" text={props.profile!.status!} />
 
                         {props.statusExt}
                     </div>

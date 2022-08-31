@@ -11,6 +11,7 @@ import { usePrefs } from "state/contexts/prefs";
 import { Panel } from "state/mutators/window";
 
 import { UIText } from "ui/components/common/ui-text";
+import { UserText } from "ui/components/common/ui-text-user";
 import { Bounce } from "ui/components/common/spinners/bounce";
 import { VectorIcon } from "ui/components/common/icon";
 import { Avatar } from "ui/components/common/avatar";
@@ -95,7 +96,7 @@ function ListedChannel(props: IListedChannelProps) {
                 <RoomIcon room={props.room} />
 
                 <div class="ln-channel-list__name">
-                    <UIText text={props.room.name} />
+                    <UserText text={props.room.name} />
                 </div>
             </Link>
 

@@ -5,6 +5,7 @@ import { Panel } from "state/mutators/window";
 import { RootState, useRootDispatch, useRootSelector } from "state/root";
 import { activeRoom } from "state/selectors/active";
 
+import { UserText } from "ui/components/common/ui-text-user";
 import { VectorIcon } from "ui/components/common/icon";
 
 import { Icons } from "lantern-icons";
@@ -50,11 +51,11 @@ export function ChannelHeader() {
 
                 <div class="ln-channel-info__wrapper">
                     <div class="ln-channel-info">
-                        <span class="ln-channel-info__name ui-text" textContent={room().name} />
+                        <span class="ln-channel-info__name"><UserText text={room().name} /></span>
 
                         <Show when={room().topic}>
                             <span class="ln-vert">&nbsp;</span>
-                            <span class="ln-channel-info__topic ui-text" textContent={room().topic} />
+                            <span class="ln-channel-info__topic"><UserText text={room().topic!} /></span>
                         </Show>
                     </div>
                 </div>
