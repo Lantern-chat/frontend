@@ -76,7 +76,13 @@ export function PositionedModal(props: IPositionedModalProps) {
         }
 
         let wrapper_props = {
-            style: { position: 'absolute' as const, left: px(left), top: px(top) } as JSX.CSSProperties,
+            style: {
+                position: 'absolute',
+                '--modal-left': px(left),
+                '--modal-top': px(top),
+                left: 'var(--modal-left)',
+                top: 'var(--modal-top)',
+            } as JSX.CSSProperties,
             class: cns.join(' '),
         };
 
