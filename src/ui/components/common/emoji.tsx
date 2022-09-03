@@ -2,7 +2,8 @@ import { createEffect, createMemo, createSignal, Show } from "solid-js"
 import { createRef, Ref } from "ui/hooks/createRef";
 import { usePrefs } from "state/contexts/prefs";
 import { ALIASES_REV, EMOJI_RE, emoji_with_skin_tone, SKIN_TONE_MODIFIER, format_emoji_shortcode, decode_emojis } from "lib/emoji";
-import { normalize } from "lib/emoji_lite";
+import type { Snowflake } from "state/models";
+import { emote_url, emoji_url } from "config/urls";
 
 export interface IEmojiProps {
     value: string,
@@ -19,8 +20,6 @@ export interface IEmojiProps {
 }
 
 import "./emoji.scss";
-import { Snowflake } from "client-sdk";
-import { asset_url, emote_url } from "config/urls";
 export function Emoji(props: IEmojiProps) {
     const prefs = usePrefs();
 
@@ -68,7 +67,7 @@ export function Emoji(props: IEmojiProps) {
             <img loading="lazy" class="emoji" classList={{ 'large': large() }}
                 alt={loaded() ? value() : undefined}
                 aria-label={value()} draggable={false} data-type="emoji"
-                src={`/static/emoji/individual/${normalize(value())}.svg`}
+                src={emoji_url(value())}
                 title={title()}
                 onLoad={() => setLoaded(true)}
                 onError={() => setErrored(true)} ref={ref as any} />

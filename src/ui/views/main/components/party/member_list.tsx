@@ -204,7 +204,9 @@ function ListedMember(props: IListedMemberProps) {
                 <div class="ln-member__title">
 
                     <div class="ln-member__name">
-                        <span class="ui-text" style={{ color: color() }} textContent={cached_user().nick} />
+                        <span class="ui-text" style={{ color: color() }}>
+                            <UserText text={cached_user().nick} />
+                        </span>
                     </div>
 
                     <Show when={cached_user().user.id == props.owner}>

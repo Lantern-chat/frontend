@@ -1,5 +1,6 @@
 import { SUPPORTS_AVIF, SUPPORTS_WEBM } from "lib/codecs";
-import { usePrefs } from "state/contexts/prefs";
+import { minimize } from "lib/emoji_lite";
+//import { usePrefs } from "state/contexts/prefs";
 import { Snowflake, AssetFlags, asset_flags } from "state/models";
 
 const PROTOCOL = window.config.secure ? 'https://' : (window.location.protocol + '//');
@@ -31,3 +32,5 @@ export function room_url(party_id: Snowflake, room_id?: Snowflake): string {
     let url = `/channels/${party_id}/`;
     return room_id ? (url + room_id) : url;
 }
+
+export const emoji_url = (emoji: string): string => `/static/emoji/individual/${minimize(emoji)}.svg`;

@@ -23,20 +23,12 @@ export function Reactions(props: IReactionsProps) {
     };
 
     let on_click = (e: MouseEvent) => {
-        let emote, emoji;
-
-        let t = e.target as HTMLElement | null, d;
+        let emote, emoji, t = e.target as HTMLElement | null, d;
         while(t && t != wrapper) {
             d = t.dataset['emote'];
-            if(d) {
-                emote = d;
-                break;
-            }
+            if(d) { emote = d; break; }
             d = t.dataset['emoji'];
-            if(d) {
-                emoji = d;
-                break;
-            }
+            if(d) { emoji = d; break; }
 
             t = t.parentElement;
         }

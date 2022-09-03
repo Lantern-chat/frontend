@@ -1,6 +1,6 @@
 import { createSignal, Show } from "solid-js"
 import { usePrefs } from "state/contexts/prefs";
-import { normalize } from "lib/emoji_lite";
+import { emoji_url } from "config/urls";
 
 import type { IEmojiProps } from "./emoji";
 
@@ -29,7 +29,7 @@ export function EmojiLite(props: IEmojiLiteProps) {
             <img loading="lazy" class="emoji" classList={{ 'large': large() }}
                 alt={value()} aria-label={value()}
                 draggable={false} data-type="emoji"
-                src={`/static/emoji/individual/${normalize(value())}.svg`}
+                src={emoji_url(value())}
                 onError={() => setErrored(true)} />
         </Show>
     );

@@ -94,3 +94,13 @@ export function quicksort<T>(arr: Array<T>, cmp: CompareFunc<T> = less_than) {
     quicksort_inner(arr, 0, arr.length - 1, cmp);
 }
 */
+
+export function lazy<T>(gen: () => T): () => T {
+    let value: T | undefined;
+    return () => {
+        if(!value) {
+            value = gen();
+        }
+        return value;
+    };
+}

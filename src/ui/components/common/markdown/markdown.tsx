@@ -7,7 +7,7 @@ import { CodeWrapper } from "./components/code_wrapper";
 
 import { compareString } from "lib/compare";
 import { Dynamic } from "solid-js/web";
-import { ALIASES_REV, decode_emojis, EMOJI_RE0 } from "lib/emoji";
+import { ALIASES_REV, decode_emojis, EMOJI_RE0, find_emoji } from "lib/emoji";
 import { Emoji } from "../emoji";
 import { CustomEmote } from "./components/mention";
 
@@ -1280,7 +1280,7 @@ export const defaultRules: DefaultRules = {
     emoji: {
         o: currOrder++,
         m: (source, state, prev) => {
-            return EMOJI_RE0.exec(source);
+            return find_emoji(source, EMOJI_RE0);
         },
         p: (capture, parse, state) => {
             state.had_emoji = true;
