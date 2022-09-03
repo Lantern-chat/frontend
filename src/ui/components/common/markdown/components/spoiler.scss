@@ -6,6 +6,12 @@
         text-decoration: inherit;
         display: inline-flex;
 
+        background-color: rgba(128, 128, 128, 0.2);
+
+        .ln-light-theme & {
+            background-color: rgba(128, 128, 128, 0.1);
+        }
+
         &.hidden {
             cursor: pointer;
 
@@ -43,13 +49,5 @@
         //    bottom: 0;
         //    right: 0;
         //}
-
-        &.visible {
-            background-color: rgba(128, 128, 128, 0.2);
-
-            .ln-light-theme & {
-                background-color: rgba(128, 128, 128, 0.1);
-            }
-        }
     }
 }
