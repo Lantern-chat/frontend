@@ -59,7 +59,7 @@ import { Accessor, createMemo } from "solid-js";
 
 /// This should be prefered over useI18nContext when using `setLocale`
 export function useLocale(): ReturnType<typeof useI18nContext> & { lang: Accessor<ILanguage> } {
-    let { LL, locale, setLocale } = useI18nContext();
+    const { LL, locale, setLocale } = useI18nContext();
 
     return {
         LL, locale, setLocale: (locale: Locales) => {

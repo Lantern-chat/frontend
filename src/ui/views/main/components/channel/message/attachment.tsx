@@ -9,7 +9,7 @@ import { message_attachment_url } from "config/urls";
 import { createBytesFormatter } from "ui/hooks/createFormatter";
 
 import { createRef } from "ui/hooks/createRef";
-import { useLocale } from "ui/i18n";
+import { useI18nContext } from "ui/i18n/i18n-solid";
 import { MainContext, createClickEater } from "ui/hooks/useMain";
 import { Branch } from "ui/components/flow";
 import { createInfiniteScrollIntersectionTrigger } from "ui/components/infinite_scroll";
@@ -33,7 +33,7 @@ const LARGE_THRESHOLD = 1024 * 1024 * (IS_MOBILE ? 10 : 30);
 
 import "./attachment.scss";
 export function MsgAttachment(props: IMsgAttachmentProps) {
-    const { LL } = useLocale();
+    const { LL } = useI18nContext();
 
     let prefs = usePrefs();
 

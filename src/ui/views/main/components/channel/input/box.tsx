@@ -12,7 +12,6 @@ import { Type } from "state/actions";
 import { sendMessage, startTyping } from "state/commands";
 import { activeParty, activeRoom } from "state/selectors/active";
 import { usePrefs } from "state/contexts/prefs";
-import { useLocale } from "ui/i18n";
 import { ITypingState } from "state/mutators/chat";
 
 //import { FileUploadModal } from "ui/views/main/modals/file_upload";
@@ -30,7 +29,7 @@ import { createController } from "ui/hooks/createController";
 
 import "./box.scss";
 export function MessageBox() {
-    const prefs = usePrefs(), { LL } = useLocale();
+    const prefs = usePrefs(), { LL } = useI18nContext();
 
     let state = useStructuredSelector({
         active_room: activeRoom,

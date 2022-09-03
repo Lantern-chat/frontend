@@ -15,6 +15,7 @@ import { SetController } from "ui/hooks/createController";
 import { createBytesFormatter } from "ui/hooks/createFormatter";
 import { createRef, Ref } from "ui/hooks/createRef";
 import { useLocale } from "ui/i18n";
+import { useI18nContext } from "ui/i18n/i18n-solid";
 
 import "./upload.scss";
 
@@ -52,7 +53,7 @@ var COUNTER = 0;
 const SPOILER = "SPOILER_";
 
 export function UploadPanel(props: IUploadPanelProps) {
-    const { LL } = useLocale();
+    const { LL } = useI18nContext();
 
     let files: Map<number, IMappedFile> = new Map();
     let [file_meta, setFileMeta] = createStore<Array<IFileMeta>>([]);
@@ -323,7 +324,7 @@ interface IUploadDropperProps {
 }
 
 function UploadDropper(props: IUploadDropperProps) {
-    const { LL } = useLocale();
+    const { LL } = useI18nContext();
     const [drag, setDrag] = createSignal(0);
 
     const inc = () => setDrag(d => d + 1);
