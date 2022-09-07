@@ -147,3 +147,95 @@ export function emote_start(input: string, position: number): number {
 
     return is_valid ? start : -1;
 }
+
+export const enum SpanType {
+    None,
+    InlineCode,
+    BlockCode,
+    InlineMath,
+    BlockMath,
+    Url,
+    CustomEmote,
+    UserMention,
+    RoomMention,
+    Spoiler,
+    EmoteName,
+}
+
+// NOTE: This is slightly different from the backend version, in that the start+end range includes
+// the delimiters, but the `v` value is present that excludes them. Was easier this way.
+export interface MdSpan {
+    type: SpanType,
+    start: number,
+    len: number,
+    value: string,
+    spoilered?: boolean,
+}
+
+interface Rule {
+    r: RegExp,
+    t: SpanType;
+}
+
+const RULES: Array<Rule> = [
+    {
+        r: /^<@(\d+)>/,
+        t: SpanType.UserMention,
+    },
+    {
+        r: /^<#(\d+)>/,
+        t: SpanType.RoomMention,
+    },
+    {
+        r: /^<:(\w*:\d+)>/,
+        t: SpanType.CustomEmote,
+    },
+    {
+        r: /^:(\w+):/,
+        t: SpanType.EmoteName,
+    },
+    {
+        r: /^\|\|([^]*?)\|\|/,
+        t: SpanType.Spoiler,
+    },
+    {
+        r: /^```([^`][^]*?)\n```/,
+        t: SpanType.BlockCode
+    },
+    {
+        r: /^`([^`\n]+)`/,
+        t: SpanType.InlineCode,
+    },
+];
+
+export function scan_markdown(input: string, spans: MdSpan[] = [], offset: number = 0): MdSpan[] {
+    let i = -1, slice, m: RegExpExecArray | null;
+    while(slice = input.slice(++i)) {
+        for(let rule of RULES) {
+            if(m = rule.r.exec(slice)) {
+                let start = i + offset, len = m[0].length;
+
+                spans.push({
+                    type: rule.t,
+                    start,
+                    len,
+                    value: m[1],
+                });
+
+                if(rule.t == SpanType.Spoiler) {
+                    let j = spans.length;
+
+                    scan_markdown(m[1], spans, i + 2);
+
+                    for(let span of spans.slice(j)) {
+                        span.spoilered = true;
+                    }
+                }
+
+                i += len;
+            }
+        }
+    }
+
+    return spans;
+}
