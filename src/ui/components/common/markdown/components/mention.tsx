@@ -2,7 +2,6 @@ import { Match, Show, Switch } from "solid-js";
 import { Snowflake } from "state/models";
 import { useRootSelector } from "state/root";
 import { Link } from "ui/components/history";
-import { Emote } from "../../emoji";
 
 export interface IMentionProps {
     prefix: '@' | '#',
@@ -30,10 +29,6 @@ export function Mention(props: IMentionProps) {
         );
         default: return null;
     }
-}
-
-export function CustomEmote(props: { id: Snowflake, large?: boolean }) {
-    return <Emote id={/*@once*/props.id} large={/*@once*/props.large} />;
 }
 
 function UserMention(props: { id: Snowflake }) {

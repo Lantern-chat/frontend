@@ -1,7 +1,7 @@
 import { Icons } from "lantern-icons";
 import { For, Show } from "solid-js";
-import { Emote as IEmote, Message } from "state/models";
-import { Emoji, Emote } from "ui/components/common/emoji";
+import { Emote, Message } from "state/models";
+import { Emoji, CustomEmote } from "ui/components/common/emoji";
 import { VectorIcon } from "ui/components/common/icon";
 import { AnchoredModal } from "ui/components/modal/anchored";
 import { createSimpleToggleOnClick } from "ui/hooks/useMain";
@@ -48,7 +48,7 @@ export function Reactions(props: IReactionsProps) {
                             <Show when={reaction.emote} fallback={
                                 <Emoji value={reaction.emoji} />
                             }>
-                                <Emote id={reaction.emote} />
+                                <CustomEmote id={reaction.emote} name="" />
                             </Show>
 
                             <span class="ln-reaction__count ui-text" textContent={reaction.count} />

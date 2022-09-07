@@ -75,14 +75,14 @@ export function Emoji(props: IEmojiProps) {
     );
 }
 
-export function Emote(props: { id: Snowflake, large?: boolean }) {
+export function CustomEmote(props: { id: Snowflake, large?: boolean, name: string }) {
     const prefs = usePrefs();
 
     let large = () => props.large && !prefs.CompactView();
 
     return (
         <img loading="lazy" class="emoji" classList={{ 'large': large() }}
-            draggable={false} data-type="emoji"
+            draggable={false} data-type="emoji" title={props.name}
             src={emote_url("emote", props.id, prefs.LowBandwidthMode())}
             alt={'<:' + props.id + ':>'}
         />

@@ -8,8 +8,7 @@ import { CodeWrapper } from "./components/code_wrapper";
 import { compareString } from "lib/compare";
 import { Dynamic } from "solid-js/web";
 import { ALIASES_REV, decode_emojis, EMOJI_RE0, find_emoji } from "lib/emoji";
-import { Emoji } from "../emoji";
-import { CustomEmote } from "./components/mention";
+import { CustomEmote, Emoji } from "../emoji";
 
 export interface Capture extends Array<string> {
     index?: number,
@@ -1017,7 +1016,7 @@ export const defaultRules: DefaultRules = {
     },
     autolink: {
         o: currOrder++,
-        m: inlineRegex(/^<([^: >]+:\/[^ >]+)>/),
+        m: inlineRegex(/^<([^:\s>]+:\/[^\s>]+)>/),
         p: (capture, parse, state) => {
             // NOTE: This syntax disables links and embeds
             return {
@@ -1195,12 +1194,12 @@ export const defaultRules: DefaultRules = {
     },
     custom_emote: {
         o: currOrder++,
-        m: inlineRegex(/^<:(\d+):>/),
+        m: inlineRegex(/^<:(\w*):(\d+)>/),
         p: (capture, parse, state) => {
             state.had_emoji = true;
-            return { id: capture[1] }
+            return { id: capture[2], name: capture[1] }
         },
-        h: (node, output, state) => <CustomEmote id={/*@once*/node.id} large={/*@once*/state.no_text} />
+        h: (node, output, state) => <CustomEmote id={/*@once*/node.id} name={/*@once*/node.name} large={/*@once*/state.no_text} />
     },
     tags: {
         o: currOrder++,
@@ -1232,9 +1231,7 @@ export const defaultRules: DefaultRules = {
     },
     spoiler: {
         o: currOrder,
-        m: (source) => {
-            return /^\|\|([^]+?)\|\|(?!\|)/.exec(source);
-        },
+        m: anyScopeRegex(/^\|\|([^]+?)\|\|/),
         p: (capture, parse, state) => {
             return { c: parse(capture[1], state) };
         },
