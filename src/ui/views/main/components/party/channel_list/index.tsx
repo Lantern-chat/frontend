@@ -10,10 +10,8 @@ import { Room, Snowflake } from "state/models";
 import { usePrefs } from "state/contexts/prefs";
 import { Panel } from "state/mutators/window";
 
-import { UIText } from "ui/components/common/ui-text";
+import { UserText } from "ui/components/common/ui-text-user";
 import { Bounce } from "ui/components/common/spinners/bounce";
-import { VectorIcon } from "ui/components/common/icon";
-import { Avatar } from "ui/components/common/avatar";
 import { Link } from "ui/components/history";
 import { createSimplePositionedContextMenu } from "ui/hooks/useMain";
 
@@ -95,7 +93,7 @@ function ListedChannel(props: IListedChannelProps) {
                 <RoomIcon room={props.room} />
 
                 <div class="ln-channel-list__name">
-                    <span class="ui-text" textContent={props.room.name} />
+                    <UserText class="ui-text" text={props.room.name} />
                 </div>
             </Link>
 
@@ -122,20 +120,20 @@ function RoomContextMenu(props: IRoomContextMenuProps) {
     return (
         <ContextMenu dark>
             <div>
-                <UIText text={LL().main.menus.MARK_AS_READ()} />
+                <span class="ui-text" textContent={LL().main.menus.MARK_AS_READ()} />
             </div>
 
             <hr />
 
             <div>
-                <UIText text={LL().main.menus.room.EDIT()} />
+                <span class="ui-text" textContent={LL().main.menus.room.EDIT()} />
             </div>
 
             <Show when={dev_mode()}>
                 <hr />
 
                 <div onClick={() => copyText(props.room.id)}>
-                    <UIText text={LL().main.menus.COPY_ID()} />
+                    <span class="ui-text" textContent={LL().main.menus.COPY_ID()} />
                 </div>
             </Show>
         </ContextMenu>
@@ -152,7 +150,7 @@ function RoomListContextMenu(props: IRoomListContextMenuProps) {
     return (
         <ContextMenu dark>
             <div>
-                <UIText text={LL().main.menus.room_list.CREATE()} />
+                <span class="ui-text" textContent={LL().main.menus.room_list.CREATE()} />
             </div>
         </ContextMenu>
     );
