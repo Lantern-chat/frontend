@@ -31,7 +31,7 @@ export interface IFileUploadController {
 }
 
 export interface IUploadPanelProps {
-    onChange(size: number): void;
+    onChange(count: number, size: number): void;
     fc: SetController<IFileUploadController>;
 }
 
@@ -62,7 +62,7 @@ export function UploadPanel(props: IUploadPanelProps) {
         setFileMeta(file_meta.findIndex(v => v.id == id), meta);
     };
 
-    createEffect(() => props.onChange(file_meta.length))
+    createEffect(() => props.onChange(file_meta.length, Array.from(files.values()).reduce((p, c) => p + c.file.size, 0)))
 
     let on_drop = (new_files: Array<File>) => setFileMeta(arr => {
         let new_arr: Array<IFileMeta> = [];
@@ -107,8 +107,8 @@ export function UploadPanel(props: IUploadPanelProps) {
     let [uploading, setUploading] = createSignal(false);
 
     let reset = () => {
-        setFileMeta([]);
         files.clear();
+        setFileMeta([]);
 
         let child;
         while(child = inputs!.firstChild) { child.remove(); }
