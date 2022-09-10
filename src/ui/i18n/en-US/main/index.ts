@@ -19,7 +19,7 @@ const enUS_main: BaseTranslation = {
     DEAFEN: "Deafen",
     UNDEAFEN: "Undeafen",
     EDITED: "Edited",
-    EDITED_ON: "Edited on {ts:string}",
+    EDITED_ON: "Edited on {ts|timestamp}",
     PINNED: "Pinned",
     MESSAGE_PINNED: "Message Pinned",
     OWNER: "Owner",

@@ -36,8 +36,6 @@ function LoginRoutes(props: { which: typeof LOGIN_ROUTES[number] }) {
         }
     };
 
-    let { LL } = /*#__PURE__*/useI18nContext();
-
     return (
         <>
             <Fireflies density={175} />
@@ -45,10 +43,10 @@ function LoginRoutes(props: { which: typeof LOGIN_ROUTES[number] }) {
             <ThemeWidget />
             <LangWidget />
 
-            {__DEV__ && <div class="ln-dev-banner" textContent={LL().DEV_BANNER()} />}
+            {__DEV__ && <div class="ln-dev-banner" textContent={useI18nContext().LL().DEV_BANNER()} />}
 
             <div class="ln-box ln-scroll-y">
-                <div class="ln-login-container ln-centered" style={{ zIndex: 1 }}>
+                <div class="ln-login-container ln-centered" style={{ 'z-index': 1 }}>
                     <Suspense fallback={Fallback}>
                         <Dynamic component={View()} />
                         <Logo />

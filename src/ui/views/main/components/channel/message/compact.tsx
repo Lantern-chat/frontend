@@ -1,9 +1,8 @@
 import { For, Show } from "solid-js";
 import { useRootSelector } from "state/root";
 import { selectCachedUserFromMessage } from "state/selectors/selectCachedUser";
-import { UITimestamp } from "ui/components/common/timestamp";
-import { createTimestamp } from "ui/hooks/createTimestamp";
 import { useI18nContext } from "ui/i18n/i18n-solid";
+import { formatters } from "ui/i18n";
 import { MsgAttachment } from "./attachment";
 import { IMessageProps, MessageUserName } from "./common";
 
@@ -11,18 +10,14 @@ import { Message as MessageBody } from "./msg";
 import { Reactions } from "./reaction";
 
 export function CompactMessage(props: IMessageProps) {
-    let { LL, locale } = useI18nContext();
+    let { LL, locale } = useI18nContext(), f = () => formatters[locale()];
 
     let cached_member = useRootSelector(state => selectCachedUserFromMessage(state, props.msg.msg));
 
-    let ts = createTimestamp(() => props.msg.ts);
-
     let extra = () => {
         if(props.msg.et) {
-            let ets = createTimestamp(() => props.msg.et);
-
             return (
-                <span class="ui-text ln-system-sub" title={LL().main.EDITED_ON({ ts: ets() })}>
+                <span class="ui-text ln-system-sub" title={LL().main.EDITED_ON({ ts: props.msg.et })}>
                     ({LL().main.EDITED().toLocaleLowerCase(locale())})
                 </span>
             );
@@ -35,8 +30,8 @@ export function CompactMessage(props: IMessageProps) {
             <div class="ln-msg__title">
 
                 <div class="ln-msg__side">
-                    <div class="ln-msg__sidets" title={ts()}>
-                        <UITimestamp time={props.msg.ts} format="LT" />
+                    <div class="ln-msg__sidets" title={f().timestamp(props.msg.ts) as string}>
+                        <span class="ui-text" textContent={f().time(props.msg.ts) as string} />
                     </div>
                 </div>
 

@@ -5,28 +5,24 @@ import { For, Show } from "solid-js";
 import { useRootSelector } from "state/root";
 import { selectCachedUserFromMessage } from "state/selectors/selectCachedUser";
 import { VectorIcon } from "ui/components/common/icon";
-import { Branch } from "ui/components/flow";
 import { BotLabel } from "../../misc/bot_label";
 import { IMessageProps, MessageUserAvatar, MessageUserName } from "./common";
 
 import { Message as MessageBody } from "./msg";
 import { MsgAttachment } from "./attachment";
-import { createTimestamp } from "ui/hooks/createTimestamp";
-import { UICalendar, UITimestamp } from "ui/components/common/timestamp";
-import { useI18nContext } from "ui/i18n/i18n-solid";
+import { UICalendar } from "ui/components/common/timestamp";
 import { Reactions } from "./reaction";
+import { useI18nContext } from "ui/i18n/i18n-solid";
+import { formatters } from "ui/i18n";
 
 export function CozyMessage(props: IMessageProps) {
-    let { LL, locale } = useI18nContext();
+    let { LL, locale } = useI18nContext(), f = () => formatters[locale()];
 
     let cached_member = useRootSelector(state => selectCachedUserFromMessage(state, props.msg.msg));
 
-    let ts = createTimestamp(() => props.msg.ts);
-    let ets = createTimestamp(() => props.msg.et);
-
     let extra = () => {
         if(!props.msg.sg && props.msg.et) {
-            return <span class="ui-text ln-system-sub" title={LL().main.EDITED_ON({ ts: ets() })}>
+            return <span class="ui-text ln-system-sub" title={LL().main.EDITED_ON({ ts: props.msg.et })}>
                 ({LL().main.EDITED().toLocaleLowerCase(locale())})
             </span>;
         }
@@ -36,32 +32,29 @@ export function CozyMessage(props: IMessageProps) {
     return (
         <>
             <div class="ln-msg__side">
-                <Branch>
-                    <Branch.If when={props.msg.sg}>
-                        {/*if first message in the group, give it the user avatar and title*/}
-                        <MessageUserAvatar user={cached_member().user} name={cached_member().nick} party_id={props.msg.msg.party_id} />
-                    </Branch.If>
-
-                    <Branch.Else>
-                        <div class="ln-msg__sidets" title={ts()}>
-                            <UITimestamp time={props.msg.ts} format="LT" />
-                        </div>
-                    </Branch.Else>
-                </Branch>
+                <Show when={props.msg.sg} fallback={
+                    <div class="ln-msg__sidets" title={f().timestamp(props.msg.ts) as string}>
+                        <span class="ui-text" textContent={f().time(props.msg.ts) as string} />
+                    </div>
+                }>
+                    {/*if first message in the group, give it the user avatar and title*/}
+                    <MessageUserAvatar user={cached_member().user} name={cached_member().nick} party_id={props.msg.msg.party_id} />
+                </Show>
             </div>
 
             <div class="ln-msg__message">
+                {/* Start of group */}
                 <Show when={props.msg.sg}>
                     <div class="ln-msg__title">
                         <MessageUserName name={cached_member().nick} user={props.msg.msg.author} party_id={props.msg.msg.party_id} />
 
                         <span class="ln-separator"> - </span>
 
-                        <span class="ln-msg__ts" title={ts()}>
+                        <span class="ln-msg__ts" title={f().timestamp(props.msg.ts) as string}>
                             <UICalendar time={props.msg.ts} />
 
                             <Show when={props.msg.et}>
-                                <span class="flags" title={LL().main.EDITED_ON({ ts: ets() })}>
+                                <span class="flags" title={LL().main.EDITED_ON({ ts: props.msg.ts })}>
                                     <VectorIcon id={Icons.Pencil} />
                                 </span>
                             </Show>

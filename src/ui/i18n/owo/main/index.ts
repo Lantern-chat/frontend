@@ -17,7 +17,7 @@ const owo_main: NamespaceMainTranslation = {
 	DEAFEN: "deafen 😳😳😳",
 	UNDEAFEN: "undeafen 🥺",
 	EDITED: "edited, mya",
-	EDITED_ON: "editwed on {ts}, nyaa!",
+	EDITED_ON: "editwed on {ts|timestamp}, nyaa!",
 	PINNED: "pinned 😳",
 	MESSAGE_PINNED: "message pinned >_<",
 	SPOILER_TITLE: "cwick t-to weveaw spoiwew >_<",

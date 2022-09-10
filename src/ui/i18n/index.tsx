@@ -10,19 +10,7 @@ if(__DEV__) {
     DETECTORS.unshift(queryStringDetector);
 }
 
-import type { Locales } from "./i18n-types";
-
-// TODO: Figure out how to handle currencies.
-export interface Currency extends Intl.NumberFormatOptions {
-    compactDisplay?: "short" | "long",
-    style: 'currency' | 'decimal' | 'percent' | 'unit',
-    currency: string,
-    currencyDisplay?: "symbol" | "narrowSymbol" | "code" | "name",
-    currencySign?: "accounting" | "standard",
-    notation?: "standard" | "scientific" | "engineering" | "compact",
-    signDisplay?: "always" | "auto" | "exceptZero" | "negative" | "never",
-    numberingSystem?: "arab" | "arabext" | "bali" | "beng" | "deva" | "fullwide" | "gujr" | "guru" | "hanidec" | "khmr" | "knda" | "laoo" | "latn" | "limb" | "mlym" | "mong" | "mymr" | "orya" | "tamldec" | "telu" | "thai" | "tibt"
-}
+import type { Formatters, Locales, TranslationFunctions } from "./i18n-types";
 
 export interface ILanguage {
     /// Name of language (in language)
@@ -54,11 +42,14 @@ export const LANGUAGE_KEYS = Object.keys(LANGUAGES).sort(compareString) as Array
 
 import dayjs from "lib/time";
 import { useI18nContext } from "./i18n-solid";
-import { loadedLocales, i18nString } from "./i18n-util";
+import { loadedLocales, i18nString, loadedFormatters } from "./i18n-util";
 import { Accessor, createMemo } from "solid-js";
+import type { ExtendedFormatters } from "./formatters";
+
+export const formatters = loadedFormatters as Record<Locales, ExtendedFormatters>;
 
 /// This should be prefered over useI18nContext when using `setLocale`
-export function useLocale(): ReturnType<typeof useI18nContext> & { lang: Accessor<ILanguage> } {
+export function useLocale(): ReturnType<typeof useI18nContext> & { lang: Accessor<ILanguage>, f: Accessor<ExtendedFormatters> } {
     const { LL, locale, setLocale } = useI18nContext();
 
     return {
@@ -68,7 +59,8 @@ export function useLocale(): ReturnType<typeof useI18nContext> & { lang: Accesso
             dayjs.updateLocale(l, { calendar: loadedLocales[locale].CALENDAR_FORMAT });
             setLocale(locale);
         },
-        lang: createMemo(() => LANGUAGES[locale()]),
+        lang: () => LANGUAGES[locale()],
+        f: () => formatters[locale()],
     };
 }
 

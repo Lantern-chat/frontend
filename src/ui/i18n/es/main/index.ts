@@ -18,7 +18,7 @@ const es_main: NamespaceMainTranslation = {
 	DEAFEN: "Ensordecer",
 	UNDEAFEN: "Desensordecer",
 	EDITED: "Editado",
-	EDITED_ON: "Editado el {ts}",
+	EDITED_ON: "Editado el {ts|timestamp}",
 	PINNED: "Anclado",
 	MESSAGE_PINNED: "Mensaje Fijado",
 	OWNER: "Dueño",

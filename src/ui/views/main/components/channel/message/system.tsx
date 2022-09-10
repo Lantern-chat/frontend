@@ -2,18 +2,19 @@ import { MessageKind } from "state/models";
 import { VectorIcon } from "ui/components/common/icon";
 import { IMessageProps } from "./common";
 
-import { createCalendar, createTimestamp } from "ui/hooks/createTimestamp";
+import { createCalendar } from "ui/hooks/createTimestamp";
 
 import { Icons } from "lantern-icons";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 import { Markdown } from "ui/components/common/markdown";
 import { fnv1a } from "lib/fnv";
 import { loadedLocales } from "ui/i18n/i18n-util";
+import { formatters } from "ui/i18n";
 
 export function SystemMessage(props: IMessageProps) {
-    let ts = () => props.msg.ts,
-        title = createTimestamp(ts),
-        calendar = createCalendar(ts);
+    let { locale } = useI18nContext(), f = () => formatters[locale()];
+
+    let calendar = createCalendar(() => props.msg.ts);
 
     return (
         <>
@@ -23,7 +24,7 @@ export function SystemMessage(props: IMessageProps) {
 
             <div class="ln-msg__message ln-system-message">
                 <Markdown source={system_body(props)} class="ln-msg"
-                    extra={<span class="ui-text ln-system-sub" title={title()} textContent={calendar()} />}
+                    extra={<span class="ui-text ln-system-sub" title={f().timestamp(props.msg.ts) as string} textContent={calendar()} />}
                 />
             </div>
         </>

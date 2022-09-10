@@ -19,7 +19,7 @@ const idID_main: NamespaceMainTranslation = {
     DEAFEN: "Tulikan",
     UNDEAFEN: "Nyalakan",
     EDITED: "Telah disunting",
-    EDITED_ON: "Disunting pada {ts}",
+    EDITED_ON: "Disunting pada {ts|timestamp}",
     PINNED: "Disematkan",
     MESSAGE_PINNED: "Pesan disematkan",
     SPOILER_TITLE: "Klik untuk melihat spoiler",

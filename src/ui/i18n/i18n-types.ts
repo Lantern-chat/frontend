@@ -229,10 +229,10 @@ export type NamespaceMainTranslation = {
 	 */
 	EDITED: string
 	/**
-	 * Edited on {ts}
-	 * @param {string} ts
+	 * Edited on {ts|timestamp}
+	 * @param {unknown} ts
 	 */
-	EDITED_ON: RequiredParams<'ts'>
+	EDITED_ON: RequiredParams<'ts|timestamp'>
 	/**
 	 * Pinned
 	 */
@@ -875,9 +875,9 @@ export type TranslationFunctions = {
 		 */
 		EDITED: () => LocalizedString
 		/**
-		 * Edited on {ts}
+		 * Edited on {ts|timestamp}
 		 */
-		EDITED_ON: (arg: { ts: string }) => LocalizedString
+		EDITED_ON: (arg: { ts: unknown }) => LocalizedString
 		/**
 		 * Pinned
 		 */
@@ -1285,4 +1285,5 @@ export type Formatters = {
 	bytes: (value: number) => unknown
 	number: (value: number) => unknown
 	percent: (value: number) => unknown
+	timestamp: (value: unknown) => unknown
 }
