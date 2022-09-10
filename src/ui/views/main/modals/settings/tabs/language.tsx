@@ -9,7 +9,8 @@ export const LanguageSettingsTab = () => {
     );
 };
 
-import { LANGUAGES, LANGUAGE_KEYS, useLocale } from "ui/i18n";
+import { LANGUAGES, LANGUAGE_KEYS } from "ui/i18n";
+import { useI18nContext } from "ui/i18n/i18n-solid";
 import { loadLocaleAsync, loadNamespaceAsync } from "ui/i18n/i18n-util.async";
 
 import { Spinner } from "ui/components/common/spinners/spinner";
@@ -17,7 +18,7 @@ import { EmojiLite } from "ui/components/common/emoji_lite";
 
 import "./language.scss";
 function LangPicker() {
-    let { locale, setLocale } = useLocale();
+    let { locale, setLocale } = useI18nContext();
 
     let [loading, setLoading] = createSignal<undefined | Locales>();
 

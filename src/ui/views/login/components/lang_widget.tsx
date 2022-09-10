@@ -1,7 +1,8 @@
 import { createSelector, For } from "solid-js";
 
 import { Locales } from "ui/i18n/i18n-types";
-import { LANGUAGES, LANGUAGE_KEYS, useLocale } from "ui/i18n";
+import { LANGUAGES, LANGUAGE_KEYS } from "ui/i18n";
+import { useI18nContext } from "ui/i18n/i18n-solid";
 import { loadLocaleAsync } from "ui/i18n/i18n-util.async";
 
 import { VectorIcon } from "ui/components/common/icon";
@@ -10,7 +11,7 @@ import { EmojiLite } from "ui/components/common/emoji_lite";
 
 import "./lang_widget.scss";
 export function LangWidget() {
-    let { LL, locale, setLocale } = useLocale();
+    let { LL, locale, setLocale } = useI18nContext();
 
     let selected = createSelector(locale);
 

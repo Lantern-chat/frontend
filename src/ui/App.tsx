@@ -60,11 +60,11 @@ function LoginRoutes(props: { which: typeof LOGIN_ROUTES[number] }) {
 import type { Locales } from "ui/i18n/i18n-types";
 import TypesafeI18n, { useI18nContext } from "ui/i18n/i18n-solid";
 import { loadLocaleAsync, loadNamespaceAsync } from "ui/i18n/i18n-util.async";
-import { DETECTORS, LANGUAGES, useLocale } from "ui/i18n";
+import { DETECTORS, LANGUAGES } from "ui/i18n";
 
 const MainWrapper = {
     default: () => {
-        let { locale, setLocale } = useLocale();
+        let { locale, setLocale } = useI18nContext();
 
         setLocale(locale()); // refresh locale
 
