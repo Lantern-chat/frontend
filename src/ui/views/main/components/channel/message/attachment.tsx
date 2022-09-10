@@ -6,9 +6,9 @@ import { categorize_mime } from "lib/mime";
 import { Message, Attachment, AttachmentFlags } from "state/models";
 import { usePrefs } from "state/contexts/prefs";
 import { message_attachment_url } from "config/urls";
-import { createBytesFormatter } from "ui/hooks/createFormatter";
 
 import { createRef } from "ui/hooks/createRef";
+import { useLocale } from "ui/i18n";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 import { MainContext, createClickEater } from "ui/hooks/useMain";
 import { Branch } from "ui/components/flow";
@@ -93,11 +93,11 @@ export function MsgAttachment(props: IMsgAttachmentProps) {
 }
 
 function MediaMetadata(props: IMsgAttachmentProps) {
-    let bytes_formatter = createBytesFormatter();
+    let { f } = useLocale();
 
     let metadata = () => {
         let { mime, size } = props.attachment;
-        let bytes = bytes_formatter(size);
+        let bytes = f().bytes(size);
 
         return '(' + (mime ? (mime + ' - ' + bytes) : bytes) + ')';
     };
@@ -110,16 +110,14 @@ function MediaMetadata(props: IMsgAttachmentProps) {
 }
 
 function GenericAttachment(props: IMsgAttachmentProps) {
-    const prefs = usePrefs();
+    const prefs = usePrefs(), { f } = useLocale();
     let url = createMemo(() => message_attachment_url(props.msg.room_id, props.attachment.id, props.attachment.filename));
     let title = createMemo(() => (props.attachment.filename + ' (' + props.attachment.size + ')'));
 
     let eat = createClickEater();
 
-    let bytes_formatter = createBytesFormatter();
-
     let metadata = () => {
-        let bytes = bytes_formatter(props.attachment.size);
+        let bytes = f().bytes(props.attachment.size);
         if(props.attachment.mime && prefs.ShowMediaMetadata()) {
             return props.attachment.mime + ' - ' + bytes;
         } else {
@@ -245,7 +243,7 @@ function computeModifiedStyle(style: JSX.CSSProperties, attachment: Attachment, 
     if(use_mobile_view) {
         if(attachment.width && attachment.height) {
             return {
-                'aspect-ratio': attachment.width / attachment.height,
+                'aspect-ratio': (attachment.width / attachment.height).toString(),
                 width: `min(100%, ${attachment.width}px)`,
             };
         } else {

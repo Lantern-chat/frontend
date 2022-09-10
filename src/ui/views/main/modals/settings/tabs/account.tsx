@@ -25,7 +25,7 @@ export const AccountSettingsTab = () => {
             return {
                 used: user.quota_used,
                 total: user.quota_total,
-                percent: 100 * user.quota_used / user.quota_total
+                percent: user.quota_used / user.quota_total
             };
         }
         return;
@@ -38,7 +38,7 @@ export const AccountSettingsTab = () => {
             <div>Change Password</div>
             <div>2-Factor Authentication</div>
 
-            <Show when={quota()}>
+            <Show when={quota()} keyed>
                 {quota => (
                     <div>
                         <span>{LL().main.settings.account.QUOTA(quota)}</span>

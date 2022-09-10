@@ -2,7 +2,6 @@ import { createSignal, onMount, createMemo, Show, createEffect, Accessor, onClea
 
 import { resize_image } from "lib/image";
 import { unpack_rgb, u82float, RGBColor, pack_rgb, float2u8 } from "lib/color";
-import { createPercentFormatter } from "ui/hooks/createFormatter";
 import { br } from "ui/utils";
 import { createFileUrl } from "ui/hooks/createFileUrl";
 
@@ -43,7 +42,7 @@ function compare_color(x: RGBColor, y: RGBColor): boolean {
 let on_file = (e: Event, cb: Setter<File | undefined>) => cb((e.currentTarget as HTMLInputElement).files?.[0]);
 
 function ProfileSettingsTabInner() {
-    const L = useLocale(), { LL } = L;
+    const { LL, f } = useLocale();
 
     let store = useRootStore();
     onMount(() => store.dispatch(fetch_profile(store.state.user.user!.id)));
@@ -72,8 +71,6 @@ function ProfileSettingsTabInner() {
     let can_show_remove_banner = () => localBannerUrl() !== null && (localBannerUrl() || cached_user().profile?.banner);
 
     let [editingColor, setEditingColor] = createSignal(false);
-
-    let percent = createPercentFormatter(0, L);
 
     let [hasChanges, setHasChanges] = createSignal(false);
 
@@ -258,7 +255,7 @@ function ProfileSettingsTabInner() {
                         <div style={{
                             '--avatar-roundness-raw': roundness() / 127,
                             '--avatar-roundness': br(roundness() / 127),
-                            '--avatar-roundness-formatted': '"' + percent(roundness() / 127) + '"'
+                            '--avatar-roundness-formatted': '"' + f().percent0(roundness() / 127) + '"'
                         }}>
                             <input id="avatar_roundness" type="range" min="0" max="127" step="1"
                                 list="roundness-snap"

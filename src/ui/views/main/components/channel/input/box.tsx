@@ -18,7 +18,6 @@ import { ITypingState } from "state/mutators/chat";
 import { Hotkey, MainContext, createClickEater, useMainHotkey } from "ui/hooks/useMain";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
-import { createBytesFormatter } from "ui/hooks/createFormatter";
 import { useLocale } from "ui/i18n";
 import { UIText } from "ui/components/common/ui-text";
 import { VectorIcon } from "ui/components/common/icon";
@@ -31,7 +30,7 @@ import { createController } from "ui/hooks/createController";
 
 import "./box.scss";
 export function MessageBox() {
-    const prefs = usePrefs(), l = useLocale(), { LL } = l;
+    const prefs = usePrefs(), { LL, f } = useLocale();
 
     let state = useStructuredSelector({
         active_room: activeRoom,
@@ -54,8 +53,6 @@ export function MessageBox() {
     let ts = 0, skip = false;
 
     let [show_focus_border, setShowFocusBorder] = createSignal(false);
-
-    let bytes = createBytesFormatter(l);
 
     createEffect(() => {
         // focus textarea on desktop when active room changes
@@ -97,7 +94,7 @@ export function MessageBox() {
     let do_send = async () => {
         if(state.active_room && !is_empty()) {
             let attachments = await fc()!.upload();
-            dispatch(sendMessage(state.active_room, value().trim(), attachments));
+            dispatch(sendMessage(state.active_room, value().trim(), attachments as any));
             tac()!.setValue("");
             ts = 0; // reset typing timestamp
         }
@@ -235,7 +232,10 @@ export function MessageBox() {
                     <UsersTyping />
                 </Show>
 
-                <span class="ui-text" id="file-upload-meta" textContent={bytes(files()[1])} style={{ display: files()[1] ? '' : 'none' }} />
+                <span class="ui-text" id="file-upload-meta"
+                    textContent={f().bytes(files()[1])}
+                    style={{ display: files()[1] ? '' : 'none' }}
+                />
             </div>
 
         </>

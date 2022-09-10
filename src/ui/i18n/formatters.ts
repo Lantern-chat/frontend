@@ -3,7 +3,7 @@ import type { Locales, Formatters } from "./i18n-types";
 
 import { date, number } from "typesafe-i18n/formatters";
 import { LANGUAGES } from "./";
-import { format_bytes } from "lib/formatting";
+import { createBytesFormatter, format_bytes_iec } from "lib/formatting";
 
 import type { BaseFormatters, FormatterFunction } from "typesafe-i18n/types/runtime/src/core.mjs";
 import { calendar, DateParams } from "lib/time";
@@ -13,12 +13,13 @@ export interface ExtendedFormatters extends Formatters, BaseFormatters {
 	time: FormatterFunction<number | Date | undefined, string>,
 	timestamp: FormatterFunction<number | Date | undefined, string>,
 	calendar: FormatterFunction<number | Date | undefined, string> & ((t: DateParams, ref?: Date | number) => string),
+	percent0: Formatters['percent'],
+	bytes: FormatterFunction<number, string>,
 }
 
 const SUPPORTS_DATE_STYLE = (new Intl.DateTimeFormat("en-US", { dateStyle: "full" }).resolvedOptions() as any).dateStyle === "full";
 
 export const initFormatters: FormattersInitializer<Locales, ExtendedFormatters> = (locale: Locales) => {
-
 	// resolve correct "real" locale
 	let lang = LANGUAGES[locale], l = lang.d || locale;
 
@@ -31,12 +32,15 @@ export const initFormatters: FormattersInitializer<Locales, ExtendedFormatters> 
 		integer: number(l, {
 			maximumFractionDigits: 0,
 		}),
-		bytes: (bytes: number): string => format_bytes(bytes, !lang.nsi, l) as string,
+		bytes: createBytesFormatter(l, !lang.nsi),
 		percent: number(l, {
 			maximumFractionDigits: 2,
-			style: "unit",
-			unit: "percent"
-		} as any),
+			style: "percent"
+		}),
+		percent0: number(l, {
+			maximumFractionDigits: 0,
+			style: "percent"
+		}),
 		time: date(l, SUPPORTS_DATE_STYLE
 			? { timeStyle: "short" }
 			: { hour: "numeric", minute: "numeric" }),

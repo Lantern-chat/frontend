@@ -12,7 +12,6 @@ import { UIText } from "ui/components/common/ui-text";
 import { MimeIcon } from "ui/components/mime";
 import { FullscreenModal } from "ui/components/modal";
 import { SetController } from "ui/hooks/createController";
-import { createBytesFormatter } from "ui/hooks/createFormatter";
 import { createRef, Ref } from "ui/hooks/createRef";
 import { useLocale } from "ui/i18n";
 import { useI18nContext } from "ui/i18n/i18n-solid";
@@ -238,7 +237,7 @@ interface IUploadPreviewProps {
 }
 
 function UploadPreview(props: IUploadPreviewProps) {
-    const L = useLocale(), { LL } = L;
+    const { LL, f } = useLocale();
 
     const prefs = usePrefs();
 
@@ -273,10 +272,8 @@ function UploadPreview(props: IUploadPreviewProps) {
         }
     };
 
-    let bytes = createBytesFormatter(L);
-
     let title = () => {
-        let t = file().type, b = bytes(file().size);
+        let t = file().type, b = f().bytes(file().size);
         return t ? (t + ' - ' + b) : b;
     };
 
