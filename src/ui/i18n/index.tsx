@@ -40,7 +40,6 @@ export const LANGUAGES: ILanguages = {
 
 export const LANGUAGE_KEYS = Object.keys(LANGUAGES).sort(compareString) as Array<Locales>;
 
-import dayjs from "lib/time";
 import { useI18nContext } from "./i18n-solid";
 import { loadedLocales, i18nString, loadedFormatters } from "./i18n-util";
 import { Accessor, createMemo } from "solid-js";
@@ -53,12 +52,7 @@ export function useLocale(): ReturnType<typeof useI18nContext> & { lang: Accesso
     const { LL, locale, setLocale } = useI18nContext();
 
     return {
-        LL, locale, setLocale: (locale: Locales) => {
-            let lang = LANGUAGES[locale], l = lang.d || locale;
-            dayjs.locale(l);
-            dayjs.updateLocale(l, { calendar: loadedLocales[locale].CALENDAR_FORMAT });
-            setLocale(locale);
-        },
+        LL, locale, setLocale,
         lang: () => LANGUAGES[locale()],
         f: () => formatters[locale()],
     };

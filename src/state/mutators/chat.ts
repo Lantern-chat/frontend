@@ -1,4 +1,3 @@
-import dayjs, { Dayjs } from "lib/time";
 import { binarySearch } from "lib/util";
 
 import { Action, Type } from "../actions";
@@ -147,8 +146,8 @@ export const chatMutator = mutatorWithDefault(
                             old_msgs = room.msgs,
                             new_msgs = raw_msgs.map(msg => ({
                                 msg,
-                                ts: +dayjs(msg.created_at),
-                                et: msg.edited_at ? +dayjs(msg.edited_at) : null,
+                                ts: +new Date(msg.created_at),
+                                et: msg.edited_at ? +new Date(msg.edited_at) : null,
                             })).sort((a, b) => a.ts - b.ts);
 
                         // TODO: Get the msg_id query term and avoid full merging
@@ -206,8 +205,8 @@ export const chatMutator = mutatorWithDefault(
                     case ServerMsgOpcode.MessageCreate: {
                         let raw_msg = event.p, msg = {
                             msg: raw_msg,
-                            ts: +dayjs(raw_msg.created_at),
-                            et: raw_msg.edited_at ? +dayjs(raw_msg.edited_at) : null,
+                            ts: +new Date(raw_msg.created_at),
+                            et: raw_msg.edited_at ? +new Date(raw_msg.edited_at) : null,
                         };
 
                         let room = state.rooms[raw_msg.room_id];
@@ -250,8 +249,8 @@ export const chatMutator = mutatorWithDefault(
                         if(room) {
                             let msg: IMessageState = {
                                 msg: raw_msg,
-                                ts: +dayjs(raw_msg.created_at),
-                                et: raw_msg.edited_at ? +dayjs(raw_msg.edited_at) : null,
+                                ts: +new Date(raw_msg.created_at),
+                                et: raw_msg.edited_at ? +new Date(raw_msg.edited_at) : null,
                             }, { idx, found } = binarySearch(room.msgs, m => m.ts - msg.ts);
 
                             if(found && room.msgs[idx].msg.id == raw_msg.id) {

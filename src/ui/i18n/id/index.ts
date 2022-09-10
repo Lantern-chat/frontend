@@ -1,11 +1,9 @@
 import type { Translation } from '../i18n-types';
 
-import 'dayjs/locale/id';
-
 // @stringify
 const id: Translation = {
-    DEV_BANNER: "Versi ini adalah versi pengembangan.",
-    YEAR: "Tahun",
+	DEV_BANNER: "Versi ini adalah versi pengembangan.",
+	YEAR: "Tahun",
 	MONTH: "Bulan",
 	DAY: "Tanggal",
 	REGISTER: "Registrasi",

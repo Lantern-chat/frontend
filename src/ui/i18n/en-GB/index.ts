@@ -1,7 +1,5 @@
 import type { Translations } from '../i18n-types';
 
-import 'dayjs/locale/en-gb';
-
 import enUS from "../en-US";
 
 const enGB: Translations = {

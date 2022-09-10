@@ -57,7 +57,6 @@
     "buffer": "^6.0.3",
     "client-sdk": "https://github.com/Lantern-chat/client-sdk-ts",
     "core-js": "3",
-    "dayjs": "^1.10.8",
     "freezeframe": "^5.0.2",
     "highlight.js": "^11.4.0",
     "history": "^5.3.0",

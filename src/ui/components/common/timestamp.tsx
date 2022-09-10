@@ -1,10 +1,10 @@
+import type { DateParams } from "lib/time";
 import type { JSX } from "solid-js";
-import type dayjs from "lib/time";
 
 import { createCalendar } from "ui/hooks/createTimestamp";
 
 export interface ITimestampProps {
-    time: NonNullable<dayjs.ConfigType>,
+    time: NonNullable<DateParams>,
     format?: string,
 }
 

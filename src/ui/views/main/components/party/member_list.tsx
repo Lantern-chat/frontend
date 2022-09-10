@@ -39,7 +39,7 @@ export function MemberList() {
 
     let { locale, lang } = useLocale();
 
-    // NOTE: Ensure it uses the dayjs-locale
+    // NOTE: Ensure it uses the real locale
     let collator = createMemo(() => new Intl.Collator(lang().d || locale(), { sensitivity: 'base' }));
 
     // name changes are rare, so sort these first
@@ -221,7 +221,7 @@ function ListedMember(props: IListedMemberProps) {
                     </Show>
                 </div>
 
-                <Show when={presence().status != PresenceStatus.Offline && cached_user().profile?.status}>
+                <Show when={presence().status != PresenceStatus.Offline && cached_user().profile?.status} keyed>
                     {status => (
                         <div class="ln-member__status">
                             <UserText class="chat-text" text={status} />

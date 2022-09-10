@@ -1,7 +1,5 @@
 import type { Translation } from '../i18n-types';
 
-import 'dayjs/locale/es';
-
 // @stringify
 const es: Translation = {
     DEV_BANNER: "Esta es una compilación de desarrollo.",

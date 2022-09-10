@@ -5,8 +5,7 @@ import { createController } from "ui/hooks/createController";
 import { setSession } from "state/commands";
 import { usePrefs } from "state/contexts/prefs";
 
-import dayjs from "lib/time";
-
+import { months } from "lib/time";
 import { useRootDispatch } from "state/root";
 import { CLIENT } from "state/global";
 
@@ -42,7 +41,7 @@ var zxcvbn: { zxcvbn: zxcvbn_fn } | (() => Promise<{ default: zxcvbn_fn }>) = ()
 // }
 
 const YEARS: string[] = [];
-const CURRENT_YEAR = dayjs().year();
+const CURRENT_YEAR = new Date().getFullYear();
 for(let i = 0; i < 100; i++) {
     YEARS.push((CURRENT_YEAR - 13 - i).toString());
 }
@@ -81,7 +80,7 @@ interface RegisterAction {
 }
 
 function calculateDays(dob: IDob): number {
-    let num_days = dayjs(0).year(dob.y || 1970).month((dob.m || 12) - 1).daysInMonth();
+    let num_days = new Date(dob.y || 1970, dob.m || 12, 0).getDate();
     dob.d = (dob.d == null || num_days < dob.d) ? null : dob.d;
     return num_days;
 }
@@ -271,7 +270,7 @@ export default function RegisterView() {
             <FormGroup>
                 <FormLabel for="password">
                     {LL().PASSWORD()}
-                    <span class="ln-tooltip" style={{ marginLeft: '0.2em' }}>
+                    <span class="ln-tooltip" style={{ 'margin-inline-start': '0.2em' }}>
                         <VectorIcon src={CircleEmptyInfoIcon} />
                     </span>
                 </FormLabel>
@@ -294,10 +293,9 @@ export default function RegisterView() {
                     <FormSelect name="month" required value={state.dob.m != null ? state.dob.m : ""} onChange={on_month_change}>
                         <option disabled hidden value="">{LL().MONTH()}</option>
 
-                        {/*NOTE: Make each dependent on LL(), so the dayjs locale is updated as well*/}
-                        <For each={(LL(), dayjs.months())}>
-                            {(month, i) => <option value={i() + 1}>{month}</option>}
-                        </For>
+                        <Index each={months(locale())}>
+                            {(month, i) => <option value={i + 1}>{month()}</option>}
+                        </Index>
                     </FormSelect>
 
                     <FormSelect name="day" required onChange={on_day_change} value={state.dob.d == null ? "" : state.dob.d}>

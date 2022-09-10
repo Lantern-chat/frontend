@@ -1,10 +1,10 @@
 import { Accessor, createContext, createMemo, JSX, createComponent, onCleanup, useContext, createEffect } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import dayjs from "lib/time";
-
 import { useI18nContext } from "ui/i18n/i18n-solid";
 import { usePageVisible } from "ui/hooks/usePageVisible";
+import { DateParams } from "lib/time";
+import { formatters } from "ui/i18n";
 
 export interface TimeStore {
     s: number,
@@ -15,27 +15,20 @@ export interface TimeStore {
 
 const DEFAULT_TIME: TimeStore = { s: 0, m: 0, h: 0, d: 0 };
 
-var now = dayjs();
+var now = new Date();
+var today = new Date(now).setHours(0, 0, 0, 0);
 
 export const TimeContext = /*#__PURE__*/createContext<TimeStore>(DEFAULT_TIME);
 
-export function createTimestamp(ts: Accessor<NonNullable<dayjs.ConfigType> | null | undefined>, format?: string | Accessor<string | undefined>): Accessor<string> {
-    const { locale, LL } = useI18nContext();
-
-    // track locale
-    return createMemo(() => (locale(),
-        dayjs(ts()).format((typeof format === 'function' ? format() : format) || LL().DEFAULT_TS_FORMAT())));
-}
-
-export function createCalendar(ts: Accessor<NonNullable<dayjs.ConfigType> | null | undefined>): Accessor<string> {
-    const { locale } = useI18nContext(), time = useContext(TimeContext);
+export function createCalendar(ts: Accessor<DateParams>, l?: ReturnType<typeof useI18nContext>): Accessor<string> {
+    const { locale } = l || useI18nContext(), time = useContext(TimeContext);
 
     // track locale and current day, reusing `now` to avoid recomputing it
-    return createMemo(() => (locale(), time.d, dayjs(ts()).calendar(now)));
+    return () => (time.d, formatters[locale()].calendar(ts(), today));
 }
 
 // passthrough function that would subscribe to the relevant time component
-function subscribe(time: TimeStore, t: dayjs.Dayjs): dayjs.Dayjs {
+function subscribe(time: TimeStore, t: Date): Date {
     let diffs = (+now - +t) / 1000;
 
     if(diffs < 60) {
@@ -55,13 +48,13 @@ export function TimeProvider(props: { children: JSX.Element }) {
     let [time, setTime] = createStore(DEFAULT_TIME);
 
     let update = () => {
-        now = dayjs();
+        today = new Date(now = new Date()).setHours(0, 0, 0, 0);
 
         setTime({
-            s: now.second(),
-            m: now.minute(),
-            h: now.hour(),
-            d: now.date(),
+            s: now.getSeconds(),
+            m: now.getMinutes(),
+            h: now.getHours(),
+            d: now.getDate(),
         });
     };
 

@@ -1,4 +1,3 @@
-import dayjs from "lib/time";
 import { DispatchableAction, Type } from "state/actions";
 import { Room, Snowflake } from "state/models";
 
@@ -14,7 +13,7 @@ export function sendMessage(room_id: Snowflake, content: string, attachments?: S
 
         if((!has_attachments && content.length == 0) || content.length > 5000) return;
 
-        //let now = dayjs();
+        //let now = new Date();
 
         //dispatch({
         //    type: Type.MESSAGE_SEND, msg: {
