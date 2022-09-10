@@ -42,7 +42,7 @@ export function Reactions(props: IReactionsProps) {
                 {(reaction: any) => {
 
                     return (
-                        <span class="ln-reaction" classList={{ 'own': reaction.own }}
+                        <span class="ln-reaction" classList={{ 'me': reaction.me }}
                             data-emote={reaction.emote} data-emoji={reaction.emoji}
                         >
                             <Show when={reaction.emote} fallback={
