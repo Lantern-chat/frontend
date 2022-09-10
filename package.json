@@ -11,7 +11,8 @@
     "build:status": "webpack --mode production -c ./webpack.status.config.js",
     "build:status:dev": "webpack --mode development -c ./webpack.status.config.js",
     "doc": "typedoc --entryPoints src --hideGenerator --theme minimal",
-    "typesafe-i18n": "typesafe-i18n"
+    "typesafe-i18n": "typesafe-i18n",
+    "hljs": "node ./regen-hljs.js"
   },
   "devDependencies": {
     "@babel/core": "^7.17.5",

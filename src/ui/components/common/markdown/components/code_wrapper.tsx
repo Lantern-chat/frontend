@@ -42,7 +42,7 @@ function CollapsedCode(props: ICodeProps & { loc: number }) {
 
     // encode "expand/collapse" switching in CSS using `details[open]`
     return (
-        <details class="ln-code-details" open={open()} onToggle={onToggle}>
+        <details class="ln-code-details" open={open()} onToggle={onToggle} onTouchStart={e => e.stopPropagation()}>
             <summary onClick={onClick}>
                 Click to&nbsp;
                 <span class="ln-code-details__closed">expand</span>
