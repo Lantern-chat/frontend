@@ -18,7 +18,6 @@ import { createSimplePositionedContextMenu, createSimpleToggleOnClick, Hotkey, u
 
 import { Timeline } from "./timeline";
 import { MsgContextMenu } from "../../menus/msg_context";
-import { Branch } from "ui/components/flow";
 import { VectorIcon } from "ui/components/common/icon";
 
 import { Anchor, InfiniteScroll, InfiniteScrollContext, InfiniteScrollController } from "ui/components/infinite_scroll";
@@ -150,21 +149,17 @@ function GotoBottomFooter(props: IGotoBottomFooterProps) {
     let { LL } = useI18nContext();
 
     return (
-        <Branch>
-            <Branch.If when={props.use_mobile_view}>
-                <span id="goto-now" onClick={() => props.onClick()}>
-                    <VectorIcon id={Icons.ChevronDown} />
+        <Show when={props.use_mobile_view} fallback={
+            <div class="ln-feed-footer ui-text" onClick={() => props.onClick()}>
+                <span textContent={LL().main.VIEWING_OLDER()} />
+                <span id="goto-now">
+                    {LL().main.GOTO_NOW()} <VectorIcon id={Icons.ChevronDown} />
                 </span>
-            </Branch.If>
-
-            <Branch.Else>
-                <div class="ln-feed-footer ui-text" onClick={() => props.onClick()}>
-                    <span textContent={LL().main.VIEWING_OLDER()} />
-                    <span id="goto-now">
-                        {LL().main.GOTO_NOW()} <VectorIcon id={Icons.ChevronDown} />
-                    </span>
-                </div>
-            </Branch.Else>
-        </Branch>
+            </div>
+        }>
+            <span id="goto-now" onClick={() => props.onClick()}>
+                <VectorIcon id={Icons.ChevronDown} />
+            </span>
+        </Show>
     );
 }

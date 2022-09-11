@@ -11,7 +11,6 @@ import { createRef } from "ui/hooks/createRef";
 import { useLocale } from "ui/i18n";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 import { MainContext, createClickEater } from "ui/hooks/useMain";
-import { Branch } from "ui/components/flow";
 import { createInfiniteScrollIntersectionTrigger } from "ui/components/infinite_scroll";
 
 import { px } from "ui/utils";
@@ -181,28 +180,24 @@ function ImageAttachment(props: IImageAttachmentProps) {
     //createEffect(() => img.current?.classList.toggle('loading', !loaded()));
 
     return (
-        <Branch>
-            <Branch.If when={animated_format()}>
-                {which => <AnimatedGif {...props.img}
-                    src={src()}
-                    which={which as any}
-                    img={img}
-                    onLoad={on_load}
-                    onLoadedMetadata={on_load}
-                    style={style()} />
-                }
-            </Branch.If>
-
-            <Branch.Else>
-                <img {...props.img}
-                    ref={img}
-                    src={src()}
-                    onLoad={on_load}
-                    onLoadedMetadata={on_load}
-                    style={style()}
-                />
-            </Branch.Else>
-        </Branch>
+        <Show keyed when={animated_format()} fallback={
+            <img {...props.img}
+                ref={img}
+                src={src()}
+                onLoad={on_load}
+                onLoadedMetadata={on_load}
+                style={style()}
+            />
+        }>
+            {which => <AnimatedGif {...props.img}
+                src={src()}
+                which={which as any}
+                img={img}
+                onLoad={on_load}
+                onLoadedMetadata={on_load}
+                style={style()} />
+            }
+        </Show>
     )
 }
 

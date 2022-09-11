@@ -1,7 +1,6 @@
 import { createRenderEffect, createSignal, JSX, Show } from "solid-js";
 import { runBatched } from "ui/hooks/runBatched";
 import { br } from "ui/utils";
-import { Branch } from "../flow";
 
 export interface IAvatarProps {
     rounded?: number | boolean,
@@ -48,31 +47,27 @@ export function Avatar(props: IAvatarProps) {
     return (
         <div class="ln-avatar" {...props.props}>
             <div class="ln-avatar__wrapper" {...props.wrapper} title={props.username}>
-                <Branch>
-                    <Branch.If when={props.url}>
-                        {/* <div class="ln-avatar__skel" /> */}
+                <Show when={props.url} fallback={
+                    <span
+                        class="ln-avatar__text"
+                        style={{
+                            "background-color": props.backgroundColor,
+                            'border-radius': br(props.rounded)
+                        }}
+                    >
+                        {props.children || props.text || '?'}
+                    </span>
+                }>
+                    {/* <div class="ln-avatar__skel" /> */}
 
-                        <img src={props.url!}
-                            loading="lazy"
-                            class="ln-avatar__image"
-                            // onLoad={on_load_img}
-                            alt={props.username}
-                            style={{ 'border-radius': br(props.rounded) }}
-                        />
-                    </Branch.If>
-
-                    <Branch.Else>
-                        <span
-                            class="ln-avatar__text"
-                            style={{
-                                "background-color": props.backgroundColor,
-                                'border-radius': br(props.rounded)
-                            }}
-                        >
-                            {props.children || props.text || '?'}
-                        </span>
-                    </Branch.Else>
-                </Branch>
+                    <img src={props.url!}
+                        loading="lazy"
+                        class="ln-avatar__image"
+                        // onLoad={on_load_img}
+                        alt={props.username}
+                        style={{ 'border-radius': br(props.rounded) }}
+                    />
+                </Show>
             </div>
 
             {props.anchor}
