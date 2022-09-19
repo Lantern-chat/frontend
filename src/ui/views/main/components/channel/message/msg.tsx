@@ -13,10 +13,11 @@ export interface MessageProps {
     extra?: JSX.Element,
 }
 
+// TODO: If keyed, test if source can be /*@once*/
 import "./msg.scss";
 export function Message(props: MessageProps) {
     return (
-        <Show when={props.msg.content}>
+        <Show keyed when={props.msg.content}>
             {content => (
                 <Markdown source={content}
                     class="ln-msg"

@@ -51,7 +51,7 @@ export function PartyAvatar(props: IPartyAvatarProps) {
                     backgroundColor={pickColorFromHash(props.party.id, prefs.LightMode())} />
             </Link>
 
-            <Show when={pos()}>
+            <Show keyed when={pos()}>
                 {pos => (
                     <PositionedModal rect={pos}>
                         <ListedPartyMenu party={props.party} />

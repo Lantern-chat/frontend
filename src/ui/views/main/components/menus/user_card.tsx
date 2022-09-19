@@ -100,7 +100,7 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
                 <div class="banner"
                     style={{
                         "background-color": color(),
-                        'background-image': props.hideBanner ? null : banner_url(),
+                        'background-image': props.hideBanner ? null : banner_url() as any,
                     }}
                 >
                     {props.bannerCover}

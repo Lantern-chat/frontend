@@ -26,7 +26,7 @@ export function PartyFooter() {
     return (
         <footer class="ln-party-footer">
             <div class="ln-party-footer__user">
-                <Show when={cached_user()} fallback={<Spinner size="100%" />}>
+                <Show keyed when={cached_user()} fallback={<Spinner size="100%" />}>
                     {user => {
                         return (<>
                             <UserAvatar nickname={user.user.username} user_id={user.user.id} profile={user.profile} presence={user.presence} />

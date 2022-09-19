@@ -53,13 +53,13 @@ export function ChannelList() {
 
     return (
         <ul class="ln-channel-list ln-scroll-y ln-scroll-fixed" {...main_click_props} >
-            <Show when={rooms()?.length} fallback={<div style={{ height: "100%", paddingTop: '1em' }}><Bounce size="auto" /></div>}>
+            <Show when={rooms()?.length} fallback={<div style={{ height: "100%", 'padding-top': '1em' }}><Bounce size="auto" /></div>}>
                 <For each={rooms()}>
                     {room => <ListedChannel room={room} selected={is_room_selected(room.id)} onNavigate={on_navigate} />}
                 </For>
             </Show>
 
-            <Show when={!!party().party_id && pos()}>
+            <Show keyed when={!!party().party_id && pos()}>
                 {pos => (
                     <PositionedModal rect={pos}>
                         <RoomListContextMenu party_id={party().party_id!} />
@@ -97,7 +97,7 @@ function ListedChannel(props: IListedChannelProps) {
                 </div>
             </Link>
 
-            <Show when={pos()}>
+            <Show keyed when={pos()}>
                 {pos => (
                     <PositionedModal rect={pos}>
                         <RoomContextMenu room={props.room} />

@@ -165,7 +165,7 @@ export default function LoginView() {
             </div>
 
             <Show when={state.totp_required}>
-                <FullscreenModal style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
+                <FullscreenModal style={{ 'background-color': 'rgba(0, 0, 0, 0.6)' }}>
                     <div class="ln-center-standalone" style={{ color: 'white' }}>
                         TOTP Required
                     </div>
