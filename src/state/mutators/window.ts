@@ -16,15 +16,16 @@ export interface IWindowState {
 
 export const MOBILE_MAX_SIZE: number = 640;
 
-import { mutatorWithDefault } from "solid-mutant";
+import { RootState } from "state/root";
 import { StorageKey } from "state/storage";
 import { Action, Type } from "../actions";
 
-export const windowMutator = mutatorWithDefault(
-    () => {
+export function windowMutator(root: RootState, action: Action) {
+    let state = root.window;
+    if(!state) {
         let show_user_list = localStorage.getItem(StorageKey.SHOW_USER_LIST);
 
-        return {
+        state = root.window = {
             width: window.innerWidth,
             height: window.innerHeight,
             use_mobile_view: window.innerWidth < MOBILE_MAX_SIZE,
@@ -33,29 +34,28 @@ export const windowMutator = mutatorWithDefault(
             show_user_list: typeof show_user_list == 'string' ? JSON.parse(show_user_list) : true,
             showing_footers: false,
         };
-    },
-    (state: IWindowState, action: Action) => {
-        switch(action.type) {
-            case Type.WINDOW_RESIZE: {
-                let width = window.innerWidth;
-                state.width = width;
-                state.use_mobile_view = width < MOBILE_MAX_SIZE;
-                state.height = window.innerHeight;
-                break;
-            }
-            case Type.WINDOW_SET_PANEL: {
-                state.last_panel = state.show_panel;
-                state.show_panel = action.panel;
-                break;
-            }
-            case Type.WINDOW_TOGGLE_USER_LIST: {
-                state.show_user_list = action.open;
-                break;
-            }
-            case Type.TOGGLE_FOOTERS: {
-                state.showing_footers = action.show;
-                break;
-            }
+    }
+
+    switch(action.type) {
+        case Type.WINDOW_RESIZE: {
+            let width = window.innerWidth;
+            state.width = width;
+            state.use_mobile_view = width < MOBILE_MAX_SIZE;
+            state.height = window.innerHeight;
+            break;
+        }
+        case Type.WINDOW_SET_PANEL: {
+            state.last_panel = state.show_panel;
+            state.show_panel = action.panel;
+            break;
+        }
+        case Type.WINDOW_TOGGLE_USER_LIST: {
+            state.show_user_list = action.open;
+            break;
+        }
+        case Type.TOGGLE_FOOTERS: {
+            state.showing_footers = action.show;
+            break;
         }
     }
-);
+}

@@ -4,7 +4,7 @@ import { IS_MOBILE } from "lib/user_agent";
 import { loadMessages, SearchMode, activateParty, setSession } from "state/commands";
 import { DEFAULT_LOGGED_IN_CHANNEL, GLOBAL, HISTORY } from "state/global";
 import { GatewayStatus } from "state/mutators/gateway";
-import { prefsMutator, getPad } from "state/mutators/prefs";
+import { getPad, default_prefs } from "state/mutators/prefs";
 import { Action, RootState, Type } from "state/root";
 import { ServerMsgOpcode } from "state/models";
 
@@ -231,7 +231,7 @@ export function mainEffect(state: RootState, action: Action, dispatch: Dispatch<
                     let prefs = msg.p.user.preferences;
 
                     if(prefs) {
-                        let full_prefs = { ...prefsMutator.default(), ...prefs } as UserPreferences;
+                        let full_prefs = { ...default_prefs(), ...prefs } as UserPreferences;
 
                         setTheme({
                             temperature: full_prefs.temp,

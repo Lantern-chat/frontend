@@ -4,7 +4,7 @@ import { ServerMsgOpcode, User, UserPresence, UserPresenceFlags } from "../model
 import { ISession } from "lib/session";
 import { erase } from "lib/util";
 import { GatewayMessageDiscriminator } from "worker/gateway/msg";
-import { mutatorWithDefault } from "solid-mutant";
+import { RootState } from "state/root";
 
 export interface IUserState {
     user?: User,
@@ -15,63 +15,65 @@ export interface IUserState {
     quota_total?: number,
 }
 
-export const userMutator = mutatorWithDefault(
-    () => ({}),
-    (state: IUserState, action: Action) => {
-        switch(action.type) {
-            case Type.SESSION_LOGIN: {
-                state.session = action.session;
-                break;
-            }
-            case Type.SESSION_EXPIRED: {
-                erase(state); // clear entire user state
-                break;
-            }
-            case Type.UPDATE_QUOTA: {
-                state.quota_total = action.quota_total;
-                state.quota_used = action.quota_used;
-                break;
-            }
-            case Type.GATEWAY_EVENT: {
-                let ev = action.payload;
+export function userMutator(root: RootState, action: Action) {
+    let state = root.user;
+    if(!state) {
+        state = root.user = {};
+    }
 
-                switch(ev.t) {
-                    case GatewayMessageDiscriminator.Ready: {
-                        // Initialize the user with `online` presence to start with
-                        // TODO: Improve this
+    switch(action.type) {
+        case Type.SESSION_LOGIN: {
+            state.session = action.session;
+            break;
+        }
+        case Type.SESSION_EXPIRED: {
+            erase(state); // clear entire user state
+            break;
+        }
+        case Type.UPDATE_QUOTA: {
+            state.quota_total = action.quota_total;
+            state.quota_used = action.quota_used;
+            break;
+        }
+        case Type.GATEWAY_EVENT: {
+            let ev = action.payload;
 
-                        state.user = ev.p.user;
-                        state.presence = { flags: UserPresenceFlags.Online };
-                        break;
-                    }
-                    case GatewayMessageDiscriminator.Event: {
-                        if(!state.user) break;
+            switch(ev.t) {
+                case GatewayMessageDiscriminator.Ready: {
+                    // Initialize the user with `online` presence to start with
+                    // TODO: Improve this
 
-                        let p = ev.p;
-                        switch(p.o) {
-                            case ServerMsgOpcode.PresenceUpdate: {
-                                if(p.p.user.id == state.user.id) {
-                                    state.presence = p.p.presence;
-                                }
-                                break;
-                            }
-                            case ServerMsgOpcode.UserUpdate: {
-                                let user = p.p.user;
-
-                                // overwrite own user info if same user and has private fields present
-                                // indicating it's meant for us
-                                if(user.id == state.user!.id && user.email) {
-                                    Object.assign(state.user, user);
-                                }
-
-                                break;
-                            }
-                        }
-                        break;
-                    }
+                    state.user = ev.p.user;
+                    state.presence = { flags: UserPresenceFlags.Online };
+                    break;
                 }
-                break;
+                case GatewayMessageDiscriminator.Event: {
+                    if(!state.user) break;
+
+                    let p = ev.p;
+                    switch(p.o) {
+                        case ServerMsgOpcode.PresenceUpdate: {
+                            if(p.p.user.id == state.user.id) {
+                                state.presence = p.p.presence;
+                            }
+                            break;
+                        }
+                        case ServerMsgOpcode.UserUpdate: {
+                            let user = p.p.user;
+
+                            // overwrite own user info if same user and has private fields present
+                            // indicating it's meant for us
+                            if(user.id == state.user!.id && user.email) {
+                                Object.assign(state.user, user);
+                            }
+
+                            break;
+                        }
+                    }
+                    break;
+                }
             }
+            break;
         }
     }
-);
+}

@@ -62,7 +62,7 @@ export const GLOBAL: IGlobalState = window['LANTERN_GLOBAL'] = window['LANTERN_G
     let store = createRoot(() => {
         let store = createMutantStore<CombinedState<RootState>, Action>(initialMutator, {
             history: recomputeHistoryContext(history),
-            user: { ...userMutator.default(), session },
+            user: { session },
             prefs: loadPrefs(),
         });
 

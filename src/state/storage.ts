@@ -1,6 +1,6 @@
 import { ISession, parseSession } from "lib/session";
 import { UserPreferences } from "./models";
-import { prefsMutator } from "./mutators/prefs";
+import { default_prefs } from "./mutators/prefs";
 
 export const enum StorageKey {
     LOCALE = "LOCALE",
@@ -23,6 +23,6 @@ export function storeSession(session: ISession | null) {
 }
 
 export function loadPrefs(): UserPreferences {
-    let prefs = localStorage.getItem(StorageKey.PREFS), default_prefs = prefsMutator.default();
-    return prefs ? { ...default_prefs, ...JSON.parse(prefs) } : default_prefs;
+    let prefs = localStorage.getItem(StorageKey.PREFS), dp = default_prefs();
+    return prefs ? { ...dp, ...JSON.parse(prefs) } : dp;
 }

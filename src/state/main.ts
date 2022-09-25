@@ -1,4 +1,4 @@
-import { combineMutators, Mutator } from "solid-mutant";
+import type { Mutator } from "solid-mutant";
 
 import { chatMutator } from "./mutators/chat";
 import { cacheMutator } from "./mutators/cache";
@@ -15,15 +15,14 @@ export { Type } from "./actions";
 
 import type { RootState } from "./root";
 
-export const mainMutator = combineMutators<RootState, Action>({
-    chat: chatMutator,
-    cache: cacheMutator,
-    window: windowMutator,
-    gateway: gatewayMutator,
-    user: userMutator,
-    party: partyMutator,
-    prefs: prefsMutator,
-    // history mutator is initialized with a value when creating the store
-    history: historyMutator as Mutator<IHistoryState, Action>,
-    toasts: toastMutator,
-});
+export const mainMutator: Mutator<RootState, Action> = (state: RootState, action: Action) => {
+    chatMutator(state, action);
+    cacheMutator(state, action);
+    windowMutator(state, action);
+    gatewayMutator(state, action);
+    userMutator(state, action);
+    partyMutator(state, action);
+    prefsMutator(state, action);
+    historyMutator(state, action);
+    toastMutator(state, action);
+};

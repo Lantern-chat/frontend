@@ -1,6 +1,7 @@
 import { History, Location } from "history";
 import { Action, Type } from "state/actions";
 import { IHistoryExt } from "state/global";
+import { RootState } from "state/root";
 
 export interface IHistoryState {
     history: IHistoryExt,
@@ -15,8 +16,8 @@ export function recomputeHistoryContext(history: IHistoryExt): IHistoryState {
     return { history, location, parts };
 }
 
-export function historyMutator(state: IHistoryState, action: Action) {
+export function historyMutator(root: RootState, action: Action) {
     if(action.type == Type.HISTORY_UPDATE) {
-        Object.assign(state, action.ctx);
+        Object.assign(root.history, action.ctx);
     }
 }
