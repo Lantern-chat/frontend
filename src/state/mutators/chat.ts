@@ -319,12 +319,12 @@ export function chatMutator(root: RootState, action: Action) {
                                     msg.msg.reactions.splice(reaction_idx, 1);
                                 }
                             } else {
-                                msg.msg.reactions = [...msg.msg.reactions, {
+                                msg.msg.reactions.push({
                                     ...emote, // emote or emoji
                                     users: [user_id],
                                     me: own_reaction,
                                     count: 1,
-                                }];
+                                });
                             }
                         }
                     }
