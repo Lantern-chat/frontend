@@ -2,9 +2,9 @@ import { binarySearch } from "lib/util";
 
 import { Action, Type } from "../actions";
 
-import { Message, Snowflake, Room, Attachment, ServerMsg, ServerMsgOpcode, Reaction, ReactionFull } from "../models";
+import { Message, Snowflake, Room, Attachment, ServerMsg, ServerMsgOpcode, Reaction, ReactionFull, ReactionShorthand } from "../models";
 import { GatewayMessageDiscriminator } from "worker/gateway/msg";
-import { ObjectMap } from "state/util/map_set";
+import { ArraySet, ObjectMap } from "state/util/map_set";
 import { SearchMode } from "state/commands/message/load";
 import { RootState } from "state/root";
 
@@ -285,28 +285,49 @@ export function chatMutator(root: RootState, action: Action) {
                 }
                 case ServerMsgOpcode.MessageReactionAdd:
                 case ServerMsgOpcode.MessageReactionRemove: {
+                    // NOTE: Message update events will overwrite the reactions field and remove users array
+
                     let { msg_id, room_id, user_id, emote } = event.p,
                         room = state.rooms[room_id];
 
                     if(room) {
                         let msg = room.msgs.find(m => m.msg.id == msg_id);
+
                         if(msg) {
                             msg.msg.reactions ||= [];
 
-                            let existing: Reaction | undefined = msg.msg.reactions.find(r => 'emote' in r ? r.emote == emote['emote'] : r.emoji == emote['emoji']);
+                            let reaction_idx = msg.msg.reactions.findIndex(r => 'emote' in r ? r.emote == emote['emote'] : r.emoji == emote['emoji']),
+                                reaction: Reaction | undefined = msg.msg.reactions[reaction_idx],
+                                own_reaction = user_id == root.user.user!.id,
+                                added = event.o == ServerMsgOpcode.MessageReactionAdd;
 
+                            if(reaction) {
+                                // create users
+                                let users = ArraySet((reaction as ReactionFull).users ||= []);
 
-                            if(existing) {
-                                if(event.o == ServerMsgOpcode.MessageReactionAdd) {
-                                    let users = (existing as ReactionFull).users ||= [];
+                                if(added) {
+                                    users.delete(user_id);
+                                    (reaction as ReactionShorthand).me ||= own_reaction;
+                                } else {
+                                    users.add(user_id);
+                                    (reaction as ReactionShorthand).me &&= !own_reaction;
                                 }
+
+                                (reaction as ReactionShorthand).count += added ? 1 : -1;
+
+                                if((reaction as ReactionShorthand).count == 0) {
+                                    msg.msg.reactions.splice(reaction_idx, 1);
+                                }
+                            } else {
+                                msg.msg.reactions = [...msg.msg.reactions, {
+                                    ...emote, // emote or emoji
+                                    users: [user_id],
+                                    me: own_reaction,
+                                    count: 1,
+                                }];
                             }
-
-
-
                         }
                     }
-
 
                     break;
                 }
