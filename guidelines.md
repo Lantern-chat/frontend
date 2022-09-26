@@ -7,8 +7,9 @@ Frontend guidelines:
 * Consider `Branch`/`Branch.If`/`Branch.ElseIf`/`Branch.Else` for if/if else/else-like chains of show logic instead of `Switch`/`Match`
 * Never use React-like conditional rendering patterns. You *must* use `Show` or similar.
 * Async/await is your friend
-* Try to use direction-less CSS attributes, such as `margin-inline-start` instead of `margin-left`, or `padding-block-start` instead of `padding-top`
+* Try to use direction-less CSS attributes, such as `margin-inline-(start|end)` instead of `margin-(left|right)`, or `padding-block-(start|end)` instead of `padding-(top|bottom)`
     * This helps with languages that use right-to-left flow.
+    * `inset-inline-(start|end)` instead of `left` or `right`
 * Children of `Show` and similar that are functions are entirely recreated each time the `when` parameter changes
     * Use regular JSX children instead to avoid this, only `<Show when={value}>{value => <thing/>}</Show>` patterns are affected
 * Try to take advantage of SCSS with nesting and prepending using `&`
