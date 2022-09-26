@@ -70,18 +70,9 @@
         bottom: 50%;
         transform: scale(2, 1);
 
-        .ln-ltr & {
-            left: -0.75em;
-            @media (max-width: 49em) {
-                left: -4%;
-            }
-        }
-
-        .ln-rtl & {
-            right: -0.75em;
-            @media (max-width: 49em) {
-                right: -4%;
-            }
+        inset-inline-start: -0.75em; // left
+        @media (max-width: 49em) {
+            inset-inline-start: -4%; // left
         }
     }
 

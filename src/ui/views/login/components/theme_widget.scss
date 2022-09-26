@@ -21,12 +21,7 @@
     position: absolute;
     top: 1em;
 
-    .ln-ltr & {
-        left: 1em;
-    }
-    .ln-rtl & {
-        right: 1em;
-    }
+    inset-inline-start: 1em; // left
 
     background-color: $lnx-secondary-surface-color;
     border-radius: 1em;

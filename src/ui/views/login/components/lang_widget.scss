@@ -4,12 +4,7 @@
     position: absolute;
     top: 1em;
 
-    .ln-ltr & {
-        right: 1em;
-    }
-    .ln-rtl & {
-        left: 1em;
-    }
+    inset-inline-end: 1em; // right
 
     background-color: $lnx-secondary-surface-color;
     border-radius: 1em;

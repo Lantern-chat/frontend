@@ -8,12 +8,7 @@
     position: absolute;
     bottom: -0.2em;
 
-    .ln-ltr & {
-        right: -0.2em;
-    }
-    .ln-rtl & {
-        left: -0.2em;
-    }
+    inset-inline-end: -0.2em; // right
 
     display: inline-flex;
     flex-direction: column;

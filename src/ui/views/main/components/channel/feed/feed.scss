@@ -42,12 +42,7 @@
         width: 2rem;
         bottom: 0;
 
-        .ln-ltr & {
-            right: 0;
-        }
-        .ln-rtl & {
-            left: 0;
-        }
+        inset-inline-end: 0; // right
     }
 
     li:last-child {

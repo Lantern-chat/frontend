@@ -217,13 +217,7 @@ summary {
             top: 0;
             bottom: 0;
 
-            .ln-ltr & {
-                left: 0;
-            }
-
-            .ln-rtl & {
-                right: 0;
-            }
+            inset-inline-start: 0; // left
         }
     }
 

@@ -32,7 +32,7 @@ export function AnchoredModal(props: IAnchoredModalProps) {
         <>
             <span ref={anchor} class="ln-context-anchor" />
 
-            <Show when={show() && anchor.current?.getBoundingClientRect()}>
+            <Show keyed when={show() && anchor.current?.getBoundingClientRect()}>
                 {rect => (
                     <PositionedModal eat={props.eat} rect={rect}>
                         {props.children}
