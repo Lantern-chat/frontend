@@ -219,9 +219,7 @@ export interface IMainClickOptions extends ClickEventHandlers {
     onMainClick: OnClickHandler,
 }
 
-export function useMainClick(opt: IMainClickOptions) {
-    let main = useContext(MainContext);
-
+export function useMainClick(opt: IMainClickOptions, main: IMainContext = useContext(MainContext)) {
     let props: ClickEventProps = {};
 
     for(let key in EVENTS) {
@@ -285,7 +283,7 @@ export interface ISimpleMainClickOptions {
     onMainClick: OnClickHandler,
 }
 
-export function createSimplePositionedContextMenu(opts?: ISimpleMainClickOptions): [get: Accessor<Position | null>, props: ClickEventProps] {
+export function createSimplePositionedContextMenu(opts?: ISimpleMainClickOptions, main?: IMainContext): [get: Accessor<Position | null>, props: ClickEventProps] {
     let [pos, setPos] = createSignal<Position | null>(null);
 
     let props = useMainClick({
@@ -296,12 +294,12 @@ export function createSimplePositionedContextMenu(opts?: ISimpleMainClickOptions
             e.stopPropagation();
             e.preventDefault();
         },
-    });
+    }, main);
 
     return [pos, props];
 }
 
-export function createSimpleToggleOnClick(opts?: ISimpleMainClickOptions): [Accessor<boolean>, ClickEventProps, Setter<boolean>] {
+export function createSimpleToggleOnClick(opts?: ISimpleMainClickOptions, main?: IMainContext): [Accessor<boolean>, ClickEventProps, Setter<boolean>] {
     let [show, setShow] = createSignal(false);
 
     // track element this is listening to
@@ -313,7 +311,7 @@ export function createSimpleToggleOnClick(opts?: ISimpleMainClickOptions): [Acce
         onClick: (e: MouseEvent) => {
             el = e.currentTarget; setShow(v => !v); e.stopPropagation();
         }
-    });
+    }, main);
 
     return [show, props, setShow];
 }

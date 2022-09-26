@@ -5,9 +5,10 @@ import { EmojiLite } from "ui/components/common/emoji_lite";
 import { VectorIcon } from "ui/components/common/icon";
 import { Icons } from "lantern-icons";
 import { createRef } from "ui/hooks/createRef";
+import { Snowflake } from "state/models"
 
 export interface IEmojiPickerProps {
-    onPick(emoji: string): void;
+    onPick(emoji: string | null, emote: Snowflake | null): void;
 }
 
 const unkebab = (c: string): string => c.replace(/\b[a-z]/g, m => m.toUpperCase()).replace(/\-/g, ' ');
@@ -152,15 +153,16 @@ function PickerCategory(props: IEmojiPickerProps & { c: number, all?: boolean, s
 
     // simple event delegation to avoid adding listeners on every single emoji
     // the DOM here is incredibly shallow, so the number of iterations is likely usually less than 2
-    let find_emoji = (t: HTMLElement, cb: (emoji: string, element: HTMLElement) => void) => {
+    let find_emoji = (t: HTMLElement, cb: (emoji: string | null, emote: Snowflake | null, element: HTMLElement) => void) => {
         while(t && t != ref.current) {
-            let a = t.getAttribute('data-emoji');
-            if(a) { return cb(a, t); }
+            let a = t.dataset['emoji'];
+            if(a) { return cb(a, null, t); }
+            if(a = t.dataset['emote']) { return cb(null, a, t); }
             t = t.parentElement!;
         }
     };
 
-    let on_click = (e: MouseEvent) => find_emoji(e.target as HTMLElement, props.onPick);
+    let on_click = (e: MouseEvent) => find_emoji(e.target as HTMLElement, (emoji, emote) => props.onPick(emoji, emote));
 
     // // lazily fill in the titles on hover
     // let on_hover = (e: Event) => find_emoji(e.target as HTMLElement, (e, h) => {

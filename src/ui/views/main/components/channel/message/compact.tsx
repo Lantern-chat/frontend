@@ -40,13 +40,13 @@ export function CompactMessage(props: IMessageProps) {
 
             <MessageBody msg={props.msg.msg} extra={extra()} />
 
-            <Show when={props.msg.msg.reactions?.length}>
-                <Reactions msg={props.msg.msg} />
-            </Show>
-
             <For each={props.msg.msg.attachments}>
                 {attachment => <MsgAttachment msg={props.msg.msg} attachment={attachment} />}
             </For>
+
+            <Show when={props.msg.msg.reactions?.length}>
+                <Reactions msg={props.msg.msg} />
+            </Show>
         </div>
     );
 }

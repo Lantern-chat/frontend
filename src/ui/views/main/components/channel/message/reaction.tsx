@@ -1,10 +1,12 @@
+import { PutReaction, DeleteOwnReaction } from "client-sdk/src/api/commands";
 import { Icons } from "lantern-icons";
-import { For, Show } from "solid-js";
-import { Emote, Message } from "state/models";
+import { For, Show, useContext } from "solid-js";
+import { CLIENT } from "state/global";
+import { Emote, Message, Snowflake } from "state/models";
 import { Emoji, CustomEmote } from "ui/components/common/emoji";
 import { VectorIcon } from "ui/components/common/icon";
 import { AnchoredModal } from "ui/components/modal/anchored";
-import { createSimpleToggleOnClick } from "ui/hooks/useMain";
+import { createSimpleToggleOnClick, MainContext } from "ui/hooks/useMain";
 import { EmojiPicker } from "../../misc/emoji_picker";
 
 export interface IReactionsProps {
@@ -13,18 +15,20 @@ export interface IReactionsProps {
 
 import "./reaction.scss";
 export function Reactions(props: IReactionsProps) {
-    let wrapper: HTMLDivElement | undefined;
-
     let [show, main_click_props, setShow] = createSimpleToggleOnClick();
 
-    let on_pick = (e: string) => {
+    let on_pick = (emoji: string | null, emote: Snowflake | null) => {
         setShow(false);
-        //props.onPick(e, format_emoji_shortcode(e));
+        CLIENT.execute(PutReaction({ room_id: props.msg.room_id, msg_id: props.msg.id, e: { emoji: emoji!, emote: emote! } }));
     };
 
     let on_click = (e: MouseEvent) => {
-        let emote, emoji, t = e.target as HTMLElement | null, d;
-        while(t && t != wrapper) {
+        let emote: string | undefined,
+            emoji: string | undefined,
+            t = e.target as HTMLElement | null,
+            d: string | undefined;
+
+        while(t && t != e.currentTarget) {
             d = t.dataset['emote'];
             if(d) { emote = d; break; }
             d = t.dataset['emoji'];
@@ -33,28 +37,24 @@ export function Reactions(props: IReactionsProps) {
             t = t.parentElement;
         }
 
-        console.log(emote, emoji);
+        if(emote || emoji) {
+            let msg = props.msg, args = { room_id: msg.room_id, msg_id: msg.id, e: emoji ? { emoji } : { emote: emote! } };
+            CLIENT.execute(t?.classList.contains('me') ? DeleteOwnReaction(args) : PutReaction(args));
+        }
     };
 
     return (
-        <div class="ln-reaction__wrapper" ref={wrapper} onClick={on_click}>
+        <div class="ln-reaction__wrapper" onClick={on_click}>
             <For each={props.msg.reactions}>
-                {(reaction: any) => {
-
-                    return (
-                        <span class="ln-reaction" classList={{ 'me': reaction.me }}
-                            data-emote={reaction.emote} data-emoji={reaction.emoji}
-                        >
-                            <Show when={reaction.emote} fallback={
-                                <Emoji value={reaction.emoji} />
-                            }>
-                                <CustomEmote id={reaction.emote} name="" />
-                            </Show>
-
-                            <span class="ln-reaction__count ui-text" textContent={reaction.count} />
-                        </span>
-                    )
-                }}
+                {(reaction: any) => (
+                    <span class="ln-reaction" classList={{ 'me': reaction.me }}
+                        data-emote={reaction.emote} data-emoji={reaction.emoji}
+                    >
+                        {/* emote is immutable here, so a regular branch is fine */}
+                        {/*@once*/ reaction.emote ? <CustomEmote id={reaction.emote} name="" /> : <Emoji value={reaction.emoji} />}
+                        <span class="ln-reaction__count ui-text" textContent={reaction.count} />
+                    </span>
+                )}
             </For>
 
             <span class="ln-reaction ln-reaction--add" classList={{ 'active': show() }} {...main_click_props}>
@@ -67,3 +67,4 @@ export function Reactions(props: IReactionsProps) {
         </div>
     )
 }
+

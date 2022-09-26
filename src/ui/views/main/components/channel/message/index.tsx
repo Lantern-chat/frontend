@@ -13,6 +13,7 @@ import { MsgContextMenu } from "../../menus/msg_context";
 import { CompactMessage } from "../message/compact";
 import { CozyMessage } from "../message/cozy";
 import { SystemMessage } from "../message/system";
+import { ActionWidget } from "./actions";
 
 export function Message(props: { msg: IMessageState }) {
     let prefs = usePrefs();
@@ -55,6 +56,8 @@ export function Message(props: { msg: IMessageState }) {
                             </PositionedModal>
                         )}
                     </Show>
+
+                    <ActionWidget msg={props.msg.msg} />
                 </div>
             </li>
         </>
