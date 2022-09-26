@@ -26,6 +26,10 @@
     border: 1px solid $lnx-secondary-surface-color;
     box-shadow: 0.25rem 0.25rem 0.5rem $lnx-primary-surface-color;
 
+    .ln-light-theme & {
+        background-color: $lnx-tertiary-surface-color;
+    }
+
     border-radius: 0.5em;
     overflow: hidden;
 
@@ -35,7 +39,11 @@
 
     .emoji {
         cursor: pointer;
-        filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.2));
+        filter: #{"invert(var(--dark-emoji, 0))"} drop-shadow(0 0 4px rgba(0, 0, 0, 0.2));
+
+        .ln-light-theme & {
+            filter: #{"invert(var(--light-emoji, 0))"} drop-shadow(0 0 4px rgba(0, 0, 0, 0.2));
+        }
     }
 
     display: flex;
@@ -86,10 +94,14 @@
             height: 2em;
             border-radius: 0.5em;
             padding-inline: 1em;
-            background-color: rgba(128, 128, 128, 0.54);
             border: none;
             color: $lnx-primary-text-color;
             outline: none;
+
+            background-color: rgba(128, 128, 128, 0.5);
+            .ln-light-theme & {
+                background-color: rgba(192, 192, 192, 0.25);
+            }
 
             &:focus,
             &:active,
@@ -129,8 +141,12 @@
 
             z-index: 1;
             position: relative;
-            background-color: $lnx-primary-surface-color;
             border-bottom-left-radius: 1em;
+
+            background-color: $lnx-primary-surface-color;
+            .ln-light-theme & {
+                background-color: $lnx-tertiary-surface-color;
+            }
         }
 
         span {
@@ -157,10 +173,15 @@
         width: 1.5em;
         min-width: 1.5em;
         padding-block: 0.25em;
-        background-color: $lnx-secondary-surface-color;
         display: flex;
         flex-direction: column;
         align-items: center;
+
+        background-color: $lnx-secondary-surface-color;
+
+        .ln-light-theme & {
+            background-color: $lnx-primary-surface-color;
+        }
 
         > div {
             cursor: pointer;

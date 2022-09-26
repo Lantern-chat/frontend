@@ -19,7 +19,43 @@
         height: 1em;
     }
 
-    .ln-enhanced-contrast & {
-        filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.2));
+    filter: #{"invert(var(--dark-emoji, 0))"};
+
+    .ln-light-theme & {
+        filter: #{"invert(var(--light-emoji, 0))"};
     }
+
+    .ln-enhanced-contrast & {
+        filter: #{"invert(var(--dark-emoji, 0))"} drop-shadow(0 0 4px rgba(0, 0, 0, 0.2));
+    }
+
+    .ln-enhanced-contrast.ln-light-theme & {
+        filter: #{"invert(var(--light-emoji, 0))"} drop-shadow(0 0 4px rgba(0, 0, 0, 0.2));
+    }
+}
+
+// subjective list of emojis that appear too dark
+.emoji[aria-label="♟️"], // chess pawn
+.emoji[aria-label="📞"], // phone
+.emoji[aria-label="🔙"], // BACK arrow
+.emoji[aria-label="🔚"], // END arrow
+.emoji[aria-label="🔛"], // ON! arrow
+.emoji[aria-label="🔜"], // SOON arrow
+.emoji[aria-label="🔝"], // TOP arrow
+.emoji[aria-label="✖️"], // multiply
+.emoji[aria-label="➕"], // plus
+.emoji[aria-label="➖"], // minus
+.emoji[aria-label="➗"], // divide
+.emoji[aria-label="🟰"], // heavy equals sign
+.emoji[aria-label="〰️"], // wavy dash
+.emoji[aria-label="💱"], // currency exchange
+.emoji[aria-label="💲"], // heavy dollar sign
+.emoji[aria-label="✔️"], // check mark
+.emoji[aria-label="➰"], // curly loop
+.emoji[aria-label="✴️"], // eight-pointed star
+.emoji[aria-label="©️"], // copyright
+.emoji[aria-label="®️"], // registered
+.emoji[aria-label="™️"] // trade mark
+{
+    --dark-emoji: 1;
 }
