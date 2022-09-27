@@ -53,9 +53,13 @@
             line-height: 0;
             font-size: 1.5em;
             text-align: center;
-            mix-blend-mode: exclusion;
             font-weight: bold;
             font-family: Arial;
+
+            mix-blend-mode: exclusion;
+            .ln-light-theme & {
+                mix-blend-mode: normal;
+            }
         }
     }
 }

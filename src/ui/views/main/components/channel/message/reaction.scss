@@ -1,3 +1,5 @@
+@import "lib/variables";
+
 .ln-reaction {
     &__wrapper {
         padding-block-start: 0.5em;
@@ -25,11 +27,12 @@
     cursor: pointer;
 
     &.me {
-        //background-color: hsla(60deg, 70%, 40%, 0.2);
-        background-color: hsla(60deg, 70%, 50%, 0.25);
+        background-color: hsla(60deg, 70%, 40%, 0.25);
 
         .ln-light-theme & {
-            background-color: hsla(60deg, 70%, 50%, 0.5);
+            //background-color: hsla(60deg, 70%, 50%, 0.5);
+            //background-color: hsla(60deg, 80%, 40%, 0.5);
+            background-color: hsla(60deg, 60%, 70%, 0.35);
         }
     }
 
@@ -53,16 +56,20 @@
         box-shadow: none;
         filter: drop-shadow(0 0 0.25em black);
 
+        .ln-light-theme & {
+            filter: drop-shadow(0 0 0.25em rgba(0, 0, 0, 0.25));
+        }
+
         opacity: 0;
 
         .ln-msg__outer:hover & {
             opacity: 0.25;
-        }
 
-        &:hover,
-        &:active,
-        &.active {
-            opacity: 1;
+            &:hover,
+            &:active,
+            &.active {
+                opacity: 0.75;
+            }
         }
 
         .ln-icon {
