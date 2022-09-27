@@ -29,14 +29,21 @@
 
             &,
             & * {
-                background-color: black;
                 user-select: none;
-                color: black;
-                box-shadow: inset 1000rem 1000rem black;
                 fill: transparent;
                 clip: auto;
                 overflow: hidden;
                 overflow: clip;
+
+                background-color: black;
+                color: black;
+                box-shadow: inset 1000rem 1000rem black;
+
+                .ln-oled-theme & {
+                    background-color: #666;
+                    color: #666;
+                    box-shadow: inset 1000rem 1000rem #666;
+                }
             }
         }
 
