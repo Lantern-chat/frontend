@@ -31,13 +31,13 @@ function select_comp(props: IVectorIconProps) {
 
 // Similar workings to `<Dynamic>` but simpler for faster rendering
 export function VectorIcon(props: IVectorIconProps): JSX.Element {
-    return createMemo(() => {
+    return () => {
         let comp = select_comp(props);
         if(comp) {
             return untrack(() => comp!(props as any));
         }
         return;
-    });
+    };
 }
 
 const ICON_PATH = icon_path + '#';

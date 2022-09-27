@@ -1,4 +1,4 @@
-import { createSignal, Show } from "solid-js"
+import { createSignal } from "solid-js"
 import { usePrefs } from "state/contexts/prefs";
 import { emoji_url } from "config/urls";
 
@@ -22,15 +22,11 @@ export function EmojiLite(props: IEmojiLiteProps) {
 
     let large = () => props.large && !prefs.CompactView();
 
-    return (
-        <Show when={!use_system()} fallback={
-            <span class="emoji" classList={{ 'large': large() }} textContent={value()} />
-        }>
-            <img loading="lazy" class="emoji" classList={{ 'large': large() }}
-                alt={value()} aria-label={value()}
-                draggable={false} data-type="emoji"
-                src={emoji_url(value())}
-                onError={() => setErrored(true)} />
-        </Show>
+    return () => use_system() ? <span class="emoji" classList={{ 'large': large() }} textContent={value()} /> : (
+        <img loading="lazy" class="emoji" classList={{ 'large': large() }}
+            alt={value()} aria-label={value()}
+            draggable={false} data-type="emoji"
+            src={emoji_url(value())}
+            onError={() => setErrored(true)} />
     );
 }

@@ -28,11 +28,9 @@ import "./profile.scss";
 export function ProfileSettingsTab() {
     let store = useRootStore();
 
-    return (
-        <Show when={!!store.state.user.user}>
-            <ProfileSettingsTabInner />
-        </Show>
-    )
+    return () => !!store.state.user.user && (
+        <ProfileSettingsTabInner />
+    );
 }
 
 function compare_color(x: RGBColor, y: RGBColor): boolean {

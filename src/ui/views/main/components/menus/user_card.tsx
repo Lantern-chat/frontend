@@ -128,9 +128,7 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
                         <span>{props.user.username}<Discriminator discriminator={props.user.discriminator} /></span>
                     </Show>
 
-                    <Show when={user_is_bot(props.user)}>
-                        <BotLabel />
-                    </Show>
+                    {() => user_is_bot(props.user) && <BotLabel />}
                 </div>
 
                 <Show when={props.profile?.status}>

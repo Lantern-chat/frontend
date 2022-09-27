@@ -129,13 +129,15 @@ function RoomContextMenu(props: IRoomContextMenuProps) {
                 <span class="ui-text" textContent={LL().main.menus.room.EDIT()} />
             </div>
 
-            <Show when={dev_mode()}>
-                <hr />
+            {() => dev_mode() && (
+                <>
+                    <hr />
 
-                <div onClick={() => copyText(props.room.id)}>
-                    <span class="ui-text" textContent={LL().main.menus.COPY_ID()} />
-                </div>
-            </Show>
+                    <div onClick={() => copyText(props.room.id)}>
+                        <span class="ui-text" textContent={LL().main.menus.COPY_ID()} />
+                    </div>
+                </>
+            )}
         </ContextMenu>
     );
 }

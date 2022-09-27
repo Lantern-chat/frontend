@@ -83,13 +83,15 @@ function ListedPartyMenu(props: IListedPartyMenuProps) {
                 <UIText text={LL().main.menus.INVITE_PEOPLE()} />
             </div>
 
-            <Show when={dev_mode()}>
-                <hr />
+            {() => dev_mode() && (
+                <>
+                    <hr />
 
-                <div onClick={() => copyText(props.party.id)}>
-                    <UIText text={LL().main.menus.COPY_ID()} />
-                </div>
-            </Show>
+                    <div onClick={() => copyText(props.party.id)}>
+                        <UIText text={LL().main.menus.COPY_ID()} />
+                    </div>
+                </>
+            )}
         </ContextMenu>
     );
 }

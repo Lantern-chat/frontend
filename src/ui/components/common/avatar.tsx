@@ -47,7 +47,17 @@ export function Avatar(props: IAvatarProps) {
     return (
         <div class="ln-avatar" {...props.props}>
             <div class="ln-avatar__wrapper" {...props.wrapper} title={props.username}>
-                <Show when={props.url} fallback={
+                {/* <div class="ln-avatar__skel" /> */}
+
+                {() => props.url ? (
+                    <img src={props.url!}
+                        loading="lazy"
+                        class="ln-avatar__image"
+                        // onLoad={on_load_img}
+                        alt={props.username}
+                        style={{ 'border-radius': br(props.rounded) }}
+                    />
+                ) : (
                     <span
                         class="ln-avatar__text"
                         style={{
@@ -57,17 +67,7 @@ export function Avatar(props: IAvatarProps) {
                     >
                         {props.children || props.text || '?'}
                     </span>
-                }>
-                    {/* <div class="ln-avatar__skel" /> */}
-
-                    <img src={props.url!}
-                        loading="lazy"
-                        class="ln-avatar__image"
-                        // onLoad={on_load_img}
-                        alt={props.username}
-                        style={{ 'border-radius': br(props.rounded) }}
-                    />
-                </Show>
+                )}
             </div>
 
             {props.anchor}

@@ -205,7 +205,7 @@ export function UploadPanel(props: IUploadPanelProps) {
             }} />
             <UploadDropper on_drop={on_drop} />
 
-            <Show when={file_meta.length > 1}>
+            {file_meta.length > 1 && (
                 <div class="ln-attachment-controls">
                     <div class="ln-attachment-controls__spoiler" title={LL().main.SPOILER_ALL(spoileredAll())}
                         onClick={spoiler_all}>
@@ -215,7 +215,7 @@ export function UploadPanel(props: IUploadPanelProps) {
                         <VectorIcon id={Icons.Close} />
                     </div>
                 </div>
-            </Show>
+            )}
 
             <ul class="ln-attachment-previews ln-scroll-x" onWheel={on_wheel} onTouchMove={stop} onTouchStart={stop} onTouchEnd={stop}>
                 <For each={file_meta}>

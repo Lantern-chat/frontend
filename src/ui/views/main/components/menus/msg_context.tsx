@@ -102,14 +102,16 @@ export function MsgContextMenu(props: IMsgContextMenuProps) {
                 <UIText text={shownConfirmation() ? LL().main.menus.msg.CONFIRM() : LL().main.menus.msg.DELETE()} />
             </div>
 
-            <Show when={dev_mode()}>
-                <hr />
+            {() => dev_mode() && (
+                <>
+                    <hr />
 
-                <div onClick={() => copyText(props.msg.msg.id)}>
-                    <VectorIcon id={Icons.ChatMessage} />
-                    <UIText text={LL().main.menus.COPY_ID()} />
-                </div>
-            </Show>
+                    <div onClick={() => copyText(props.msg.msg.id)}>
+                        <VectorIcon id={Icons.ChatMessage} />
+                        <UIText text={LL().main.menus.COPY_ID()} />
+                    </div>
+                </>
+            )}
         </ContextMenu>
     )
 }

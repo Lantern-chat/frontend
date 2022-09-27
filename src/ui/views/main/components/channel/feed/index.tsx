@@ -148,18 +148,16 @@ interface IGotoBottomFooterProps {
 function GotoBottomFooter(props: IGotoBottomFooterProps) {
     let { LL } = useI18nContext();
 
-    return (
-        <Show when={props.use_mobile_view} fallback={
-            <div class="ln-feed-footer ui-text" onClick={() => props.onClick()}>
-                <span textContent={LL().main.VIEWING_OLDER()} />
-                <span id="goto-now">
-                    {LL().main.GOTO_NOW()} <VectorIcon id={Icons.ChevronDown} />
-                </span>
-            </div>
-        }>
-            <span id="goto-now" onClick={() => props.onClick()}>
-                <VectorIcon id={Icons.ChevronDown} />
+    return () => props.use_mobile_view ? (
+        <span id="goto-now" onClick={() => props.onClick()}>
+            <VectorIcon id={Icons.ChevronDown} />
+        </span>
+    ) : (
+        <div class="ln-feed-footer ui-text" onClick={() => props.onClick()}>
+            <span textContent={LL().main.VIEWING_OLDER()} />
+            <span id="goto-now">
+                {LL().main.GOTO_NOW()} <VectorIcon id={Icons.ChevronDown} />
             </span>
-        </Show>
+        </div>
     );
 }

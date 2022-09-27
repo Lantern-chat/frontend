@@ -22,15 +22,17 @@ export function UserText(props: UITextProps) {
     let prefs = lazy(() => usePrefs());
 
     let inner = () => split_user_text(props.text)
-        .map(n => typeof n === 'string' ? n : (prefs().UsePlatformEmojis()
-            ? <span class="emoji" draggable={false}
-                data-type="emoji" aria-label={/*@once*/n.e}
-                textContent={/*@once*/n.e} on:mouseover={on_hover}
-            />
-            : <img class="emoji" alt={/*@once*/n.e} draggable={false}
-                data-type="emoji" aria-label={/*@once*/n.e}
-                src={/*@once*/emoji_url(n.e)} on:mouseover={on_hover}
-            />));
+        .map(n => typeof n === 'string' ? n : (
+            prefs().UsePlatformEmojis() ? (
+                <span class="emoji" draggable={false}
+                    data-type="emoji" aria-label={/*@once*/n.e}
+                    textContent={/*@once*/n.e} on:mouseover={on_hover}
+                />) : (
+                <img class="emoji" alt={/*@once*/n.e} draggable={false}
+                    data-type="emoji" aria-label={/*@once*/n.e}
+                    src={/*@once*/emoji_url(n.e)} on:mouseover={on_hover}
+                />
+            )));
 
     return props.class ?
         (<span class={/*@once*/props.class}>{inner()}</span>)

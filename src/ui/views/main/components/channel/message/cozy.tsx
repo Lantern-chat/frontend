@@ -32,14 +32,14 @@ export function CozyMessage(props: IMessageProps) {
     return (
         <>
             <div class="ln-msg__side">
-                <Show when={props.msg.sg} fallback={
+                {() => props.msg.sg ? (
+                    // if first message in the group, give it the user avatar and title
+                    <MessageUserAvatar user={cached_member().user} name={cached_member().nick} party_id={props.msg.msg.party_id} />
+                ) : (
                     <div class="ln-msg__sidets" title={f().timestamp(props.msg.ts) as string}>
                         <span class="ui-text" textContent={f().time(props.msg.ts) as string} />
                     </div>
-                }>
-                    {/*if first message in the group, give it the user avatar and title*/}
-                    <MessageUserAvatar user={cached_member().user} name={cached_member().nick} party_id={props.msg.msg.party_id} />
-                </Show>
+                )}
             </div>
 
             <div class="ln-msg__message">
@@ -53,22 +53,20 @@ export function CozyMessage(props: IMessageProps) {
                         <span class="ln-msg__ts" title={f().timestamp(props.msg.ts) as string}>
                             <UICalendar time={props.msg.ts} />
 
-                            <Show when={props.msg.et}>
+                            {() => !!props.msg.et && (
                                 <span class="flags" title={LL().main.EDITED_ON({ ts: props.msg.ts })}>
                                     <VectorIcon id={Icons.Pencil} />
                                 </span>
-                            </Show>
+                            )}
 
-                            <Show when={props.msg.msg.flags & MessageFlags.Pinned}>
+                            {() => (props.msg.msg.flags & MessageFlags.Pinned) != 0 && (
                                 <span class="flags" title={LL().main.MESSAGE_PINNED()}>
                                     <VectorIcon id={Icons.PushPin} />
                                 </span>
-                            </Show>
+                            )}
                         </span>
 
-                        <Show when={user_is_bot(props.msg.msg.author)}>
-                            <BotLabel />
-                        </Show>
+                        {() => user_is_bot(props.msg.msg.author) && <BotLabel />}
                     </div>
                 </Show>
 

@@ -66,26 +66,26 @@ export function MsgAttachment(props: IMsgAttachmentProps) {
             <Show when={!errored() && !prefs.LowBandwidthMode()} fallback={<GenericAttachment {...props} />}>
                 <Switch fallback={<GenericAttachment {...props} />}>
                     <Match when={mime_prefix() === 'image' && !unknown() && !large()}>
-                        <Show when={prefs.ShowMediaMetadata()}><MediaMetadata {...props} /></Show>
+                        {() => prefs.ShowMediaMetadata() && <MediaMetadata {...props} />}
                         <ImageAttachment img={common()} src={src()} attachment={props.attachment} use_mobile_view={prefs.UseMobileView()} />
                     </Match>
 
                     <Match when={mime_prefix() === 'video' && !unknown()}>
-                        <Show when={prefs.ShowMediaMetadata()}><MediaMetadata {...props} /></Show>
+                        {() => prefs.ShowMediaMetadata() && <MediaMetadata {...props} />}
                         <VideoAttachment vid={common()} src={src()} attachment={props.attachment} use_mobile_view={prefs.UseMobileView()} />
                     </Match>
 
                     <Match when={mime_prefix() === 'audio'}>
-                        <Show when={prefs.ShowMediaMetadata()}><MediaMetadata {...props} /></Show>
+                        {() => prefs.ShowMediaMetadata() && <MediaMetadata {...props} />}
                         <AudioAttachment audio={common()} src={src()} attachment={props.attachment} />
                     </Match>
                 </Switch>
 
-                <Show when={spoilered()}>
+                {() => spoilered() && (
                     <span class="spoiler-label" title={LL().main.SPOILER_TITLE()}>
                         <UIText text={LL().main.SPOILER(0)} />
                     </span>
-                </Show>
+                )}
             </Show>
         </div>
     )

@@ -172,9 +172,7 @@ export function MsgTextarea(props: IMsgTextareaProps) {
                 maxlength={5000}
             />
 
-            <Show when={taprops.disabled}>
-                <span class="ln-msg-textarea__disable" />
-            </Show>
+            {() => taprops.disabled && <span class="ln-msg-textarea__disable" />}
         </div>
     );
 }

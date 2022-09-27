@@ -32,9 +32,9 @@ export function Toggle(props: IToggleProps) {
         <div class="ln-settings-toggle">
             <label for={props.for} class="ui-text">
                 {props.label}
-                <Show when={props.subtext}>
-                    <span class="ui-text subtext">{props.subtext}</span>
-                </Show>
+
+                {/* zero-sized if empty */}
+                <span class="ui-text subtext" textContent={props.subtext} />
             </label>
             <span class="spacer" />
             <input type="checkbox" name={props.for} id={props.for}

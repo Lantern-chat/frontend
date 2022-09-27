@@ -60,18 +60,16 @@ export function Emoji(props: IEmojiProps) {
         return;
     };
 
-    return (
-        <Show when={!use_system()} fallback={
-            <span class="emoji" classList={{ 'large': large() }} textContent={value()} ref={ref} title={title()} />
-        }>
-            <img loading="lazy" class="emoji" classList={{ 'large': large() }}
-                alt={loaded() ? value() : undefined}
-                aria-label={value()} draggable={false} data-type="emoji"
-                src={emoji_url(value())}
-                title={title()}
-                onLoad={() => setLoaded(true)}
-                onError={() => setErrored(true)} ref={ref as any} />
-        </Show>
+    return () => use_system() ? (
+        <span class="emoji" classList={{ 'large': large() }} textContent={value()} ref={ref} title={title()} />
+    ) : (
+        <img loading="lazy" class="emoji" classList={{ 'large': large() }}
+            alt={loaded() ? value() : undefined}
+            aria-label={value()} draggable={false} data-type="emoji"
+            src={emoji_url(value())}
+            title={title()}
+            onLoad={() => setLoaded(true)}
+            onError={() => setErrored(true)} ref={ref as any} />
     );
 }
 

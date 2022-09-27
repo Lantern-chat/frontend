@@ -55,7 +55,7 @@ export function UserAvatar(props: IUserAvatarProps) {
         return { url, backgroundColor };
     });
 
-    // in the <Show> below, switching to the fallback would require recomputing this anyway,
+    // in the <Show>/branch below, switching to the fallback would require recomputing this anyway,
     // so do not memoize it
     let status = () => {
         switch(presence().status) {
@@ -79,12 +79,11 @@ export function UserAvatar(props: IUserAvatarProps) {
             {props.cover}
 
             <div class="ln-user-status" title={status()[0]}>
-                <Show
-                    fallback={<span class={status()[1]} />}
-                    when={presence().status == PresenceStatus.Online && presence().is_mobile}
-                >
+                {(presence().status == PresenceStatus.Online && presence().is_mobile) ? (
                     <VectorIcon id={Icons.MobilePhone} />
-                </Show>
+                ) : (
+                    <span class={status()[1]} />
+                )}
             </div>
         </div>
     );

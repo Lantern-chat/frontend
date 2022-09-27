@@ -17,6 +17,7 @@ import { ActionWidget } from "./actions";
 
 export function Message(props: { msg: IMessageState }) {
     let prefs = usePrefs();
+    let [showActions, setShowActions] = createSignal(false);
 
     let [warn, setWarn] = createSignal(false),
         [pos, main_click_props] = createSimplePositionedContextMenu({
@@ -31,9 +32,7 @@ export function Message(props: { msg: IMessageState }) {
 
     return (
         <>
-            <Show when={prefs.GroupLines() && props.msg.sg}>
-                <hr />
-            </Show>
+            {() => prefs.GroupLines() && props.msg.sg && <hr />}
 
             <li
                 id={props.msg.msg.id}
@@ -44,6 +43,7 @@ export function Message(props: { msg: IMessageState }) {
                     "warning": !!pos() && warn(),
                     "sg": props.msg.sg,
                 }}
+                onMouseEnter={() => setShowActions(true)}
                 {...main_click_props}
             >
                 <div class="ln-msg__wrapper" role="article">
@@ -57,7 +57,7 @@ export function Message(props: { msg: IMessageState }) {
                         )}
                     </Show>
 
-                    <ActionWidget msg={props.msg.msg} />
+                    {() => showActions() && <ActionWidget msg={props.msg.msg} />}
                 </div>
             </li>
         </>
