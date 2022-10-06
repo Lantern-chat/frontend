@@ -51,13 +51,13 @@
             color: $lnx-primary-text-color;
         }
 
-        .ln-enhanced-contrast & {
-            filter: drop-shadow(0 0 2px black);
-        }
+        // .ln-enhanced-contrast & {
+        //     filter: drop-shadow(0 0 2px black);
+        // }
 
-        .ln-light-theme.ln-enhanced-contrast & {
-            filter: drop-shadow(0 0 1px white);
-        }
+        // .ln-light-theme.ln-enhanced-contrast & {
+        //     filter: drop-shadow(0 0 1px white);
+        // }
     }
 
     &__spacer {

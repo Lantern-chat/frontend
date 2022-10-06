@@ -19,17 +19,14 @@
         height: 1em;
     }
 
-    filter: #{"invert(var(--dark-emoji, 0))"};
+    // try to improve drop-shadow performance
+    // https://forum.boardgamearena.com/viewtopic.php?t=20663
+    isolation: isolate;
+    will-change: filter;
+    contain: paint;
 
+    filter: #{"invert(var(--dark-emoji, 0))"} drop-shadow(0 0 4px rgba(0, 0, 0, 0.2));
     .ln-light-theme & {
-        filter: #{"invert(var(--light-emoji, 0))"};
-    }
-
-    .ln-enhanced-contrast & {
-        filter: #{"invert(var(--dark-emoji, 0))"} drop-shadow(0 0 4px rgba(0, 0, 0, 0.2));
-    }
-
-    .ln-enhanced-contrast.ln-light-theme & {
         filter: #{"invert(var(--light-emoji, 0))"} drop-shadow(0 0 4px rgba(0, 0, 0, 0.2));
     }
 }

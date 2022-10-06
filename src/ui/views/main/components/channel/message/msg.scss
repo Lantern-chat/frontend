@@ -172,13 +172,13 @@
 
         color: white;
 
-        .ln-enhanced-contrast & {
-            filter: drop-shadow(0 0 2px black);
-        }
+        // .ln-enhanced-contrast & {
+        //     filter: drop-shadow(0 0 2px black);
+        // }
 
-        .ln-light-theme.ln-enhanced-contrast & {
-            filter: drop-shadow(0 0 2px white);
-        }
+        // .ln-light-theme.ln-enhanced-contrast & {
+        //     filter: drop-shadow(0 0 2px white);
+        // }
 
         .ln-light-theme & {
             color: black;
