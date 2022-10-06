@@ -104,27 +104,29 @@ export function MemberList() {
 
     return (
         <div class="ln-member-list ln-scroll-y ln-scroll-fixed">
-            <Show when={state.party}>
-                <For each={grouped_members().hoisted}>
-                    {hoisted => <RoleMemberList
-                        role={hoisted.role.name}
+            {() => state.party && (
+                <>
+                    <For each={grouped_members().hoisted}>
+                        {hoisted => <RoleMemberList
+                            role={hoisted.role.name}
+                            party_id={state.party!.party.id}
+                            members={hoisted.members}
+                            owner={state.party!.party.owner} />}
+                    </For>
+
+                    <RoleMemberList
+                        role={LL().main.ONLINE()}
                         party_id={state.party!.party.id}
-                        members={hoisted.members}
-                        owner={state.party!.party.owner} />}
-                </For>
+                        members={grouped_members().online}
+                        owner={state.party!.party.owner} />
 
-                <RoleMemberList
-                    role={LL().main.ONLINE()}
-                    party_id={state.party!.party.id}
-                    members={grouped_members().online}
-                    owner={state.party!.party.owner} />
-
-                <RoleMemberList
-                    role={LL().main.OFFLINE()}
-                    party_id={state.party!.party.id}
-                    members={grouped_members().offline}
-                    owner={state.party!.party.owner} />
-            </Show>
+                    <RoleMemberList
+                        role={LL().main.OFFLINE()}
+                        party_id={state.party!.party.id}
+                        members={grouped_members().offline}
+                        owner={state.party!.party.owner} />
+                </>
+            )}
         </div>
     )
 }

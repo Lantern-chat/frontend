@@ -184,7 +184,7 @@ function ImageAttachment(props: IImageAttachmentProps) {
             <img {...props.img}
                 ref={img}
                 src={src()}
-                onLoad={on_load}
+                on:load={on_load}
                 onLoadedMetadata={on_load}
                 style={style()}
             />
@@ -193,7 +193,7 @@ function ImageAttachment(props: IImageAttachmentProps) {
                 src={src()}
                 which={which as any}
                 img={img}
-                onLoad={on_load}
+                on:load={on_load}
                 onLoadedMetadata={on_load}
                 style={style()} />
             }
@@ -218,7 +218,7 @@ function VideoAttachment(props: IVideoAttachmentProps) {
     return (
         <video {...props.vid} src={src()} ref={ref}
             style={style()} muted={usePrefs().MuteMedia()}
-            onLoadedMetadata={on_load} onLoad={on_load}
+            onLoadedMetadata={on_load} on:load={on_load}
             preload="metadata" controls
         />
     )

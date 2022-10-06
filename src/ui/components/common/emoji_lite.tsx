@@ -22,11 +22,14 @@ export function EmojiLite(props: IEmojiLiteProps) {
 
     let large = () => props.large && !prefs.CompactView();
 
-    return () => use_system() ? <span class="emoji" classList={{ 'large': large() }} textContent={value()} /> : (
-        <img loading="lazy" class="emoji" classList={{ 'large': large() }}
-            alt={value()} aria-label={value()}
-            draggable={false} data-type="emoji"
-            src={emoji_url(value())}
-            onError={() => setErrored(true)} />
-    );
+    return () => use_system() ?
+        (
+            <span class="emoji" classList={{ 'large': large() }} textContent={value()} />
+        ) : (
+            <img loading="lazy" class="emoji" classList={{ 'large': large() }}
+                alt={value()} aria-label={value()}
+                draggable={false} data-type="emoji"
+                src={emoji_url(value())}
+                on:error={() => setErrored(true)} />
+        );
 }

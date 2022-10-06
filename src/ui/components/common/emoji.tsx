@@ -47,7 +47,6 @@ export function Emoji(props: IEmojiProps) {
     }
 
     let [errored, setErrored] = createSignal(false);
-    let [loaded, setLoaded] = createSignal(false);
 
     let use_system = () => errored() || !EMOJI_RE.test(value()) || prefs.UsePlatformEmojis();
 
@@ -64,12 +63,11 @@ export function Emoji(props: IEmojiProps) {
         <span class="emoji" classList={{ 'large': large() }} textContent={value()} ref={ref} title={title()} />
     ) : (
         <img loading="lazy" class="emoji" classList={{ 'large': large() }}
-            alt={loaded() ? value() : undefined}
             aria-label={value()} draggable={false} data-type="emoji"
             src={emoji_url(value())}
-            title={title()}
-            onLoad={() => setLoaded(true)}
-            onError={() => setErrored(true)} ref={ref as any} />
+            on:load={(e) => { (e.target as HTMLImageElement).alt = value(); }}
+            on:error={() => setErrored(true)}
+            title={title()} ref={ref as any} />
     );
 }
 

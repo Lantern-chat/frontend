@@ -56,7 +56,7 @@ export function MessageBox() {
 
     createEffect(() => {
         // focus textarea on desktop when active room changes
-        if(!IS_MOBILE && state.active_room) { tac()!.focus(); }
+        if(!IS_MOBILE && state.active_room) { tac()?.focus(); }
     });
 
     // Load up any available draft, set the textarea to that,
@@ -75,15 +75,15 @@ export function MessageBox() {
 
             skip = true; // skip the change event this will emit
             untrack(() => {
-                tac()!.setValue(store.state.chat.rooms[state.active_room!]?.draft || "");
-                fc()!.reset();
+                tac()?.setValue(store.state.chat.rooms[state.active_room!]?.draft || "");
+                fc()?.reset();
             });
         }
     });
 
     useMainHotkey(Hotkey.FocusTextArea, () => {
         if(ta.current && state.active_room) {
-            tac()!.focus(); setShowFocusBorder(true);
+            tac()?.focus(); setShowFocusBorder(true);
         }
     });
 
@@ -95,7 +95,7 @@ export function MessageBox() {
         if(state.active_room && !is_empty()) {
             let attachments = await fc()!.upload();
             dispatch(sendMessage(state.active_room, value().trim(), attachments as any));
-            tac()!.setValue("");
+            tac()?.setValue("");
             ts = 0; // reset typing timestamp
         }
     };
@@ -129,7 +129,7 @@ export function MessageBox() {
             do_send();
 
             // refocus if lost
-            if(f) { tac()!.focus(); }
+            if(f) { tac()?.focus(); }
         }
     };
 
@@ -165,12 +165,12 @@ export function MessageBox() {
     let on_click_focus = (e: MouseEvent) => {
         if(e.defaultPrevented) return;
 
-        eat(e); if(state.active_room) { tac()!.focus(); }
+        eat(e); if(state.active_room) { tac()?.focus(); }
     };
 
     let on_pick_emote = (e: string, shortcode: string) => {
-        tac()!.append(shortcode || e);
-        tac()!.focus();
+        tac()?.append(shortcode || e);
+        tac()?.focus();
     };
 
     let debug_node; if(__DEV__) {
@@ -189,9 +189,7 @@ export function MessageBox() {
                 <UploadPanel onChange={(c, s) => setFiles([c, s])} fc={setFC} />
 
                 <div class="ln-typing ln-typing__top">
-                    <Show when={prefs.UseMobileView()}>
-                        <UsersTyping />
-                    </Show>
+                    {() => prefs.UseMobileView() && <UsersTyping />}
                 </div>
 
                 <div on:click={on_click_focus} class="ln-msg-box">
@@ -221,16 +219,12 @@ export function MessageBox() {
                         <VectorIcon id={Icons.Send} />
                     </div>
 
-                    <Show when={!state.active_room}>
-                        <span class="ln-msg-box__disable" />
-                    </Show>
+                    {() => !state.active_room && <span class="ln-msg-box__disable" />}
                 </div>
             </div>
 
             <div class="ln-typing ln-typing__bottom">
-                <Show when={!prefs.UseMobileView()}>
-                    <UsersTyping />
-                </Show>
+                {() => !prefs.UseMobileView() && <UsersTyping />}
 
                 <span class="ui-text" id="file-upload-meta"
                     textContent={f().bytes(files()[1])}

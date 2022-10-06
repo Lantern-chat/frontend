@@ -85,9 +85,9 @@ export function MessageFeed() {
 
     return (
         <div class="ln-msg-list__flex-container">
-            <Show when={has_timeline()}>
+            {/* <Show when={has_timeline()}>
                 <Timeline direction={0} position={0} />
-            </Show>
+            </Show> */}
 
             <Show when={__DEV__ && state.room?.locked}>
                 Room is Loading
@@ -106,9 +106,9 @@ export function MessageFeed() {
             >
                 <InfiniteScrollContext.Provider value={ifs as any}>
                     <ul class="ln-msg-list" id="ln-msg-list" >
-                        <Show when={state.room?.fully_loaded}>
+                        {() => state.room?.fully_loaded && (
                             <TopOfChannel name={state.room!.room.name} />
-                        </Show>
+                        )}
 
                         <For each={feed()}>
                             {msg => <Message msg={msg} />}

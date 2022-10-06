@@ -96,7 +96,7 @@ export function createInfiniteScrollIntersectionTrigger<T extends HTMLElement>(
                 do_batch = false, // only batch if not visible on observer "mount"
                 cleanup = () => {
                     o.o?.disconnect();
-                    delete o.o;
+                    o.o = undefined;
                 };
 
             o.o = new IntersectionObserver(entries => {

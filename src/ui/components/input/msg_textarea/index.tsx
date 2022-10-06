@@ -1,4 +1,4 @@
-import { createMemo, createSignal, JSX, Show, splitProps } from 'solid-js';
+import { createMemo, createSignal, JSX, Show, splitProps, untrack } from 'solid-js';
 
 import { TextareaAutosize, TextareaHeightChangeMeta } from 'ui/components/input/textarea';
 
@@ -7,7 +7,7 @@ import { useI18nContext } from 'ui/i18n/i18n-solid';
 import type { SetController } from 'ui/hooks/createController';
 import { createShallowMemo } from 'ui/hooks/createShallowMemo';
 import { parseHotkey, Hotkey } from "ui/hooks/useMain";
-import { AnyRef, composeRefs } from 'ui/hooks/createRef';
+import { Ref } from 'ui/hooks/createRef';
 
 export interface IMsgTextareaProps {
     disabled?: boolean,
@@ -21,7 +21,7 @@ export interface IMsgTextareaProps {
     onContextMenu(e: MouseEvent): void;
     onSelectionChange?(ta: HTMLTextAreaElement, in_code: boolean): void;
 
-    ta?: AnyRef<HTMLTextAreaElement>;
+    ta: Ref<HTMLTextAreaElement | undefined>;
     tac?: SetController<IMsgTextareaController>,
 }
 
@@ -33,30 +33,32 @@ export interface IMsgTextareaController {
 
 import "./textarea.scss";
 export function MsgTextarea(props: IMsgTextareaProps) {
-    let ta = composeRefs(props.ta);
+    let ta = props.ta;
 
     let { LL } = useI18nContext();
 
-    let [local, taprops] = splitProps(props, ['mobile', 'spellcheck', 'onChange', 'onKeyDown', 'onSelectionChange', 'tac']);
+    let [local, taprops] = splitProps(props, ['mobile', 'spellcheck', 'onChange', 'onKeyDown', 'onSelectionChange', 'tac', 'ta']);
 
     let setValue = (value: string, change: boolean = true) => {
         if(ta.current) {
             ta.current.value = value;
 
             // triggers a 'change' event that in-turn triggers a resize
-            change && (ta.current.dispatchEvent(new Event('change', { bubbles: false })), props.onChange(value));
+            //change && (ta.current.dispatchEvent(new Event('change', { bubbles: false })), props.onChange(value));
         }
     };
 
     local.tac?.({
-        setValue,
+        setValue: (value, change) => untrack(() => setValue(value, change)),
         focus() {
-            ta.current?.focus();
+            untrack(() => ta.current?.focus());
         },
         append(value: string) {
-            if(ta.current) {
-                setValue(ta.current.value + value);
-            }
+            untrack(() => {
+                if(ta.current) {
+                    setValue(ta.current.value + value);
+                }
+            })
         }
     });
 

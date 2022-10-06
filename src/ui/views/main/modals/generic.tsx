@@ -5,10 +5,6 @@ import { usePrefs } from "state/contexts/prefs";
 import { VectorIcon } from "ui/components/common/icon";
 import { FullscreenModal, Modal } from "ui/components/modal";
 
-// NOTE: USED IN DIRECTIVE BELOW
-import { clickEater } from "ui/hooks/useMain";
-false && clickEater;
-
 export interface GenericModalProps {
     children?: JSX.Element,
     onClose?: () => void,
@@ -42,7 +38,7 @@ export function GenericModal(props: GenericModalProps) {
 
     return (
         <FullscreenModal onClick={on_close} class="ln-generic-modal" classList={{ 'closing': closing() }}>
-            <div class="ln-generic-modal__inner" use:clickEater={["click"]}>
+            <div class="ln-generic-modal__inner">
                 <div class="ln-generic-modal__close" onClick={on_close}>
                     <VectorIcon id={Icons.Close} />
                 </div>

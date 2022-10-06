@@ -50,10 +50,10 @@ export function Avatar(props: IAvatarProps) {
                 {/* <div class="ln-avatar__skel" /> */}
 
                 {() => props.url ? (
-                    <img src={props.url!}
+                    <img src={props.url}
                         loading="lazy"
                         class="ln-avatar__image"
-                        // onLoad={on_load_img}
+                        // on:load={on_load_img}
                         alt={props.username}
                         style={{ 'border-radius': br(props.rounded) }}
                     />

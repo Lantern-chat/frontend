@@ -4,23 +4,14 @@ import { createTrigger } from "./createTrigger";
 export type SetController<T> = (c: T | null) => void;
 
 export function createController<T>(): [get: Accessor<T | null>, set: (c: T) => void] {
-    let storage: { c: null | T } = { c: null };
-    let [track, dirty] = createTrigger();
+    let storage: { c: null | T } = { c: null },
+        [track, dirty] = createTrigger(),
+        counter = 0;
 
-    let get = createMemo(() => {
-        track();
-        return storage.c;
-    });
-
-    let counter = 0, set = (value: T) => {
-        storage.c = value;
-        dirty();
-
+    return [() => (track(), storage.c), (value: T) => {
         // same trick as `createRef`, only trigger cleanup on last usage
         counter++; onCleanup(() => --counter || (storage.c = null, dirty()));
 
-        return value;
-    };
-
-    return [get, set];
+        return (storage.c = value, dirty(), value);
+    }];
 }

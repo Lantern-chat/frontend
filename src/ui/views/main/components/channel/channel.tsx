@@ -27,19 +27,19 @@ export function Channel() {
                 <ChannelHeader />
 
                 {/*mobile doesn't need to wrap anything or show the user-list*/}
-                <Show when={!state.use_mobile_view} fallback={<Feed />}>
+                {() => state.use_mobile_view ? (<Feed />) : (
                     <div class="ln-channel__wrapper">
                         <Feed />
 
-                        <Show when={state.show_user_list}>
+                        {() => state.show_user_list && (
                             <div class="ln-channel__members">
                                 <MemberList />
                             </div>
-                        </Show>
+                        )}
                     </div>
-                </Show>
+                )}
             </ErrorBoundary>
-        </div>
+        </div >
     );
 }
 
@@ -52,9 +52,7 @@ function Feed() {
                 {__DEV__ && <DevBanner />}
             </div>
 
-            <Show when={active_room()} fallback={<div class="ln-center-standalone">Loading...</div>}>
-                <MessageFeed />
-            </Show>
+            {() => !!active_room() ? <MessageFeed /> : <div class="ln-center-standalone">Loading...</div>}
 
             <MessageBox />
         </div>

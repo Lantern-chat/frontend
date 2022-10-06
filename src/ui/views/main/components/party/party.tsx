@@ -132,22 +132,23 @@ export function Party() {
 
     return (
         <div class="ln-party" ref={party_ref}>
-            <Show when={showLeft()}>
+            {() => showLeft() && (
                 <div
                     class="ln-party__sidebar"
                     classList={{ "ln-party__sidebar--closed": state.use_mobile_view && state.show_panel == Panel.Main }}
                 >
-                    <Show
-                        when={state.active_party != '@me'}
-                        fallback={<HomeSideBar />}
-                    >
-                        <PartyHeader />
-                        <ChannelList />
-                    </Show>
+                    {state.active_party != '@me' ? (
+                        <>
+                            <PartyHeader />
+                            <ChannelList />
+                        </>
+                    ) : (
+                        <HomeSideBar />
+                    )}
 
                     <PartyFooter />
                 </div>
-            </Show>
+            )}
 
             <div
                 class="ln-party__channel"
@@ -157,26 +158,25 @@ export function Party() {
                 }}
             >
                 {/*NOTE: This is clear element that covers the chat when on the side */}
-                <Show when={state.use_mobile_view && state.show_panel != Panel.Main}>
+                {() => state.use_mobile_view && state.show_panel != Panel.Main && (
                     <div class="ln-channel__cover" onClick={() => dispatch({ type: Type.WINDOW_SET_PANEL, panel: Panel.Main })} />
-                </Show>
+                )}
 
                 {/*NOTE: active_party may be null */}
-                <Show when={state.active_party && state.active_party != '@me'} fallback="Test">
-                    <Channel />
-                </Show>
+                {() => state.active_party && state.active_party != '@me' && <Channel />}
             </div>
 
-            <Show when={showRight()}>
+            {() => showRight() && (
                 <div
                     class="ln-party__user-list"
                     classList={{ "ln-party__user-list--closed": state.show_panel == Panel.Main }}
                 >
-                    <Show when={state.active_party && state.active_party != '@me'} fallback="Something">
+                    {/* TODO: Put something else here instead of member list on home */}
+                    {state.active_party && state.active_party != '@me' && (
                         <MemberList />
-                    </Show>
+                    )}
                 </div>
-            </Show>
+            )}
         </div>
     );
 }
