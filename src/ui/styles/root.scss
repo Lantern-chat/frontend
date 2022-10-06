@@ -190,6 +190,7 @@ a {
     font-size: calc(1em / var(--ln-ui-font-size-adjust, 1));
     font-family: $lnx-ui-font-family;
     tab-size: 4;
+    text-indent: 0;
 }
 
 .ln-theme-transition {

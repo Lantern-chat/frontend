@@ -64,15 +64,18 @@
             filter: drop-shadow(0 0 0.25em rgba(0, 0, 0, 0.25));
         }
 
-        opacity: 0;
+        // on non-iOS browsers
+        @supports not (-webkit-touch-callout: none) {
+            opacity: 0;
 
-        .ln-msg__outer:hover & {
-            opacity: 0.25;
+            .ln-reaction__wrapper & {
+                opacity: 0.25;
 
-            &:hover,
-            &:active,
-            &.active {
-                opacity: 0.75;
+                &:hover,
+                &:active,
+                &.active {
+                    opacity: 0.75;
+                }
             }
         }
 

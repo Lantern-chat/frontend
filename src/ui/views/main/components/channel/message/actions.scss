@@ -1,26 +1,25 @@
 @import "lib/variables";
 
-.ln-msg__outer:hover .ln-action-widget {
-    opacity: 0.25;
-}
-
-.ln-action-widget.ln-action-widget {
-    &:hover,
-    &:active,
-    &.active {
-        opacity: 1;
-
-        background-color: $lnx-primary-surface-color;
-    }
-}
-
 .ln-action-widget {
     position: absolute;
     right: 0;
     opacity: 0;
+    z-index: 1;
 
     border-radius: 0.5em;
     overflow: hidden;
+
+    .ln-msg__outer:hover & {
+        opacity: 0.25;
+
+        &:hover,
+        &:active,
+        &.active {
+            opacity: 1;
+
+            background-color: $lnx-primary-surface-color;
+        }
+    }
 
     > span {
         padding: 0.25em;
