@@ -293,7 +293,7 @@ function UploadPreview(props: IUploadPreviewProps) {
                 classList={{ 'spoilered': props.meta.spoiler }}
                 title={title()}
             >
-                <Show when={!errored()} fallback={icon}>
+                {/* <Show when={!errored()} fallback={icon}>
                     <Switch fallback={icon}>
                         <Match when={mime_prefix() === 'image'}>
                             <img {...common} src={src()} />
@@ -303,7 +303,16 @@ function UploadPreview(props: IUploadPreviewProps) {
                             <video {...common} src={src() + "#t=0.0001"} controls={false} muted />
                         </Match>
                     </Switch>
-                </Show>
+                </Show> */}
+
+                {() => {
+                    switch(!errored() && mime_prefix()) {
+                        case 'image': return <img {...common} src={src()} />;
+                        case 'video': return <video {...common} src={src() + "#t=0.0001"} controls={false} muted
+                            on:mouseenter={on_video_hover} on:mouseleave={on_video_out} />;
+                        default: return icon();
+                    }
+                }}
             </div>
 
             <span class="ui-text" textContent={file().name} title={file().name} />
@@ -314,6 +323,15 @@ function UploadPreview(props: IUploadPreviewProps) {
             </span>
         </li>
     )
+}
+
+function on_video_hover(e: MouseEvent) {
+    (e.target as HTMLVideoElement).play();
+}
+
+function on_video_out(e: MouseEvent) {
+    (e.target as HTMLVideoElement).pause();
+    (e.target as HTMLVideoElement).currentTime = 0;
 }
 
 interface IUploadDropperProps {

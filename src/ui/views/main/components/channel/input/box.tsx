@@ -23,6 +23,7 @@ import { UIText } from "ui/components/common/ui-text";
 import { VectorIcon } from "ui/components/common/icon";
 import { IMsgTextareaController, MsgTextarea } from "ui/components/input/msg_textarea";
 import { EmotePicker } from "../common/emote_picker";
+import { UserText } from "ui/components/common/ui-text-user";
 import { IFileUploadController, UploadPanel } from "./upload";
 
 import { Icons } from "lantern-icons";
@@ -237,9 +238,7 @@ export function MessageBox() {
 }
 
 function UsersTyping() {
-    let { LL } = useI18nContext();
-
-    let formatted = useRootSelector(state => {
+    let { LL } = useI18nContext(), formatted = useRootSelector((state): string => {
         let active_party = activeParty(state),
             active_room = activeRoom(state);
 
@@ -280,12 +279,8 @@ function UsersTyping() {
             }
         }
 
-        return;
+        return '';
     });
 
-    return (
-        <Show when={formatted()}>
-            <UIText text={formatted()} />
-        </Show>
-    )
+    return <UserText class="ui-text" text={formatted()} />;
 }
