@@ -1,4 +1,4 @@
-import { createSignal, onMount, onCleanup, createEffect, untrack, batch } from "solid-js";
+import { createSignal, onMount, onCleanup, batch } from "solid-js";
 
 import type { SignalOptions } from "solid-js/types/reactive/signal";
 
@@ -7,6 +7,11 @@ export type Refable = HTMLElement | undefined;
 export interface Ref<T extends Refable> {
     (value: T): void;
     get current(): T;
+}
+
+interface FullRef<T extends Refable> extends Ref<T> {
+    set _override(value: T);
+    _reset(): void;
 }
 
 /**
@@ -20,19 +25,18 @@ export interface Ref<T extends Refable> {
 export function createRef<T extends Refable>(): Ref<T | undefined>;
 export function createRef<T extends Refable>(initial: T, options?: SignalOptions<T>): Ref<T>;
 export function createRef<T extends Refable>(initial?: T, options?: SignalOptions<T>): Ref<T | undefined> {
-    let [get, set] = createSignal<T | undefined>(initial, options);
-
-    let counter = 0, ref = function(value: T) {
+    let [get, set] = createSignal<T | undefined>(initial, options), ref = function(value: T) {
         set(value as any);
-
-        // on each use of `ref`, increment the counter and setup the cleanup hook
-        // only when all cleanup hooks have run should it reset the ref.
-        // This helps to avoid cases where the ref is set multiple times, intentionally
-        // overwritten, and we don't want it reverting in the middle of that.
-        counter++; onCleanup(() => --counter || set(initial as any));
+        onCleanup(() => set(initial as any));
     } as Ref<T>;
 
-    return Object.defineProperty(ref, 'current', { get, set, enumerable: true });
+    return Object.defineProperties(ref, {
+        'current': { get, enumerable: true, },
+        '_override': { set },
+        '_reset': { value: () => { set(initial as any); } }
+    });
+
+    //return Object.defineProperty(ref, 'current', { get, enumerable: true });
 }
 
 export type AnyRef<T extends Refable> = Ref<T> | ((value: T) => void);
@@ -44,61 +48,54 @@ export type AnyRef<T extends Refable> = Ref<T> | ((value: T) => void);
  * @param maybe_refs
  * @returns
  */
-export function composeRefs<T extends Refable>(any_own: Ref<T>, ...maybe_refs: Array<AnyRef<T> | null | undefined>): Ref<T>
-export function composeRefs<T extends Refable>(any_own: AnyRef<T> | undefined | null, ...maybe_refs: Array<AnyRef<T> | null | undefined>): Ref<T | undefined>
-export function composeRefs<T extends Refable>(any_own: AnyRef<T> | undefined | null, ...maybe_refs: Array<AnyRef<T> | null | undefined>): Ref<T | undefined> {
-    let own: Ref<T | undefined>;
+export function composeRefs<T extends Refable>(...maybe_refs: Array<AnyRef<T> | null | undefined>): Ref<T> {
+    let simple: Array<AnyRef<T>> = [], complex: Array<FullRef<T>> = [];
 
-    if(typeof any_own === 'function' && 'current' in any_own) { own = any_own; }
-    else { own = createRef<T>(); maybe_refs.unshift(any_own); }
-
-    // preprocess refs
-    let refs: Array<AnyRef<T>> = [];
     for(let ref of maybe_refs) {
-        if(ref) {
-            if('current' in ref) {
-                refs.push(value => (ref as any).current = value); // cheating
+        if(typeof ref === 'function') {
+            if('_override' in ref) {
+                complex.push(ref as FullRef<T>);
             } else {
-                refs.push(value => untrack(() => ref!(value)));
+                simple.push(ref);
             }
         }
     }
 
-    if(refs.length) {
-        // this "composes" refs by triggering updates when `own` updates,
-        // then just overwriting the old values. This makes external ref updates
-        // entirely dependent on `own`'s usage scope, without too much complication.
-        createEffect(() => {
-            let value = own.current;
-
-            batch(() => {
-                for(let ref of refs) {
-                    ref(value as T);
-                }
-            });
-        });
+    if(complex.length == 1 && simple.length == 0) {
+        return complex[0];
     }
 
-    return own;
-}
+    let own = complex.length ? complex[0] : createRef<T>(),
+        override_complex = (value: T) => batch(() => {
+            for(let ref of complex) {
+                ref._override = value;
+            }
+        }),
+        reset_complex = () => batch(() => {
+            for(let ref of complex) {
+                ref._reset();
+            }
+        });
 
-/**
- * Variant of `onMount` that takes a `Ref<T>`, and will invoke the callback
- * as soon as that ref has been set.
- *
- * @param ref
- * @param cb
- */
-export function onMountRef<T extends Refable>(ref: Ref<T>, cb: (t: T) => void) {
-    onMount(() => {
-        if(ref.current) {
-            cb(ref.current);
-        } else {
-            createEffect(() => {
-                if(ref.current) {
-                    untrack(() => cb(ref.current));
-                }
+    let ref = function(value: T) {
+        if(complex.length) {
+            __DEV__ && console.log("Setting complex refs");
+            onCleanup(() => {
+                __DEV__ && console.log("Resetting complex refs");
+                reset_complex();
             });
+
+            override_complex(value);
         }
+
+        for(let ref of simple) {
+            ref(value);
+        }
+    } as Ref<T>;
+
+    return Object.defineProperties(ref, {
+        'current': { enumerable: true, get: () => own.current },
+        '_override': { set: override_complex },
+        '_reset': { value: reset_complex }
     });
 }
