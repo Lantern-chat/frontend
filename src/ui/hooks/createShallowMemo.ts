@@ -5,7 +5,7 @@ export type CompareHint<T> =
     | T extends Array<any> ? 'array' : never
     | T extends object ? 'object' : never;
 
-export function createShallowMemo<T>(value: Accessor<T>, hint?: CompareHint<T>): Accessor<T> {
+export function createShallowMemo<T>(value: Accessor<T>, hint: CompareHint<T> | null): Accessor<T> {
     return createMemo(value, undefined, {
         equals: hint == 'array' ? shallowEqualArrays as any :
             hint == 'object' ? shallowEqualObjects : (prev, curr) => {

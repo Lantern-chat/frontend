@@ -154,7 +154,7 @@ export function MsgTextarea(props: IMsgTextareaProps) {
             return { 'overflow-y': 'hidden' } as JSX.CSSProperties;
         }
         return;
-    });
+    }, 'object');
 
     // https://github.com/buildo/react-autosize-textarea/issues/52 but same thing with the Solid version
     return (
