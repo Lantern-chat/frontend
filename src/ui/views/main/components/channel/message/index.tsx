@@ -30,11 +30,17 @@ export function Message(props: { msg: IMessageState }) {
         System = SystemMessage;
     }
 
+    let outer: HTMLLIElement | undefined, on_mouse_enter = () => {
+        outer!.removeEventListener('mouseenter', on_mouse_enter);
+        setShowActions(true);
+    };
+
     return (
         <>
             {() => prefs.GroupLines() && props.msg.sg && <hr />}
 
             <li
+                ref={outer}
                 id={props.msg.msg.id}
                 data-author={props.msg.msg.author.id}
                 class="ln-msg__outer"
@@ -43,7 +49,7 @@ export function Message(props: { msg: IMessageState }) {
                     "warning": !!pos() && warn(),
                     "sg": props.msg.sg,
                 }}
-                onMouseEnter={() => setShowActions(true)}
+                on:mouseenter={on_mouse_enter}
                 {...main_click_props}
             >
                 <div class="ln-msg__wrapper" role="article">
