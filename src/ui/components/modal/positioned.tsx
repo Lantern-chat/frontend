@@ -93,11 +93,9 @@ export function PositionedModal(props: IPositionedModalProps) {
     });
 
     return (
-        <Modal>
-            <div {...computed().wrapper_props} {...eaten}>
-                <div style={computed().style}>
-                    {props.children}
-                </div>
+        <Modal {...computed().wrapper_props} {...eaten}>
+            <div style={computed().style}>
+                {props.children}
             </div>
         </Modal>
     );

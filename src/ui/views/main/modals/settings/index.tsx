@@ -38,12 +38,10 @@ export function SettingsModal() {
     });
 
     return (
-        <Modal>
-            <div class={"ln-modal ln-settings ln-settings--" + (closing() ? 'closing' : 'opened')}>
-                <Suspense fallback={Fallback}>
-                    <SettingsTabs do_return={do_return} />
-                </Suspense>
-            </div>
+        <Modal class={"ln-modal ln-settings ln-settings--" + (closing() ? 'closing' : 'opened')}>
+            <Suspense fallback={Fallback}>
+                <SettingsTabs do_return={do_return} />
+            </Suspense>
         </Modal>
     )
 }
