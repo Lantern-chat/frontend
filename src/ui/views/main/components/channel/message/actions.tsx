@@ -16,7 +16,7 @@ import "./actions.scss";
 export function ActionWidget(props: { msg: Message }) {
     let main = useContext(MainContext);
 
-    let [show, { "on:click": on_react_click, ...main_click_props }, setShow] = createSimpleToggleOnClick(undefined, main);
+    let [show, { "onClick": on_react_click, ...main_click_props }, setShow] = createSimpleToggleOnClick(undefined, main);
 
     let on_click = (e: MouseEvent) => {
         let t = e.target as HTMLElement | null;

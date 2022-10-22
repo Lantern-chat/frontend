@@ -14,7 +14,7 @@ export function Spoiler(props: { children: JSXElement }) {
 
     return (
         <span
-            on:click={on_spoiler_click}
+            onClick={on_spoiler_click}
             class="spoiler hidden"
             title={LL().main.SPOILER_TITLE()}
         >

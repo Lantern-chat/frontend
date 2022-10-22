@@ -3,8 +3,7 @@ import { JSX } from "solid-js";
 declare module "solid-js" {
     namespace JSX {
         interface Directives {
-            clickEater: Array<"click" | "contextmenu" | "touch">;
-            eat: Array<keyof HTMLElementEventMap>;
+            cleanedEvent: Array<[event: string, listener: (e: Event) => void]>;
         }
     }
 }

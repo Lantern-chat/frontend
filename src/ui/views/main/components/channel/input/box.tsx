@@ -204,17 +204,17 @@ export function MessageBox() {
                         onKeyDown={on_keydown}
                         onChange={on_change}
                         mobile={prefs.UseMobileView()}
-                        onContextMenu={eat}
+                        onContextMenu={e => e.stopPropagation()}
                         spellcheck={prefs.EnableSpellcheck()}
                     />
 
                     {/* {debug_node} */}
 
-                    <div class="ln-msg-box__send visible" on:click={click_file} title={LL().main.ATTACH_FILE()}>
+                    <div class="ln-msg-box__send visible" onClick={click_file} title={LL().main.ATTACH_FILE()}>
                         <VectorIcon id={Icons.Plus} />
                     </div>
 
-                    <div class="ln-msg-box__send" on:click={on_send_click} title={LL().main.SEND_MESSAGE()}
+                    <div class="ln-msg-box__send" onClick={on_send_click} title={LL().main.SEND_MESSAGE()}
                         classList={{ 'visible': !is_empty() }}
                     >
                         <VectorIcon id={Icons.Send} />

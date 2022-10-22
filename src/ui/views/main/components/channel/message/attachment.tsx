@@ -13,6 +13,9 @@ import { useI18nContext } from "ui/i18n/i18n-solid";
 import { MainContext, createClickEater } from "ui/hooks/useMain";
 import { createInfiniteScrollIntersectionTrigger } from "ui/components/infinite_scroll";
 
+import { cleanedEvent } from "ui/directives/bugs";
+false && cleanedEvent;
+
 import { px } from "ui/utils";
 
 //import { LightBox } from "ui/views/main/modals/lightbox/index_img";
@@ -184,8 +187,10 @@ function ImageAttachment(props: IImageAttachmentProps) {
             <img {...props.img}
                 ref={img}
                 src={src()}
-                on:load={on_load}
-                onLoadedMetadata={on_load}
+                use:cleanedEvent={[
+                    ['load', on_load],
+                    ['loadedmetadata', on_load]
+                ]}
                 style={style()}
             />
         }>
@@ -193,7 +198,7 @@ function ImageAttachment(props: IImageAttachmentProps) {
                 src={src()}
                 which={which as any}
                 img={img}
-                on:load={on_load}
+                onLoad={on_load}
                 onLoadedMetadata={on_load}
                 style={style()} />
             }

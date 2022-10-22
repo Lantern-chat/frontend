@@ -1,9 +1,12 @@
-import { createEffect, createMemo, createSignal, Show } from "solid-js"
+import { createEffect, createMemo, createSignal, onCleanup, Show } from "solid-js"
 import { createRef, Ref } from "ui/hooks/createRef";
 import { usePrefs } from "state/contexts/prefs";
 import { ALIASES_REV, EMOJI_RE, emoji_with_skin_tone, SKIN_TONE_MODIFIER, format_emoji_shortcode, decode_emojis } from "lib/emoji";
 import type { Snowflake } from "state/models";
 import { emote_url, emoji_url } from "config/urls";
+
+import { cleanedEvent } from "ui/directives/bugs";
+false && cleanedEvent;
 
 export interface IEmojiProps {
     value: string,
@@ -36,15 +39,18 @@ export function Emoji(props: IEmojiProps) {
         return emoji_with_skin_tone(e, props.tone);
     });
 
-    // zero-cost easter egg
-    if(!props.ui && value() == '🍪') {
-        ref = createRef();
-        createEffect(() => {
-            let c = 0; (ref as Ref<HTMLElement>).current?.addEventListener('click', () => {
-                if(++c == 5) { window.open('https://orteil.dashnet.org/cookieclicker/'); c = 0; }
-            });
-        });
-    }
+    // // zero-cost easter egg
+    // // TODO: Use regular `onClick` for event-delegation
+    // if(!props.ui && value() == '🍪') {
+    //     ref = createRef();
+    //     createEffect(() => {
+    //         let c = 0, listener = () => {
+    //             if(++c == 5) { window.open('https://orteil.dashnet.org/cookieclicker/'); c = 0; }
+    //         }; (ref as Ref<HTMLElement>).current?.addEventListener('click', listener);
+
+    //         onCleanup(() => (ref as Ref<HTMLElement>).current?.removeEventListener('click', listener));
+    //     });
+    // }
 
     let [errored, setErrored] = createSignal(false);
 
@@ -65,8 +71,10 @@ export function Emoji(props: IEmojiProps) {
         <img loading="lazy" class="emoji" classList={{ 'large': large() }}
             aria-label={value()} draggable={false} data-type="emoji"
             src={emoji_url(value())}
-            on:load={(e) => { (e.target as HTMLImageElement).alt = value(); }}
-            on:error={() => setErrored(true)}
+            use:cleanedEvent={[
+                ['load', (e) => { (e.target as HTMLImageElement).alt = value(); }],
+                ['error', () => setErrored(true)]
+            ]}
             title={title()} ref={ref as any} />
     );
 }

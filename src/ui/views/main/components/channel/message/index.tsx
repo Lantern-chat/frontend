@@ -17,7 +17,6 @@ import { ActionWidget } from "./actions";
 
 export function Message(props: { msg: IMessageState }) {
     let prefs = usePrefs();
-    let [showActions, setShowActions] = createSignal(false);
 
     let [warn, setWarn] = createSignal(false),
         [pos, main_click_props] = createSimplePositionedContextMenu({
@@ -30,10 +29,7 @@ export function Message(props: { msg: IMessageState }) {
         System = SystemMessage;
     }
 
-    let outer: HTMLLIElement | undefined, on_mouse_enter = () => {
-        outer!.removeEventListener('mouseenter', on_mouse_enter);
-        setShowActions(true);
-    };
+    let outer: HTMLLIElement | undefined;
 
     return (
         <>
@@ -49,7 +45,6 @@ export function Message(props: { msg: IMessageState }) {
                     "warning": !!pos() && warn(),
                     "sg": props.msg.sg,
                 }}
-                on:mouseenter={on_mouse_enter}
                 {...main_click_props}
             >
                 <div class="ln-msg__wrapper" role="article">
@@ -63,7 +58,7 @@ export function Message(props: { msg: IMessageState }) {
                         )}
                     </Show>
 
-                    {() => showActions() && <ActionWidget msg={props.msg.msg} />}
+                    <ActionWidget msg={props.msg.msg} />
                 </div>
             </li>
         </>

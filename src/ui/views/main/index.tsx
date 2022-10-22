@@ -243,7 +243,7 @@ export default function Main() {
         <div class="ln-main" ref={main}
             oncapture:click={clickAll}
             oncapture:contextmenu={clickAll}
-            on:contextmenu={onContextMenu}
+            onContextMenu={onContextMenu}
             on:drop={cancel_drop}
         >
             <MainContext.Provider value={main_value}>

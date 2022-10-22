@@ -2,8 +2,10 @@ import "lib/polyfills";
 
 import { render, DelegatedEvents } from "solid-js/web";
 
-// we aren't using event delegation
 DelegatedEvents.clear();
+for(let e of ['click', 'contextmenu', 'dblclick', 'keydown', 'keyup']) {
+    DelegatedEvents.add(e);
+}
 
 import "ui/styles/root.scss";
 import "ui/styles/layout.scss";

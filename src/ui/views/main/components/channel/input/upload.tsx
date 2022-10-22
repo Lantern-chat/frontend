@@ -16,6 +16,9 @@ import { createRef, Ref } from "ui/hooks/createRef";
 import { useLocale } from "ui/i18n";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 
+import { cleanedEvent } from "ui/directives/bugs";
+false && cleanedEvent;
+
 import "./upload.scss";
 
 let eat = (e: Event) => {
@@ -309,7 +312,7 @@ function UploadPreview(props: IUploadPreviewProps) {
                     switch(!errored() && mime_prefix()) {
                         case 'image': return <img {...common} src={src()} />;
                         case 'video': return <video {...common} src={src() + "#t=0.0001"} controls={false} muted
-                            on:mouseenter={on_video_hover} on:mouseleave={on_video_out} />;
+                            use:cleanedEvent={[['mouseenter', on_video_hover], ['mouseleave', on_video_out]]} />;
                         default: return icon();
                     }
                 }}

@@ -3,6 +3,9 @@ import { usePrefs } from "state/contexts/prefs";
 import { emoji_url } from "config/urls";
 import { lazy } from "lib/util";
 
+import { cleanedEvent } from "ui/directives/bugs";
+false && cleanedEvent;
+
 export interface UITextProps {
     text: string,
     class?: 'ui-text' | 'chat-text',
@@ -26,11 +29,11 @@ export function UserText(props: UITextProps) {
             prefs().UsePlatformEmojis() ? (
                 <span class="emoji" draggable={false}
                     data-type="emoji" aria-label={/*@once*/n.e}
-                    textContent={/*@once*/n.e} on:mouseover={on_hover}
+                    textContent={/*@once*/n.e} use:cleanedEvent={[['mouseover', on_hover]]}
                 />) : (
                 <img class="emoji" alt={/*@once*/n.e} draggable={false}
                     data-type="emoji" aria-label={/*@once*/n.e}
-                    src={/*@once*/emoji_url(n.e)} on:mouseover={on_hover}
+                    src={/*@once*/emoji_url(n.e)} use:cleanedEvent={[['mouseover', on_hover]]}
                 />
             )));
 

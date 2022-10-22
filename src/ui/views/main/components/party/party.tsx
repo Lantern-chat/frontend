@@ -118,14 +118,14 @@ export function Party() {
                 'contextmenu': cancel_touch,
             };
 
-            for(let name in e) { party_ref.current.addEventListener(name, e[name]); }
+            let el = party_ref.current;
+
+            for(let name in e) { el.addEventListener(name, e[name]); }
 
             onCleanup(() => {
                 document.removeEventListener('selectionchange', cancel_touch);
 
-                if(party_ref.current) {
-                    for(let name in e) { party_ref.current.removeEventListener(name, e[name]); }
-                }
+                for(let name in e) { el.removeEventListener(name, e[name]); }
             });
         }
     });

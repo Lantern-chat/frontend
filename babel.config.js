@@ -12,7 +12,7 @@ module.exports = {
             }
         }],
         ["solid", {
-            delegateEvents: false,
+            delegateEvents: true,
         }],
         ['@babel/preset-typescript', {
             optimizeConstEnums: true,
@@ -24,5 +24,10 @@ module.exports = {
             extensions: [".js", ".jsx", ".es", ".es6", ".mjs", ".ts", ".tsx"]
         }],
         "babel-plugin-optimize-object-literals",
-    ]
+    ],
+    env: {
+        "development": {
+            compact: false,
+        }
+    }
 };

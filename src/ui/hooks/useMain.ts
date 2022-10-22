@@ -201,8 +201,8 @@ export function useOnNav(cb: OnNavHandler) {
 }
 
 const EVENTS = {
-    'onClick': 'on:click',
-    'onContextMenu': 'on:contextmenu',
+    'onClick': 'onClick',
+    'onContextMenu': 'onContextMenu',
     'onTouch': 'on:touch',
 } as const;
 

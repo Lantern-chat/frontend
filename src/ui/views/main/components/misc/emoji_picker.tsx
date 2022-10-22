@@ -7,6 +7,9 @@ import { Icons } from "lantern-icons";
 import { createRef } from "ui/hooks/createRef";
 import { Snowflake } from "state/models"
 
+import { cleanedEvent } from "ui/directives/bugs";
+false && cleanedEvent;
+
 export interface IEmojiPickerProps {
     onPick(emoji: string | null, emote: Snowflake | null): void;
 }
@@ -216,7 +219,8 @@ function PickerCategory(props: IEmojiPickerProps & { c: number, all?: boolean, s
     });
 
     return (
-        <div ref={ref} on:click={on_click} class="ln-emoji-picker__listing ln-scroll-y ln-scroll-fixed" data-search={props.search}>
+        // NOTE: This must use on:click for custom delegation
+        <div ref={ref} use:cleanedEvent={[['click', on_click]]} class="ln-emoji-picker__listing ln-scroll-y ln-scroll-fixed" data-search={props.search}>
             {emojis()}
 
             <Show when={none()}>
