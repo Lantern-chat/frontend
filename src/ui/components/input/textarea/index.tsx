@@ -1,6 +1,6 @@
-import { createRenderEffect, createSignal, JSX, onCleanup, onMount, splitProps } from "solid-js";
+import { createRenderEffect, createSignal, JSX, onCleanup, onMount, splitProps, untrack } from "solid-js";
 
-import { AnyRef, composeRefs } from "ui/hooks/createRef";
+import { createRef, Ref } from "ui/hooks/createRef";
 import { px } from "ui/utils";
 import { calculateNodeHeight } from "./calc";
 
@@ -23,14 +23,13 @@ export interface TextareaAutosizeProps extends Omit<TextareaProps, 'style'> {
     onHeightChange?: (height: number, meta: TextareaHeightChangeMeta) => void;
     cacheMeasurements?: boolean;
     style?: Partial<Style>;
-    ta?: AnyRef<HTMLTextAreaElement>,
-    ref?: AnyRef<HTMLTextAreaElement>,
+    ta?: Ref<HTMLTextAreaElement | undefined>,
 }
 
 export function TextareaAutosize(props: TextareaAutosizeProps) {
-    let [local, taprops] = splitProps(props, ['maxRows', 'minRows', 'onHeightChange', 'cacheMeasurements', 'ta', 'ref', 'onInput', 'onChange', 'style'])
+    let [local, taprops] = splitProps(props, ['maxRows', 'minRows', 'onHeightChange', 'cacheMeasurements', 'ref', 'onInput', 'onChange', 'style'])
 
-    let ref = composeRefs(local.ta, local.ref), measurements: SizingData;
+    let ref = props.ta || createRef(), measurements: SizingData;
 
     let [height, setHeight] = createSignal(0);
 

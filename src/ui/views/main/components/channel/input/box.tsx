@@ -15,7 +15,7 @@ import { usePrefs } from "state/contexts/prefs";
 import { ITypingState } from "state/mutators/chat";
 
 //import { FileUploadModal } from "ui/views/main/modals/file_upload";
-import { Hotkey, MainContext, createClickEater, useMainHotkey } from "ui/hooks/useMain";
+import { Hotkey, MainContext, useMainHotkey } from "ui/hooks/useMain";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
 import { useLocale } from "ui/i18n";
@@ -70,8 +70,8 @@ export function MessageBox() {
             let room = state.active_room;
 
             onCleanup(() => {
-                __DEV__ && console.log("Storing Draft");
-                ta.current && dispatch({ type: Type.MESSAGE_DRAFT, room, draft: untrack(value) });
+                __DEV__ && console.log("Storing Draft", value());
+                ta.current && dispatch({ type: Type.MESSAGE_DRAFT, room, draft: value() });
             });
 
             skip = true; // skip the change event this will emit
@@ -114,17 +114,14 @@ export function MessageBox() {
         }, 0);
     };
 
-    let eat = createClickEater();
-
     let click_file = (e: MouseEvent) => {
-        eat(e);
         fc()?.click();
-        e.preventDefault();
         e.stopPropagation();
     };
 
     let on_send_click = (e: MouseEvent) => {
-        eat(e); if(!is_empty()) {
+        e.stopPropagation();
+        if(!is_empty()) {
             let f = focused;
 
             do_send();
@@ -165,8 +162,8 @@ export function MessageBox() {
 
     let on_click_focus = (e: MouseEvent) => {
         if(e.defaultPrevented) return;
-
-        eat(e); if(state.active_room) { tac()?.focus(); }
+        e.stopPropagation();
+        if(state.active_room) { tac()?.focus(); }
     };
 
     let on_pick_emote = (e: string, shortcode: string) => {
@@ -199,10 +196,11 @@ export function MessageBox() {
                     <MsgTextarea
                         onBlur={on_blur}
                         onFocus={on_focus}
-                        ta={ta}
+                        ta={/*@once*/ta}
                         tac={setTAC}
                         onKeyDown={on_keydown}
                         onChange={on_change}
+                        onSelectionChange={(ta) => setSelection(ta.selectionStart)}
                         mobile={prefs.UseMobileView()}
                         onContextMenu={e => e.stopPropagation()}
                         spellcheck={prefs.EnableSpellcheck()}

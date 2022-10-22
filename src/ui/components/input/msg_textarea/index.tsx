@@ -147,20 +147,20 @@ export function MsgTextarea(props: IMsgTextareaProps) {
         if(bubble) { onKeyDown(e); }
     };
 
-    let max_rows = createMemo(() => local.mobile ? 5 : 20);
+    let max_rows = () => local.mobile ? 5 : 20;
 
-    let style = createShallowMemo(() => {
+    let style = () => {
         if(rows() < max_rows()) {
             return { 'overflow-y': 'hidden' } as JSX.CSSProperties;
         }
         return;
-    }, 'object');
+    };
 
     // https://github.com/buildo/react-autosize-textarea/issues/52 but same thing with the Solid version
     return (
         <div class="ln-msg-textarea">
             <TextareaAutosize
-                ta={ta}
+                ta={/*@once*/ta}
                 {...taprops} // onBlur, onFocus, onContextMenu, disabled, etc.
                 placeholder={LL().main.MESSAGE() + '...'}
                 spellcheck={spellcheck()}

@@ -42,6 +42,10 @@
         font-size: 0.8em;
         color: $lnx-secondary-text-color;
         vertical-align: top;
+
+        &:empty {
+            display: none;
+        }
     }
 }
 
