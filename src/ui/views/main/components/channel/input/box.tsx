@@ -257,7 +257,7 @@ function UsersTyping() {
                     }
 
                     if(member = members[entry.user]) {
-                        let nick = member.nick || member.user.username;
+                        let nick = member.user.profile?.nick || member.user.username;
 
                         if(nick) {
                             selected.push(nick);

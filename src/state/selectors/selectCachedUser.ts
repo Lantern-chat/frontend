@@ -17,7 +17,7 @@ export function selectCachedUser(state: RootState, user_id: Snowflake, party_id?
             if(member) {
                 cached = {
                     user: member.user,
-                    nick: member.nick || member.user.username,
+                    nick: member.user.profile?.nick || member.user.username,
                     profile: member.user.profile,
                     presence: member.presence,
                     party_id,

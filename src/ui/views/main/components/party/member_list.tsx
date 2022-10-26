@@ -47,8 +47,8 @@ export function MemberList() {
         let members = state.party?.members, c = collator();
         if(members) {
             return Object.values(members).sort((a, b) => c.compare(
-                a.nick || a.user.username,
-                b.nick || b.user.username,
+                a.user.profile?.nick || a.user.username,
+                b.user.profile?.nick || b.user.username,
             ))
         }
         return;

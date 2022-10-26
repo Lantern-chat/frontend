@@ -114,7 +114,7 @@ export function cacheMutator(root: RootState, action: Action) {
                             case ServerMsgOpcode.MemberRemove: {
                                 let p = event.p;
 
-                                cached.nick = p.nick || p.user.username;
+                                cached.nick = p.user.profile?.nick || p.user.username;
                                 cached.presence = p.presence || cached.presence;
                                 cached.roles = p.roles;
                             }

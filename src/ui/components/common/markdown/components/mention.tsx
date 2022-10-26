@@ -19,7 +19,7 @@ export function Mention(props: IMentionProps) {
     switch(props.prefix) {
         case '@': return (
             <Show keyed when={party()?.members[props.id]} fallback={<span textContent={`<@${/*@once*/props.id}>`} />}>
-                {member => <span class="ln-user-mention">@{member.nick || member.user.username}</span>}
+                {member => <span class="ln-user-mention">@{member.user.profile?.nick || member.user.username}</span>}
             </Show>
         );
         case '#': return (
