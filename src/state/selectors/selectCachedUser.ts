@@ -44,7 +44,7 @@ export function selectCachedUser(state: RootState, user_id: Snowflake, party_id?
             if(fallback) {
                 cached = {
                     user: fallback,
-                    nick: fallback.username,
+                    nick: fallback.profile?.nick || fallback.username,
                     profile: fallback.profile,
                     presence: state.user.user?.id == fallback.id ? state.user.presence : undefined,
                     bits: DEFAULT_PROFILE_BITS,

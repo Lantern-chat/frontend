@@ -74,7 +74,7 @@ export function cacheMutator(root: RootState, action: Action) {
 
                     let cached_user = cache.users[user.id] = {
                         user,
-                        nick: user.username,
+                        nick: user.profile?.nick || user.username,
                         profile: user.profile,
                         bits: user.profile ? split_profile_bits(user.profile) : DEFAULT_PROFILE_BITS,
                     };
@@ -107,16 +107,18 @@ export function cacheMutator(root: RootState, action: Action) {
                             merge(cached, 'profile', user.profile);
                         }
 
+                        cached.nick = user.profile?.nick || user.username;
+
                         // any member events should also update cache parts
                         switch(event.o) {
                             case ServerMsgOpcode.MemberAdd:
                             case ServerMsgOpcode.MemberUpdate:
+                            //@ts-ignore fallthrough
                             case ServerMsgOpcode.MemberRemove: {
-                                let p = event.p;
-
-                                cached.nick = p.user.profile?.nick || p.user.username;
-                                cached.presence = p.presence || cached.presence;
-                                cached.roles = p.roles;
+                                cached.roles = event.p.roles;
+                            }
+                            case ServerMsgOpcode.PresenceUpdate: {
+                                cached.presence = event.p.presence || cached.presence;
                             }
                         }
 
