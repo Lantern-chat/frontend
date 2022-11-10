@@ -15,7 +15,7 @@ function MathFallback(props: IMathProps) {
 }
 
 function CodeFallback(props: ICodeProps) {
-    return <pre class="hljs"><code style={{ whiteSpace: 'pre' }} textContent={/* @once */props.src} /></pre>
+    return <pre class="hljs"><code style={{ "white-space": 'pre' }} textContent={/* @once */props.src} /></pre>
 }
 
 export const Math = (props: IMathProps) => (

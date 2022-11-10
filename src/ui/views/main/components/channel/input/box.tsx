@@ -251,12 +251,12 @@ function UsersTyping() {
                 for(let entry of typing) {
                     remaining -= 1;
 
-                    if(!__DEV__ && entry.user == user_id) {
+                    if(!__DEV__ && entry.user_id == user_id) {
                         // skip self
                         continue;
                     }
 
-                    if(member = members[entry.user]) {
+                    if(member = members[entry.user_id]) {
                         let nick = member.user.profile?.nick || member.user.username;
 
                         if(nick) {

@@ -2,6 +2,7 @@ import { createMemo, createUniqueId, JSX, Show } from "solid-js";
 import { Modal } from "ui/components/modal";
 import { createRef } from "ui/hooks/createRef";
 import { createTrigger } from "ui/hooks/createTrigger";
+import { px } from "ui/utils";
 
 export interface IContextMenuProps {
     children: JSX.Element,
@@ -73,7 +74,7 @@ interface ComputedModal {
 function ContextMenuInner(props: ComputedModal & { children: any }) {
     return (
         <Modal>
-            <div style={{ position: 'absolute', top: props.bottom, left: props.left }}>
+            <div style={{ position: 'absolute', top: px(props.bottom), left: px(props.left) }}>
                 <div style={props.style}>{props.children}{createUniqueId()}</div>
             </div>
         </Modal>

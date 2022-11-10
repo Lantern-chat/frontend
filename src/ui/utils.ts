@@ -64,7 +64,7 @@ const DIMENSIONAL: Set<keyof JSX.CSSProperties> = /*#__PURE__*/ new Set([
 export function pxs(style?: JSX.CSSProperties | undefined): JSX.CSSProperties | undefined {
     if(style) {
         for(let key in style) {
-            if(DIMENSIONAL.has(key)) {
+            if(DIMENSIONAL.has(key as keyof JSX.CSSProperties)) {
                 style[key] = px(style[key]);
             }
         }

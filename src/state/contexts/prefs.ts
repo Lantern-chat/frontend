@@ -16,7 +16,7 @@ export type UserPreferenceAccessors =
         Theme: Accessor<ITheme>;
     };
 
-export const UserPrefsContext = createContext<UserPreferenceAccessors>(null!);
+export const UserPrefsContext = createContext<UserPreferenceAccessors>(null! as UserPreferenceAccessors);
 
 export function UserPrefsProvider(props: { children: JSX.Element }) {
     let store = useRootStore(), accessors = {};

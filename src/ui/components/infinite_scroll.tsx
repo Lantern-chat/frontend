@@ -57,7 +57,7 @@ export interface InfiniteScrollController {
 
 const OBSERVER_OPTIONS: ResizeObserverOptions = { box: "border-box" };
 
-export const InfiniteScrollContext = /*#__PURE__*/ createContext<Accessor<InfiniteScrollController>>(null!);
+export const InfiniteScrollContext = /*#__PURE__*/ createContext<Accessor<InfiniteScrollController>>(null! as Accessor<InfiniteScrollController>);
 
 export function createInfiniteScrollIntersection<T extends HTMLElement>(
     ref: Ref<T | undefined>,

@@ -24,7 +24,7 @@ import { Anchor, InfiniteScroll, InfiniteScrollContext, InfiniteScrollController
 
 import { Icons } from "lantern-icons";
 
-function compute_goto(ifs: InfiniteScrollController | null): boolean {
+function compute_goto(ifs: InfiniteScrollController | null | undefined): boolean {
     if(ifs) {
         let container = ifs.container;
         if(container) {

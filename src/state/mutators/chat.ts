@@ -20,7 +20,7 @@ export interface IMessageState {
 }
 
 export interface ITypingState {
-    user: Snowflake,
+    user_id: Snowflake,
     ts: number,
 }
 
@@ -238,7 +238,7 @@ export function chatMutator(root: RootState, action: Action) {
                     for(let idx = 0; idx < room.typing.length; idx++) {
                         // if found, remove them from the typing list,
                         // as the message that was just sent was probably what they were typing
-                        if(room.typing[idx].user == raw_msg.author.id) {
+                        if(room.typing[idx].user_id == raw_msg.author.id) {
                             room.typing.splice(idx, 1); // delete 1
                             break;
                         }
@@ -264,21 +264,21 @@ export function chatMutator(root: RootState, action: Action) {
                     break;
                 }
                 case ServerMsgOpcode.TypingStart: {
-                    let { user, room: room_id } = event.p;
+                    let { user_id, room_id } = event.p;
                     let room = state.rooms[room_id];
                     if(room) {
                         let ts = Date.now();
                         // search through typing entries for this room for any existing
                         // entries to refresh
                         for(let entry of room.typing) {
-                            if(entry.user == user) {
+                            if(entry.user_id == user_id) {
                                 entry.ts = ts; // refresh timestamp
                                 return; // early exit
                             };
                         }
 
                         // if not found above (and returned early), push new typing entry
-                        room.typing.push({ user, ts });
+                        room.typing.push({ user_id, ts });
                     }
 
                     break;
