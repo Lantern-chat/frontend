@@ -88,6 +88,7 @@ export function cacheMutator(root: RootState, action: Action) {
                 case ServerMsgOpcode.MessageCreate:
                 case ServerMsgOpcode.MessageUpdate:
                 case ServerMsgOpcode.PresenceUpdate:
+                case ServerMsgOpcode.ProfileUpdate:
                 case ServerMsgOpcode.UserUpdate:
                 case ServerMsgOpcode.MemberAdd:
                 case ServerMsgOpcode.MemberRemove:
@@ -103,11 +104,11 @@ export function cacheMutator(root: RootState, action: Action) {
                         // will only be truly null if there is no profile whatsoever
                         if(user.profile === null) {
                             cached.profile = null;
-                        } else {
+                        } else if(user.profile) {
                             merge(cached, 'profile', user.profile);
                         }
 
-                        cached.nick = user.profile?.nick || user.username;
+                        cached.nick = cached.user.profile?.nick || user.username;
 
                         // any member events should also update cache parts
                         switch(event.o) {

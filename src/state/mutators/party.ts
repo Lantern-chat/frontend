@@ -210,19 +210,19 @@ export function partyMutator(root: RootState, action: Action) {
 
                             break;
                         }
-                        case ServerMsgOpcode.PresenceUpdate: {
-                            let { user, party_id, presence } = p.p;
-                            if(party_id) {
-                                let party = state.parties[party_id!];
-                                if(party) {
-                                    let member = party.members[user.id];
-                                    if(member) {
-                                        member.presence = presence;
-                                    }
-                                }
-                            }
-                            break;
-                        }
+                        // case ServerMsgOpcode.PresenceUpdate: {
+                        //     let { user, party_id, presence } = p.p;
+                        //     if(party_id) {
+                        //         let party = state.parties[party_id!];
+                        //         if(party) {
+                        //             let member = party.members[user.id];
+                        //             if(member) {
+                        //                 member.presence = presence;
+                        //             }
+                        //         }
+                        //     }
+                        //     break;
+                        // }
                         case ServerMsgOpcode.RoomDelete:
                         case ServerMsgOpcode.RoomCreate:
                         case ServerMsgOpcode.RoomUpdate: {
