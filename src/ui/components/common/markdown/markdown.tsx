@@ -6,7 +6,7 @@ import { Math } from "./lazy";
 import { CodeWrapper } from "./components/code_wrapper";
 
 import { compareString } from "lib/compare";
-import { Dynamic } from "solid-js/web";
+import { insert } from "solid-js/web";
 import { ALIASES_REV, decode_emojis, EMOJI_RE0, find_emoji } from "lib/emoji";
 import { CustomEmote, Emoji } from "../emoji";
 
@@ -186,8 +186,8 @@ export interface DefaultRules extends DefaultRulesIndexer {
     readonly url: DefaultInRule,
     readonly math: DefaultInOutRule,
     readonly unescapedDollar: DefaultInOutRule,
-    readonly link: DefaultInOutRule,
-    readonly image: DefaultInOutRule,
+    //readonly link: DefaultInOutRule,
+    //readonly image: DefaultInOutRule,
     //readonly reflink: DefaultInRule,
     //readonly refimage: DefaultInRule,
     readonly em: DefaultInOutRule,
@@ -196,6 +196,7 @@ export interface DefaultRules extends DefaultRulesIndexer {
     readonly u: DefaultInOutRule,
     readonly spoiler: DefaultInOutRule,
     readonly del: DefaultInOutRule,
+    readonly wbr: DefaultInOutRule,
     readonly tags: DefaultInOutRule,
     readonly inlineCode: DefaultInOutRule,
     readonly br: DefaultInOutRule,
@@ -855,7 +856,9 @@ export const defaultRules: DefaultRules = {
             };
         },
         h: (node, output, state) => {
-            return <Dynamic component={/* @once */'h' + node.level} children={/* @once */output(node.c, state)} />
+            let el = document.createElement('h' + node.level);
+            insert(el, output(node.c, state));
+            return el;
         },
     },
     nptable: {
@@ -1040,7 +1043,7 @@ export const defaultRules: DefaultRules = {
             }
 
             return {
-                type: "link",
+                type: "url", // link
                 c: [{
                     type: "text",
                     c: address
@@ -1055,7 +1058,7 @@ export const defaultRules: DefaultRules = {
         m: inlineRegex(/^(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/),
         p: (capture, parse, state) => {
             return {
-                type: "link",
+                // type: "link",
                 c: [{
                     type: "text",
                     c: capture[1]
@@ -1064,7 +1067,9 @@ export const defaultRules: DefaultRules = {
                 title: undefined
             };
         },
-        h: null
+        h: (node, output, state) => {
+            return <a href={/* @once */sanitizeUrl(node.target)} title={/* @once */node.title} target="_blank">{/* @once */output(node.c, state)}</a>;
+        }
     },
     math: {
         o: currOrder++,
@@ -1092,39 +1097,38 @@ export const defaultRules: DefaultRules = {
             return "$";
         },
     },
-    link: {
-        o: currOrder++,
-        m: inlineRegex(new RegExp(
-            "^\\[(" + LINK_INSIDE + ")\\]\\(" + LINK_HREF_AND_TITLE + "\\)"
-        )),
-        p: (capture, parse, state) => {
-            return {
-                c: parse(capture[1], state),
-                target: unescapeUrl(capture[2]),
-                title: capture[3]
-            };
-        },
-        h: (node, output, state) => {
-            return <a href={/* @once */sanitizeUrl(node.target)} title={/* @once */node.title} target="_blank">{/* @once */output(node.c, state)}</a>;
-
-        }
-    },
-    image: {
-        o: currOrder++,
-        m: inlineRegex(new RegExp(
-            "^!\\[(" + LINK_INSIDE + ")\\]\\(" + LINK_HREF_AND_TITLE + "\\)"
-        )),
-        p: (capture, parse, state) => {
-            return {
-                alt: capture[1],
-                target: unescapeUrl(capture[2]),
-                title: capture[3]
-            };
-        },
-        h: (node, output, state) => {
-            return <img src={/* @once */sanitizeUrl(node.target)} alt={/* @once */node.alt} title={/* @once */node.title} />;
-        }
-    },
+    // link: {
+    //     o: currOrder++,
+    //     m: inlineRegex(new RegExp(
+    //         "^\\[(" + LINK_INSIDE + ")\\]\\(" + LINK_HREF_AND_TITLE + "\\)"
+    //     )),
+    //     p: (capture, parse, state) => {
+    //         return {
+    //             c: parse(capture[1], state),
+    //             target: unescapeUrl(capture[2]),
+    //             title: capture[3]
+    //         };
+    //     },
+    //     h: (node, output, state) => {
+    //         return <a href={/* @once */sanitizeUrl(node.target)} title={/* @once */node.title} target="_blank">{/* @once */output(node.c, state)}</a>;
+    //     }
+    // },
+    // image: {
+    //     o: currOrder++,
+    //     m: inlineRegex(new RegExp(
+    //         "^!\\[(" + LINK_INSIDE + ")\\]\\(" + LINK_HREF_AND_TITLE + "\\)"
+    //     )),
+    //     p: (capture, parse, state) => {
+    //         return {
+    //             alt: capture[1],
+    //             target: unescapeUrl(capture[2]),
+    //             title: capture[3]
+    //         };
+    //     },
+    //     h: (node, output, state) => {
+    //         return <img src={/* @once */sanitizeUrl(node.target)} alt={/* @once */node.alt} title={/* @once */node.title} />;
+    //     }
+    // },
     em: {
         o: currOrder /* same as strong/u */,
         m: inlineRegex(
@@ -1201,6 +1205,12 @@ export const defaultRules: DefaultRules = {
         },
         h: (node, output, state) => <CustomEmote id={/*@once*/node.id} name={/*@once*/node.name} large={/*@once*/state.no_text} />
     },
+    wbr: {
+        o: currOrder++,
+        m: inlineRegex(/^<wbr ?\/?>/),
+        p: (capture, parse, state) => ({}),
+        h: (node, output, state) => <wbr />,
+    },
     tags: {
         o: currOrder++,
         m: inlineRegex(/^<(sup|sub)>([^\n]+?)<\/\1>/),
@@ -1227,7 +1237,11 @@ export const defaultRules: DefaultRules = {
                 }
             ];
         },
-        h: (node, output, state) => <Dynamic component={/* @once */node.tag} children={/* @once */output(node.c, state)} />,
+        h: (node, output, state) => {
+            let el = document.createElement(node.tag);
+            insert(el, output(node.c, state));
+            return el;
+        },
     },
     spoiler: {
         o: currOrder,

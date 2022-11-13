@@ -19,7 +19,10 @@ export interface IMathProps {
 
 import "./math.scss";
 export default function Math(props: IMathProps) {
-    let html = () => katex.renderToString(props.src, {
+    // all inner markdown components are @once, so just create the thing and move on
+
+    let el = document.createElement(props.inline ? 'span' : 'div');
+    el.innerHTML = katex.renderToString(props.src, {
         displayMode: !props.inline,
         strict: false,
         throwOnError: false,
@@ -28,5 +31,5 @@ export default function Math(props: IMathProps) {
         maxSize: 5,
     });
 
-    return <Dynamic component={props.inline ? 'span' : 'div'} innerHTML={/* @once */html()} />;
+    return el;
 }

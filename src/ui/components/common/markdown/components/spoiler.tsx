@@ -1,6 +1,7 @@
 import type { JSXElement } from "solid-js";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 
+// avoid using extra signals by just doing the mutation directly
 function on_spoiler_click(e: MouseEvent) {
     let el = e.currentTarget as HTMLSpanElement;
     el.classList.toggle("hidden", false);

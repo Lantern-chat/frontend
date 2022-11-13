@@ -42,11 +42,8 @@ export default function Code(props: ICodeProps) {
     }
 
     return (
-        <Show when={hasLang(language())} keyed fallback={
-            <pre class="hljs">
-                <code textContent={/* @once */props.src.trim()} />
-            </pre>
-        }>
+        <Show when={hasLang(language())} keyed
+            fallback={<pre class="hljs"><code textContent={/* @once */props.src.trim()} /></pre>}>
             {language => {
                 let compiled = hljs.highlight(props.src, { language });
 
