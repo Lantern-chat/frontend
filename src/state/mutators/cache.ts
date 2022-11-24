@@ -101,14 +101,15 @@ export function cacheMutator(root: RootState, action: Action) {
                     if(cached) {
                         merge(cached, 'user', user);
 
-                        // will only be truly null if there is no profile whatsoever
-                        if(user.profile === null) {
-                            cached.profile = null;
-                        } else if(user.profile) {
+                        if(user.profile) {
                             merge(cached, 'profile', user.profile);
+                        } else if(user.profile === null) {
+                            // will only be truly null if there is no profile whatsoever
+                            cached.profile = null;
                         }
 
-                        cached.nick = cached.user.profile?.nick || user.username;
+                        // NOTE: cached.user.profile is unreliable, use cached.profile
+                        cached.nick = cached.profile?.nick || cached.user.username;
 
                         // any member events should also update cache parts
                         switch(event.o) {
