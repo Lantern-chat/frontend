@@ -23,6 +23,7 @@ import { UIText } from "ui/components/common/ui-text";
 import { AnimatedGif } from "ui/components/common/gif";
 import { VectorIcon } from "ui/components/common/icon";
 import { MimeIcon } from "ui/components/mime";
+import { UserText } from "ui/components/common/ui-text-user";
 
 import { Icons } from "lantern-icons";
 
@@ -105,8 +106,8 @@ function MediaMetadata(props: IMsgAttachmentProps) {
     };
 
     return (
-        <div class="ui-text ln-attachment-metadata ln-attachment-metadata--full">
-            <span textContent={props.attachment.filename} title={props.attachment.filename} />&nbsp;{metadata()}
+        <div class="ui-text ln-attachment-metadata ln-attachment-metadata--full" title={props.attachment.filename}>
+            <span><UserText text={props.attachment.filename} /></span>&nbsp;{metadata()}
         </div>
     );
 }
