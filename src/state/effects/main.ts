@@ -157,7 +157,7 @@ export function mainEffect(state: RootState, action: Action, dispatch: Dispatch<
                 if(CONNECTABLE.includes(state.gateway.status) && state.user.session) {
                     // if the history updated and we're now on a page that needs the gateway, connect
                     connect_gateway(state);
-                } else {
+                } else if(parts[0] == 'channels') {
                     // if the history updated and gateway is good, load
                     // any new messages for the now-active channel
                     let room_id = activeRoom(state),
@@ -167,7 +167,7 @@ export function mainEffect(state: RootState, action: Action, dispatch: Dispatch<
                         let last_msg = room.msgs[room.msgs.length - 1];
                         let last_msg_id = last_msg != null ? last_msg.msg.id : undefined;
 
-                        dispatch(loadMessages(room.room.id, last_msg_id, SearchMode.After));
+                        dispatch(loadMessages(room_id!, last_msg_id, SearchMode.After));
                     }
                 }
             }
