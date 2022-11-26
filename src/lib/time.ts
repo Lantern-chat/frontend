@@ -159,3 +159,9 @@ export function months(locale: string): string[] {
     }
     return months;
 }
+
+export function same_day(a: Date, b: Date) {
+    return a.getDate() == b.getDate() &&
+        a.getMonth() == b.getMonth() &&
+        a.getFullYear() == b.getFullYear();
+}

@@ -1,4 +1,5 @@
 import { binarySearch } from "lib/util";
+import { same_day } from "lib/time";
 
 import { Action, Type } from "../actions";
 
@@ -10,18 +11,23 @@ import { RootState } from "state/root";
 
 export interface IMessageState {
     msg: Message,
-    // unix timestamp
-    ts: number,
-    // unix timestamp for edit time
-    et: number | null,
+
+    /// Creation time
+    ts: Date,
+
+    /// Edit time
+    et: Date | null,
 
     /// Starts Group?
     sg?: boolean,
+
+    /// Starts Day?
+    sd?: boolean,
 }
 
 export interface ITypingState {
     user_id: Snowflake,
-    ts: number,
+    ts: Date,
 }
 
 export interface IAttachmentState {
@@ -50,16 +56,21 @@ export interface IChatState {
 function starts_group(msg: IMessageState, prev: IMessageState | undefined) {
     if(!prev) return true;
 
-    if(Math.abs(msg.ts - prev.ts) > (1000 * 60 * 5)) return true;
+    if(Math.abs(+msg.ts - +prev.ts) > (1000 * 60 * 5)) return true;
     if(msg.msg.author.id != prev.msg.author.id) return true;
 
     return false;
 }
 
-function set_starts_group(msgs: IMessageState[], idx: number) {
+function starts_day(msg: IMessageState, prev: IMessageState | undefined) {
+    return !prev || !same_day(msg.ts, prev.ts);
+}
+
+function set_starts(msgs: IMessageState[], idx: number) {
     let msg = msgs[idx], prev = msgs[idx - 1];
     if(msg) {
         msg.sg = starts_group(msg, prev);
+        msg.sd = starts_day(msg, prev);
     }
 }
 
@@ -113,7 +124,7 @@ export function chatMutator(root: RootState, action: Action) {
             for(let room_id in rooms) {
                 let room = rooms[room_id];
                 if(room.typing.length == 0) continue;
-                room.typing = room.typing.filter(entry => (now - entry.ts) < 7000);
+                room.typing = room.typing.filter(entry => (now - +entry.ts) < 7000);
             }
 
             break;
@@ -148,14 +159,14 @@ export function chatMutator(root: RootState, action: Action) {
                         old_msgs = room.msgs,
                         new_msgs = raw_msgs.map(msg => ({
                             msg,
-                            ts: +new Date(msg.created_at),
-                            et: msg.edited_at ? +new Date(msg.edited_at) : null,
-                        })).sort((a, b) => a.ts - b.ts);
+                            ts: new Date(msg.created_at),
+                            et: msg.edited_at ? new Date(msg.edited_at) : null,
+                        })).sort((a, b) => +a.ts - +b.ts);
 
                     // TODO: Get the msg_id query term and avoid full merging
                     while(new_msgs.length && old_msgs.length) {
                         let n = new_msgs[0], o = old_msgs[0],
-                            d = n.ts - o.ts, same = n.msg.id == o.msg.id;
+                            d = +n.ts - +o.ts, same = n.msg.id == o.msg.id;
 
                         if(d < 0) {
                             final_msgs.push(new_msgs.shift()!);
@@ -172,7 +183,7 @@ export function chatMutator(root: RootState, action: Action) {
                     room.msgs = [...final_msgs, ...new_msgs, ...old_msgs];
 
                     for(let i = 0; i < room.msgs.length; i++) {
-                        set_starts_group(room.msgs, i);
+                        set_starts(room.msgs, i);
                     }
                 }
             }
@@ -200,15 +211,15 @@ export function chatMutator(root: RootState, action: Action) {
                     room.msgs.splice(msg_idx, 1);
 
                     // after message is removed, update the msg at the new index
-                    set_starts_group(room.msgs, msg_idx);
+                    set_starts(room.msgs, msg_idx);
 
                     break;
                 }
                 case ServerMsgOpcode.MessageCreate: {
                     let raw_msg = event.p, msg = {
                         msg: raw_msg,
-                        ts: +new Date(raw_msg.created_at),
-                        et: raw_msg.edited_at ? +new Date(raw_msg.edited_at) : null,
+                        ts: new Date(raw_msg.created_at),
+                        et: raw_msg.edited_at ? new Date(raw_msg.edited_at) : null,
                     };
 
                     let room = state.rooms[raw_msg.room_id];
@@ -216,7 +227,7 @@ export function chatMutator(root: RootState, action: Action) {
 
                     // we try to keep the messages sorted by timestamp, and messages may not always
                     // arrive in order, so find where it should be inserted
-                    let { idx, found } = binarySearch(room.msgs, m => m.ts - msg.ts);
+                    let { idx, found } = binarySearch(room.msgs, m => +m.ts - +msg.ts);
 
                     // message already exists (weird, but whatever)
                     if(found && room.msgs[idx].msg.id == raw_msg.id) return;
@@ -226,7 +237,7 @@ export function chatMutator(root: RootState, action: Action) {
 
                     // after insertion, cascade check to start group
                     for(let i = idx; i < room.msgs.length; i++) {
-                        set_starts_group(room.msgs, i);
+                        set_starts(room.msgs, i);
                     }
 
                     __DEV__ && console.log("Splicing message '%s' at index %d", raw_msg.content, idx);
@@ -251,9 +262,9 @@ export function chatMutator(root: RootState, action: Action) {
                     if(room) {
                         let msg: IMessageState = {
                             msg: raw_msg,
-                            ts: +new Date(raw_msg.created_at),
-                            et: raw_msg.edited_at ? +new Date(raw_msg.edited_at) : null,
-                        }, { idx, found } = binarySearch(room.msgs, m => m.ts - msg.ts);
+                            ts: new Date(raw_msg.created_at),
+                            et: raw_msg.edited_at ? new Date(raw_msg.edited_at) : null,
+                        }, { idx, found } = binarySearch(room.msgs, m => +m.ts - +msg.ts);
 
                         if(found && room.msgs[idx].msg.id == raw_msg.id) {
                             // NOTE: overwrite with msg except for sg
@@ -267,7 +278,7 @@ export function chatMutator(root: RootState, action: Action) {
                     let { user_id, room_id } = event.p;
                     let room = state.rooms[room_id];
                     if(room) {
-                        let ts = Date.now();
+                        let ts = new Date();
                         // search through typing entries for this room for any existing
                         // entries to refresh
                         for(let entry of room.typing) {

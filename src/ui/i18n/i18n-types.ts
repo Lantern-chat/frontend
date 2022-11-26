@@ -21,128 +21,128 @@ export type Translations = RootTranslation &
 
 type RootTranslation = {
 	/**
-	 * This is a development build.
+	 * T​h​i​s​ ​i​s​ ​a​ ​d​e​v​e​l​o​p​m​e​n​t​ ​b​u​i​l​d​.
 	 */
 	DEV_BANNER: string
 	/**
-	 * Year
+	 * Y​e​a​r
 	 */
 	YEAR: string
 	/**
-	 * Month
+	 * M​o​n​t​h
 	 */
 	MONTH: string
 	/**
-	 * Day
+	 * D​a​y
 	 */
 	DAY: string
 	/**
-	 * Register
+	 * R​e​g​i​s​t​e​r
 	 */
 	REGISTER: string
 	/**
-	 * Login
+	 * L​o​g​i​n
 	 */
 	LOGIN: string
 	/**
-	 * Email Address
+	 * E​m​a​i​l​ ​A​d​d​r​e​s​s
 	 */
 	EMAIL_ADDRESS: string
 	/**
-	 * Username
+	 * U​s​e​r​n​a​m​e
 	 */
 	USERNAME: string
 	/**
-	 * Username or Email
+	 * U​s​e​r​n​a​m​e​ ​o​r​ ​E​m​a​i​l
 	 */
 	USERNAME_OR_EMAIL: string
 	/**
-	 * Nickname
+	 * N​i​c​k​n​a​m​e
 	 */
 	NICKNAME: string
 	/**
-	 * Password
+	 * P​a​s​s​w​o​r​d
 	 */
 	PASSWORD: string
 	/**
-	 * Reset
+	 * R​e​s​e​t
 	 */
 	RESET: string
 	/**
-	 * Date of Birth
+	 * D​a​t​e​ ​o​f​ ​B​i​r​t​h
 	 */
 	DATE_OF_BIRTH: string
 	/**
-	 * Network Error
+	 * N​e​t​w​o​r​k​ ​E​r​r​o​r
 	 */
 	NETWORK_ERROR: string
 	/**
-	 * Unknown Error
+	 * U​n​k​n​o​w​n​ ​E​r​r​o​r
 	 */
 	UNKNOWN_ERROR: string
 	/**
-	 * {{Don't have|Have}} a 2FA code?
+	 * {​{​D​o​n​'​t​ ​h​a​v​e​|​H​a​v​e​}​}​ ​a​ ​2​F​A​ ​c​o​d​e​?
 	 */
 	MFA_TOGGLE_TEXT: string
 	/**
-	 * Click here to {{hide|show}} the input.
+	 * C​l​i​c​k​ ​h​e​r​e​ ​t​o​ ​{​{​h​i​d​e​|​s​h​o​w​}​}​ ​t​h​e​ ​i​n​p​u​t​.
 	 */
 	MFA_TOGGLE_FLAVOR: string
 	/**
-	 * 2FA Code
+	 * 2​F​A​ ​C​o​d​e
 	 */
 	MFA_CODE: string
 	/**
-	 * Go to Login
+	 * G​o​ ​t​o​ ​L​o​g​i​n
 	 */
 	GOTO_LOGIN: string
 	/**
-	 * By registering, you agree to our... this will be filled in later.
+	 * B​y​ ​r​e​g​i​s​t​e​r​i​n​g​,​ ​y​o​u​ ​a​g​r​e​e​ ​t​o​ ​o​u​r​.​.​.​ ​t​h​i​s​ ​w​i​l​l​ ​b​e​ ​f​i​l​l​e​d​ ​i​n​ ​l​a​t​e​r​.
 	 */
 	REGISTER_AGREE: string
 	/**
-	 * Password must be at least 8 characters long and contain at least one number or one special character.
+	 * P​a​s​s​w​o​r​d​ ​m​u​s​t​ ​b​e​ ​a​t​ ​l​e​a​s​t​ ​8​ ​c​h​a​r​a​c​t​e​r​s​ ​l​o​n​g​ ​a​n​d​ ​c​o​n​t​a​i​n​ ​a​t​ ​l​e​a​s​t​ ​o​n​e​ ​n​u​m​b​e​r​ ​o​r​ ​o​n​e​ ​s​p​e​c​i​a​l​ ​c​h​a​r​a​c​t​e​r​.
 	 */
 	PASSWORD_REQS: string
 	/**
-	 * Change Theme
+	 * C​h​a​n​g​e​ ​T​h​e​m​e
 	 */
 	CHANGE_THEME: string
 	/**
-	 * Change Theme Temperature
+	 * C​h​a​n​g​e​ ​T​h​e​m​e​ ​T​e​m​p​e​r​a​t​u​r​e
 	 */
 	CHANGE_THEME_TEMP: string
 	/**
-	 * Change Language
+	 * C​h​a​n​g​e​ ​L​a​n​g​u​a​g​e
 	 */
 	CHANGE_LANG: string
 	/**
-	 * Loading...
+	 * L​o​a​d​i​n​g​.​.​.
 	 */
 	LOADING: string
 	/**
-	 * dddd, MMMM Do, YYYY LT
+	 * d​d​d​d​,​ ​M​M​M​M​ ​D​o​,​ ​Y​Y​Y​Y​ ​L​T
 	 */
 	DEFAULT_TS_FORMAT: string
 	CALENDAR_FORMAT: {
 		/**
-		 * [Yesterday at] LT
+		 * [​Y​e​s​t​e​r​d​a​y​ ​a​t​]​ ​L​T
 		 */
 		lastDay: string
 		/**
-		 * [Today at] LT
+		 * [​T​o​d​a​y​ ​a​t​]​ ​L​T
 		 */
 		sameDay: string
 		/**
-		 * [Tomorrow at] LT
+		 * [​T​o​m​o​r​r​o​w​ ​a​t​]​ ​L​T
 		 */
 		nextDay: string
 		/**
-		 * dddd [at] LT
+		 * d​d​d​d​ ​[​a​t​]​ ​L​T
 		 */
 		nextWeek: string
 		/**
-		 * [Last] dddd [at] LT
+		 * [​L​a​s​t​]​ ​d​d​d​d​ ​[​a​t​]​ ​L​T
 		 */
 		lastWeek: string
 		/**
@@ -151,12 +151,12 @@ type RootTranslation = {
 		sameElse: string
 	}
 	/**
-	 * This site is protected by hCaptcha and its <@Privacy Policy> and <#Terms of Service> apply.
+	 * T​h​i​s​ ​s​i​t​e​ ​i​s​ ​p​r​o​t​e​c​t​e​d​ ​b​y​ ​h​C​a​p​t​c​h​a​ ​a​n​d​ ​i​t​s​ ​<​@​P​r​i​v​a​c​y​ ​P​o​l​i​c​y​>​ ​a​n​d​ ​<​#​T​e​r​m​s​ ​o​f​ ​S​e​r​v​i​c​e​>​ ​a​p​p​l​y​.
 	 */
 	hCaptcha: string
 	units: {
 		/**
-		 * {0}px
+		 * {​0​}​p​x
 		 * @param {unknown} 0
 		 */
 		PX: RequiredParams<'0'>
@@ -165,167 +165,167 @@ type RootTranslation = {
 
 export type NamespaceMainTranslation = {
 	/**
-	 * Channel
+	 * C​h​a​n​n​e​l
 	 */
 	CHANNEL: string
 	/**
-	 * Party
+	 * P​a​r​t​y
 	 */
 	PARTY: string
 	/**
-	 * Direct Message
+	 * D​i​r​e​c​t​ ​M​e​s​s​a​g​e
 	 */
 	DIRECT_MESSAGE: string
 	/**
-	 * Create Direct Message
+	 * C​r​e​a​t​e​ ​D​i​r​e​c​t​ ​M​e​s​s​a​g​e
 	 */
 	CREATE_DIRECT_MESSAGE: string
 	/**
-	 * {{✔|}} Bot
+	 * {​{​✔​|​}​}​ ​B​o​t
 	 */
 	BOT: string
 	/**
-	 * Online
+	 * O​n​l​i​n​e
 	 */
 	ONLINE: string
 	/**
-	 * Offline
+	 * O​f​f​l​i​n​e
 	 */
 	OFFLINE: string
 	/**
-	 * Busy/Do Not Disturb
+	 * B​u​s​y​/​D​o​ ​N​o​t​ ​D​i​s​t​u​r​b
 	 */
 	BUSY: string
 	/**
-	 * Away
+	 * A​w​a​y
 	 */
 	AWAY: string
 	/**
-	 * Message
+	 * M​e​s​s​a​g​e
 	 */
 	MESSAGE: string
 	/**
-	 * Settings
+	 * S​e​t​t​i​n​g​s
 	 */
 	SETTINGS: string
 	/**
-	 * Mute
+	 * M​u​t​e
 	 */
 	MUTE: string
 	/**
-	 * Unmute
+	 * U​n​m​u​t​e
 	 */
 	UNMUTE: string
 	/**
-	 * Deafen
+	 * D​e​a​f​e​n
 	 */
 	DEAFEN: string
 	/**
-	 * Undeafen
+	 * U​n​d​e​a​f​e​n
 	 */
 	UNDEAFEN: string
 	/**
-	 * Edited
+	 * E​d​i​t​e​d
 	 */
 	EDITED: string
 	/**
-	 * Edited on {ts|timestamp}
+	 * E​d​i​t​e​d​ ​o​n​ ​{​t​s​|​t​i​m​e​s​t​a​m​p​}
 	 * @param {unknown} ts
 	 */
 	EDITED_ON: RequiredParams<'ts|timestamp'>
 	/**
-	 * Pinned
+	 * P​i​n​n​e​d
 	 */
 	PINNED: string
 	/**
-	 * Message Pinned
+	 * M​e​s​s​a​g​e​ ​P​i​n​n​e​d
 	 */
 	MESSAGE_PINNED: string
 	/**
-	 * Owner
+	 * O​w​n​e​r
 	 */
 	OWNER: string
 	/**
-	 * You're viewing older messages.
+	 * Y​o​u​'​r​e​ ​v​i​e​w​i​n​g​ ​o​l​d​e​r​ ​m​e​s​s​a​g​e​s​.
 	 */
 	VIEWING_OLDER: string
 	/**
-	 * Go to now
+	 * G​o​ ​t​o​ ​n​o​w
 	 */
 	GOTO_NOW: string
 	/**
-	 * Click to reveal spoiler
+	 * C​l​i​c​k​ ​t​o​ ​r​e​v​e​a​l​ ​s​p​o​i​l​e​r
 	 */
 	SPOILER_TITLE: string
 	/**
-	 * {{Uns|S}}poiler
+	 * {​{​U​n​s​|​S​}​}​p​o​i​l​e​r
 	 */
 	SPOILER: string
 	/**
-	 * {{Uns|S}}poiler All
+	 * {​{​U​n​s​|​S​}​}​p​o​i​l​e​r​ ​A​l​l
 	 */
 	SPOILER_ALL: string
 	/**
-	 * Remove
+	 * R​e​m​o​v​e
 	 */
 	REMOVE: string
 	/**
-	 * Remove All
+	 * R​e​m​o​v​e​ ​A​l​l
 	 */
 	REMOVE_ALL: string
 	/**
-	 * Save
+	 * S​a​v​e
 	 */
 	SAVE: string
 	/**
-	 * Continue Editing
+	 * C​o​n​t​i​n​u​e​ ​E​d​i​t​i​n​g
 	 */
 	CONTINUE: string
 	/**
-	 * Discard
+	 * D​i​s​c​a​r​d
 	 */
 	DISCARD: string
 	/**
-	 * Reset
+	 * R​e​s​e​t
 	 */
 	RESET: string
 	/**
-	 * You have unsaved changes!
+	 * Y​o​u​ ​h​a​v​e​ ​u​n​s​a​v​e​d​ ​c​h​a​n​g​e​s​!
 	 */
 	UNSAVED: string
 	/**
-	 * Attach File
+	 * A​t​t​a​c​h​ ​F​i​l​e
 	 */
 	ATTACH_FILE: string
 	/**
-	 * Send Message
+	 * S​e​n​d​ ​M​e​s​s​a​g​e
 	 */
 	SEND_MESSAGE: string
 	/**
-	 * Drop Files
+	 * D​r​o​p​ ​F​i​l​e​s
 	 */
 	DROP_FILES: string
 	USERS_TYPING: {
 		/**
-		 * {0} is typing...
+		 * {​0​}​ ​i​s​ ​t​y​p​i​n​g​.​.​.
 		 * @param {string} 0
 		 */
 		'0': RequiredParams<'0'>
 		/**
-		 * {0} and {1} are typing...
+		 * {​0​}​ ​a​n​d​ ​{​1​}​ ​a​r​e​ ​t​y​p​i​n​g​.​.​.
 		 * @param {string} 0
 		 * @param {string} 1
 		 */
 		'1': RequiredParams<'0' | '1'>
 		/**
-		 * {0}, {1}, and {2} are typing...
+		 * {​0​}​,​ ​{​1​}​,​ ​a​n​d​ ​{​2​}​ ​a​r​e​ ​t​y​p​i​n​g​.​.​.
 		 * @param {string} 0
 		 * @param {string} 1
 		 * @param {string} 2
 		 */
 		'2': RequiredParams<'0' | '1' | '2'>
 		/**
-		 * {0}, {1}, {2}, and {3} others are typing...
+		 * {​0​}​,​ ​{​1​}​,​ ​{​2​}​,​ ​a​n​d​ ​{​3​}​ ​o​t​h​e​r​s​ ​a​r​e​ ​t​y​p​i​n​g​.​.​.
 		 * @param {string} 0
 		 * @param {string} 1
 		 * @param {string} 2
@@ -335,70 +335,70 @@ export type NamespaceMainTranslation = {
 	}
 	channel: {
 		/**
-		 * You have reached the top of #{0}!
+		 * Y​o​u​ ​h​a​v​e​ ​r​e​a​c​h​e​d​ ​t​h​e​ ​t​o​p​ ​o​f​ ​#​{​0​}​!
 		 * @param {unknown} 0
 		 */
 		TOP1: RequiredParams<'0'>
 		/**
-		 * Congrats on making it this far.
+		 * C​o​n​g​r​a​t​s​ ​o​n​ ​m​a​k​i​n​g​ ​i​t​ ​t​h​i​s​ ​f​a​r​.
 		 */
 		TOP2: string
 	}
 	menus: {
 		/**
-		 * Copy ID
+		 * C​o​p​y​ ​I​D
 		 */
 		COPY_ID: string
 		/**
-		 * Mark as Read
+		 * M​a​r​k​ ​a​s​ ​R​e​a​d
 		 */
 		MARK_AS_READ: string
 		/**
-		 * Invite People
+		 * I​n​v​i​t​e​ ​P​e​o​p​l​e
 		 */
 		INVITE_PEOPLE: string
 		msg: {
 			/**
-			 * Delete Message
+			 * D​e​l​e​t​e​ ​M​e​s​s​a​g​e
 			 */
 			DELETE: string
 			/**
-			 * Are you sure?
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​?
 			 */
 			CONFIRM: string
 			/**
-			 * Edit Message
+			 * E​d​i​t​ ​M​e​s​s​a​g​e
 			 */
 			EDIT: string
 			/**
-			 * Copy Message
+			 * C​o​p​y​ ​M​e​s​s​a​g​e
 			 */
 			COPY: string
 			/**
-			 * Copy Selection
+			 * C​o​p​y​ ​S​e​l​e​c​t​i​o​n
 			 */
 			COPY_SEL: string
 			/**
-			 * Report Message
+			 * R​e​p​o​r​t​ ​M​e​s​s​a​g​e
 			 */
 			REPORT: string
 		}
 		room: {
 			/**
-			 * Edit Channel
+			 * E​d​i​t​ ​C​h​a​n​n​e​l
 			 */
 			EDIT: string
 		}
 		room_list: {
 			/**
-			 * Create Channel
+			 * C​r​e​a​t​e​ ​C​h​a​n​n​e​l
 			 */
 			CREATE: string
 		}
 	}
 	member_list: {
 		/**
-		 * {role} – {length|number}
+		 * {​r​o​l​e​}​ ​–​ ​{​l​e​n​g​t​h​|​n​u​m​b​e​r​}
 		 * @param {number} length
 		 * @param {string} role
 		 */
@@ -406,7 +406,7 @@ export type NamespaceMainTranslation = {
 	}
 	lightbox: {
 		/**
-		 *  — {width|number} x {height|number} ({size|bytes})
+		 *  ​—​ ​{​w​i​d​t​h​|​n​u​m​b​e​r​}​ ​x​ ​{​h​e​i​g​h​t​|​n​u​m​b​e​r​}​ ​(​{​s​i​z​e​|​b​y​t​e​s​}​)
 		 * @param {number} height
 		 * @param {number} size
 		 * @param {number} width
@@ -415,223 +415,227 @@ export type NamespaceMainTranslation = {
 	}
 	settings: {
 		/**
-		 * Account
+		 * A​c​c​o​u​n​t
 		 */
 		ACCOUNT: string
 		/**
-		 * Profile
+		 * P​r​o​f​i​l​e
 		 */
 		PROFILE: string
 		/**
-		 * Privacy
+		 * P​r​i​v​a​c​y
 		 */
 		PRIVACY: string
 		/**
-		 * Notifications
+		 * N​o​t​i​f​i​c​a​t​i​o​n​s
 		 */
 		NOTIFICATIONS: string
 		/**
-		 * Appearance
+		 * A​p​p​e​a​r​a​n​c​e
 		 */
 		APPEARANCE: string
 		/**
-		 * Accessibility
+		 * A​c​c​e​s​s​i​b​i​l​i​t​y
 		 */
 		ACCESSIBILITY: string
 		/**
-		 * Text & Media
+		 * T​e​x​t​ ​&​ ​M​e​d​i​a
 		 */
 		TEXT_AND_MEDIA: string
 		/**
-		 * Language
+		 * L​a​n​g​u​a​g​e
 		 */
 		LANGUAGE: string
 		/**
-		 * Logout
+		 * L​o​g​o​u​t
 		 */
 		LOGOUT: string
 		/**
-		 * Return
+		 * R​e​t​u​r​n
 		 */
 		RETURN: string
 		/**
-		 * Select any category to view settings
+		 * S​e​l​e​c​t​ ​a​n​y​ ​c​a​t​e​g​o​r​y​ ​t​o​ ​v​i​e​w​ ​s​e​t​t​i​n​g​s
 		 */
 		SELECT_CATEGORY: string
 		account: {
 			/**
-			 * {used|bytes}/{total|bytes} ({percent|percent}) Upload Quota Used
+			 * {​u​s​e​d​|​b​y​t​e​s​}​/​{​t​o​t​a​l​|​b​y​t​e​s​}​ ​(​{​p​e​r​c​e​n​t​|​p​e​r​c​e​n​t​}​)​ ​U​p​l​o​a​d​ ​Q​u​o​t​a​ ​U​s​e​d
 			 * @param {number} percent
 			 * @param {number} total
 			 * @param {number} used
 			 */
 			QUOTA: RequiredParams<'percent|percent' | 'total|bytes' | 'used|bytes'>
 			/**
-			 * Enable Developer Mode
+			 * E​n​a​b​l​e​ ​D​e​v​e​l​o​p​e​r​ ​M​o​d​e
 			 */
 			DEV_MODE: string
 		}
 		appearance: {
 			/**
-			 * Theme
+			 * T​h​e​m​e
 			 */
 			THEME: string
 			/**
-			 * Show Lines Between Groups
+			 * S​h​o​w​ ​L​i​n​e​s​ ​B​e​t​w​e​e​n​ ​G​r​o​u​p​s
 			 */
 			GROUP_LINES: string
 			/**
-			 * Group Padding
+			 * G​r​o​u​p​ ​P​a​d​d​i​n​g
 			 */
 			GROUP_PADDING: string
 			/**
-			 * Light Theme
+			 * L​i​g​h​t​ ​T​h​e​m​e
 			 */
 			LIGHT_THEME: string
 			/**
-			 * Dark Theme
+			 * D​a​r​k​ ​T​h​e​m​e
 			 */
 			DARK_THEME: string
 			/**
-			 * Enable OLED Dark Theme
+			 * E​n​a​b​l​e​ ​O​L​E​D​ ​D​a​r​k​ ​T​h​e​m​e
 			 */
 			OLED_THEME: string
 			/**
-			 * Temperature
+			 * T​e​m​p​e​r​a​t​u​r​e
 			 */
 			TEMP: string
 			/**
-			 * View Mode
+			 * V​i​e​w​ ​M​o​d​e
 			 */
 			VIEW_MODE: string
 			/**
-			 * Compact
+			 * C​o​m​p​a​c​t
 			 */
 			COMPACT: string
 			/**
-			 * Cozy
+			 * C​o​z​y
 			 */
 			COZY: string
 			/**
-			 * "The wizard quickly jinxed the gnomes before they vaporized."
+			 * "​T​h​e​ ​w​i​z​a​r​d​ ​q​u​i​c​k​l​y​ ​j​i​n​x​e​d​ ​t​h​e​ ​g​n​o​m​e​s​ ​b​e​f​o​r​e​ ​t​h​e​y​ ​v​a​p​o​r​i​z​e​d​.​"
 			 */
 			FONT_EXAMPLE: string
 			/**
-			 * Chat Font Size
+			 * C​h​a​t​ ​F​o​n​t​ ​S​i​z​e
 			 */
 			CHAT_FONT_SIZE: string
 			/**
-			 * UI Font Size
+			 * U​I​ ​F​o​n​t​ ​S​i​z​e
 			 */
 			UI_FONT_SIZE: string
 			/**
-			 * Chat Font Family
+			 * C​h​a​t​ ​F​o​n​t​ ​F​a​m​i​l​y
 			 */
 			CHAT_FONT_FAMILY: string
 			/**
-			 * UI Font Family
+			 * U​I​ ​F​o​n​t​ ​F​a​m​i​l​y
 			 */
 			UI_FONT_FAMILY: string
+			/**
+			 * S​h​o​w​ ​D​a​t​e​ ​C​h​a​n​g​e
+			 */
+			SHOW_DATE_CHANGE: string
 		}
 		notifications: {
 			ENABLE_DESKTOP_NOTIFICATIONS: {
 				/**
-				 * Enable Desktop Notifications
+				 * E​n​a​b​l​e​ ​D​e​s​k​t​o​p​ ​N​o​t​i​f​i​c​a​t​i​o​n​s
 				 */
 				'0': string
 				/**
-				 * Enable Desktop Notifications (May be outdated if revoked externally)
+				 * E​n​a​b​l​e​ ​D​e​s​k​t​o​p​ ​N​o​t​i​f​i​c​a​t​i​o​n​s​ ​(​M​a​y​ ​b​e​ ​o​u​t​d​a​t​e​d​ ​i​f​ ​r​e​v​o​k​e​d​ ​e​x​t​e​r​n​a​l​l​y​)
 				 */
 				'1': string
 				/**
-				 * Enable Desktop Notifications (Not Available)
+				 * E​n​a​b​l​e​ ​D​e​s​k​t​o​p​ ​N​o​t​i​f​i​c​a​t​i​o​n​s​ ​(​N​o​t​ ​A​v​a​i​l​a​b​l​e​)
 				 */
 				'2': string
 			}
 		}
 		media: {
 			/**
-			 * Show Media Metadata
+			 * S​h​o​w​ ​M​e​d​i​a​ ​M​e​t​a​d​a​t​a
 			 */
 			SHOW_MEDIA_METADATA: string
 			/**
-			 * Displays file name, MIME type, and file size on attachments
+			 * D​i​s​p​l​a​y​s​ ​f​i​l​e​ ​n​a​m​e​,​ ​M​I​M​E​ ​t​y​p​e​,​ ​a​n​d​ ​f​i​l​e​ ​s​i​z​e​ ​o​n​ ​a​t​t​a​c​h​m​e​n​t​s
 			 */
 			SHOW_MEDIA_METADATA_SUBTEXT: string
 			/**
-			 * Mute Media by Default
+			 * M​u​t​e​ ​M​e​d​i​a​ ​b​y​ ​D​e​f​a​u​l​t
 			 */
 			MUTE_MEDIA: string
 			/**
-			 * Disable Attachments of Unknown Size
+			 * D​i​s​a​b​l​e​ ​A​t​t​a​c​h​m​e​n​t​s​ ​o​f​ ​U​n​k​n​o​w​n​ ​S​i​z​e
 			 */
 			HIDE_UNKNOWN: string
 			/**
-			 * Use Platform Emojis
+			 * U​s​e​ ​P​l​a​t​f​o​r​m​ ​E​m​o​j​i​s
 			 */
 			USE_PLATFORM_EMOJIS: string
 			/**
-			 * Enable Spellcheck
+			 * E​n​a​b​l​e​ ​S​p​e​l​l​c​h​e​c​k
 			 */
 			ENABLE_SPELLCHECK: string
 		}
 		accessibility: {
 			/**
-			 * Reduce Motion
+			 * R​e​d​u​c​e​ ​M​o​t​i​o​n
 			 */
 			REDUCE_MOTION: string
 			/**
-			 * Reduces or removes animations and transitions
+			 * R​e​d​u​c​e​s​ ​o​r​ ​r​e​m​o​v​e​s​ ​a​n​i​m​a​t​i​o​n​s​ ​a​n​d​ ​t​r​a​n​s​i​t​i​o​n​s
 			 */
 			REDUCE_MOTION_SUBTEXT: string
 			/**
-			 * Pause GIFs on Unfocus
+			 * P​a​u​s​e​ ​G​I​F​s​ ​o​n​ ​U​n​f​o​c​u​s
 			 */
 			UNFOCUS_PAUSE: string
 			/**
-			 * Enable Low-Bandwidth Mode
+			 * E​n​a​b​l​e​ ​L​o​w​-​B​a​n​d​w​i​d​t​h​ ​M​o​d​e
 			 */
 			LOW_BANDWIDTH: string
 			/**
-			 * Uses lower quality assets and will not display attachments until requested
+			 * U​s​e​s​ ​l​o​w​e​r​ ​q​u​a​l​i​t​y​ ​a​s​s​e​t​s​ ​a​n​d​ ​w​i​l​l​ ​n​o​t​ ​d​i​s​p​l​a​y​ ​a​t​t​a​c​h​m​e​n​t​s​ ​u​n​t​i​l​ ​r​e​q​u​e​s​t​e​d
 			 */
 			LOW_BANDWIDTH_SUBTEXT: string
 			/**
-			 * Force Constrasting Colors
+			 * F​o​r​c​e​ ​C​o​n​s​t​r​a​s​t​i​n​g​ ​C​o​l​o​r​s
 			 */
 			FORCE_COLOR_CONTRAST: string
 			/**
-			 * Adjusts custom colors from users or roles to be visible against the background
+			 * A​d​j​u​s​t​s​ ​c​u​s​t​o​m​ ​c​o​l​o​r​s​ ​f​r​o​m​ ​u​s​e​r​s​ ​o​r​ ​r​o​l​e​s​ ​t​o​ ​b​e​ ​v​i​s​i​b​l​e​ ​a​g​a​i​n​s​t​ ​t​h​e​ ​b​a​c​k​g​r​o​u​n​d
 			 */
 			FORCE_COLOR_CONTRAST_SUBTEXT: string
 		}
 		profile: {
 			/**
-			 * Avatar Roundness
+			 * A​v​a​t​a​r​ ​R​o​u​n​d​n​e​s​s
 			 */
 			AVATAR_ROUNDNESS: string
 			/**
-			 * Status
+			 * S​t​a​t​u​s
 			 */
 			STATUS: string
 			/**
-			 * Biography
+			 * B​i​o​g​r​a​p​h​y
 			 */
 			BIO: string
 			/**
-			 * Change Avatar
+			 * C​h​a​n​g​e​ ​A​v​a​t​a​r
 			 */
 			CHANGE_AVATAR: string
 			/**
-			 * Change Banner
+			 * C​h​a​n​g​e​ ​B​a​n​n​e​r
 			 */
 			CHANGE_BANNER: string
 			/**
-			 * Remove Avatar
+			 * R​e​m​o​v​e​ ​A​v​a​t​a​r
 			 */
 			REMOVE_AVATAR: string
 			/**
-			 * Remove Banner
+			 * R​e​m​o​v​e​ ​B​a​n​n​e​r
 			 */
 			REMOVE_BANNER: string
 		}
@@ -639,17 +643,17 @@ export type NamespaceMainTranslation = {
 	system: {
 		welcome: {
 			/**
-			 * Welcome, <@{user}>!
+			 * W​e​l​c​o​m​e​,​ ​<​@​{​u​s​e​r​}​>​!
 			 * @param {string} user
 			 */
 			'0': RequiredParams<'user'>
 			/**
-			 * <@{user}> has joined the party!
+			 * <​@​{​u​s​e​r​}​>​ ​h​a​s​ ​j​o​i​n​e​d​ ​t​h​e​ ​p​a​r​t​y​!
 			 * @param {string} user
 			 */
 			'1': RequiredParams<'user'>
 			/**
-			 * <@{user}> is here, scatter!
+			 * <​@​{​u​s​e​r​}​>​ ​i​s​ ​h​e​r​e​,​ ​s​c​a​t​t​e​r​!
 			 * @param {string} user
 			 */
 			'2': RequiredParams<'user'>
@@ -1158,6 +1162,10 @@ export type TranslationFunctions = {
 				 * UI Font Family
 				 */
 				UI_FONT_FAMILY: () => LocalizedString
+				/**
+				 * Show Date Change
+				 */
+				SHOW_DATE_CHANGE: () => LocalizedString
 			}
 			notifications: {
 				ENABLE_DESKTOP_NOTIFICATIONS: {

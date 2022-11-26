@@ -35,6 +35,10 @@ export const AppearanceSettingsTab = () => {
 
             <ViewSelector />
 
+            <TogglePrefsFlag for="date_change"
+                label={LL().main.settings.appearance.SHOW_DATE_CHANGE()}
+                flag={UserPreferenceFlags.ShowDateChange} />
+
             <TogglePrefsFlag for="group_lines"
                 label={LL().main.settings.appearance.GROUP_LINES()}
                 flag={UserPreferenceFlags.GroupLines} />

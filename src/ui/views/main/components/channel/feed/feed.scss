@@ -59,6 +59,50 @@
         margin: var(--ln-chat-group-padding, 0.15em) 0;
     }
 
+    .ln-date-change {
+        margin: var(--ln-chat-group-padding, 0.15em) 0;
+        margin-inline: 1em;
+
+        opacity: 0.5;
+
+        display: flex;
+        justify-content: center;
+        overflow: hidden;
+        white-space: nowrap;
+
+        span {
+            font-size: 0.75em;
+
+            cursor: default;
+            user-select: all;
+
+            display: inline-block;
+            position: relative;
+
+            color: $lnx-secondary-text-color;
+
+            &::after,
+            &::before {
+                content: "";
+                position: absolute;
+                top: 50%;
+                width: 100vw;
+                height: 1px;
+                background: $lnx-secondary-text-color;
+            }
+
+            &::before {
+                right: 100%;
+                margin-right: 1em;
+            }
+
+            &::after {
+                left: 100%;
+                margin-left: 1em;
+            }
+        }
+    }
+
     .group-lines & > hr {
         border-top: calc(1em / 16) solid rgb(128, 128, 128, 0.15);
     }

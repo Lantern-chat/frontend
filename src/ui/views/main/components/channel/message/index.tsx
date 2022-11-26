@@ -7,6 +7,7 @@ import { user_is_system } from "state/models";
 import { IMessageState } from "state/mutators/chat";
 import { PositionedModal } from "ui/components/modal/positioned";
 import { createSimplePositionedContextMenu } from "ui/hooks/useMain";
+import { useLocale } from "ui/i18n";
 import { MsgContextMenu } from "../../menus/msg_context";
 
 
@@ -14,6 +15,16 @@ import { CompactMessage } from "../message/compact";
 import { CozyMessage } from "../message/cozy";
 import { SystemMessage } from "../message/system";
 import { ActionWidget } from "./actions";
+
+function DateChange(props: { ts: Date }) {
+    let { f } = useLocale();
+
+    return (
+        <div class="ln-date-change">
+            <span class="ui-text">{f().date(props.ts)}</span>
+        </div>
+    );
+}
 
 export function Message(props: { msg: IMessageState }) {
     let prefs = usePrefs();
@@ -29,14 +40,13 @@ export function Message(props: { msg: IMessageState }) {
         System = SystemMessage;
     }
 
-    let outer: HTMLLIElement | undefined;
-
     return (
         <>
-            {() => prefs.GroupLines() && props.msg.sg && <hr />}
+            {() => prefs.ShowDateChange() && props.msg.sd
+                ? <DateChange ts={props.msg.ts} />
+                : (prefs.GroupLines() && props.msg.sg && <hr />)}
 
             <li
-                ref={outer}
                 id={props.msg.msg.id}
                 data-author={props.msg.msg.author.id}
                 class="ln-msg__outer"

@@ -11,8 +11,10 @@ import { loadedLocales } from "./i18n-util";
 
 export interface ExtendedFormatters extends Formatters, BaseFormatters {
 	time: FormatterFunction<number | Date | undefined, string>,
+	date: FormatterFunction<number | Date | undefined, string>,
 	timestamp: FormatterFunction<number | Date | undefined, string>,
 	calendar: FormatterFunction<number | Date | undefined, string> & ((t: DateParams, ref?: Date | number) => string),
+	/// Percent with zero decimals
 	percent0: Formatters['percent'],
 	bytes: FormatterFunction<number, string>,
 }
@@ -44,6 +46,7 @@ export const initFormatters: FormattersInitializer<Locales, ExtendedFormatters> 
 		time: date(l, SUPPORTS_DATE_STYLE
 			? { timeStyle: "short" }
 			: { hour: "numeric", minute: "numeric" }),
+		date: date(l, SUPPORTS_DATE_STYLE ? { dateStyle: "long" } : { month: "long", day: "numeric", year: "numeric" }),
 		timestamp: date(l, SUPPORTS_DATE_STYLE
 			? { dateStyle: "full", timeStyle: "short" }
 			: { weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric" }),

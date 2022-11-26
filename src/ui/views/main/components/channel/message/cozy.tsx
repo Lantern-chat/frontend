@@ -44,7 +44,7 @@ export function CozyMessage(props: IMessageProps) {
 
             <div class="ln-msg__message">
                 {/* Start of group */}
-                <Show when={props.msg.sg}>
+                {() => props.msg.sg && (
                     <div class="ln-msg__title">
                         <MessageUserName name={cached_member().nick} user={props.msg.msg.author} party_id={props.msg.msg.party_id} />
 
@@ -68,7 +68,7 @@ export function CozyMessage(props: IMessageProps) {
 
                         {() => user_is_bot(props.msg.msg.author) && <BotLabel />}
                     </div>
-                </Show>
+                )}
 
                 <MessageBody msg={props.msg.msg} extra={extra()} />
 

@@ -105,6 +105,7 @@ const enUS_main: BaseTranslation = {
             UI_FONT_SIZE: "UI Font Size",
             CHAT_FONT_FAMILY: "Chat Font Family",
             UI_FONT_FAMILY: "UI Font Family",
+            SHOW_DATE_CHANGE: "Show Date Change",
         },
         notifications: {
             ENABLE_DESKTOP_NOTIFICATIONS: [
