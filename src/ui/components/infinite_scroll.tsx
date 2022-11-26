@@ -71,7 +71,11 @@ export function createInfiniteScrollIntersection<T extends HTMLElement>(
         if(enable() && ref.current) {
             let ifs = useContext(InfiniteScrollContext);
             let observer = new IntersectionObserver(entries => {
-                entries.length && runBatched(() => setVisible(entries[0].intersectionRatio > 0), 0);
+                let visible = false;
+                for(let entry of entries) {
+                    if(visible ||= entry.intersectionRatio > 0) break;
+                }
+                entries.length && runBatched(() => setVisible(visible), 0);
             }, { ...opts, root: ifs().container });
 
             observer.observe(ref.current);
@@ -100,12 +104,14 @@ export function createInfiniteScrollIntersectionTrigger<T extends HTMLElement>(
                 };
 
             o.o = new IntersectionObserver(entries => {
-                if(entries.length && entries[0].intersectionRatio > 0) {
-                    do_batch ? runBatched(set_visible) : set_visible();
-                    cleanup();
-                } else {
-                    do_batch = true;
+                for(let entry of entries) {
+                    if(entry.intersectionRatio > 0) {
+                        do_batch ? runBatched(set_visible) : set_visible();
+                        return cleanup();
+                    }
                 }
+
+                do_batch = true;
             }, { ...opts, root: ifs().container });
 
             o.o.observe(ref.current);
