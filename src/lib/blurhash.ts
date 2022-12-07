@@ -68,8 +68,10 @@ export function decode(hash: ArrayBuffer, w: number, h: number, punch: number): 
                 c: RGBColor = { r: 0, g: 0, b: 0 };
 
             for(let j = 0; j < cy; j++) {
+                let basis_y = cos(yf * j);
+
                 for(let i = 0, k = j * cx; i < cx; i++) {
-                    let idx = i + k, basis = cos(xf * i) * cos(yf * j);
+                    let idx = i + k, basis = cos(xf * i) * basis_y;
 
                     c.r += colors[idx].r * basis;
                     c.g += colors[idx].g * basis;
@@ -96,8 +98,10 @@ function multiply_basis_function(xc: number, yc: number, w: number, h: number, r
         scale = 1 / (w * h); // NOTE: This noramlization differs from reference, because I think it looks better
 
     for(let y = 0; y < h; y++) {
+        let basis_y = cos(y * ny);
+
         for(let x = 0; x < w; x++) {
-            let basis = cos(x * nx) * cos(y * ny),
+            let basis = cos(x * nx) * basis_y,
                 i = bpp * (x + y * w);
 
             let c = u8srgb2linear({ r: rgb[i], g: rgb[i + 1], b: rgb[i + 2] });
