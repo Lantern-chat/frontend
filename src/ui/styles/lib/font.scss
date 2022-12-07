@@ -6,6 +6,7 @@ $ln-font-family-cursive: "Brush Script MT", cursive;
 $ln-font-family-monospace: Consolas, Liberation Mono, Menlo, Courier, monospace;
 $ln-font-family-comicsans: "Drama Sans", "Comic Sans MS", "Marker Felt", $ln-font-family-sansserif;
 $ln-font-family-opendyslexic: OpenDyslexic, $ln-font-family-comicsans;
+$ln-font-family-atkinsonhyperlegible: Atkinson Hyperlegible, $ln-font-family-sansserif;
 
 $lnx-chat-font-family: varx(--ln-chat-font-family, $ln-font-family-sansserif);
 $lnx-ui-font-family: varx(--ln-ui-font-family, $ln-font-family-sansserif);

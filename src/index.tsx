@@ -12,6 +12,7 @@ import "ui/styles/layout.scss";
 
 import "ui/styles/lib/fonts/lato.css";
 import "ui/styles/lib/fonts/opendyslexic.css";
+import "ui/styles/lib/fonts/atkinson_hyperlegible.css";
 import "ui/styles/lib/fonts/dramasans.css";
 import "ui/styles/lib/fonts/hasklig.css";
 

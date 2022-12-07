@@ -152,6 +152,7 @@ a {
     --ln-font-family-monospace: #{$ln-font-family-monospace};
     --ln-font-family-opendyslexic: #{$ln-font-family-opendyslexic};
     --ln-font-family-comicsans: #{$ln-font-family-comicsans};
+    --ln-font-family-atkinsonhyperlegible: #{$ln-font-family-atkinsonhyperlegible};
 }
 
 .ln-font {
@@ -179,6 +180,10 @@ a {
 
     &-comicsans {
         font-family: $ln-font-family-comicsans;
+    }
+
+    &-atkinsonhyperlegible {
+        font-family: $ln-font-family-atkinsonhyperlegible;
     }
 }
 

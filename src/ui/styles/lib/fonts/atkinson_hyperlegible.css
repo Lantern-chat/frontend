@@ -1,0 +1,39 @@
+@font-face {
+    font-family: "Atkinson Hyperlegible";
+    src: url(Atkinson_Hyperlegible/AtkinsonHyperlegible-Regular.woff2) format("woff2"),
+        url(Atkinson_Hyperlegible/AtkinsonHyperlegible-Regular.woff) format("woff"),
+        url(Atkinson_Hyperlegible/AtkinsonHyperlegible-Regular.ttf) format("ttf");
+    font-style: normal;
+    font-weight: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Atkinson Hyperlegible";
+    src: url(Atkinson_Hyperlegible/AtkinsonHyperlegible-Italic.woff2) format("woff2"),
+        url(Atkinson_Hyperlegible/AtkinsonHyperlegible-Italic.woff) format("woff"),
+        url(Atkinson_Hyperlegible/AtkinsonHyperlegible-Italic.ttf) format("ttf");
+    font-style: italic;
+    font-weight: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Atkinson Hyperlegible";
+    src: url(Atkinson_Hyperlegible/AtkinsonHyperlegible-Bold.woff2) format("woff2"),
+        url(Atkinson_Hyperlegible/AtkinsonHyperlegible-Bold.woff) format("woff"),
+        url(Atkinson_Hyperlegible/AtkinsonHyperlegible-Bold.ttf) format("ttf");
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Atkinson Hyperlegible";
+    src: url(Atkinson_Hyperlegible/AtkinsonHyperlegible-BoldItalic.woff2) format("woff2"),
+        url(Atkinson_Hyperlegible/AtkinsonHyperlegible-BoldItalic.woff) format("woff"),
+        url(Atkinson_Hyperlegible/AtkinsonHyperlegible-BoldItalic.ttf) format("ttf");
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
