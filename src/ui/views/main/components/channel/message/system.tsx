@@ -37,9 +37,12 @@ function system_body(props: IMessageProps): string {
     switch(props.msg.msg.kind) {
         case MessageKind.Welcome: {
             let user = props.msg.msg.author.id,
-                length = (loadedLocales[locale()].main.system.welcome as any).length;
+                idx = fnv1a(user) % (loadedLocales[locale()].main.system.welcome as any).length;
 
-            return LL().main.system.welcome[fnv1a(user) % length]({ user });
+            return LL().main.system.welcome[idx]({ user });
+        }
+        case MessageKind.Unavailable: {
+            return LL().main.system.unavailable();
         }
     }
 

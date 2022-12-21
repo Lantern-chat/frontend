@@ -658,6 +658,10 @@ export type NamespaceMainTranslation = {
 			 */
 			'2': RequiredParams<'user'>
 		}
+		/**
+		 * M​e​s​s​a​g​e​ ​U​n​a​v​a​i​l​a​b​l​e
+		 */
+		unavailable: string
 	}
 }
 
@@ -1285,6 +1289,10 @@ export type TranslationFunctions = {
 				 */
 				'2': (arg: { user: string }) => LocalizedString
 			}
+			/**
+			 * Message Unavailable
+			 */
+			unavailable: () => LocalizedString
 		}
 	}
 }

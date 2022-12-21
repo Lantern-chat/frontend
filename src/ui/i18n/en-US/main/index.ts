@@ -149,7 +149,8 @@ const enUS_main: BaseTranslation = {
             "Welcome, <@{user:string}>!",
             "<@{user:string}> has joined the party!",
             "<@{user:string}> is here, scatter!"
-        ]
+        ],
+        unavailable: "Message Unavailable",
     }
 };
 
