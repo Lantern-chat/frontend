@@ -54,7 +54,7 @@ export function userMutator(root: RootState, action: Action) {
                     switch(p.o) {
                         case ServerMsgOpcode.PresenceUpdate: {
                             if(p.p.user.id == state.user.id) {
-                                state.presence = p.p.presence;
+                                state.presence = p.p.user.presence;
                             }
                             break;
                         }

@@ -2,9 +2,8 @@ import { Message, Snowflake, split_profile_bits, User, UserProfileSplitBits } fr
 import { CachedUser, cache_key, DEFAULT_PROFILE_BITS } from "state/mutators/cache";
 import { RootState, Type, useRootDispatch } from "state/root";
 
-export function selectCachedUserFromMessage(state: RootState, msg: Message): CachedUser {
-    return selectCachedUser(state, msg.author.id, msg.party_id, msg.author);
-}
+export const selectCachedUserFromMessage = (state: RootState, msg: Message): CachedUser =>
+    selectCachedUser(state, msg.author.id, msg.party_id, msg.author);
 
 export function selectCachedUser(state: RootState, user_id: Snowflake, party_id?: Snowflake, fallback?: User): CachedUser {
     let cached = state.cache.users[cache_key(user_id, party_id)];
@@ -19,7 +18,7 @@ export function selectCachedUser(state: RootState, user_id: Snowflake, party_id?
                     user: member.user,
                     nick: member.user.profile?.nick || member.user.username,
                     profile: member.user.profile,
-                    presence: member.presence,
+                    presence: member.user.presence,
                     party_id,
                     bits: DEFAULT_PROFILE_BITS,
                 };

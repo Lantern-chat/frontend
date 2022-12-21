@@ -120,7 +120,7 @@ export function cacheMutator(root: RootState, action: Action) {
                                 cached.roles = event.p.roles;
                             }
                             case ServerMsgOpcode.PresenceUpdate: {
-                                cached.presence = event.p.presence || cached.presence;
+                                cached.presence = event.p.user.presence || cached.presence;
                             }
                         }
 
