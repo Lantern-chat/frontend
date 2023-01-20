@@ -59,9 +59,15 @@ export function CozyMessage(props: IMessageProps) {
                                 </span>
                             )}
 
-                            {() => (props.msg.msg.flags & MessageFlags.Pinned) != 0 && (
+                            {() => props.msg.msg.pins?.length && (
                                 <span class="flags" title={LL().main.MESSAGE_PINNED()}>
                                     <VectorIcon id={Icons.PushPin} />
+                                </span>
+                            )}
+
+                            {() => props.msg.msg.starred && (
+                                <span class="flags" title={LL().main.MESSAGE_STARRED()}>
+                                    <VectorIcon id={Icons.StarSmall} />
                                 </span>
                             )}
                         </span>

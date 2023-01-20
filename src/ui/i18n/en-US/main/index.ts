@@ -22,6 +22,7 @@ const enUS_main: BaseTranslation = {
     EDITED_ON: "Edited on {ts|timestamp}",
     PINNED: "Pinned",
     MESSAGE_PINNED: "Message Pinned",
+    MESSAGE_STARRED: "Message Starred",
     OWNER: "Owner",
     VIEWING_OLDER: "You're viewing older messages.",
     GOTO_NOW: "Go to now",

@@ -242,6 +242,10 @@ export type NamespaceMainTranslation = {
 	 */
 	MESSAGE_PINNED: string
 	/**
+	 * M​e​s​s​a​g​e​ ​S​t​a​r​r​e​d
+	 */
+	MESSAGE_STARRED: string
+	/**
 	 * O​w​n​e​r
 	 */
 	OWNER: string
@@ -740,11 +744,11 @@ export type TranslationFunctions = {
 	/**
 	 * {{Don't have|Have}} a 2FA code?
 	 */
-	MFA_TOGGLE_TEXT: (arg: { h: string | number | boolean }) => LocalizedString
+	MFA_TOGGLE_TEXT: (arg: { h: number | string | boolean }) => LocalizedString
 	/**
 	 * Click here to {{hide|show}} the input.
 	 */
-	MFA_TOGGLE_FLAVOR: (arg: { h: string | number | boolean }) => LocalizedString
+	MFA_TOGGLE_FLAVOR: (arg: { h: number | string | boolean }) => LocalizedString
 	/**
 	 * 2FA Code
 	 */
@@ -837,7 +841,7 @@ export type TranslationFunctions = {
 		/**
 		 * {{✔|}} Bot
 		 */
-		BOT: (arg: { verified: string | number | boolean }) => LocalizedString
+		BOT: (arg: { verified: number | string | boolean }) => LocalizedString
 		/**
 		 * Online
 		 */
@@ -895,6 +899,10 @@ export type TranslationFunctions = {
 		 */
 		MESSAGE_PINNED: () => LocalizedString
 		/**
+		 * Message Starred
+		 */
+		MESSAGE_STARRED: () => LocalizedString
+		/**
 		 * Owner
 		 */
 		OWNER: () => LocalizedString
@@ -913,11 +921,11 @@ export type TranslationFunctions = {
 		/**
 		 * {{Uns|S}}poiler
 		 */
-		SPOILER: (arg0: string | number | boolean) => LocalizedString
+		SPOILER: (arg0: number | string | boolean) => LocalizedString
 		/**
 		 * {{Uns|S}}poiler All
 		 */
-		SPOILER_ALL: (arg0: string | number | boolean) => LocalizedString
+		SPOILER_ALL: (arg0: number | string | boolean) => LocalizedString
 		/**
 		 * Remove
 		 */
