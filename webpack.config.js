@@ -1,4 +1,5 @@
 const path = require("path");
+const fs = require("fs");
 const webpack = require("webpack");
 const packageJson = require("./package.json");
 
@@ -15,6 +16,21 @@ const distPath = path.join(__dirname, 'dist');
 
 const ENABLE_PRODUCTION = true;
 
+class JustWriteTheFile {
+    constructor(path, contents) {
+        this.path = path;
+        this.contents = contents;
+    }
+
+    apply() {
+        let dir = path.dirname(this.path);
+        if(!fs.existsSync(dir)) {
+            fs.mkdirSync(dir);
+        }
+        fs.writeFileSync(this.path, this.contents);
+    }
+}
+
 function makeMinimizer() {
     const TerserPlugin = require('terser-webpack-plugin');
 
@@ -23,7 +39,7 @@ function makeMinimizer() {
         terserOptions: {
             sourceMap: false, //!IS_PRODUCTION,
             compress: {
-                ecma: 2015,
+                ecma: 2020,
                 passes: 3,
                 unsafe_math: true,
             },
@@ -39,6 +55,8 @@ module.exports = (env, argv) => {
     const MODE = argv.mode || 'development';
     const IS_PRODUCTION = MODE === "production";
     const CHUNK_NAME = (ENABLE_PRODUCTION && IS_PRODUCTION) ? "[id].[chunkhash]" : "[id]";
+
+    const VERSION = `${packageJson.version}${IS_PRODUCTION ? "" : "-dev"}@${new Date().toISOString()}`;
 
     let config = {
         cache: !IS_PRODUCTION,
@@ -173,6 +191,7 @@ module.exports = (env, argv) => {
                 "__DEV__": JSON.stringify(!IS_PRODUCTION),
                 "__PRERELEASE__": JSON.stringify(JSON.parse(process.env.BUILD_PRERELEASE || 'false')),
                 "__TEST__": "false",
+                "__VERSION__": `"${VERSION}"`,
                 "process": {
                     "env": {
                         'NODE_DEBUG': 'undefined',
@@ -182,6 +201,7 @@ module.exports = (env, argv) => {
                 },
                 "DO_NOT_EXPORT_CRC": "undefined"
             }),
+            new JustWriteTheFile(path.join(distPath, "version.txt"), VERSION),
             new webpack.ProvidePlugin({
                 Buffer: ['buffer', 'Buffer'],
                 //TextDecoder: ['text-encoding', 'TextDecoder'],

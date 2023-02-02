@@ -2,6 +2,7 @@ import { Dispatch } from "solid-mutant";
 
 import { IS_MOBILE } from "lib/user_agent";
 import { loadMessages, SearchMode, activateParty, setSession } from "state/commands";
+import { checkVersion } from "state/commands/version";
 import { DEFAULT_LOGGED_IN_CHANNEL, GLOBAL, HISTORY } from "state/global";
 import { GatewayStatus } from "state/mutators/gateway";
 import { getPad, default_prefs } from "state/mutators/prefs";
@@ -208,6 +209,8 @@ export function mainEffect(state: RootState, action: Action, dispatch: Dispatch<
                     break;
                 }
                 case GatewayMessageDiscriminator.Ready: {
+                    dispatch(checkVersion());
+
                     let parties = state.party.parties,
                         { active_party, active_room } = state.chat;
 

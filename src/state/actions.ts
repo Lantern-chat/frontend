@@ -4,6 +4,7 @@ import type { RootState } from "state/root";
 import type { ISession } from "lib/session";
 
 export enum Type {
+    NEW_VERSION = "NEW_VERSION",
     API_ERROR = "API_ERROR",
 
     HISTORY_UPDATE = "HISTORY_UPDATE",
@@ -55,6 +56,7 @@ import type { DispatchableAction as MutantDispatchableAction } from "solid-mutan
 export type DispatchableAction = MutantDispatchableAction<Action, RootState>;
 
 export type Action =
+    | NewVersion
     | HistoryUpdate
     | SessionLogin
     | SessionExpired
@@ -84,6 +86,11 @@ export type Action =
     | ProfileFetched
     | CacheUser
     | UpdateQuota;
+
+export interface NewVersion {
+    type: Type.NEW_VERSION,
+    version: string,
+}
 
 // HISTORY ACTIONS
 

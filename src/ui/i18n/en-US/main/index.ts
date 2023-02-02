@@ -14,6 +14,8 @@ const enUS_main: BaseTranslation = {
     AWAY: "Away",
     MESSAGE: "Message",
     SETTINGS: "Settings",
+    RELOAD_PAGE: "Reload page for latest version",
+    TOGGLE_USERLIST: "Toggle userlist panel",
     MUTE: "Mute",
     UNMUTE: "Unmute",
     DEAFEN: "Deafen",

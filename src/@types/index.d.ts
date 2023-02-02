@@ -1,6 +1,7 @@
 declare var __DEV__: boolean;
 declare var __PRERELEASE__: boolean;
 declare var __TEST__: boolean;
+declare var __VERSION__: string;
 
 interface HTMLMediaElement {
     playing: boolean;

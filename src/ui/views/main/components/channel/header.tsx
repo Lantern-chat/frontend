@@ -4,6 +4,7 @@ import { Type } from "state/main";
 import { Panel } from "state/mutators/window";
 import { RootState, useRootDispatch, useRootSelector } from "state/root";
 import { activeRoom } from "state/selectors/active";
+import { useI18nContext } from "ui/i18n/i18n-solid";
 
 import { SimpleMarkdown } from "ui/components/common/markdown";
 import { VectorIcon } from "ui/components/common/icon";
@@ -12,6 +13,8 @@ import { Icons } from "lantern-icons";
 
 import "./header.scss";
 export function ChannelHeader() {
+    const { LL } = useI18nContext();
+
     let dispatch = useRootDispatch();
     let room = useRootSelector(state => {
         let active_room = activeRoom(state), room;
@@ -25,6 +28,7 @@ export function ChannelHeader() {
     });
 
     let show_panel = useRootSelector(state => state.window.show_panel);
+    let latest_version = useRootSelector(state => state.window.latest_version);
 
     let toggle_sidebar = (which: Panel) => {
         dispatch([
@@ -62,12 +66,24 @@ export function ChannelHeader() {
                     </div>
                 </div>
 
-                <div class="ln-channel-header__users">
+                <div class="ln-channel-header__users"
+                    title={LL().main.TOGGLE_USERLIST()}
+                >
                     <span
                         onClick={() => toggle_sidebar(Panel.RightUserList)}>
                         <VectorIcon id={Icons.Users} />
                     </span>
                 </div>
+
+                {() => (__VERSION__ != latest_version()) && (
+                    <div class="ln-channel-header__version"
+                        title={LL().main.RELOAD_PAGE()}
+                        onClick={() => (location.reload as any)(true)}>
+                        <span>
+                            <VectorIcon id={Icons.Refresh} />
+                        </span>
+                    </div>
+                )}
             </div>
         </div>
     )

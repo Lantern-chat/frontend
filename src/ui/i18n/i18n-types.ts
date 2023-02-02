@@ -209,6 +209,14 @@ export type NamespaceMainTranslation = {
 	 */
 	SETTINGS: string
 	/**
+	 * R​e​l​o​a​d​ ​p​a​g​e​ ​f​o​r​ ​l​a​t​e​s​t​ ​v​e​r​s​i​o​n
+	 */
+	RELOAD_PAGE: string
+	/**
+	 * T​o​g​g​l​e​ ​u​s​e​r​l​i​s​t​ ​p​a​n​e​l
+	 */
+	TOGGLE_USERLIST: string
+	/**
 	 * M​u​t​e
 	 */
 	MUTE: string
@@ -866,6 +874,14 @@ export type TranslationFunctions = {
 		 * Settings
 		 */
 		SETTINGS: () => LocalizedString
+		/**
+		 * Reload page for latest version
+		 */
+		RELOAD_PAGE: () => LocalizedString
+		/**
+		 * Toggle userlist panel
+		 */
+		TOGGLE_USERLIST: () => LocalizedString
 		/**
 		 * Mute
 		 */

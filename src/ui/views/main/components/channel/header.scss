@@ -37,7 +37,8 @@
     }
 
     &__hamburger,
-    &__users {
+    &__users,
+    &__version {
         > span {
             display: block;
             padding: 0.25em;
@@ -65,6 +66,35 @@
 
         @media (min-width: $ln-min-channel-width) {
             display: none;
+        }
+    }
+
+    &__version {
+        svg {
+            .ln-dark-theme & {
+                fill: hsl(120, 50%, 50%);
+            }
+
+            .ln-light-theme & {
+                fill: hsl(120, 80%, 30%);
+            }
+
+            .ln-enable-motion & {
+                @keyframes rotate_version {
+                    0% {
+                        transform: rotate(0deg);
+                    }
+                    85% {
+                        transform: rotate(0deg);
+                    }
+                    100% {
+                        transform: rotate(360deg);
+                    }
+                }
+
+                // animation: rotate_version 15s cubic-bezier(.9,0,.26,1.55) infinite;
+                animation: rotate_version 10s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+            }
         }
     }
 }

@@ -16,6 +16,7 @@ import { IS_MOBILE } from "lib/user_agent";
 import { RootState, Action } from "./root";
 import { userMutator } from "./mutators/user";
 import { initialMutator, Type } from "./initial";
+import { checkVersion } from "./commands/version";
 
 
 export const DEFAULT_LOGGED_IN_CHANNEL: string = "/channels/@me";
@@ -44,6 +45,7 @@ interface IGlobalState {
     store: Store<RootState, Action>,
     client: Client,
     patched_main: boolean,
+    version_timer: ReturnType<typeof setInterval>,
 }
 
 // use `window` to avoid duplicates in edge-cases
@@ -124,7 +126,8 @@ export const GLOBAL: IGlobalState = window['LANTERN_GLOBAL'] = window['LANTERN_G
             if(has_typing) {
                 store.dispatch({ type: Type.CLEANUP_TYPING });
             }
-        }, 2000) // every 2 seconds
+        }, 2000), // every 2 seconds
+        version_timer: setInterval(() => store.dispatch(checkVersion()), 1000 * 60 * 15), // 15 minutes
     };
 }());
 

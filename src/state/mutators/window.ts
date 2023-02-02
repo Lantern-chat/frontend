@@ -5,6 +5,7 @@ export const enum Panel {
 }
 
 export interface IWindowState {
+    latest_version: string,
     width: number,
     height: number,
     use_mobile_view: boolean,
@@ -26,6 +27,7 @@ export function windowMutator(root: RootState, action: Action) {
         let show_user_list = localStorage.getItem(StorageKey.SHOW_USER_LIST);
 
         state = root.window = {
+            latest_version: __VERSION__,
             width: window.innerWidth,
             height: window.innerHeight,
             use_mobile_view: window.innerWidth < MOBILE_MAX_SIZE,
@@ -37,6 +39,10 @@ export function windowMutator(root: RootState, action: Action) {
     }
 
     switch(action.type) {
+        case Type.NEW_VERSION: {
+            state.latest_version = action.version;
+            break;
+        }
         case Type.WINDOW_RESIZE: {
             let width = window.innerWidth;
             state.width = width;
