@@ -238,8 +238,8 @@
             margin-inline-start: 0.5em; // margin-left
 
             .ln-icon {
-                vertical-align: bottom;
-                display: inline;
+                vertical-align: text-top;
+                display: inline-flex;
                 font-size: 1.2em;
             }
         }
