@@ -25,6 +25,11 @@ export function AccessibilitySettingsTab() {
                 label={LL().main.settings.accessibility.FORCE_COLOR_CONTRAST()}
                 flag={UserPreferenceFlags.ForceColorConstrast}
                 subtext={LL().main.settings.accessibility.FORCE_COLOR_CONTRAST_SUBTEXT()} />
+
+            <TogglePrefsFlag for="show_grey_img_bg"
+                label={LL().main.settings.accessibility.SHOW_GREY_IMG_BG()}
+                flag={UserPreferenceFlags.ShowGreyImageBg}
+                subtext={LL().main.settings.accessibility.SHOW_GREY_IMG_BG_SUBTEXT()} />
         </form>
     );
 }

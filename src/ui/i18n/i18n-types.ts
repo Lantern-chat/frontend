@@ -620,6 +620,14 @@ export type NamespaceMainTranslation = {
 			 * A​d​j​u​s​t​s​ ​c​u​s​t​o​m​ ​c​o​l​o​r​s​ ​f​r​o​m​ ​u​s​e​r​s​ ​o​r​ ​r​o​l​e​s​ ​t​o​ ​b​e​ ​v​i​s​i​b​l​e​ ​a​g​a​i​n​s​t​ ​t​h​e​ ​b​a​c​k​g​r​o​u​n​d
 			 */
 			FORCE_COLOR_CONTRAST_SUBTEXT: string
+			/**
+			 * S​h​o​w​ ​g​r​e​y​ ​b​a​c​k​g​r​o​u​n​d​ ​u​n​d​e​r​ ​i​m​a​g​e​s
+			 */
+			SHOW_GREY_IMG_BG: string
+			/**
+			 * H​e​l​p​s​ ​m​a​k​e​ ​m​o​s​t​l​y​-​t​r​a​n​s​p​a​r​e​n​t​ ​i​m​a​g​e​s​ ​m​o​r​e​ ​v​i​s​i​b​l​e
+			 */
+			SHOW_GREY_IMG_BG_SUBTEXT: string
 		}
 		profile: {
 			/**
@@ -1266,6 +1274,14 @@ export type TranslationFunctions = {
 				 * Adjusts custom colors from users or roles to be visible against the background
 				 */
 				FORCE_COLOR_CONTRAST_SUBTEXT: () => LocalizedString
+				/**
+				 * Show grey background under images
+				 */
+				SHOW_GREY_IMG_BG: () => LocalizedString
+				/**
+				 * Helps make mostly-transparent images more visible
+				 */
+				SHOW_GREY_IMG_BG_SUBTEXT: () => LocalizedString
 			}
 			profile: {
 				/**

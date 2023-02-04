@@ -54,6 +54,8 @@ export function MsgAttachment(props: IMsgAttachmentProps) {
             "data-mime": a.mime,
             onContextMenu: eat,
             onError: () => setErrored(true),
+            width: a.width,
+            height: a.height,
         };
     };
 

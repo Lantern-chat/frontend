@@ -136,6 +136,9 @@ const enUS_main: BaseTranslation = {
 
             FORCE_COLOR_CONTRAST: "Force Constrasting Colors",
             FORCE_COLOR_CONTRAST_SUBTEXT: "Adjusts custom colors from users or roles to be visible against the background",
+
+            SHOW_GREY_IMG_BG: "Show grey background under images",
+            SHOW_GREY_IMG_BG_SUBTEXT: "Helps make mostly-transparent images more visible",
         },
         profile: {
             AVATAR_ROUNDNESS: "Avatar Roundness",
