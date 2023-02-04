@@ -73,7 +73,7 @@ export function MemberList() {
             }
 
             outer: for(let member of members) {
-                let presence = parse_presence(member.presence);
+                let presence = parse_presence(member.user.presence);
 
                 if(presence.status != PresenceStatus.Offline) {
                     // if the member is in any roles AND if there are any roles to hoist
