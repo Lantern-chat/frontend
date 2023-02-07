@@ -118,6 +118,8 @@ const enUS_main: BaseTranslation = {
             ]
         },
         media: {
+            SHOW_ATTACHMENT_GRID: "Show Attachments in Grid",
+            SHOW_ATTACHMENT_GRID_SUBTEXT: "Arrange multiple attachments for a single message into a grid",
             SHOW_MEDIA_METADATA: "Show Media Metadata",
             SHOW_MEDIA_METADATA_SUBTEXT: "Displays file name, MIME type, and file size on attachments",
             MUTE_MEDIA: "Mute Media by Default",

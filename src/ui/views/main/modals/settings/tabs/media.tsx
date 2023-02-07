@@ -8,6 +8,11 @@ export function MediaSettingsTab() {
 
     return (
         <form class="ln-settings-form">
+            <TogglePrefsFlag for="show_grid"
+                label={LL().main.settings.media.SHOW_ATTACHMENT_GRID()}
+                flag={UserPreferenceFlags.ShowAttachmentGrid}
+                subtext={LL().main.settings.media.SHOW_ATTACHMENT_GRID_SUBTEXT()} />
+
             <TogglePrefsFlag for="show_metadata"
                 label={LL().main.settings.media.SHOW_MEDIA_METADATA()}
                 flag={UserPreferenceFlags.ShowMediaMetadata}

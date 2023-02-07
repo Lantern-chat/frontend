@@ -567,6 +567,14 @@ export type NamespaceMainTranslation = {
 		}
 		media: {
 			/**
+			 * S​h​o​w​ ​A​t​t​a​c​h​m​e​n​t​s​ ​i​n​ ​G​r​i​d
+			 */
+			SHOW_ATTACHMENT_GRID: string
+			/**
+			 * A​r​r​a​n​g​e​ ​m​u​l​t​i​p​l​e​ ​a​t​t​a​c​h​m​e​n​t​s​ ​f​o​r​ ​a​ ​s​i​n​g​l​e​ ​m​e​s​s​a​g​e​ ​i​n​t​o​ ​a​ ​g​r​i​d
+			 */
+			SHOW_ATTACHMENT_GRID_SUBTEXT: string
+			/**
 			 * S​h​o​w​ ​M​e​d​i​a​ ​M​e​t​a​d​a​t​a
 			 */
 			SHOW_MEDIA_METADATA: string
@@ -621,7 +629,7 @@ export type NamespaceMainTranslation = {
 			 */
 			FORCE_COLOR_CONTRAST_SUBTEXT: string
 			/**
-			 * S​h​o​w​ ​g​r​e​y​ ​b​a​c​k​g​r​o​u​n​d​ ​u​n​d​e​r​ ​i​m​a​g​e​s
+			 * S​h​o​w​ ​G​r​e​y​ ​I​m​a​g​e​ ​B​a​c​k​g​r​o​u​n​d
 			 */
 			SHOW_GREY_IMG_BG: string
 			/**
@@ -1221,6 +1229,14 @@ export type TranslationFunctions = {
 			}
 			media: {
 				/**
+				 * Show Attachments in Grid
+				 */
+				SHOW_ATTACHMENT_GRID: () => LocalizedString
+				/**
+				 * Arrange multiple attachments for a single message into a grid
+				 */
+				SHOW_ATTACHMENT_GRID_SUBTEXT: () => LocalizedString
+				/**
 				 * Show Media Metadata
 				 */
 				SHOW_MEDIA_METADATA: () => LocalizedString
@@ -1275,7 +1291,7 @@ export type TranslationFunctions = {
 				 */
 				FORCE_COLOR_CONTRAST_SUBTEXT: () => LocalizedString
 				/**
-				 * Show grey background under images
+				 * Show Grey Image Background
 				 */
 				SHOW_GREY_IMG_BG: () => LocalizedString
 				/**
