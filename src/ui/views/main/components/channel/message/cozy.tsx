@@ -9,7 +9,7 @@ import { BotLabel } from "../../misc/bot_label";
 import { IMessageProps, MessageUserAvatar, MessageUserName } from "./common";
 
 import { Message as MessageBody } from "./msg";
-import { MsgAttachment } from "./attachment";
+import { Attachments } from "./attachment";
 import { UICalendar } from "ui/components/common/timestamp";
 import { Reactions } from "./reaction";
 import { useI18nContext } from "ui/i18n/i18n-solid";
@@ -78,9 +78,7 @@ export function CozyMessage(props: IMessageProps) {
 
                 <MessageBody msg={props.msg.msg} extra={extra()} />
 
-                <For each={props.msg.msg.attachments}>
-                    {attachment => <MsgAttachment msg={props.msg.msg} attachment={attachment} />}
-                </For>
+                <Attachments msg={props.msg.msg} />
 
                 <Show when={props.msg.msg.reactions?.length}>
                     <Reactions msg={props.msg.msg} />

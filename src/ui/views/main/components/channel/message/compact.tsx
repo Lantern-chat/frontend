@@ -3,7 +3,7 @@ import { useRootSelector } from "state/root";
 import { selectCachedUserFromMessage } from "state/selectors/selectCachedUser";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 import { formatters } from "ui/i18n";
-import { MsgAttachment } from "./attachment";
+import { Attachments } from "./attachment";
 import { IMessageProps, MessageUserName } from "./common";
 
 import { Message as MessageBody } from "./msg";
@@ -40,9 +40,7 @@ export function CompactMessage(props: IMessageProps) {
 
             <MessageBody msg={props.msg.msg} extra={extra()} />
 
-            <For each={props.msg.msg.attachments}>
-                {attachment => <MsgAttachment msg={props.msg.msg} attachment={attachment} />}
-            </For>
+            <Attachments msg={props.msg.msg} />
 
             <Show when={props.msg.msg.reactions?.length}>
                 <Reactions msg={props.msg.msg} />

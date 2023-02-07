@@ -12,8 +12,12 @@
     //    margin-bottom: 0.5em;
     //}
 
-    & > * {
+    & > *:first-child {
         margin-top: 0.5em;
+    }
+
+    &--grid & > *:first-child {
+        margin-top: 0;
     }
 
     .ln-msg__title + & > div:first-child {
@@ -76,6 +80,92 @@
         }
     }
 
+    // Must go before grid overrides
+    audio,
+    video,
+    img {
+        //max-height: 40em;
+        max-height: max(50vh, 9 * 2.5em);
+        max-width: min(100%, max(50vw, 16 * 2.5em));
+        object-fit: contain;
+
+        @media (max-width: $ln-max-channel-width) {
+            max-width: 100%;
+        }
+
+        display: block;
+        height: auto;
+        width: auto;
+
+        outline: none;
+        border: 0;
+
+        &:-moz-loading {
+            visibility: hidden;
+        }
+
+        // TODO: Revisit this, trying to use variables to keep is
+        // lower priority than direct aspect-ratio on the element
+        aspect-ratio: var(--aspect-ratio);
+    }
+
+    &--grid {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    &--grid & {
+        padding-inline-end: 0;
+    }
+
+    &--grid-item {
+        & img {
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            min-height: 0;
+            border-radius: 3px; // NOTE: Using px is rare, but I want this to be very subtle
+            padding-right: 0.5em;
+
+            &:first-child {
+                padding-top: 0.5em;
+            }
+        }
+
+        &.s {
+            flex-basis: 20%;
+            min-width: 0;
+            min-height: 0;
+
+            img {
+                aspect-ratio: 1 / 1 !important;
+                width: 100%;
+            }
+
+            @media (max-width: $ln-max-channel-width) {
+                flex-basis: 50%;
+            }
+        }
+
+        &.w {
+            flex-basis: 40%;
+            min-width: 0;
+            min-height: 0;
+
+            img {
+                aspect-ratio: 2 / 1 !important;
+                width: 100%;
+            }
+
+            @media (max-width: $ln-max-channel-width) {
+                flex-basis: 100%;
+            }
+        }
+
+        // .t {
+        //     aspect-ratio: 1 / 2;
+        // }
+    }
+
     @media (max-width: $ln-max-channel-width) {
         //padding-left: 1rem;
         padding-inline-end: 1rem;
@@ -84,6 +174,22 @@
 
     &__download {
         margin-inline-start: 1em;
+    }
+
+    // &--grid &__generic&__generic
+    @at-root #{&}--grid #{&}__generic#{&}__generic {
+        @media (max-width: $ln-max-channel-width) {
+            margin-block: 0.5em 0.25em;
+            right: 0.25em;
+            position: relative;
+        }
+    }
+
+    &--grid &__generic {
+        @media (min-width: $ln-min-channel-width) {
+            display: flex; // stretches
+            max-width: calc(100% - 0.5em);
+        }
     }
 
     &__generic {
@@ -137,33 +243,16 @@
         }
     }
 
-    audio,
-    video,
-    img {
-        //max-height: 40em;
-        max-height: max(50vh, 9 * 2.5em);
-        max-width: min(100%, max(50vw, 16 * 2.5em));
-        object-fit: contain;
-
-        @media (max-width: $ln-max-channel-width) {
-            max-width: 100%;
-        }
-
-        display: block;
-        height: auto;
-        width: auto;
-    }
-
     .ln-grey-img-bg.ln-dark-theme & {
         video,
-        img {
+        img[data-loaded="true"] {
             background-color: rgba(256, 256, 256, 0.55);
         }
     }
 
     .ln-grey-img-bg.ln-light-theme & {
         video,
-        img {
+        img[data-loaded="true"] {
             background-color: rgba(128, 128, 128, 0.4);
         }
     }
@@ -212,7 +301,8 @@
     user-select: text;
 
     &--full {
-        margin-bottom: -0.25em;
+        margin-block: 0.25em;
+        //margin-bottom: -0.25em;
         display: flex;
         white-space: nowrap;
 
@@ -222,6 +312,14 @@
             display: inline-block;
             text-overflow: ellipsis;
             user-select: all;
+        }
+
+        .ln-msg-attachment--grid-item & {
+            display: flex;
+            //height: 1.5em;
+            margin: none;
+            margin-block-end: 0.25em;
+            padding-right: 0.5em;
         }
     }
 
