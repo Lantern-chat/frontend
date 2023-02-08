@@ -41,7 +41,6 @@ const enUS_main: BaseTranslation = {
     ATTACH_FILE: "Attach File",
     SEND_MESSAGE: "Send Message",
     DROP_FILES: "Drop Files",
-    LAST_ACTIVE: "Last Active: {ago:number|relative}",
     USERS_TYPING: [
         "{0:string} is typing...", // 1 user
         "{0:string} and {1:string} are typing...", // 2 users

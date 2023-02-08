@@ -317,11 +317,6 @@ export type NamespaceMainTranslation = {
 	 * D​r​o​p​ ​F​i​l​e​s
 	 */
 	DROP_FILES: string
-	/**
-	 * L​a​s​t​ ​A​c​t​i​v​e​:​ ​{​a​g​o​|​r​e​l​a​t​i​v​e​}
-	 * @param {number} ago
-	 */
-	LAST_ACTIVE: RequiredParams<'ago|relative'>
 	USERS_TYPING: {
 		/**
 		 * {​0​}​ ​i​s​ ​t​y​p​i​n​g​.​.​.
@@ -1013,10 +1008,6 @@ export type TranslationFunctions = {
 		 * Drop Files
 		 */
 		DROP_FILES: () => LocalizedString
-		/**
-		 * Last Active: {ago|relative}
-		 */
-		LAST_ACTIVE: (arg: { ago: number }) => LocalizedString
 		USERS_TYPING: {
 			/**
 			 * {0} is typing...
@@ -1386,6 +1377,5 @@ export type Formatters = {
 	bytes: (value: number) => unknown
 	number: (value: number) => unknown
 	percent: (value: number) => unknown
-	relative: (value: number) => unknown
 	timestamp: (value: unknown) => unknown
 }

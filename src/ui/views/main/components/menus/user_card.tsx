@@ -2,7 +2,7 @@ import { createEffect, createMemo, JSXElement, onMount, Show } from "solid-js";
 import { PartyMember, Snowflake, User, parse_presence, UserPreferenceFlags, user_is_bot, PresenceStatus, UserProfile, split_profile_bits, UserPresence, UserProfileSplitBits } from "state/models";
 import { RootState, useRootDispatch, useRootSelector, useRootStore } from "state/root";
 import { selectCachedUser } from "state/selectors/selectCachedUser";
-import { useI18nContext } from "ui/i18n/i18n-solid";
+import { useLocale } from "ui/i18n";
 import { usePrefs } from "state/contexts/prefs";
 import { pickColorFromHash } from "lib/palette";
 import { Markdown } from "ui/components/common/markdown";
@@ -66,8 +66,7 @@ export interface ISimpleUserCardProps {
 }
 
 export function SimpleUserCard(props: ISimpleUserCardProps) {
-    let prefs = usePrefs();
-    const { LL } = useI18nContext();
+    const prefs = usePrefs(), { f } = useLocale();
 
     let bits = createMemo(() => props.bits || (props.profile && split_profile_bits(props.profile)));
 
@@ -110,7 +109,7 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
                     {() => !!props.last_active && !props.bannerCover && props.presence?.flags == 0 && (
                         <div class="ln-user-last-active">
                             <span class="ui-text">
-                                {LL().main.LAST_ACTIVE({ ago: props.last_active * -10 })}
+                                {f().relative(props.last_active * -10)}
                             </span>
                         </div>
                     )}
