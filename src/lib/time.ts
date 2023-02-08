@@ -1,3 +1,5 @@
+import { round_to } from "./math";
+
 const MAX_DURATION: number = 0x7FFFFFFF;
 
 export interface LongTimeout {
@@ -147,6 +149,29 @@ export function calendar(
                         diff < 7 ? 'nextWeek' : 'sameElse';
 
     return format(locale, table[which], t);
+}
+
+const INCREMENTS: Array<[Intl.RelativeTimeFormatUnit, number]> = [
+    ['second', 1],
+    [`minute`, 60],
+    ['hour', 60 * 60],
+    ['day', 60 * 60 * 24],
+    ['week', 60 * 60 * 24 * 7],
+    ['month', 60 * 60 * 24 * 30.437], // average days in month
+    ['year', 60 * 60 * 24 * 365.25] // average days in year
+];
+
+export function relative(
+    rel: Intl.RelativeTimeFormat,
+    value: number,
+    digits: number = 0,
+): string {
+    let x = Math.abs(value), max = INCREMENTS[0];
+    for(let j of INCREMENTS) {
+        if(j[1] >= x) break;
+        max = j;
+    }
+    return rel.format(round_to(value / max[1], digits), max[0]);
 }
 
 export function months(locale: string): string[] {

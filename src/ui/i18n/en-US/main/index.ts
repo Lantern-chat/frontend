@@ -41,6 +41,7 @@ const enUS_main: BaseTranslation = {
     ATTACH_FILE: "Attach File",
     SEND_MESSAGE: "Send Message",
     DROP_FILES: "Drop Files",
+    LAST_ACTIVE: "Last Active: {ago:number|relative}",
     USERS_TYPING: [
         "{0:string} is typing...", // 1 user
         "{0:string} and {1:string} are typing...", // 2 users
@@ -116,6 +117,10 @@ const enUS_main: BaseTranslation = {
                 "Enable Desktop Notifications (May be outdated if revoked externally)",
                 "Enable Desktop Notifications (Not Available)",
             ]
+        },
+        privacy: {
+            HIDE_LAST_ACTIVE: "Hide Last Active",
+            HIDE_LAST_ACTIVE_SUBTEXT: "Will not display your approximate last-active time for other users",
         },
         media: {
             SHOW_ATTACHMENT_GRID: "Show Attachments in Grid",

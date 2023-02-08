@@ -1,4 +1,9 @@
-const { sqrt, cbrt, sin, abs, sign, PI, min, max } = Math;
+const { sqrt, cbrt, sin, abs, sign, PI, min, max, round, trunc } = Math;
+
+export function round_to(x: number, digits: number = 0): number {
+    let i = trunc(x);
+    return digits == 0 ? i : (i + round((x - i + Number.EPSILON) * digits) / digits);
+}
 
 export function saturate(x: number): number {
     return min(1, max(0, x));

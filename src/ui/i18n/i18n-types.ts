@@ -317,6 +317,11 @@ export type NamespaceMainTranslation = {
 	 * D​r​o​p​ ​F​i​l​e​s
 	 */
 	DROP_FILES: string
+	/**
+	 * L​a​s​t​ ​A​c​t​i​v​e​:​ ​{​a​g​o​|​r​e​l​a​t​i​v​e​}
+	 * @param {number} ago
+	 */
+	LAST_ACTIVE: RequiredParams<'ago|relative'>
 	USERS_TYPING: {
 		/**
 		 * {​0​}​ ​i​s​ ​t​y​p​i​n​g​.​.​.
@@ -564,6 +569,16 @@ export type NamespaceMainTranslation = {
 				 */
 				'2': string
 			}
+		}
+		privacy: {
+			/**
+			 * H​i​d​e​ ​L​a​s​t​ ​A​c​t​i​v​e
+			 */
+			HIDE_LAST_ACTIVE: string
+			/**
+			 * W​i​l​l​ ​n​o​t​ ​d​i​s​p​l​a​y​ ​y​o​u​r​ ​a​p​p​r​o​x​i​m​a​t​e​ ​l​a​s​t​-​a​c​t​i​v​e​ ​t​i​m​e​ ​f​o​r​ ​o​t​h​e​r​ ​u​s​e​r​s
+			 */
+			HIDE_LAST_ACTIVE_SUBTEXT: string
 		}
 		media: {
 			/**
@@ -998,6 +1013,10 @@ export type TranslationFunctions = {
 		 * Drop Files
 		 */
 		DROP_FILES: () => LocalizedString
+		/**
+		 * Last Active: {ago|relative}
+		 */
+		LAST_ACTIVE: (arg: { ago: number }) => LocalizedString
 		USERS_TYPING: {
 			/**
 			 * {0} is typing...
@@ -1227,6 +1246,16 @@ export type TranslationFunctions = {
 					'2': () => LocalizedString
 				}
 			}
+			privacy: {
+				/**
+				 * Hide Last Active
+				 */
+				HIDE_LAST_ACTIVE: () => LocalizedString
+				/**
+				 * Will not display your approximate last-active time for other users
+				 */
+				HIDE_LAST_ACTIVE_SUBTEXT: () => LocalizedString
+			}
 			media: {
 				/**
 				 * Show Attachments in Grid
@@ -1357,5 +1386,6 @@ export type Formatters = {
 	bytes: (value: number) => unknown
 	number: (value: number) => unknown
 	percent: (value: number) => unknown
+	relative: (value: number) => unknown
 	timestamp: (value: unknown) => unknown
 }

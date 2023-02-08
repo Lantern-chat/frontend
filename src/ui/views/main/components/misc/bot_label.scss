@@ -6,7 +6,7 @@ span.bot-label {
     justify-content: center;
     flex-direction: column;
     cursor: default;
-    //user-select: none;
+    user-select: none;
 
     background-color: hsl(227, 70%, 60%); //#5674e1 #7289da;
     .ln-light-theme & {

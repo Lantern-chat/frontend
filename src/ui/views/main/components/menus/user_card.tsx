@@ -40,6 +40,7 @@ export function UserCard(props: IUserCardProps) {
                 nick={cached_user()!.nick}
                 bits={cached_user()!.bits}
                 profile={cached_user()!.profile}
+                last_active={cached_user()!.last_active}
                 presence={cached_user()!.presence} />
         </Show>
     );
@@ -50,6 +51,7 @@ export interface ISimpleUserCardProps {
     nick: string | undefined,
     presence?: UserPresence,
     profile: UserProfile | undefined | null,
+    last_active?: number,
     bits?: UserProfileSplitBits,
     banner_url?: string | null,
     avatar_url?: string | null,
@@ -104,6 +106,14 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
                     }}
                 >
                     {props.bannerCover}
+
+                    {() => !!props.last_active && !props.bannerCover && props.presence?.flags == 0 && (
+                        <div class="ln-user-last-active">
+                            <span class="ui-text">
+                                {LL().main.LAST_ACTIVE({ ago: props.last_active * -10 })}
+                            </span>
+                        </div>
+                    )}
                 </div>
 
                 <div class="avatar-box" style={{ 'border-radius': br(roundness()) }}>
@@ -122,13 +132,17 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
             <div class="ln-user-card__info">
                 <div class="ui-text ln-username">
                     <Show when={props.nick && props.nick != props.user.username} fallback={
-                        <h4>{props.user.username}<Discriminator discriminator={props.user.discriminator} /></h4>
+                        <h4>
+                            {props.user.username}<Discriminator discriminator={props.user.discriminator} />
+                            {() => user_is_bot(props.user) && <BotLabel />}
+                        </h4>
                     }>
                         <h4><UserText text={props.nick!} /></h4>
-                        <span>{props.user.username}<Discriminator discriminator={props.user.discriminator} /></span>
+                        <span>
+                            {props.user.username}<Discriminator discriminator={props.user.discriminator} />
+                            {() => user_is_bot(props.user) && <BotLabel />}
+                        </span>
                     </Show>
-
-                    {() => user_is_bot(props.user) && <BotLabel />}
                 </div>
 
                 <Show when={props.profile?.status}>

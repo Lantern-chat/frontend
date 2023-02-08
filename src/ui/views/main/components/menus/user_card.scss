@@ -92,12 +92,30 @@ $AVATAR_HORIZONTAL_SHIFT: 1.25em;
     }
 
     .ln-username {
-        padding-block: 0.4em;
+        padding-block: 0.4rem;
 
-        span,
-        h4 {
+        h4,
+        span {
             user-select: all;
+
+            .bot-label {
+                user-select: none;
+            }
         }
+    }
+
+    .bot-label {
+        vertical-align: top;
+    }
+
+    .ln-user-last-active {
+        font-size: 0.75em;
+        padding-block-start: 0.6rem;
+        text-align: right;
+        color: $lnx-secondary-text-color;
+        position: absolute;
+        right: 0.75rem;
+        top: 100%;
     }
 
     .ln-markdown {
@@ -107,7 +125,7 @@ $AVATAR_HORIZONTAL_SHIFT: 1.25em;
     .ln-user-custom-status {
         user-select: text;
         display: block;
-        padding-block-start: 0.4em;
+        padding-block-start: 0.4rem;
     }
 
     .ln-user-biography {

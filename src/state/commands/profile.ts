@@ -12,8 +12,8 @@ export function fetch_profile(user_id: Snowflake, party_id?: Snowflake): Dispatc
             let user = 'user' in user_or_member ? user_or_member.user : user_or_member;
 
             dispatch({
-                type: Type.PROFILE_FETCHED,
-                user_id, party_id,
+                type: Type.USER_FETCHED,
+                user, party_id,
                 // graceful fallback to default profile if there is none
                 profile: user.profile || { bits: 0 }
             });

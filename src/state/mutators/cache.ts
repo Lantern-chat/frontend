@@ -1,6 +1,6 @@
 import { PartyMemberEvent, UserPresenceUpdateEvent } from "client-sdk/src/models/gateway";
 import { Action, Type } from "state/actions";
-import { Message, PartyMember, ServerMsgOpcode, Snowflake, split_profile_bits, User, UserPresence, UserProfile, UserProfileSplitBits } from "state/models";
+import { Message, PartyMember, ServerMsgOpcode, Snowflake, split_profile_bits, User, UserPresence, UserPresenceFlags, UserProfile, UserProfileSplitBits } from "state/models";
 import { RootState } from "state/root";
 import { merge } from "state/util";
 import { GatewayMessageDiscriminator } from "worker/gateway/msg";
@@ -13,6 +13,7 @@ export interface CachedUser {
     presence?: UserPresence,
     profile?: UserProfile | null,
     bits: UserProfileSplitBits,
+    last_active: number | undefined,
 }
 
 export interface ICacheState {
@@ -27,6 +28,17 @@ export const DEFAULT_PROFILE_BITS: UserProfileSplitBits = {
     roundedness: 0,
     override_color: false,
     color: 0,
+}
+
+function get_last_active(presence: UserPresence | undefined): undefined | number {
+    if(presence) {
+        if(presence.flags > 0) {
+            return 0;
+        } else if(presence.last_active) {
+            return presence.last_active;
+        }
+    }
+    return;
 }
 
 export function cacheMutator(root: RootState, action: Action) {
@@ -45,14 +57,16 @@ export function cacheMutator(root: RootState, action: Action) {
 
             break;
         }
-        case Type.PROFILE_FETCHED: {
-            let { user_id, party_id, profile } = action,
-                key = cache_key(user_id, party_id),
+        case Type.USER_FETCHED: {
+            let { user, party_id, profile } = action,
+                key = cache_key(user.id, party_id),
                 cached: CachedUser | undefined = cache.users[key];
 
             if(cached) {
                 merge(cached, 'profile', profile);
                 cached.bits = split_profile_bits(profile);
+                cached.last_active = get_last_active(user.presence);
+                cached.presence = user.presence;
             } else {
                 __DEV__ && console.log("Not caching profile", key);
             }
@@ -77,6 +91,7 @@ export function cacheMutator(root: RootState, action: Action) {
                         nick: user.profile?.nick || user.username,
                         profile: user.profile,
                         bits: user.profile ? split_profile_bits(user.profile) : DEFAULT_PROFILE_BITS,
+                        last_active: get_last_active(user.presence),
                     };
 
                     for(let party of event.p.parties) {
