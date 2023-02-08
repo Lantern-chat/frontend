@@ -5,7 +5,9 @@ export function checkVersion(): DispatchableAction {
         let old = state.window.latest_version;
 
         try {
-            let resp = await fetch("/static/version.txt");
+            // GET requests can be cached, causing version mismatches,
+            // so append Date.now() to bust the cache
+            let resp = await fetch(`/static/version.txt?${Date.now()}`);
             let new_version = await resp.text();
 
             if(old != new_version) {
