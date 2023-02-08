@@ -571,7 +571,7 @@ export type NamespaceMainTranslation = {
 			 */
 			HIDE_LAST_ACTIVE: string
 			/**
-			 * W​i​l​l​ ​n​o​t​ ​d​i​s​p​l​a​y​ ​y​o​u​r​ ​a​p​p​r​o​x​i​m​a​t​e​ ​l​a​s​t​-​a​c​t​i​v​e​ ​t​i​m​e​ ​f​o​r​ ​o​t​h​e​r​ ​u​s​e​r​s
+			 * W​i​l​l​ ​n​o​t​ ​d​i​s​p​l​a​y​ ​y​o​u​r​ ​a​p​p​r​o​x​i​m​a​t​e​ ​l​a​s​t​-​a​c​t​i​v​e​ ​t​i​m​e​ ​t​o​ ​o​t​h​e​r​ ​u​s​e​r​s
 			 */
 			HIDE_LAST_ACTIVE_SUBTEXT: string
 		}
@@ -1243,7 +1243,7 @@ export type TranslationFunctions = {
 				 */
 				HIDE_LAST_ACTIVE: () => LocalizedString
 				/**
-				 * Will not display your approximate last-active time for other users
+				 * Will not display your approximate last-active time to other users
 				 */
 				HIDE_LAST_ACTIVE_SUBTEXT: () => LocalizedString
 			}

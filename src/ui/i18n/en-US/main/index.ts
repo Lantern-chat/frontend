@@ -119,7 +119,7 @@ const enUS_main: BaseTranslation = {
         },
         privacy: {
             HIDE_LAST_ACTIVE: "Hide Last Active",
-            HIDE_LAST_ACTIVE_SUBTEXT: "Will not display your approximate last-active time for other users",
+            HIDE_LAST_ACTIVE_SUBTEXT: "Will not display your approximate last-active time to other users",
         },
         media: {
             SHOW_ATTACHMENT_GRID: "Show Attachments in Grid",
