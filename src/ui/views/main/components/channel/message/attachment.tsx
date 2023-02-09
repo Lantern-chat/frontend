@@ -27,7 +27,7 @@ import { UserText } from "ui/components/common/ui-text-user";
 
 import { Icons } from "lantern-icons";
 
-const LARGE_THRESHOLD = 1024 * 1024 * (IS_MOBILE ? 10 : 30);
+const LARGE_THRESHOLD = 1024 * 1024 * (IS_MOBILE ? 20 : 50);
 
 import "./attachment.scss";
 
@@ -35,55 +35,88 @@ const MAX_GRID_WIDTH = 4 / 100;
 
 interface GridItem {
     attachment: Attachment,
-    form: 's' | 'w' | 't'; // square/wide/tall
+    x: number,
+    y: number,
+    w: 1 | 2,
+    h: 1 | 2,
 }
 
 interface Grid {
+    cols: 2 | 3 | 4 | 5,
     items: Array<GridItem>
 }
 
-// TODO: Improve this
 function compute_grid(msg: Message, prefs: UserPreferenceAccessors): Grid | undefined {
-    if(msg.attachments && msg.attachments.length > 2 && !prefs.LowBandwidthMode()) {
-        let items: GridItem[] = [], is_mobile = prefs.UseMobileView(), continous_squares = 0, total_wide = 0;
+    if(msg.attachments && msg.attachments.length > 1 && !prefs.LowBandwidthMode()) {
+        let items: GridItem[] = [],
+            is_mobile = prefs.UseMobileView(),
+            limit_cols = is_mobile ? 2 : 5,
+            max_cols = 1;
 
+        // compute item dimensions
         for(let attachment of msg.attachments) {
-            if(!attachment.mime?.startsWith("image/")) {
+            let unknown = prefs.HideUnknown() && !(attachment.width && attachment.height);
+            let large = attachment.size >= LARGE_THRESHOLD;
+
+            if((unknown || large)) {
                 return;
             }
 
             let ar = attachment.width! / attachment.height!;
-            let form: "s" | "w" | "t" = ar > 1.5 ? 'w' : ar < 0.5 ? 't' : 's';
 
-            let unknown = prefs.HideUnknown() && !(attachment.width && attachment.height);
-            let large = attachment.size >= LARGE_THRESHOLD;
+            items.push({
+                attachment, x: 0, y: 0,
+                w: ar > 1.5 ? 2 : 1,
+                h: 1 //ar < 0.6 ? 2 : 1,
+            });
+        }
 
-            if((unknown || large) && form != "w") {
+        let x = 0, y = 0;
+
+        for(let item of items) {
+            item.x = x;
+            item.y = y;
+
+            let nx = x + item.w;
+            max_cols = Math.max(nx, max_cols);
+
+            if(nx > limit_cols) return;
+
+            if(nx == limit_cols) {
+                x = 0;
+                y += 1;
+            } else {
+                x = nx;
+            }
+        }
+
+        // mobile layout optimizations
+        if(limit_cols == 2 && y > 0) {
+            let l = items.length, last_item = items[l - 1];
+
+            // stacked on top, use normal behavior
+            if((() => {
+                for(let i = 0; i < l - 1; i++) {
+                    if(items[i].w != 2) return false;
+                }
+                return true;
+            })()) {
                 return;
             }
 
-            if(form == "s") {
-                continous_squares++;
-            } else {
-                // odd, would cause gap
-                if(is_mobile && (continous_squares & 1) == 1) {
-                    return;
-                }
-
-                if(form == "w") {
-                    total_wide++;
-                }
-
-                continous_squares = 0;
+            // fill empty space at bottom
+            if(last_item.x == 0 && items[l - 2].h == 1) {
+                last_item.w = 2;
             }
 
-            items.push({ attachment, form });
+            // compute average width, and if they're mostly
+            // all wide anyway just show them linearly
+            if((items.reduce((s, x) => s + x.w, 0) / l) >= 1.5) return;
+        } else {
+            // TODO
         }
 
-        // if they're mostly all wide anyway, just show them linearly
-        if(is_mobile && (total_wide / items.length) >= 0.65) return;
-
-        return { items };
+        return { items, cols: max_cols as any }
     }
 
     return;
@@ -107,14 +140,24 @@ export function Attachments(props: { msg: Message }) {
 
 export function AttachmentGrid(props: { msg: Message, grid: Grid, prefs: UserPreferenceAccessors }) {
     return (
-        <div class="ln-msg-attachment--grid">
+        <div class="ln-msg-attachment--grid" style={{
+            'grid-template-columns': `repeat(${props.grid.cols}, ${100 / props.grid.cols}%)`,
+        }}>
             <For each={props.grid.items}>
                 {(item) => (
                     <div class="ln-msg-attachment--grid-item"
                         classList={{
-                            's': item.form == 's',
-                            'w': item.form == 'w',
-                            't': item.form == 't',
+                            w1: item.w == 1,
+                            w2: item.w == 2,
+                            h1: item.h == 1,
+                            h2: item.h == 2,
+                        }}
+                        style={{
+                            // convert zero-indexed to one-indexed
+                            'grid-column-start': 1 + item.x,
+                            'grid-column-end': 1 + item.x + item.w,
+                            'grid-row-start': 1 + item.y,
+                            'grid-row-end': 1 + item.y + item.h,
                         }}
                     >
                         <MsgAttachment msg={props.msg} attachment={item.attachment} prefs={props.prefs} />
