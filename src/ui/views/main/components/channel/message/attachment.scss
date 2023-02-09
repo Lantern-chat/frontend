@@ -89,9 +89,11 @@
         max-width: min(100%, max(50vw, 16 * 2.5em));
         object-fit: contain;
 
-        .ln-small-attachments & {
-            max-height: 9 * 2em;
-            max-width: 16 * 2em;
+        @media (min-width: $ln-min-channel-width) {
+            .ln-small-attachments & {
+                max-height: 9 * 2em;
+                max-width: 16 * 2em;
+            }
         }
 
         @media (max-width: $ln-max-channel-width) {
@@ -136,6 +138,7 @@
             }
         }
 
+        // square
         &.s {
             flex-basis: 20%;
             min-width: 0;
@@ -151,6 +154,23 @@
             }
         }
 
+        // tall
+        &.t {
+            flex-basis: 20%;
+            min-width: 0;
+            min-height: 0;
+
+            img {
+                aspect-ratio: 1 / 1 !important;
+                width: 100%;
+            }
+
+            @media (max-width: $ln-max-channel-width) {
+                flex-basis: 50%;
+            }
+        }
+
+        // wide
         &.w {
             flex-basis: 40%;
             min-width: 0;
