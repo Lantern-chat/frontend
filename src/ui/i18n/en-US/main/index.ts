@@ -122,6 +122,7 @@ const enUS_main: BaseTranslation = {
             HIDE_LAST_ACTIVE_SUBTEXT: "Will not display your approximate last-active time to other users",
         },
         media: {
+            SMALL_ATTACHMENTS: "Smaller Attachments",
             SHOW_ATTACHMENT_GRID: "Show Attachments in Grid",
             SHOW_ATTACHMENT_GRID_SUBTEXT: "Arrange multiple attachments for a single message into a grid",
             SHOW_MEDIA_METADATA: "Show Media Metadata",

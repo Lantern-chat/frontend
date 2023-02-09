@@ -47,6 +47,7 @@ export function mainEffect(state: RootState, action: Action, dispatch: Dispatch<
 
             de.classList.toggle('ln-enhanced-contrast', hasUserPrefFlag(prefs, UserPreferenceFlags.ForceColorConstrast));
             de.classList.toggle('ln-grey-img-bg', hasUserPrefFlag(prefs, UserPreferenceFlags.ShowGreyImageBg));
+            de.classList.toggle('ln-small-attachments', hasUserPrefFlag(prefs, UserPreferenceFlags.SmallerAttachments));
 
             // 16px == 1em, /2 for both sides
             de.style.setProperty('--ln-chat-group-padding', (pad / 32).toFixed(2) + 'em');

@@ -577,6 +577,10 @@ export type NamespaceMainTranslation = {
 		}
 		media: {
 			/**
+			 * S​m​a​l​l​e​r​ ​A​t​t​a​c​h​m​e​n​t​s
+			 */
+			SMALL_ATTACHMENTS: string
+			/**
 			 * S​h​o​w​ ​A​t​t​a​c​h​m​e​n​t​s​ ​i​n​ ​G​r​i​d
 			 */
 			SHOW_ATTACHMENT_GRID: string
@@ -1248,6 +1252,10 @@ export type TranslationFunctions = {
 				HIDE_LAST_ACTIVE_SUBTEXT: () => LocalizedString
 			}
 			media: {
+				/**
+				 * Smaller Attachments
+				 */
+				SMALL_ATTACHMENTS: () => LocalizedString
 				/**
 				 * Show Attachments in Grid
 				 */
