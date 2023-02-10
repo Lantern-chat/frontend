@@ -125,7 +125,7 @@ export function createInfiniteScrollIntersectionTrigger<T extends HTMLElement>(
 const doTimeout = (cb: () => void) => setTimeout(cb, 50);
 const doNow = (cb: () => void) => cb();
 
-const DO_SAFARI_HACKS = true && IS_IOS_SAFARI;
+const DO_SAFARI_HACKS = false && IS_IOS_SAFARI;
 
 // Fucking Safari...
 const clearLater = DO_SAFARI_HACKS ? clearTimeout : cancelAnimationFrame;
@@ -199,8 +199,16 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
 
         if(top != container.scrollTop) {
             if(diff != 0) {
-                // relative positioning
-                container.scrollBy({ top: diff, behavior: 'instant' as any });
+                if(IS_IOS_SAFARI) {
+                    //container.style['-webkit-overflow-scrolling'] = 'auto';
+                    container.style['overflow-y'] = 'hidden';
+                    container.scrollBy({ top: diff, behavior: 'instant' as any });
+                    container.style['overflow-y'] = 'scroll';
+                    //container.style['-webkit-overflow-scrolling'] = 'touch';
+                } else {
+                    // relative positioning (sane version)
+                    container.scrollBy({ top: diff, behavior: 'instant' as any });
+                }
             } else {
                 // absolute positioning to start
                 container.scrollTo({ top, behavior: 'instant' as any });
@@ -349,6 +357,7 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
 
     let on_resize = (entries: ResizeObserverEntry[], observer: ResizeObserver) => {
         __DEV__ && console.log("RESIZED");
+
         fix_position();
 
         for(let entry of entries) {
@@ -385,8 +394,6 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
 
     // NOTE: See feed.tsx for the controlled being used to reset the ifs on active room change
 
-    let memoizedClientRect = createMemo(clientRect);
-
     props.setController?.({
         pause(p: boolean) {
             __DEV__ && console.log("Paused IFS:", p);
@@ -400,22 +407,22 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
         get at_start() { return anchor == props.start; },
         get container() { return container_ref.current!; },
         get wrapper() { return wrapper_ref.current!; },
-        clientRect: memoizedClientRect,
+        clientRect,
         scrollHeight,
-        clientHeight: createMemo(() => { return memoizedClientRect().height; }),
-        clientWidth: createMemo(() => { return memoizedClientRect().width; }),
+        clientHeight: createMemo(() => { return clientRect().height; }),
+        clientWidth: createMemo(() => { return clientRect().width; }),
         gotoStartSmooth() {
             let container = container_ref.current!;
 
             let clientHeight = container.clientHeight,
                 scrollHeight = container.scrollHeight,
                 page_border = clientHeight,
-                page_end = props.start == Anchor.Bottom ? scrollHeight : 0;
+                page_end = () => props.start == Anchor.Bottom ? container.scrollHeight : 0;
 
-            props.onScroll?.(page_end);
+            props.onScroll?.(page_end());
 
             if(reduce_motion()) {
-                container.scrollTo({ top: page_end });
+                container.scrollTo({ top: page_end() });
                 return;
             }
 
@@ -425,7 +432,13 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
             }
 
             container.scrollTo({ top: page_border, behavior: 'instant' as any });
-            do_laterish(() => container.scrollTo({ top: page_end, behavior: 'smooth' }));
+            do_laterish(() => {
+                container.scrollTo({ top: page_end(), behavior: 'smooth' });
+
+                do_laterish(() => {
+                    container.scrollTo({ top: page_end(), behavior: 'smooth' })
+                });
+            });
         }
     });
 

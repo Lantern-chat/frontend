@@ -199,8 +199,8 @@
             // fixes the grey background bleeding into padding
             background-clip: content-box;
 
-            // bug in chrome that still shows a line of pixels that should have been clipped
-            @media screen and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) {
+            // bug in chrome/webkit that still shows a line of pixels that should have been clipped
+            @media screen and (-webkit-min-device-pixel-ratio: 0) {
                 transform: translate3d(0, 0, 0);
             }
         }
