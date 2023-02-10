@@ -193,6 +193,41 @@
         }
     }
 
+    .ln-grey-img-bg & {
+        video,
+        img {
+            // fixes the grey background bleeding into padding
+            background-clip: content-box;
+        }
+    }
+
+    .ln-grey-img-bg.ln-dark-theme & {
+        video,
+        img[data-loaded="true"] {
+            background-color: rgba(256, 256, 256, 0.55);
+        }
+    }
+
+    .ln-grey-img-bg.ln-light-theme & {
+        video,
+        img[data-loaded="true"] {
+            background-color: rgba(128, 128, 128, 0.4);
+        }
+    }
+
+    img {
+        cursor: pointer;
+    }
+
+    video {
+        background-color: black;
+    }
+
+    audio {
+        width: 100%;
+        max-width: 80%;
+    }
+
     &__generic {
         text-align: start;
         padding: 0.5em;
@@ -242,33 +277,6 @@
             flex-direction: column;
             justify-content: center;
         }
-    }
-
-    .ln-grey-img-bg.ln-dark-theme & {
-        video,
-        img[data-loaded="true"] {
-            background-color: rgba(256, 256, 256, 0.55);
-        }
-    }
-
-    .ln-grey-img-bg.ln-light-theme & {
-        video,
-        img[data-loaded="true"] {
-            background-color: rgba(128, 128, 128, 0.4);
-        }
-    }
-
-    img {
-        cursor: pointer;
-    }
-
-    video {
-        background-color: black;
-    }
-
-    audio {
-        width: 100%;
-        max-width: 80%;
     }
 }
 
