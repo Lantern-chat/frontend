@@ -406,6 +406,10 @@ function computeModifiedStyle(style: JSX.CSSProperties, attachment: Attachment, 
             return { height: '100em' };
         }
     } else {
+        if(attachment.width && attachment.height) {
+            return {};
+        }
+
         return { height: px(attachment.height) || '100em' };
     }
 }
