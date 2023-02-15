@@ -1017,14 +1017,15 @@ export const defaultRules: DefaultRules = {
         // These shouldn't be reached, but in case they are, be reasonable:
         h: () => ' | ',
     },
+    // NOTE: Unlike regular markdown, Lantern's "autolink" still creates the <a> but won't trigger any embeds server-side
     autolink: {
         o: currOrder++,
-        m: inlineRegex(/^<([^:\s>]+:\/[^\s>]+)>/),
+        m: inlineRegex(/^<(https?:\/\/[^\s<]+[^<.,:;"')\]\s])>/),
         p: (capture, parse, state) => {
-            // NOTE: This syntax disables links and embeds
             return {
-                type: "text",
-                c: capture[1],
+                type: "url",
+                c: [{ type: "text", c: capture[1] }],
+                target: capture[1]
             };
         },
         h: null
@@ -1034,8 +1035,7 @@ export const defaultRules: DefaultRules = {
         m: inlineRegex(/^<([^@\s]{1,64}@[^@\s]+\.[^@\s]+)>/),
         //match: inlineRegex(/^<([^ >]+@[^ >]+)>/),
         p: (capture, parse, state) => {
-            var address = capture[1];
-            var target = capture[1];
+            let address = capture[1], target = capture[1];
 
             // Check for a `mailto:` already existing in the link:
             if(!AUTOLINK_MAILTO_CHECK_R.test(target)) {
@@ -1044,10 +1044,7 @@ export const defaultRules: DefaultRules = {
 
             return {
                 type: "url", // link
-                c: [{
-                    type: "text",
-                    c: address
-                }],
+                c: [{ type: "text", c: address }],
                 target: target
             };
         },
@@ -1059,16 +1056,12 @@ export const defaultRules: DefaultRules = {
         p: (capture, parse, state) => {
             return {
                 // type: "link",
-                c: [{
-                    type: "text",
-                    c: capture[1]
-                }],
-                target: capture[1],
-                title: undefined
+                c: [{ type: "text", c: capture[1] }],
+                target: capture[1]
             };
         },
         h: (node, output, state) => {
-            return <a href={/* @once */sanitizeUrl(node.target)} title={/* @once */node.title} target="_blank">{/* @once */output(node.c, state)}</a>;
+            return <a href={/* @once */sanitizeUrl(node.target)} title={/* @once */node.title} target="_blank" rel="noreferrer">{/* @once */output(node.c, state)}</a>;
         }
     },
     math: {
