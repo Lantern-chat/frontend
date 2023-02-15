@@ -40,14 +40,12 @@ body {
     background-color: $lnx-primary-surface-color;
 }
 
-#ln-root > *,
-#ln-modal-root > div:not(:last-child) > * {
+.ln-backdrop-blur {
     .ln-enable-motion & {
-        transition: 0.2s filter ease-out;
-    }
-
-    .ln-root-blur.ln-enable-motion & {
-        filter: blur(4px);
+        // TODO: transition doesn't work for backdrop-filter...
+        // transition: 0.5s backdrop-filter ease-out;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
     }
 }
 

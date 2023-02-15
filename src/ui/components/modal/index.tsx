@@ -1,6 +1,5 @@
 import { JSX, onCleanup, splitProps } from "solid-js";
 import { spread } from "solid-js/web";
-import { createRootBlur } from "ui/hooks/createRootBlur";
 
 const MODAL_ROOT = document.getElementById("ln-modal-root")!;
 
@@ -14,11 +13,9 @@ export function Modal(props: JSX.HTMLAttributes<HTMLDivElement>) {
 }
 
 export function FullscreenModal(props: JSX.HTMLAttributes<HTMLDivElement> & { blur?: boolean }) {
-    let [local, rest] = splitProps(props, ['class']);
+    let [local, rest] = splitProps(props, ['class', 'blur', 'classList']);
 
-    let cn = () => [local.class, "ln-fullscreen-modal"].join(" ");
-
-    createRootBlur(props);
-
-    return (<Modal {...rest} class={cn()} />);
+    return (<Modal {...rest}
+        class={[local.class, "ln-fullscreen-modal"].join(" ")}
+        classList={{ 'ln-backdrop-blur': local.blur, ...local.classList }} />);
 }
