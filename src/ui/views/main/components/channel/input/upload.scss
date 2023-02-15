@@ -47,6 +47,7 @@
     display: flex;
     position: absolute;
     bottom: calc(100% + 2px);
+    z-index: 2; // above typing indicator
 
     @media (max-width: $ln-max-channel-width) {
         bottom: calc(100% - 1px);

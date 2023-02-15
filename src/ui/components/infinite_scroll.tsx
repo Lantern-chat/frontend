@@ -125,7 +125,7 @@ export function createInfiniteScrollIntersectionTrigger<T extends HTMLElement>(
 const doTimeout = (cb: () => void) => setTimeout(cb, 50);
 const doNow = (cb: () => void) => cb();
 
-const DO_SAFARI_HACKS = false && IS_IOS_SAFARI;
+const DO_SAFARI_HACKS = true && IS_IOS_SAFARI;
 
 // Fucking Safari...
 const clearLater = DO_SAFARI_HACKS ? clearTimeout : cancelAnimationFrame;
@@ -232,6 +232,7 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
 
         clearLater(fix_frame as any); // NOTE: Was created by do_later
 
+        // NOTE: fixing=false is set one frame later to avoid multiple triggers on the same frame
         fix_frame = do_later(() => {
             fixing = false;
 
