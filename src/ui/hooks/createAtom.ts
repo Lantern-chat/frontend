@@ -3,7 +3,7 @@ import { createSignal } from "solid-js";
 
 export type Atom<T> = Accessor<T> & Setter<T>;
 
-export function createAtom<T>(initial?: T): Atom<T | undefined>;
+export function createAtom<T>(): Atom<T | undefined>;
 export function createAtom<T>(initial: T): Atom<T>;
 
 export function createAtom<T>(initial?: T): Atom<T> {
