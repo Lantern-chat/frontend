@@ -32,6 +32,8 @@ const MAX_AUTHOR_LEN = 120;
 const MAX_DESCRIPTION_LEN = 600;
 const MAX_PROVIDER_LEN = 80;
 
+const NON_SIMPLE_FIELDS: Array<keyof Embed> = ["t", "d", "au", "obj", "fields", "footer", "thumb"];
+
 function trim_text(text: string | undefined, max_len: number): string | undefined {
     if(text && text.length > max_len) {
         text = text.slice(0, max_len)!;
@@ -64,10 +66,15 @@ function Embedded(props: EmbedProps) {
         }
 
         // embeds with no complex fields can be rendered as-is
+        let simple = true;
         for(let key in props.embed) {
-            if(COMPLEX_FIELDS.includes(key as any)) {
-                return 'fit-content';
+            if(NON_SIMPLE_FIELDS.includes(key as any)) {
+                simple = false;
+                break;
             }
+        }
+        if(simple) {
+            return 'fit-content';
         }
 
         // NOTE: Must match media max-height in css
