@@ -63,12 +63,25 @@ function Embedded(props: EmbedProps) {
             return '100%';
         }
 
+        // embeds with no complex fields can be rendered as-is
+        for(let key in props.embed) {
+            if(COMPLEX_FIELDS.includes(key as any)) {
+                return 'fit-content';
+            }
+        }
+
         // NOTE: Must match media max-height in css
-        let height = prefs.SmallerAttachments() ? 20 : 30,
+        let use_smaller = prefs.SmallerAttachments(),
+            height = use_smaller ? 20 : 30,
             [w, h] = dim(),
             ar = (w / h) || 1.5;
 
         let min_width = 30;
+
+        // small images
+        if(w < 600 && !use_smaller) {
+            ar *= 0.5;
+        }
 
         if(props.embed.ty == EmbedType.Link) {
             min_width = 50;
@@ -82,6 +95,7 @@ function Embedded(props: EmbedProps) {
             style={{
                 '--embed-ac': props.embed.ac != null ? '#' + props.embed.ac.toString(16) : 'var(--ln-accent-color)',
                 'width': width(),
+                'max-width': prefs.UseMobileView() ? '100%' : '70%'
             }}
         >
             {/* <span>{dim().join(', ')} = {width()}</span> */}
