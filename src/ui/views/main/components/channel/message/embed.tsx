@@ -25,6 +25,32 @@ export function Embeds(props: { msg: Message }) {
     )
 }
 
+const ELLIPSIS = "…";
+
+const MAX_TITLE_LEN = 240;
+const MAX_AUTHOR_LEN = 120;
+const MAX_DESCRIPTION_LEN = 600;
+const MAX_PROVIDER_LEN = 80;
+
+function trim_text(text: string | undefined, max_len: number): string | undefined {
+    if(text && text.length > max_len) {
+        text = text.slice(0, max_len)!;
+
+        // run backwards in string to find recent punctuation
+        for(let i = text.length - 1; i > 0; i--) {
+            if(/[\s,.]/.test(text.charAt(i))) {
+                text = text.slice(0, i);
+                break;
+            };
+        }
+
+        // trim any remaining
+        text = text.replace(/[\s,.]+$/, '') + ELLIPSIS;
+    }
+
+    return text;
+}
+
 type Dims = Atom<[width: number, height: number]>;
 
 function Embedded(props: EmbedProps) {
@@ -70,8 +96,10 @@ function Embedded(props: EmbedProps) {
                 {author => <EmbeddedAuthor author={author} />}
             </ConstShow>
 
-            <a target="_blank" rel="noreferrer" class="ln-embed__title" href={props.embed.u}>{props.embed.t}</a>
-            <div class="ln-embed__desc">{props.embed.d}</div>
+            <a target="_blank" rel="noreferrer" class="ln-embed__title" href={props.embed.u}>
+                {trim_text(props.embed.t, MAX_TITLE_LEN)}
+            </a>
+            <div class="ln-embed__desc">{trim_text(props.embed.d, MAX_DESCRIPTION_LEN)}</div>
 
             <div class="ln-embed__media" >
                 <EmbeddedMedia {...props} dim={dim} />
@@ -106,14 +134,32 @@ function make_camo_url(media: EmbedMedia | undefined, fallback?: boolean): strin
 }
 
 function EmbeddedAuthor(props: { author: EmbedAuthor }) {
+    let url = () => {
+        let url = props.author.u, name = props.author.n;
+
+        // rare, but I've seen sites shove urls into the name parameter
+        if(!url && /^https?:\/\//.test(name)) {
+            url = name;
+        }
+
+        return url;
+    };
+
     return (
         <div class="ln-embed__author">
             <ConstShow keyed when={props.author.i}>
                 {media => <EmbeddedMediaSingle media={media} />}
             </ConstShow>
 
-            <ConstShow fallback={<span>{props.author.n}</span>} when={props.author.u}>
-                <a target="_blank" rel="noreferrer" href={props.author.u?.replace(/^http:\/\//, 'https://')}>{props.author.n}</a>
+            <ConstShow keyed when={url()} fallback={
+                <span>{trim_text(props.author.n, MAX_AUTHOR_LEN)}</span>
+            }>
+                {url => (
+                    <a target="_blank" rel="noreferrer" href={url}>
+                        {trim_text(props.author.n, MAX_AUTHOR_LEN)}
+                    </a>
+                )}
+
             </ConstShow>
         </div>
     )
@@ -124,8 +170,12 @@ function EmbeddedProvider(props: { pro: EmbedProvider, u: string | undefined }) 
 
     return (
         <div class="ln-embed__provider">
-            <ConstShow fallback={<span>{name()}</span>} when={props.pro.u}>
-                <a target="_blank" rel="noreferrer" href={props.pro.u}>{name()}</a>
+            <ConstShow when={props.pro.u} fallback={
+                <span>{trim_text(name(), MAX_PROVIDER_LEN)}</span>
+            } >
+                <a target="_blank" rel="noreferrer" href={props.pro.u}>
+                    {trim_text(name(), MAX_PROVIDER_LEN)}
+                </a>
             </ConstShow>
 
             <ConstShow keyed when={props.pro.i}>
