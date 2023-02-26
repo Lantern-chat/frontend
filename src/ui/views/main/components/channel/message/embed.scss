@@ -118,13 +118,21 @@
             border: none;
             outline: none;
             object-fit: contain;
-            object-position: center;
-            //object-position: left;
+            object-position: left top;
+
+            .ln-rtl & {
+                object-position: right top;
+            }
+
             //object-position: inline-start;
 
             .ln-small-attachments & {
                 max-height: 20em;
             }
+        }
+
+        .ln-embed__play-icon ~ img {
+            object-position: center center;
         }
     }
 
