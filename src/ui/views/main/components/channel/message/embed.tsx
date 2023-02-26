@@ -222,12 +222,7 @@ function EmbeddedMedia(props: EmbedProps & { dim?: Dims }) {
             </Match>
 
             <Match when={ty(EmbedType.Html) && props.embed.obj}>
-                {/* Honestly, regular obj embeds should be discouraged, so present it as an image when available */}
-                <ConstShow when={!props.embed.img} fallback={
-                    <EmbeddedImg url={props.embed.u} media={props.embed.img!} dim={props.dim} />
-                }>
-                    <EmbeddedHtmlWithConsent media={props.embed.obj!} embed={props.embed} dim={props.dim} />
-                </ConstShow>
+                <EmbeddedHtmlWithConsent media={props.embed.obj!} embed={props.embed} dim={props.dim} />
             </Match>
         </Switch>
     )
