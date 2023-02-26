@@ -10,10 +10,12 @@ import { IMessageProps, MessageUserAvatar, MessageUserName } from "./common";
 
 import { Message as MessageBody } from "./msg";
 import { Attachments } from "./attachment";
+import { Embeds } from "./embed";
 import { UICalendar } from "ui/components/common/timestamp";
 import { Reactions } from "./reaction";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 import { formatters } from "ui/i18n";
+import { ConstShow } from "ui/components/flow";
 
 export function CozyMessage(props: IMessageProps) {
     let { LL, locale } = useI18nContext(), f = () => formatters[locale()];
@@ -32,19 +34,19 @@ export function CozyMessage(props: IMessageProps) {
     return (
         <>
             <div class="ln-msg__side">
-                {() => props.msg.sg ? (
+                <ConstShow when={!props.msg.sg} fallback={
                     // if first message in the group, give it the user avatar and title
                     <MessageUserAvatar user={cached_member().user} name={cached_member().nick} party_id={props.msg.msg.party_id} />
-                ) : (
+                }>
                     <div class="ln-msg__sidets" title={f().timestamp(props.msg.ts) as string}>
                         <span class="ui-text" textContent={f().time(props.msg.ts) as string} />
                     </div>
-                )}
+                </ConstShow>
             </div>
 
             <div class="ln-msg__message">
                 {/* Start of group */}
-                {() => props.msg.sg && (
+                <ConstShow when={props.msg.sg}>
                     <div class="ln-msg__title">
                         <MessageUserName name={cached_member().nick} user={props.msg.msg.author} party_id={props.msg.msg.party_id} />
 
@@ -53,34 +55,41 @@ export function CozyMessage(props: IMessageProps) {
                         <span class="ln-msg__ts" title={f().timestamp(props.msg.ts) as string}>
                             <UICalendar time={props.msg.ts} />
 
-                            {() => !!props.msg.et && (
+                            <ConstShow when={props.msg.et}>
                                 <span class="flags" title={LL().main.EDITED_ON({ ts: props.msg.ts })}>
                                     <VectorIcon id={Icons.Pencil} />
                                 </span>
-                            )}
 
-                            {() => props.msg.msg.pins?.length && (
+                            </ConstShow>
+
+                            <ConstShow when={props.msg.msg.pins?.length}>
                                 <span class="flags" title={LL().main.MESSAGE_PINNED()}>
                                     <VectorIcon id={Icons.PushPin} />
                                 </span>
-                            )}
+                            </ConstShow>
 
-                            {() => props.msg.msg.starred && (
+                            <ConstShow when={props.msg.msg.starred}>
                                 <span class="flags" title={LL().main.MESSAGE_STARRED()}>
                                     <VectorIcon id={Icons.StarSmall} />
                                 </span>
-                            )}
+                            </ConstShow>
                         </span>
 
                         {() => user_is_bot(props.msg.msg.author) && <BotLabel />}
                     </div>
-                )}
+                </ConstShow>
 
                 <MessageBody msg={props.msg.msg} extra={extra()} />
 
-                <Attachments msg={props.msg.msg} />
+                <Show when={!!props.msg.msg.attachments?.length}>
+                    <Attachments msg={props.msg.msg} />
+                </Show>
 
-                <Show when={props.msg.msg.reactions?.length}>
+                <Show when={!!props.msg.msg.embeds?.length}>
+                    <Embeds msg={props.msg.msg} />
+                </Show>
+
+                <Show when={!!props.msg.msg.reactions?.length}>
                     <Reactions msg={props.msg.msg} />
                 </Show>
             </div>

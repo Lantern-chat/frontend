@@ -1,0 +1,193 @@
+@import "lib/variables";
+
+.ln-embed {
+    background-color: $lnx-primary-surface-color;
+
+    margin-block-start: 0.25em;
+    padding-block-start: 0.5em;
+    padding-block-end: 0.25em;
+    padding-inline: 1em;
+
+    position: relative;
+    overflow: hidden;
+
+    border-radius: 0.25rem;
+
+    > * {
+        display: block;
+    }
+
+    > *:empty {
+        display: none;
+    }
+
+    > *:not(:last-child) {
+        margin-block-end: 0.5em;
+    }
+
+    &__title {
+        cursor: pointer;
+    }
+
+    &__desc {
+        color: $lnx-secondary-text-color;
+        white-space: pre-wrap;
+    }
+
+    &__thumb {
+        // NOTE: float: inline-start is not fully supported yet,
+        // so rtl still needs to be done manually.
+        float: left;
+        float: inline-start;
+
+        .ln-rtl & {
+            float: right;
+            float: inline-start;
+        }
+
+        overflow: hidden;
+        margin-right: 1em;
+        border-radius: 0.25em;
+
+        img,
+        video {
+            object-fit: contain;
+            max-width: 10em;
+            height: 7em;
+            display: block;
+        }
+    }
+
+    &::before {
+        content: "";
+        top: 0;
+        bottom: 0;
+        position: absolute;
+        left: 0;
+        width: 0.25rem;
+        background-color: var(--embed-ac);
+    }
+
+    &__author {
+        //text-indent: 1em;
+        //padding-block-start: 1em;
+
+        font-weight: bold;
+
+        a,
+        span {
+            color: $lnx-primary-text-color;
+        }
+    }
+
+    &__provider {
+        text-align: right;
+        color: $lnx-secondary-text-color;
+        line-height: 1;
+        margin-inline-end: -0.5em;
+        clear: both;
+
+        img,
+        video {
+            height: 1em;
+            vertical-align: bottom;
+            margin-inline-start: 0.25em;
+        }
+    }
+
+    &__media {
+        position: relative;
+        clear: both;
+        height: fit-content;
+        //display: inline-block;
+
+        a {
+            position: absolute;
+            inset: 0;
+            cursor: pointer;
+        }
+
+        video,
+        img,
+        audio,
+        iframe {
+            width: 100%;
+            height: 100%;
+            max-height: 30em;
+            //max-height: max(min(50vh, 40em), 9 * 2.5em);
+            border: none;
+            outline: none;
+            object-fit: contain;
+            object-position: center;
+            //object-position: left;
+            //object-position: inline-start;
+
+            .ln-small-attachments & {
+                max-height: 20em;
+            }
+        }
+    }
+
+    &__play-icon {
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        font-size: 5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        filter: drop-shadow(0rem 0rem 0.2rem black);
+        cursor: pointer;
+        opacity: 0.5;
+        z-index: 1;
+
+        &:hover {
+            opacity: 1;
+        }
+
+        .ln-enable-motion & {
+            transition: opacity 0.1s ease-in;
+        }
+
+        .ln-icon {
+            background-color: $lnx-accent-color;
+            border-radius: 0.75rem;
+        }
+    }
+
+    &__play-bg {
+        //min-height: 20em;
+
+        // https://css-generators.com/wavy-shapes/
+        div {
+            height: 100%;
+            width: 100%;
+
+            --mask: radial-gradient(
+                        2.365em at 50% calc(100% + 2em),
+                        #0000 calc(99% - 0.25em),
+                        #000 calc(101% - 0.25em) 99%,
+                        #0000 101%
+                    )
+                    calc(50% - 2em) calc(50% - 0.625em + 0.5px) / 4em 1.25em,
+                radial-gradient(2.365em at 50% -2em, #0000 calc(99% - 0.25em), #000 calc(101% - 0.25em) 99%, #0000 101%)
+                    50% calc(50% + 0.625em) / 4em 1.25em;
+            -webkit-mask: var(--mask);
+            mask: var(--mask);
+
+            background: linear-gradient(
+                    135deg,
+                    rgb(31, 0, 92),
+                    rgb(91, 0, 96),
+                    rgb(135, 1, 96),
+                    rgb(172, 37, 94),
+                    rgb(202, 72, 92),
+                    rgb(225, 107, 92),
+                    rgb(243, 144, 96),
+                    rgb(255, 181, 107)
+                )
+                fixed;
+        }
+    }
+}

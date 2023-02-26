@@ -1,5 +1,5 @@
 
-import { createSignal, Show, untrack } from "solid-js";
+import { createSignal, Match, Show, Switch, untrack } from "solid-js";
 import { Dynamic } from "solid-js/web";
 
 import { usePrefs } from "state/contexts/prefs";
@@ -42,9 +42,15 @@ export function Message(props: { msg: IMessageState }) {
 
     return (
         <>
-            {() => prefs.ShowDateChange() && props.msg.sd
-                ? <DateChange ts={props.msg.ts} />
-                : (prefs.GroupLines() && props.msg.sg && <hr />)}
+            {/*Must use For-friendly constructs here*/}
+            <Switch>
+                <Match when={prefs.ShowDateChange() && props.msg.sd}>
+                    <DateChange ts={props.msg.ts} />
+                </Match>
+                <Match when={prefs.GroupLines() && props.msg.sg}>
+                    <hr />
+                </Match>
+            </Switch>
 
             <li
                 id={props.msg.msg.id}

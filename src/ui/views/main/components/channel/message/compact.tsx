@@ -8,6 +8,7 @@ import { IMessageProps, MessageUserName } from "./common";
 
 import { Message as MessageBody } from "./msg";
 import { Reactions } from "./reaction";
+import { Embeds } from "./embed";
 
 export function CompactMessage(props: IMessageProps) {
     let { LL, locale } = useI18nContext(), f = () => formatters[locale()];
@@ -28,7 +29,6 @@ export function CompactMessage(props: IMessageProps) {
     return (
         <div class="ln-msg--compact" classList={{ 'no-text': !props.msg.msg.content }}>
             <div class="ln-msg__title">
-
                 <div class="ln-msg__side">
                     <div class="ln-msg__sidets" title={f().timestamp(props.msg.ts) as string}>
                         <span class="ui-text" textContent={f().time(props.msg.ts) as string} />
@@ -40,9 +40,15 @@ export function CompactMessage(props: IMessageProps) {
 
             <MessageBody msg={props.msg.msg} extra={extra()} />
 
-            <Attachments msg={props.msg.msg} />
+            <Show when={!!props.msg.msg.attachments?.length}>
+                <Attachments msg={props.msg.msg} />
+            </Show>
 
-            <Show when={props.msg.msg.reactions?.length}>
+            <Show when={!!props.msg.msg.embeds?.length}>
+                <Embeds msg={props.msg.msg} />
+            </Show>
+
+            <Show when={!!props.msg.msg.reactions?.length}>
                 <Reactions msg={props.msg.msg} />
             </Show>
         </div>
