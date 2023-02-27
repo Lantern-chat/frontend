@@ -32,7 +32,7 @@ const MAX_AUTHOR_LEN = 120;
 const MAX_DESCRIPTION_LEN = 600;
 const MAX_PROVIDER_LEN = 80;
 
-const NON_SIMPLE_FIELDS: Array<keyof Embed> = ["t", "d", "au", "obj", "fields", "footer", "thumb"];
+const COMPLEX_FIELDS: Array<keyof Embed> = ["t", "d", "au", "obj", "fields", "footer", "thumb"];
 
 function trim_text(text: string | undefined, max_len: number): string | undefined {
     if(text && text.length > max_len) {
@@ -68,7 +68,7 @@ function Embedded(props: EmbedProps) {
         // embeds with no complex fields can be rendered as-is
         let simple = true;
         for(let key in props.embed) {
-            if(NON_SIMPLE_FIELDS.includes(key as any)) {
+            if(COMPLEX_FIELDS.includes(key as any)) {
                 simple = false;
                 break;
             }
@@ -77,19 +77,19 @@ function Embedded(props: EmbedProps) {
             return 'fit-content';
         }
 
-        // NOTE: Must match media max-height in css
         let use_smaller = prefs.SmallerAttachments(),
             height = use_smaller ? 20 : 30,
             [w, h] = dim(),
             ar = (w / h) || 1.5;
-
-        let min_width = 30;
 
         // small images
         if(w < 600 && !use_smaller) {
             ar *= 0.5;
         }
 
+        let min_width = 30;
+
+        // give link-only enough room for title/description
         if(props.embed.ty == EmbedType.Link) {
             min_width = 50;
         }
@@ -107,7 +107,9 @@ function Embedded(props: EmbedProps) {
         >
             {/* <span>{dim().join(', ')} = {width()}</span> */}
             {/* FLOATING */}
-            <ConstShow when={props.embed.thumb}>
+            <ConstShow when={props.embed.thumb &&
+                !(props.embed.img && props.embed.vid && props.embed.vid.m == "text/html")}
+            >
                 <div class="ln-embed__thumb">
                     <EmbeddedMediaSingle media={props.embed.thumb!} />
                 </div>
@@ -180,7 +182,6 @@ function EmbeddedAuthor(props: { author: EmbedAuthor }) {
                         {trim_text(props.author.n, MAX_AUTHOR_LEN)}
                     </a>
                 )}
-
             </ConstShow>
         </div>
     )

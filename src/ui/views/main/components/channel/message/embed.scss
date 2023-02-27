@@ -82,7 +82,6 @@
 
     &__provider {
         text-align: right;
-        color: $lnx-secondary-text-color;
         line-height: 1;
         margin-inline-end: -0.5em;
         clear: both;
@@ -90,8 +89,15 @@
         img,
         video {
             height: 1em;
+            width: 1em;
+            object-fit: contain;
             vertical-align: bottom;
             margin-inline-start: 0.25em;
+        }
+
+        span,
+        a {
+            color: $lnx-secondary-text-color;
         }
     }
 
@@ -131,7 +137,8 @@
             }
         }
 
-        .ln-embed__play-icon ~ img {
+        .ln-embed__play-icon ~ img,
+        video {
             object-position: center center;
         }
     }
