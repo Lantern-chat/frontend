@@ -28,9 +28,7 @@ export function UserCard(props: IUserCardProps) {
     let cached_user = createMemo(() => selectCachedUser(store.state, props.user_id, props.party_id));
 
     onMount(() => {
-        if(cached_user().profile) {
-            store.dispatch(fetch_profile(props.user_id, props.party_id));
-        }
+        store.dispatch(fetch_profile(props.user_id, props.party_id));
     });
 
     return (
