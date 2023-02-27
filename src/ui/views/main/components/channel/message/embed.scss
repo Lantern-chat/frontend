@@ -84,6 +84,7 @@
     &__spoiler {
         // NOTE: https://bugzilla.mozilla.org/show_bug.cgi?id=1657997
         backdrop-filter: blur(1.5rem);
+        -webkit-backdrop-filter: blur(1.5rem);
 
         position: absolute;
         inset: 0;

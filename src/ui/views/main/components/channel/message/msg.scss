@@ -2,10 +2,10 @@
 
 .ln-msg {
     //width: 100%;
-
     //overflow: hidden;
 
     min-width: 0;
+    max-width: 100%;
     flex: 0 1 auto;
 
     &--editing {
@@ -14,6 +14,7 @@
 
     //padding-top: 0.2em;
     word-wrap: break-word;
+    word-break: break-word;
 
     &__message {
         //overflow: hidden;
@@ -22,6 +23,7 @@
         flex-direction: column;
         justify-content: space-between;
         min-width: 0;
+        max-width: 100%;
     }
 
     .emoji.large {
