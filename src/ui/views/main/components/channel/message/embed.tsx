@@ -9,6 +9,7 @@ import { EmbedType } from "state/models";
 import { VectorIcon } from "ui/components/common/icon";
 import { ConstShow } from "ui/components/flow";
 import { Atom, createAtom } from "ui/hooks/createAtom";
+import type { IMessageProps } from "./common";
 
 import "./embed.scss";
 
@@ -33,6 +34,45 @@ const MAX_DESCRIPTION_LEN = 600;
 const MAX_PROVIDER_LEN = 80;
 
 const COMPLEX_FIELDS: Array<keyof Embed> = ["t", "d", "au", "obj", "fields", "footer", "thumb"];
+
+export function is_simple_embed(embed: Embed): boolean {
+    // embeds with no complex fields can be rendered as-is
+    let simple = true;
+    for(let key in embed) {
+        if(COMPLEX_FIELDS.includes(key as any)) {
+            simple = false;
+            break;
+        }
+    }
+    return simple;
+}
+
+export function should_hide_message(props: IMessageProps) {
+    let msg = props.msg.msg, embeds = msg.embeds, content = msg.content;
+
+    if(content && embeds?.length) {
+        let all_urls = '';
+
+        for(let embed of embeds) {
+            if(!is_simple_embed(embed)) {
+                return false;
+            }
+
+            if(embed.u) {
+                all_urls += embed.u + ' ';
+            }
+        }
+
+        all_urls = all_urls.trimEnd();
+
+        if(content == all_urls) {
+            return true;
+        }
+    }
+
+    return !content;
+}
+
 
 function trim_text(text: string | undefined, max_len: number): string | undefined {
     if(text && text.length > max_len) {
@@ -66,14 +106,7 @@ function Embedded(props: EmbedProps) {
         }
 
         // embeds with no complex fields can be rendered as-is
-        let simple = true;
-        for(let key in props.embed) {
-            if(COMPLEX_FIELDS.includes(key as any)) {
-                simple = false;
-                break;
-            }
-        }
-        if(simple) {
+        if(is_simple_embed(props.embed)) {
             return 'fit-content';
         }
 
@@ -307,11 +340,12 @@ function EmbeddedImg(props: { url?: string, media: EmbedMedia, dim?: Dims, onCli
     let on_load = (ev: Event) => {
         let el = ev.currentTarget as HTMLImageElement;
         props.dim!([el.naturalWidth, el.naturalHeight]);
-        console.log("Loaded image", props.dim!(), el);
     };
 
     return (
         <img src={make_camo_url(props.media, errored())} onError={() => setErrored(true)}
+            width={props.media.w}
+            height={props.media.h}
             onLoad={props.dim ? on_load : undefined}
             onClick={props.onClick} style={{ 'aspect-ratio': aspect_ratio(props.media, props.dim) }}
         />
@@ -334,6 +368,8 @@ function EmbeddedVideo(props: { url?: string, media: EmbedMedia, dim?: Dims, onC
     return (
         <video preload="metadata" controls muted={prefs.MuteMedia()}
             src={src()} onError={() => setErrored(true)}
+            width={props.media.w}
+            height={props.media.h}
             onClick={props.onClick} style={{ 'aspect-ratio': aspect_ratio(props.media, props.dim) }}
         />
     );
@@ -374,7 +410,8 @@ function EmbeddedHtml(props: { media: EmbedMedia, dim?: Dims }) {
         <ConstShow when={!errored()}>
             <iframe src={url()} style={{ 'aspect-ratio': aspect_ratio(props.media, props.dim) }}
                 on:error={() => setErrored(true)}
-
+                width={props.dim?.()[0]}
+                height={props.dim?.()[1]}
                 allowfullscreen
                 sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
             />

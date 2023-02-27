@@ -10,7 +10,7 @@ import { IMessageProps, MessageUserAvatar, MessageUserName } from "./common";
 
 import { Message as MessageBody } from "./msg";
 import { Attachments } from "./attachment";
-import { Embeds } from "./embed";
+import { Embeds, should_hide_message } from "./embed";
 import { UICalendar } from "ui/components/common/timestamp";
 import { Reactions } from "./reaction";
 import { useI18nContext } from "ui/i18n/i18n-solid";
@@ -59,7 +59,6 @@ export function CozyMessage(props: IMessageProps) {
                                 <span class="flags" title={LL().main.EDITED_ON({ ts: props.msg.ts })}>
                                     <VectorIcon id={Icons.Pencil} />
                                 </span>
-
                             </ConstShow>
 
                             <ConstShow when={props.msg.msg.pins?.length}>
@@ -79,7 +78,7 @@ export function CozyMessage(props: IMessageProps) {
                     </div>
                 </ConstShow>
 
-                <MessageBody msg={props.msg.msg} extra={extra()} />
+                <MessageBody msg={props.msg.msg} extra={extra()} hide={should_hide_message(props)} />
 
                 <Show when={!!props.msg.msg.attachments?.length}>
                     <Attachments msg={props.msg.msg} />

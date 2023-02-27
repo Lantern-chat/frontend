@@ -8,7 +8,7 @@ import { IMessageProps, MessageUserName } from "./common";
 
 import { Message as MessageBody } from "./msg";
 import { Reactions } from "./reaction";
-import { Embeds } from "./embed";
+import { Embeds, should_hide_message } from "./embed";
 
 export function CompactMessage(props: IMessageProps) {
     let { LL, locale } = useI18nContext(), f = () => formatters[locale()];
@@ -38,7 +38,7 @@ export function CompactMessage(props: IMessageProps) {
                 <MessageUserName name={cached_member().nick} user={props.msg.msg.author} party_id={props.msg.msg.party_id} />
             </div>
 
-            <MessageBody msg={props.msg.msg} extra={extra()} />
+            <MessageBody msg={props.msg.msg} extra={extra()} hide={should_hide_message(props)} />
 
             <Show when={!!props.msg.msg.attachments?.length}>
                 <Attachments msg={props.msg.msg} />
