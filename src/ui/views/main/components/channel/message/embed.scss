@@ -81,6 +81,11 @@
         }
     }
 
+    // compact provider if directly below a non-empty media block
+    &__media:not(:empty) + &__provider {
+        margin-block-start: -0.5em;
+    }
+
     &__provider {
         text-align: right;
         line-height: 1;
