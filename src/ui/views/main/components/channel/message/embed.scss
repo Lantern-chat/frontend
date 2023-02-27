@@ -81,9 +81,52 @@
         }
     }
 
+    &__spoiler {
+        // NOTE: https://bugzilla.mozilla.org/show_bug.cgi?id=1657997
+        backdrop-filter: blur(1.5rem);
+
+        position: absolute;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        flex-direction: column;
+        margin: 0 !important; // TODO: Code smell, overrides the >*:not(:last-child)
+
+        // clear the accent color bar
+        left: 0.25em;
+        @media screen and (-webkit-min-device-pixel-ratio: 0) {
+            // chrome subpixel rendering sucks
+            left: calc(0.25em + 1px);
+        }
+        @-moz-document url-prefix() {
+            // firefox works fine, might match the above query so revert back
+            left: 0.25em;
+        }
+
+        .ui-text {
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            margin: auto;
+            padding: 0.75em 1em;
+            border-radius: 2em;
+        }
+
+        &:hover .ui-text {
+            background-color: rgba(0, 0, 0, 0.75);
+        }
+
+        cursor: pointer;
+    }
+
     // compact provider if directly below a non-empty media block
-    &__media:not(:empty) + &__provider {
+    &__media:not(:empty) ~ &__provider {
         margin-block-start: -0.5em;
+    }
+
+    &__spoiler + &__provider {
+        z-index: 1;
+        position: relative;
     }
 
     &__provider {
@@ -143,8 +186,8 @@
             }
         }
 
-        .ln-embed__play-icon ~ img,
-        video {
+        video,
+        .ln-embed__consent ~ img {
             object-position: center center;
         }
     }
@@ -161,7 +204,6 @@
         filter: drop-shadow(0rem 0rem 0.2rem black);
         cursor: pointer;
         opacity: 0.5;
-        z-index: 1;
 
         &:hover {
             opacity: 1;

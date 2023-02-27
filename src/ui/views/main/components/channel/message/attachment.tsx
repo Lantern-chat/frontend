@@ -20,6 +20,7 @@ import { px } from "ui/utils";
 
 //import { LightBox } from "ui/views/main/modals/lightbox/index_img";
 import { UIText } from "ui/components/common/ui-text";
+import { ConstShow } from "ui/components/flow";
 import { AnimatedGif } from "ui/components/common/gif";
 import { VectorIcon } from "ui/components/common/icon";
 import { MimeIcon } from "ui/components/mime";
@@ -226,11 +227,11 @@ export function MsgAttachment(props: IMsgAttachmentProps) {
                     </Match>
                 </Switch>
 
-                {() => spoilered() && (
+                <ConstShow when={spoilered()}>
                     <span class="spoiler-label" title={LL().main.SPOILER_TITLE()}>
                         <UIText text={LL().main.SPOILER(0)} />
                     </span>
-                )}
+                </ConstShow>
             </Show>
         </div>
     )

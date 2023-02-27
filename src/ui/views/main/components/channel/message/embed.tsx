@@ -4,11 +4,13 @@ import { unpack_rgb } from "lib/color";
 import { IS_MOBILE } from "lib/user_agent";
 import { Accessor, createEffect, createSelector, createSignal, For, Match, on, onMount, Setter, Show, Switch } from "solid-js";
 import { usePrefs } from "state/contexts/prefs";
-import type { Embed, EmbedAuthor, EmbedMedia, EmbedProvider, Message } from "state/models";
+import { Embed, EmbedAuthor, EmbedFlags, EmbedMedia, EmbedProvider, Message } from "state/models";
 import { EmbedType } from "state/models";
 import { VectorIcon } from "ui/components/common/icon";
+import { UIText } from "ui/components/common/ui-text";
 import { ConstShow } from "ui/components/flow";
 import { Atom, createAtom } from "ui/hooks/createAtom";
+import { useI18nContext } from "ui/i18n/i18n-solid";
 import type { IMessageProps } from "./common";
 
 import "./embed.scss";
@@ -96,7 +98,7 @@ function trim_text(text: string | undefined, max_len: number): string | undefine
 type Dims = Atom<[width: number, height: number]>;
 
 function Embedded(props: EmbedProps) {
-    const prefs = usePrefs();
+    const prefs = usePrefs(), { LL } = useI18nContext();
 
     let dim: Dims = createAtom<[width: number, height: number]>([0, 1]);
 
@@ -130,6 +132,8 @@ function Embedded(props: EmbedProps) {
         return `min(70%, max(${min_width}em, ${height * ar + 2}em))`;
     };
 
+    let [spoilered, setSpoilered] = createSignal(!!(props.embed.f! & EmbedFlags.Spoiler));
+
     return (
         <div class="ln-embed ui-text"
             style={{
@@ -160,6 +164,12 @@ function Embedded(props: EmbedProps) {
             <div class="ln-embed__media" >
                 <EmbeddedMedia {...props} dim={dim} />
             </div>
+
+            <ConstShow when={spoilered()}>
+                <div class="ln-embed__spoiler" title={LL().main.SPOILER_TITLE()} onClick={() => setSpoilered(false)}>
+                    <UIText text={LL().main.SPOILER(0)} />
+                </div>
+            </ConstShow>
 
             <ConstShow when={props.embed.p} keyed>
                 {provider => <EmbeddedProvider pro={provider} u={props.embed.u} />}
@@ -294,15 +304,17 @@ function EmbeddedHtmlWithConsent(props: { media: EmbedMedia, embed: Embed, dim?:
 
     return (
         <Show when={!playing()} fallback={<EmbeddedHtml media={props.media} dim={props.dim} />}>
-            <div class="ln-embed__play-icon" onClick={() => setPlaying(true)}>
-                <VectorIcon id={Icons.Play} />
-            </div>
+            <span class="ln-embed__consent" />
 
-            <ConstShow keyed when={props.embed.img} fallback={
+            <ConstShow keyed when={props.embed.img || (is_large_media(props.embed.thumb) ? props.embed.thumb : undefined)} fallback={
                 <EmbeddedHtmlWithConsentFallbackImg media={props.media} dim={props.dim} />
             }>
                 {img => <EmbeddedImg url={props.embed.u} media={img} dim={props.dim} />}
             </ConstShow>
+
+            <div class="ln-embed__play-icon" onClick={() => setPlaying(true)}>
+                <VectorIcon id={Icons.Play} />
+            </div>
         </Show>
     );
 }
