@@ -167,7 +167,7 @@ function Embedded(props: EmbedProps) {
 
             <ConstShow when={spoilered()}>
                 <div class="ln-embed__spoiler" title={LL().main.SPOILER_TITLE()} onClick={() => setSpoilered(false)}>
-                    <UIText text={LL().main.SPOILER(0)} />
+                    <span textContent={LL().main.SPOILER(0)} />
                 </div>
             </ConstShow>
 
@@ -291,6 +291,16 @@ function EmbeddedMedia(props: EmbedProps & { dim?: Dims }) {
             </Match>
         </Switch>
     )
+}
+
+function is_large_media(media: EmbedMedia | undefined): boolean {
+    if(media) {
+        if(media.w! >= 512 && media.h! >= 512) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 function EmbeddedHtmlWithConsent(props: { media: EmbedMedia, embed: Embed, dim?: Dims }) {
@@ -420,13 +430,16 @@ function EmbeddedHtml(props: { media: EmbedMedia, dim?: Dims }) {
 
     return (
         <ConstShow when={!errored()}>
-            <iframe src={url()} style={{ 'aspect-ratio': aspect_ratio(props.media, props.dim) }}
-                on:error={() => setErrored(true)}
-                width={props.dim?.()[0]}
-                height={props.dim?.()[1]}
-                allowfullscreen
-                sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
-            />
+            <div class="ln-embed__iframe" >
+                {/* style={{ 'aspect-ratio': aspect_ratio(props.media, props.dim) }} */}
+                <iframe src={url()}
+                    on:error={() => setErrored(true)}
+                    width={props.dim?.()[0]}
+                    height={props.dim?.()[1]}
+                    allowfullscreen
+                    sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+                />
+            </div>
         </ConstShow>
     );
 }
