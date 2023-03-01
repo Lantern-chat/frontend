@@ -10,8 +10,10 @@ import { VectorIcon } from "ui/components/common/icon";
 import { UIText } from "ui/components/common/ui-text";
 import { ConstShow } from "ui/components/flow";
 import { Atom, createAtom } from "ui/hooks/createAtom";
+import { createRef } from "ui/hooks/createRef";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 import type { IMessageProps } from "./common";
+import { createInfiniteScrollIntersectionTrigger } from "ui/components/infinite_scroll";
 
 import "./embed.scss";
 
@@ -303,6 +305,117 @@ function is_large_media(media: EmbedMedia | undefined): boolean {
     return false;
 }
 
+function EmbeddedHtmlWithConsentFallbackImg(props: { media: EmbedMedia, dim?: Dims }) {
+    first_dims(props.media, props.dim);
+
+    return (
+        <div class="ln-embed__play-bg" style={{
+            'aspect-ratio': aspect_ratio(props.media, props.dim)
+        }}><div /></div>
+    )
+}
+
+function aspect_ratio(media: undefined | EmbedMedia, dim?: Dims): number | undefined {
+    if(dim) {
+        let [width, height] = dim();
+        return width / height;
+    }
+
+    return (media?.w || media?.h) ? ((media.w! | 1) / (media.h! | 1)) : undefined;
+}
+
+function first_dims(m: EmbedMedia, dim: undefined | Dims) {
+    if(dim && (m.w || m.h)) {
+        dim([(m.w! || m.h!) | 1, (m.h! || m.w!) | 1]);
+    }
+}
+
+const TRIGGER_OPTS = { rootMargin: '150%' };
+
+function EmbeddedImg(props: { url?: string, media: EmbedMedia, dim?: Dims, onClick?: (() => void) }) {
+    let ref = createRef<HTMLImageElement>();
+    let visible = createInfiniteScrollIntersectionTrigger(ref, TRIGGER_OPTS);
+    let [errored, setErrored] = createSignal(false);
+    let [loaded, setLoaded] = createSignal(false);
+
+    let src = () => visible() ? make_camo_url(props.media, errored()) : undefined;
+
+    first_dims(props.media, props.dim);
+
+    let on_load = (ev: Event) => {
+        let el = ev.currentTarget as HTMLImageElement;
+        props.dim?.([el.naturalWidth, el.naturalHeight]);
+        setLoaded(true);
+    };
+
+    return (
+        <>
+            <ConstShow when={props.dim && !loaded()}>
+                <div class="ln-embed__media-loading" />
+            </ConstShow>
+            <img ref={ref} src={src()} onError={() => setErrored(true)}
+                width={props.media.w}
+                height={props.media.h}
+                onLoad={on_load}
+                onClick={props.onClick} style={{ 'aspect-ratio': aspect_ratio(props.media, props.dim) }}
+            />
+        </>
+    );
+}
+
+function EmbeddedVideo(props: { url?: string, media: EmbedMedia, dim?: Dims, onClick?: (() => void) }) {
+    const prefs = usePrefs();
+    let ref = createRef<HTMLVideoElement>();
+    let visible = createInfiniteScrollIntersectionTrigger(ref, TRIGGER_OPTS);
+    let [errored, setErrored] = createSignal(false);
+    let [loaded, setLoaded] = createSignal(false);
+
+    // the #t=0.0001 forces iOS Safari to preload the first frame and display that as a preview
+    let src = () => {
+        if(visible()) {
+            let src = make_camo_url(props.media, errored());
+            return IS_MOBILE ? src + '#t=0.0001' : src;
+        }
+        return;
+    };
+
+    let on_load = (ev: Event) => {
+        let el = ev.currentTarget as HTMLVideoElement;
+        props.dim?.([el.videoWidth, el.videoHeight]);
+        setLoaded(true);
+    };
+
+    first_dims(props.media, props.dim);
+
+    return (
+        <>
+            <ConstShow when={props.dim && !loaded()}>
+                <div class="ln-embed__media-loading" />
+            </ConstShow>
+            <video ref={ref} preload="metadata" controls muted={prefs.MuteMedia()}
+                src={src()} onError={() => setErrored(true)}
+                width={props.media.w}
+                height={props.media.h}
+                onLoadedMetadata={on_load}
+                onClick={props.onClick} style={{ 'aspect-ratio': aspect_ratio(props.media, props.dim) }}
+            />
+        </>
+    );
+}
+
+function EmbeddedAudio(props: { url?: string, media: EmbedMedia, onClick?: (() => void) }) {
+    const prefs = usePrefs();
+
+    let [errored, setErrored] = createSignal(false);
+
+    return (
+        <audio preload="metadata" controls muted={prefs.MuteMedia()}
+            src={make_camo_url(props.media, errored())}
+            onError={() => setErrored(true)}
+        />
+    );
+}
+
 function EmbeddedHtmlWithConsent(props: { media: EmbedMedia, embed: Embed, dim?: Dims }) {
     const prefs = usePrefs();
 
@@ -329,87 +442,6 @@ function EmbeddedHtmlWithConsent(props: { media: EmbedMedia, embed: Embed, dim?:
     );
 }
 
-function EmbeddedHtmlWithConsentFallbackImg(props: { media: EmbedMedia, dim?: Dims }) {
-    first_dims(props.media, props.dim);
-
-    return (
-        <div class="ln-embed__play-bg" style={{
-            'aspect-ratio': aspect_ratio(props.media, props.dim)
-        }}><div /></div>
-    )
-}
-
-function aspect_ratio(media: undefined | EmbedMedia, dim?: Dims): number | undefined {
-    if(dim) {
-        let [width, height] = dim();
-        return width / height;
-    }
-
-    return (media?.w || media?.h) ? ((media.w! | 1) / (media.h! | 1)) : undefined;
-}
-
-function first_dims(m: EmbedMedia, dim: undefined | Dims) {
-    if(dim && (m.w || m.h)) {
-        dim([(m.w! || m.h!) | 1, (m.h! || m.w!) | 1]);
-    }
-}
-
-function EmbeddedImg(props: { url?: string, media: EmbedMedia, dim?: Dims, onClick?: (() => void) }) {
-    let [errored, setErrored] = createSignal(false);
-
-    first_dims(props.media, props.dim);
-
-    let on_load = (ev: Event) => {
-        let el = ev.currentTarget as HTMLImageElement;
-        props.dim!([el.naturalWidth, el.naturalHeight]);
-    };
-
-    return (
-        <img src={make_camo_url(props.media, errored())} onError={() => setErrored(true)}
-            width={props.media.w}
-            height={props.media.h}
-            onLoad={props.dim ? on_load : undefined}
-            onClick={props.onClick} style={{ 'aspect-ratio': aspect_ratio(props.media, props.dim) }}
-        />
-    );
-}
-
-function EmbeddedVideo(props: { url?: string, media: EmbedMedia, dim?: Dims, onClick?: (() => void) }) {
-    const prefs = usePrefs();
-
-    let [errored, setErrored] = createSignal(false);
-
-    // the #t=0.0001 forces iOS Safari to preload the first frame and display that as a preview
-    let src = () => {
-        let src = make_camo_url(props.media, errored());
-        return IS_MOBILE ? src + '#t=0.0001' : src
-    };
-
-    first_dims(props.media, props.dim);
-
-    return (
-        <video preload="metadata" controls muted={prefs.MuteMedia()}
-            src={src()} onError={() => setErrored(true)}
-            width={props.media.w}
-            height={props.media.h}
-            onClick={props.onClick} style={{ 'aspect-ratio': aspect_ratio(props.media, props.dim) }}
-        />
-    );
-}
-
-function EmbeddedAudio(props: { url?: string, media: EmbedMedia, onClick?: (() => void) }) {
-    const prefs = usePrefs();
-
-    let [errored, setErrored] = createSignal(false);
-
-    return (
-        <audio preload="metadata" controls muted={prefs.MuteMedia()}
-            src={make_camo_url(props.media, errored())}
-            onError={() => setErrored(true)}
-        />
-    );
-}
-
 function EmbeddedHtml(props: { media: EmbedMedia, dim?: Dims }) {
     const prefs = usePrefs();
 
@@ -430,16 +462,17 @@ function EmbeddedHtml(props: { media: EmbedMedia, dim?: Dims }) {
 
     return (
         <ConstShow when={!errored()}>
-            <div class="ln-embed__iframe" >
-                {/* style={{ 'aspect-ratio': aspect_ratio(props.media, props.dim) }} */}
-                <iframe src={url()}
-                    on:error={() => setErrored(true)}
-                    width={props.dim?.()[0]}
-                    height={props.dim?.()[1]}
-                    allowfullscreen
-                    sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
-                />
-            </div>
+            {/* <div class="ln-embed__iframe" > */}
+            {/* style={{ 'aspect-ratio': aspect_ratio(props.media, props.dim) }} */}
+            <iframe src={url()}
+                style={{ 'aspect-ratio': aspect_ratio(props.media, props.dim) }}
+                on:error={() => setErrored(true)}
+                width={props.dim?.()[0]}
+                height={props.dim?.()[1]}
+                allowfullscreen
+                sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+            />
+            {/* </div> */}
         </ConstShow>
     );
 }

@@ -318,9 +318,9 @@ const TRIGGER_OPTS = { rootMargin: '150%' };
 
 function ImageAttachment(props: IImageAttachmentProps) {
     const prefs = props.prefs;
-    let img = createRef<HTMLImageElement>();
+    let ref = createRef<HTMLImageElement>();
     let [loaded, setLoaded] = createSignal(false);
-    let visible = createInfiniteScrollIntersectionTrigger(img, TRIGGER_OPTS);
+    let visible = createInfiniteScrollIntersectionTrigger(ref, TRIGGER_OPTS);
 
     let src = () => visible() ? props.src : undefined;
     let style = () => loaded() ? {} : computeModifiedStyle(props.img.style as JSX.CSSProperties || {}, props.attachment, prefs.UseMobileView());
@@ -335,7 +335,7 @@ function ImageAttachment(props: IImageAttachmentProps) {
 
         return (
             <img {...props.img}
-                ref={img}
+                ref={ref}
                 src={src()}
                 use:cleanedEvent={[
                     ['load', on_load],

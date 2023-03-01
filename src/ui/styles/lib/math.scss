@@ -20,3 +20,11 @@ $PHI: 1.6180339887498948482045868343656381177203091798057628621354486227;
     $other: $base * $PHI;
     @return #{$other + $unit};
 }
+
+@function trunc($value) {
+    @return $value - math.floor($value);
+}
+
+@function round_to($value, $precision: 0) {
+    @return math.div(math.round($value * $precision), $precision);
+}

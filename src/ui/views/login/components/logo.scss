@@ -68,15 +68,15 @@
 
 @keyframes pulse_flame {
     @for $i from 0 through 100 {
-        $rng: 1 - random() * 0.2;
+        $rng: round_to(1 - random() * 0.2, 1000);
         $a: random() * math.$pi * 2;
         $scale: $rng + 0.4;
 
-        $s: math.sin($a) * 3;
-        $c: math.cos($a) * 3;
+        $y: round_to(math.sin($a), 100) * 3px;
+        $x: round_to(math.cos($a), 100) * 3px;
 
-        #{$i}% {
-            transform: translateY(4.5em) scale($scale) translateY(#{$s}px) translateX(#{$c}px);
+        #{$i * 1%} {
+            transform: translateY(4.5em) scale($scale) translate($x, $y);
             opacity: $rng;
         }
     }

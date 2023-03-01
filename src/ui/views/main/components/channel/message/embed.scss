@@ -1,3 +1,5 @@
+@use "sass:math";
+
 @import "lib/variables";
 
 .ln-embed {
@@ -67,6 +69,7 @@
         left: 0;
         width: 0.25rem;
         background-color: var(--embed-ac);
+        opacity: 0.85;
     }
 
     &__author {
@@ -157,11 +160,62 @@
         height: fit-content;
         display: flex;
         flex-direction: column;
+        overflow: hidden;
 
         a {
             position: absolute;
             inset: 0;
             cursor: pointer;
+        }
+
+        &-loading {
+            display: inline;
+        }
+
+        @at-root #{&} #{&}-loading {
+            display: flex;
+            position: absolute;
+            inset: 0;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            pointer-events: none;
+
+            &::before {
+                content: "";
+
+                $shadow: ();
+
+                @for $i from 0 through 8 {
+                    $angle: math.div(360deg, 8) * $i;
+                    $x: math.cos($angle) * 2.5em;
+                    $y: math.sin($angle) * 2.5em;
+                    $shadow: append($shadow, $x $y 0 0 rgba(255, 255, 255, math.div(100%, 8) * $i), comma);
+                }
+
+                box-shadow: $shadow;
+
+                //position: absolute;
+                //inset: 0;
+                //margin: auto auto;
+                font-size: 25px;
+                width: 1em;
+                height: 1em;
+                border-radius: 50%;
+                text-indent: -9999em;
+                //transform: translateZ(0);
+                transform-origin: center;
+                animation: 2s rotate_loading_icon step-end infinite;
+                z-index: 1;
+
+                @keyframes rotate_loading_icon {
+                    @for $i from 0 through 8 {
+                        #{math.div(100%, 8) * $i} {
+                            transform: translateZ(0) rotate(#{math.div(360deg, 8) * $i});
+                        }
+                    }
+                }
+            }
         }
 
         video,
@@ -208,6 +262,10 @@
 
         iframe {
             flex: 1 0 auto;
+
+            @media (max-width: $ln-max-channel-width) {
+                height: 100%;
+            }
         }
     }
 
