@@ -102,9 +102,7 @@
 
             .ln-icon {
                 position: absolute;
-                top: 0;
-                bottom: 0;
-                right: 0;
+                inset: 0 0 0 auto;
             }
         }
     }
@@ -112,9 +110,7 @@
     &__subicon {
         font-size: 0.5em;
         position: absolute;
-        top: 0;
-        bottom: 0;
-        right: 0;
+        inset: 0 0 0 auto;
 
         .ln-rtl & {
             right: 1em;

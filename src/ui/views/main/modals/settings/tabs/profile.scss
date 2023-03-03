@@ -85,10 +85,7 @@
     .avatar-cover,
     .banner-cover {
         position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
+        inset: 0;
         opacity: 0;
 
         &:hover {
@@ -274,18 +271,14 @@
         justify-content: center;
 
         position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
+        inset: 0;
         outline: none;
         border: none;
     }
 
     .squircle {
         position: absolute;
-        top: 0;
-        bottom: 0;
+        inset: 0 auto;
 
         fill: none;
         stroke: $lnx-primary-text-color;

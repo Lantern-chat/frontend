@@ -66,11 +66,7 @@ $active: #47c05b;
 
             content: "";
             position: absolute;
-
-            left: 0;
-            top: 0;
-            bottom: 0;
-            right: 2em;
+            inset: 0 2em 0 0; // right: 2em
             background-color: transparent;
             border-radius: 50%;
             box-shadow: 0.125em 0.25em 0.375em rgba(0, 0, 0, 0.2);

@@ -214,8 +214,7 @@ summary {
             background-color: $lnx-primary-text-color;
 
             position: absolute;
-            top: 0;
-            bottom: 0;
+            inset: 0 auto;
 
             inset-inline-start: 0; // left
         }

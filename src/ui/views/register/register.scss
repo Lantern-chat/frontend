@@ -14,9 +14,7 @@
     &.ln-password-strong::after,
     &.ln-password-vstrong::after {
         content: "";
-        top: 0;
-        left: 0;
-        right: 0;
+        inset: 0 0 auto 0;
         bottom: 100%;
         position: absolute;
         width: 0;

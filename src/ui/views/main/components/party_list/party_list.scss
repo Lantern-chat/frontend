@@ -73,8 +73,7 @@
         &::before {
             content: "";
             position: absolute;
-            top: 0;
-            bottom: 0;
+            inset: 0 auto;
 
             .ln-ltr & {
                 right: 93%;

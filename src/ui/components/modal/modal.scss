@@ -1,9 +1,6 @@
 .ln-fullscreen-modal {
     position: fixed;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
+    inset: 0;
     z-index: inherit;
     backface-visibility: hidden;
 }

@@ -38,9 +38,8 @@
 
     &__timeline {
         position: absolute;
-        top: 0;
+        inset: 0 auto;
         width: 2rem;
-        bottom: 0;
 
         inset-inline-end: 0; // right
     }
@@ -112,10 +111,7 @@
 
 .ln-feed-footers {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
+    inset: auto 0 0 0;
     z-index: 2;
     margin-inline: calc(1rem - 2.5px); // same as margin for input box, which is offset by 2.5px for the border
 }
