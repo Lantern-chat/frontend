@@ -53,11 +53,13 @@
 
         img,
         video {
-            object-fit: contain;
-            max-width: 10em;
-            height: 7em;
-            width: fit-content;
             display: block;
+            max-width: 10em;
+            max-height: 10em;
+            width: fit-content;
+            height: fit-content;
+            object-fit: contain;
+            object-position: left;
         }
     }
 

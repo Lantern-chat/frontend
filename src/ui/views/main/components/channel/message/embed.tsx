@@ -233,7 +233,7 @@ function EmbeddedAuthor(props: { author: EmbedAuthor }) {
 }
 
 function EmbeddedProvider(props: { pro: EmbedProvider, u: string | undefined }) {
-    let name = () => props.pro.n || (props.pro.u || props.u)?.match(/^https?:\/\/(.*?)[\/$]/)?.[1];
+    let name = () => props.pro.n || (props.pro.u || props.u)?.match(/^https?:\/\/(?:www2?\.)?(.*?)[\/$]/)?.[1];
 
     return (
         <div class="ln-embed__provider">
@@ -350,7 +350,7 @@ function EmbeddedImg(props: { url?: string, media: EmbedMedia, dim?: Dims, onCli
 
     return (
         <>
-            <ConstShow when={props.dim && !loaded()}>
+            <ConstShow when={props.dim && visible() && !loaded()}>
                 <div class="ln-embed__media-loading" />
             </ConstShow>
             <img ref={ref} src={src()} onError={() => setErrored(true)}
@@ -389,7 +389,7 @@ function EmbeddedVideo(props: { url?: string, media: EmbedMedia, dim?: Dims, onC
 
     return (
         <>
-            <ConstShow when={props.dim && !loaded()}>
+            <ConstShow when={props.dim && visible() && !loaded()}>
                 <div class="ln-embed__media-loading" />
             </ConstShow>
             <video ref={ref} preload="metadata" controls muted={prefs.MuteMedia()}
