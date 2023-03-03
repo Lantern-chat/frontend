@@ -42,7 +42,7 @@ export function EmojiPicker(props: IEmojiPickerProps) {
 
     const prefs = usePrefs();
 
-    let [tone, setTone] = createSignal<SKIN_TONE_MODIFIER>(JSON.parse(localStorage.getItem('SKIN_TONE') || '0'));
+    let [tone, setTone] = createSignal<SKIN_TONE_MODIFIER>(JSON.parse(localStorage.getItem('SKIN_TONE') || '0') as SKIN_TONE_MODIFIER);
     createEffect(() => localStorage.setItem('SKIN_TONE', JSON.stringify(tone())));
 
     let [category, setCategory] = createSignal(0);

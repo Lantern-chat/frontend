@@ -33,7 +33,7 @@ export function windowMutator(root: RootState, action: Action) {
             use_mobile_view: window.innerWidth < MOBILE_MAX_SIZE,
             show_panel: Panel.Main,
             last_panel: Panel.Main,
-            show_user_list: typeof show_user_list == 'string' ? JSON.parse(show_user_list) : true,
+            show_user_list: typeof show_user_list == 'string' ? JSON.parse(show_user_list) as boolean : true,
             showing_footers: false,
         };
     }

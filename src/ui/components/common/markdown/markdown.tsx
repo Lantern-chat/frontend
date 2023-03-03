@@ -1381,7 +1381,7 @@ export function clean_text(ast: SingleASTNode[]): SingleASTNode[] {
     return ast.filter(node => {
         if(node.type != 'text') {
             if(Array.isArray(node.c)) {
-                node.c = clean_text(node.c);
+                node.c = clean_text(node.c as SingleASTNode[]);
             }
             return true;
         }

@@ -7,7 +7,7 @@ import { gatewayMutator } from "./mutators/gateway";
 import { userMutator } from "./mutators/user";
 import { partyMutator } from "./mutators/party";
 import { prefsMutator } from "./mutators/prefs";
-import { historyMutator, IHistoryState } from "./mutators/history";
+import { historyMutator } from "./mutators/history";
 import { toastMutator } from "./mutators/toasts";
 
 import type { Action } from "./actions";

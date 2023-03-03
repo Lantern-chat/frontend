@@ -21,6 +21,7 @@ export function selectCachedUser(state: RootState, user_id: Snowflake, party_id?
                     presence: member.user.presence,
                     party_id,
                     bits: DEFAULT_PROFILE_BITS,
+                    last_active: undefined,
                 };
             }
         }
@@ -47,6 +48,7 @@ export function selectCachedUser(state: RootState, user_id: Snowflake, party_id?
                     profile: fallback.profile,
                     presence: state.user.user?.id == fallback.id ? state.user.presence : undefined,
                     bits: DEFAULT_PROFILE_BITS,
+                    last_active: undefined,
                 };
             }
         }
