@@ -187,7 +187,7 @@ function make_camo_url(media: EmbedMedia | undefined, fallback?: boolean): strin
 
     if(url && window.config.camo && !url.startsWith(CDN_URL) && media!.s) {
         // encode to base64 and convert to url-safe
-        let ext = url.match(/\.\w+($|\?)/), encoded_url = encodeUTF8toBase64(url).replace(/[=+\/]/g, s => {
+        let name = url.match(/(?:.+\/)(.+?)(?:\?|#|$)/), encoded_url = encodeUTF8toBase64(url).replace(/[=+\/]/g, s => {
             switch(s) {
                 case '+': return '-';
                 case '/': return '_';
@@ -195,7 +195,7 @@ function make_camo_url(media: EmbedMedia | undefined, fallback?: boolean): strin
             }
         });
 
-        url = `${CDN_URL + (fallback ? 'camo2' : 'camo')}/${encoded_url}/${media!.s}${ext ? ext[0] : ''}`;
+        url = `${CDN_URL + (fallback ? 'camo2' : 'camo')}/${encoded_url}/${media!.s}/${name?.[1] || ''}`;
     }
 
     return url;
