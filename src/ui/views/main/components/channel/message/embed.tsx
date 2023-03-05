@@ -41,6 +41,11 @@ const MAX_PROVIDER_LEN = 80;
 
 const COMPLEX_FIELDS: Array<keyof Embed> = ["t", "d", "au", "obj", "fields", "footer", "thumb"];
 
+
+function eat(e: Event) {
+    e.stopPropagation();
+}
+
 export function is_simple_embed(embed: Embed): boolean {
     // embeds with no complex fields can be rendered as-is
     let simple = true;
@@ -86,14 +91,14 @@ function trim_text(text: string | undefined, max_len: number): string | undefine
 
         // run backwards in string to find recent punctuation
         for(let i = text.length - 1; i > 0; i--) {
-            if(/[\s,.]/.test(text.charAt(i))) {
+            if(/[\s,.\?!\n]/.test(text.charAt(i))) {
                 text = text.slice(0, i);
                 break;
             };
         }
 
-        // trim any remaining
-        text = text.replace(/[\s,.]+$/, '') + ELLIPSIS;
+        // trim any remaining whitespace or punctuation
+        text = text.replace(/[\s,!.]+$/, '') + ELLIPSIS;
     }
 
     return text;
@@ -160,10 +165,10 @@ function Embedded(props: EmbedProps) {
                 {author => <EmbeddedAuthor author={author} />}
             </ConstShow>
 
-            <a target="_blank" rel="noreferrer" class="ln-embed__title" href={props.embed.u}>
+            <a target="_blank" onContextMenu={eat} rel="noreferrer" class="ln-embed__title" href={props.embed.u}>
                 {trim_text(props.embed.t, MAX_TITLE_LEN)}
             </a>
-            <div class="ln-embed__desc">{trim_text(props.embed.d, MAX_DESCRIPTION_LEN)}</div>
+            <div class="ln-embed__desc">{trim_text(props.embed.d, MAX_DESCRIPTION_LEN / (prefs.UseMobileView() ? 2 : 1))}</div>
 
             <div class="ln-embed__media" >
                 <EmbeddedMedia {...props} dim={dim} />
@@ -225,7 +230,7 @@ function EmbeddedAuthor(props: { author: EmbedAuthor }) {
                 <span>{trim_text(props.author.n, MAX_AUTHOR_LEN)}</span>
             }>
                 {url => (
-                    <a target="_blank" rel="noreferrer" href={url}>
+                    <a target="_blank" onContextMenu={eat} rel="noreferrer" href={url}>
                         {trim_text(props.author.n, MAX_AUTHOR_LEN)}
                     </a>
                 )}
@@ -242,7 +247,7 @@ function EmbeddedProvider(props: { pro: EmbedProvider, u: string | undefined }) 
             <ConstShow when={props.pro.u} fallback={
                 <span>{trim_text(name(), MAX_PROVIDER_LEN)}</span>
             } >
-                <a target="_blank" rel="noreferrer" href={props.pro.u}>
+                <a target="_blank" onContextMenu={eat} rel="noreferrer" href={props.pro.u}>
                     {trim_text(name(), MAX_PROVIDER_LEN)}
                 </a>
             </ConstShow>
@@ -357,6 +362,7 @@ function EmbeddedImg(props: { url?: string, media: EmbedMedia, dim?: Dims, onCli
             </ConstShow>
             <img ref={ref} src={src()} onError={() => setErrored(true)}
                 title={props.media.d}
+                onContextMenu={eat}
                 width={props.media.w}
                 height={props.media.h}
                 onLoad={on_load}
@@ -400,9 +406,10 @@ function EmbeddedVideo(props: { url?: string, media: EmbedMedia, dim?: Dims, onC
             <ConstShow when={props.dim && visible() && !loaded()}>
                 <div class="ln-embed__media-loading" />
             </ConstShow>
-            <video ref={ref} preload="metadata" controls muted={prefs.MuteMedia()}
+            <video ref={ref} preload="metadata" loop controls muted={prefs.MuteMedia()}
                 src={src()} onError={() => setErrored(true)}
                 title={props.media.d}
+                onContextMenu={eat}
                 width={props.media.w}
                 height={props.media.h}
                 onLoadedMetadata={on_load}

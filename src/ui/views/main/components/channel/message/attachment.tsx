@@ -376,7 +376,7 @@ function VideoAttachment(props: IVideoAttachmentProps) {
 
     return (
         <video {...props.vid} src={src()} ref={ref}
-            style={style()} muted={prefs.MuteMedia()}
+            style={style()} loop muted={prefs.MuteMedia()}
             onLoadedMetadata={on_load} on:load={on_load}
             preload="metadata" controls
         />

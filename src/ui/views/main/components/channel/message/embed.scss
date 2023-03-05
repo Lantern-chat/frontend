@@ -199,6 +199,9 @@
                 //inset: 0;
                 //margin: auto auto;
                 font-size: 25px;
+                .ln-small-attachments & {
+                    font-size: 15px;
+                }
                 width: 1em;
                 height: 1em;
                 border-radius: 50%;
