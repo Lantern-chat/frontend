@@ -15,6 +15,8 @@ import { useI18nContext } from "ui/i18n/i18n-solid";
 import type { IMessageProps } from "./common";
 import { createInfiniteScrollIntersectionTrigger } from "ui/components/infinite_scroll";
 
+import { SUPPORTS_WEBM } from "lib/codecs";
+
 import "./embed.scss";
 
 interface EmbedProps {
@@ -374,7 +376,12 @@ function EmbeddedVideo(props: { url?: string, media: EmbedMedia, dim?: Dims, onC
     // the #t=0.0001 forces iOS Safari to preload the first frame and display that as a preview
     let src = () => {
         if(visible()) {
-            let src = make_camo_url(props.media, errored());
+            let media = props.media;
+            if(media.m?.includes('webm') && !SUPPORTS_WEBM()) {
+                media = media.a || media;
+            }
+
+            let src = make_camo_url(media, errored());
             return IS_MOBILE ? src + '#t=0.0001' : src;
         }
         return;
