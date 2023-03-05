@@ -354,6 +354,7 @@ function EmbeddedImg(props: { url?: string, media: EmbedMedia, dim?: Dims, onCli
                 <div class="ln-embed__media-loading" />
             </ConstShow>
             <img ref={ref} src={src()} onError={() => setErrored(true)}
+                title={props.media.d}
                 width={props.media.w}
                 height={props.media.h}
                 onLoad={on_load}
@@ -394,6 +395,7 @@ function EmbeddedVideo(props: { url?: string, media: EmbedMedia, dim?: Dims, onC
             </ConstShow>
             <video ref={ref} preload="metadata" controls muted={prefs.MuteMedia()}
                 src={src()} onError={() => setErrored(true)}
+                title={props.media.d}
                 width={props.media.w}
                 height={props.media.h}
                 onLoadedMetadata={on_load}
@@ -410,6 +412,7 @@ function EmbeddedAudio(props: { url?: string, media: EmbedMedia, onClick?: (() =
 
     return (
         <audio preload="metadata" controls muted={prefs.MuteMedia()}
+            title={props.media.d}
             src={make_camo_url(props.media, errored())}
             onError={() => setErrored(true)}
         />
