@@ -146,7 +146,7 @@ function Embedded(props: EmbedProps) {
     return (
         <div class="ln-embed ui-text"
             style={{
-                '--embed-ac': props.embed.ac != null ? '#' + props.embed.ac.toString(16) : 'var(--ln-accent-color)',
+                '--embed-ac': props.embed.ac != null ? '#' + props.embed.ac.toString(16).padStart(6, '0') : 'var(--ln-accent-color)',
                 'width': width(),
                 'max-width': prefs.UseMobileView() ? '100%' : '70%'
             }}
