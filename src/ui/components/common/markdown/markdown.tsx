@@ -820,6 +820,10 @@ const SKIN_TONE_PREFIXES = [
     'skin-tone-'
 ];
 
+function eat(e: Event) {
+    e.stopPropagation();
+}
+
 var currOrder = 0;
 
 export const defaultRules: DefaultRules = {
@@ -1061,7 +1065,7 @@ export const defaultRules: DefaultRules = {
             };
         },
         h: (node, output, state) => {
-            return <a href={/* @once */sanitizeUrl(node.target)} title={/* @once */node.title} target="_blank" rel="noreferrer">{/* @once */output(node.c, state)}</a>;
+            return <a onContextMenu={eat} href={/* @once */sanitizeUrl(node.target)} title={/* @once */node.title} target="_blank" rel="noreferrer">{/* @once */output(node.c, state)}</a>;
         }
     },
     math: {
