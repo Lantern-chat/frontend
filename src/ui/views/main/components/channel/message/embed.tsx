@@ -62,23 +62,9 @@ export function should_hide_message(props: IMessageProps) {
     let msg = props.msg.msg, embeds = msg.embeds, content = msg.content;
 
     if(content && embeds?.length) {
-        let all_urls = '';
-
-        for(let embed of embeds) {
-            if(!is_simple_embed(embed)) {
-                return false;
-            }
-
-            if(embed.u) {
-                all_urls += embed.u + ' ';
-            }
-        }
-
-        all_urls = all_urls.trimEnd();
-
-        if(content == all_urls) {
-            return true;
-        }
+        // if all embeds have titles and embed urls match content (sans spoilers)
+        return embeds.reduce((a, e) => a && e.t && e.t.length > 20, true) &&
+            content.trim().replace(/\|\|/g, '') == embeds.filter(e => e.u).map(e => e.u).join(' ');
     }
 
     return !content;
@@ -225,7 +211,7 @@ function EmbeddedAuthor(props: { author: EmbedAuthor }) {
     };
 
     return (
-        <div class="ln-embed__author">
+        <div class="ln-embed__author" title={props.author.n}>
             <ConstShow keyed when={props.author.i}>
                 {media => <EmbeddedMediaSingle media={media} />}
             </ConstShow>
