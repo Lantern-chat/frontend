@@ -4,7 +4,7 @@ import { unpack_rgb } from "lib/color";
 import { IS_MOBILE } from "lib/user_agent";
 import { Accessor, createEffect, createSelector, createSignal, For, Match, on, onMount, Setter, Show, Switch } from "solid-js";
 import { usePrefs } from "state/contexts/prefs";
-import { Embed, EmbedAuthor, EmbedFlags, EmbedMedia, EmbedProvider, Message } from "state/models";
+import { Embed, EmbedAuthor, EmbedFlags, EmbedFooter, EmbedMedia, EmbedProvider, Message } from "state/models";
 import { EmbedType } from "state/models";
 import { VectorIcon } from "ui/components/common/icon";
 import { UIText } from "ui/components/common/ui-text";
@@ -180,8 +180,12 @@ function Embedded(props: EmbedProps) {
                 </div>
             </ConstShow>
 
-            <ConstShow when={props.embed.p} keyed>
+            <ConstShow keyed when={props.embed.p}>
                 {provider => <EmbeddedProvider pro={provider} u={props.embed.u} />}
+            </ConstShow>
+
+            <ConstShow keyed when={props.embed.footer}>
+                {footer => <EmbeddedFooter footer={footer} />}
             </ConstShow>
         </div>
     )
@@ -492,4 +496,16 @@ function EmbeddedHtml(props: { media: EmbedMedia, dim?: Dims }) {
             {/* </div> */}
         </ConstShow>
     );
+}
+
+function EmbeddedFooter(props: { footer: EmbedFooter }) {
+    return (
+        <div class="ln-embed__footer">
+            <ConstShow keyed when={props.footer.i}>
+                {media => <EmbeddedMediaSingle media={media} />}
+            </ConstShow>
+
+            <span>{props.footer.t}</span>
+        </div>
+    )
 }
