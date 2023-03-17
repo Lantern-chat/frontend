@@ -1,6 +1,6 @@
 import { PutReaction, DeleteOwnReaction } from "client-sdk/src/api/commands";
 import { Icons } from "lantern-icons";
-import { For, Show, useContext } from "solid-js";
+import { For } from "solid-js";
 import { CLIENT } from "state/global";
 import { Emote, Message, Snowflake } from "state/models";
 import { Emoji, CustomEmote } from "ui/components/common/emoji";

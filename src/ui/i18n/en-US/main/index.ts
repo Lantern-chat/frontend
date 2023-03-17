@@ -122,6 +122,9 @@ const enUS_main: BaseTranslation = {
             HIDE_LAST_ACTIVE_SUBTEXT: "Will not display your approximate last-active time to other users",
         },
         media: {
+            HIDE_EMBEDS: "Hide All Embeds",
+            HIDE_NSFW_EMBEDS: "Hide NSFW Embeds",
+            HIDE_NSFW_EMBEDS_SUBTEXT: "Hide detected NSFW embeds in SFW rooms. NOT Reliable!",
             SMALL_ATTACHMENTS: "Smaller Attachments",
             SHOW_ATTACHMENT_GRID: "Show Attachments in Grid",
             SHOW_ATTACHMENT_GRID_SUBTEXT: "Arrange multiple attachments for a single message into a grid",

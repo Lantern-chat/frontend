@@ -577,6 +577,18 @@ export type NamespaceMainTranslation = {
 		}
 		media: {
 			/**
+			 * H​i​d​e​ ​A​l​l​ ​E​m​b​e​d​s
+			 */
+			HIDE_EMBEDS: string
+			/**
+			 * H​i​d​e​ ​N​S​F​W​ ​E​m​b​e​d​s
+			 */
+			HIDE_NSFW_EMBEDS: string
+			/**
+			 * H​i​d​e​ ​d​e​t​e​c​t​e​d​ ​N​S​F​W​ ​e​m​b​e​d​s​ ​i​n​ ​S​F​W​ ​r​o​o​m​s​.​ ​N​O​T​ ​R​e​l​i​a​b​l​e​!
+			 */
+			HIDE_NSFW_EMBEDS_SUBTEXT: string
+			/**
 			 * S​m​a​l​l​e​r​ ​A​t​t​a​c​h​m​e​n​t​s
 			 */
 			SMALL_ATTACHMENTS: string
@@ -1252,6 +1264,18 @@ export type TranslationFunctions = {
 				HIDE_LAST_ACTIVE_SUBTEXT: () => LocalizedString
 			}
 			media: {
+				/**
+				 * Hide All Embeds
+				 */
+				HIDE_EMBEDS: () => LocalizedString
+				/**
+				 * Hide NSFW Embeds
+				 */
+				HIDE_NSFW_EMBEDS: () => LocalizedString
+				/**
+				 * Hide detected NSFW embeds in SFW rooms. NOT Reliable!
+				 */
+				HIDE_NSFW_EMBEDS_SUBTEXT: () => LocalizedString
 				/**
 				 * Smaller Attachments
 				 */

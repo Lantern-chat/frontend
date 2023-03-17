@@ -1,6 +1,6 @@
 import { MessageFlags, user_is_bot } from "state/models";
 import { Icons } from "lantern-icons";
-import { For, Show } from "solid-js";
+import { Show } from "solid-js";
 
 import { useRootSelector } from "state/root";
 import { selectCachedUserFromMessage } from "state/selectors/selectCachedUser";
@@ -16,9 +16,11 @@ import { Reactions } from "./reaction";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 import { formatters } from "ui/i18n";
 import { ConstShow } from "ui/components/flow";
+import { usePrefs } from "state/contexts/prefs";
+import { activeRoom } from "state/selectors/active";
 
 export function CozyMessage(props: IMessageProps) {
-    let { LL, locale } = useI18nContext(), f = () => formatters[locale()];
+    const prefs = usePrefs(), { LL, locale } = useI18nContext(), f = () => formatters[locale()];
 
     let cached_member = useRootSelector(state => selectCachedUserFromMessage(state, props.msg.msg));
 
@@ -30,6 +32,14 @@ export function CozyMessage(props: IMessageProps) {
         }
         return;
     };
+
+    let room_flags = useRootSelector(state => {
+        let active_room = activeRoom(state);
+        if(active_room) {
+            return state.chat.rooms[active_room]?.room.flags;
+        }
+        return;
+    });
 
     return (
         <>
@@ -78,14 +88,14 @@ export function CozyMessage(props: IMessageProps) {
                     </div>
                 </ConstShow>
 
-                <MessageBody msg={props.msg.msg} extra={extra()} hide={should_hide_message(props)} />
+                <MessageBody msg={props.msg.msg} extra={extra()} hide={should_hide_message(props, prefs, room_flags)} />
 
                 <Show when={!!props.msg.msg.attachments?.length}>
-                    <Attachments msg={props.msg.msg} />
+                    <Attachments msg={props.msg.msg} prefs={prefs} />
                 </Show>
 
-                <Show when={!!props.msg.msg.embeds?.length}>
-                    <Embeds msg={props.msg.msg} />
+                <Show when={!!props.msg.msg.embeds?.length && !prefs.HideAllEmbeds()}>
+                    <Embeds msg={props.msg.msg} room_flags={room_flags} prefs={prefs} />
                 </Show>
 
                 <Show when={!!props.msg.msg.reactions?.length}>

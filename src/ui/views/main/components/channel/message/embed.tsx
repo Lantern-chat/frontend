@@ -1,13 +1,11 @@
 import { encodeUTF8toBase64 } from "client-sdk/src/lib/base64";
 import { Icons } from "lantern-icons";
-import { unpack_rgb } from "lib/color";
 import { IS_MOBILE } from "lib/user_agent";
-import { Accessor, createEffect, createSelector, createSignal, For, Match, on, onMount, Setter, Show, Switch } from "solid-js";
-import { usePrefs } from "state/contexts/prefs";
-import { Embed, EmbedAuthor, EmbedFlags, EmbedFooter, EmbedMedia, EmbedProvider, Message } from "state/models";
+import { Accessor, createEffect, createSelector, createSignal, For, Match, on, Show, Switch } from "solid-js";
+import { usePrefs, UserPreferenceAccessors } from "state/contexts/prefs";
+import { Embed, EmbedAuthor, EmbedFlags, EmbedFooter, EmbedMedia, EmbedProvider, Message, RoomFlags } from "state/models";
 import { EmbedType } from "state/models";
 import { VectorIcon } from "ui/components/common/icon";
-import { UIText } from "ui/components/common/ui-text";
 import { ConstShow } from "ui/components/flow";
 import { Atom, createAtom } from "ui/hooks/createAtom";
 import { createRef } from "ui/hooks/createRef";
@@ -22,12 +20,19 @@ import "./embed.scss";
 interface EmbedProps {
     msg: Message,
     embed: Embed,
+    prefs: UserPreferenceAccessors,
 }
 
-export function Embeds(props: { msg: Message }) {
+export function Embeds(props: { msg: Message, prefs: UserPreferenceAccessors, room_flags: Accessor<RoomFlags | number | undefined> }) {
     return (
         <For each={props.msg.embeds}>
-            {embed => <Embedded msg={props.msg} embed={embed} />}
+            {embed => (
+                // If the embed itself is adult, then check if the room is nsfw and then if it should be hidden
+                // order of operations here is important to avoid unnecessary dependencies
+                <ConstShow when={!((embed.f! & EmbedFlags.Adult) && !(props.room_flags()! & RoomFlags.Nsfw)) || !props.prefs.HideNsfwEmbeds()}>
+                    <Embedded msg={props.msg} embed={embed} prefs={props.prefs} />
+                </ConstShow>
+            )}
         </For>
     )
 }
@@ -40,7 +45,6 @@ const MAX_DESCRIPTION_LEN = 600;
 const MAX_PROVIDER_LEN = 80;
 
 const COMPLEX_FIELDS: Array<keyof Embed> = ["t", "d", "au", "obj", "fields", "footer", "thumb"];
-
 
 function eat(e: Event) {
     e.stopPropagation();
@@ -58,13 +62,29 @@ export function is_simple_embed(embed: Embed): boolean {
     return simple;
 }
 
-export function should_hide_message(props: IMessageProps) {
+export function should_hide_message(
+    props: IMessageProps,
+    prefs: UserPreferenceAccessors,
+    room_flags: Accessor<RoomFlags | number | undefined>
+): boolean | undefined {
+    if(prefs.HideAllEmbeds()) {
+        return false;
+    }
+
     let msg = props.msg.msg, embeds = msg.embeds, content = msg.content;
 
     if(content && embeds?.length) {
         // if all embeds have titles and embed urls match content (sans spoilers)
-        return embeds.reduce((a, e) => a && e.t && e.t.length > 20, true) &&
-            content.trim().replace(/\|\|/g, '') == embeds.filter(e => e.u).map(e => e.u).join(' ');
+        let allow_hide = !!embeds.reduce((a, e) => a && e.t?.length! > 20, true)
+            && content.trim().replace(/\|\|/g, '') == embeds.filter(e => e.u).map(e => e.u).join(' ');
+
+        // if we were going to hide, double-check if nsfw filtering is enabled
+        if(allow_hide && !(room_flags()! & RoomFlags.Nsfw) && prefs.HideNsfwEmbeds()) {
+            // AND with if all embeds are SFW
+            allow_hide &&= embeds.reduce((a, e) => a && !(e.f! & EmbedFlags.Adult), true);
+        }
+
+        return allow_hide;
     }
 
     return !content;
@@ -154,9 +174,12 @@ function Embedded(props: EmbedProps) {
             <a target="_blank" onContextMenu={eat} rel="noreferrer" class="ln-embed__title" href={props.embed.u}>
                 {trim_text(props.embed.t, MAX_TITLE_LEN)}
             </a>
-            <div class="ln-embed__desc">{trim_text(props.embed.d, MAX_DESCRIPTION_LEN / (prefs.UseMobileView() ? 2 : 1))}</div>
 
-            <div class="ln-embed__media" >
+            <div class="ln-embed__desc">
+                {trim_text(props.embed.d, MAX_DESCRIPTION_LEN / (prefs.UseMobileView() ? 2 : 1))}
+            </div>
+
+            <div class="ln-embed__media">
                 <EmbeddedMedia {...props} dim={dim} />
             </div>
 

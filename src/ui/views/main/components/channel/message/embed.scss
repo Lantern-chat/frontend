@@ -23,6 +23,14 @@
         display: none;
     }
 
+    // .ln-light-theme & {
+    box-shadow: rgba(0, 0, 0, 0.1) 0.15em 0.05em 0.25em;
+    // }
+
+    .ln-oled-theme & {
+        box-shadow: $ln-oled-border-color 1px 1px;
+    }
+
     &__title,
     &__desc,
     &__author,
@@ -40,9 +48,10 @@
         overflow-wrap: break-word;
     }
 
-    &__desc {
+    &__desc,
+    &__footer {
         color: $lnx-secondary-text-color;
-        white-space: pre-wrap;
+        white-space: pre-line;
         overflow-wrap: break-word;
     }
 

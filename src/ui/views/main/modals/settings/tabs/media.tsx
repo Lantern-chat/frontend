@@ -8,6 +8,15 @@ export function MediaSettingsTab() {
 
     return (
         <form class="ln-settings-form">
+            <TogglePrefsFlag for="hide_embeds"
+                label={LL().main.settings.media.HIDE_EMBEDS()}
+                flag={UserPreferenceFlags.HideAllEmbeds} />
+
+            <TogglePrefsFlag for="hide_nsfw_embeds"
+                label={LL().main.settings.media.HIDE_NSFW_EMBEDS()}
+                flag={UserPreferenceFlags.HideNsfwEmbeds}
+                subtext={LL().main.settings.media.HIDE_NSFW_EMBEDS_SUBTEXT()} />
+
             <TogglePrefsFlag for="small_attachments"
                 label={LL().main.settings.media.SMALL_ATTACHMENTS()}
                 flag={UserPreferenceFlags.SmallerAttachments} />

@@ -123,18 +123,16 @@ function compute_grid(msg: Message, prefs: UserPreferenceAccessors): Grid | unde
     return;
 }
 
-export function Attachments(props: { msg: Message }) {
-    let prefs = usePrefs();
-
+export function Attachments(props: { msg: Message, prefs: UserPreferenceAccessors }) {
     return (
-        <Show keyed when={prefs.ShowAttachmentGrid() && compute_grid(props.msg, prefs)}
+        <Show keyed when={props.prefs.ShowAttachmentGrid() && compute_grid(props.msg, props.prefs)}
             fallback={(
                 <For each={props.msg.attachments}>
-                    {attachment => <MsgAttachment msg={props.msg} attachment={attachment} prefs={prefs} />}
+                    {attachment => <MsgAttachment msg={props.msg} attachment={attachment} prefs={props.prefs} />}
                 </For>
             )}
         >
-            {(grid: Grid) => <AttachmentGrid msg={props.msg} grid={grid} prefs={prefs} />}
+            {(grid: Grid) => <AttachmentGrid msg={props.msg} grid={grid} prefs={props.prefs} />}
         </Show>
     )
 }
