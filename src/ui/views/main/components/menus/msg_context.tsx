@@ -93,8 +93,8 @@ export function MsgContextMenu(props: IMsgContextMenuProps) {
 
             <div onClick={on_delete}
                 classList={{
-                    'ln-contextmenu-confirm': shownConfirmation(),
-                    'ln-contextmenu-delete': !shownConfirmation(),
+                    "ln-contextmenu-confirm": shownConfirmation(),
+                    "ln-contextmenu-delete": !shownConfirmation(),
                 }}
             >
                 <VectorIcon id={shownConfirmation() ? Icons.TrashOpen : Icons.Trash} />
@@ -102,16 +102,14 @@ export function MsgContextMenu(props: IMsgContextMenuProps) {
                 <UIText text={shownConfirmation() ? LL().main.menus.msg.CONFIRM() : LL().main.menus.msg.DELETE()} />
             </div>
 
-            {() => dev_mode() && (
-                <>
-                    <hr />
+            <Show when={dev_mode()}>
+                <hr />
 
-                    <div onClick={() => copyText(props.msg.msg.id)}>
-                        <VectorIcon id={Icons.ChatMessage} />
-                        <UIText text={LL().main.menus.COPY_ID()} />
-                    </div>
-                </>
-            )}
+                <div onClick={() => copyText(props.msg.msg.id)}>
+                    <VectorIcon id={Icons.ChatMessage} />
+                    <UIText text={LL().main.menus.COPY_ID()} />
+                </div>
+            </Show>
         </ContextMenu>
     )
 }

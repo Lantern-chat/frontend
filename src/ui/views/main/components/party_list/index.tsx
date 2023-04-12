@@ -46,7 +46,7 @@ export function PartyList() {
 
                 <Home active_party={state.active_party} can_navigate={can_navigate()} />
 
-                <Show when={state.user_object && !GATEWAY_PENDING.includes(state.gateway_status)} fallback={Connecting}>
+                <Show when={state.user_object && !GATEWAY_PENDING.includes(state.gateway_status)} fallback={Connecting()}>
                     <For each={state.parties}>
                         {party => <PartyAvatar
                             party={party} last_channel={state.last_channel}
@@ -80,7 +80,7 @@ function CreateParty(props: { can_navigate: boolean }) {
     let [show, setShow] = createSignal(false);
 
     return (
-        <li id="create-party" classList={{ 'selected': show() }}>
+        <li id="create-party" classList={{ "selected": show() }}>
             <Avatar rounded text="+" username="Join/Create a Party"
                 wrapper={{
                     title: "Join/Create a Party",

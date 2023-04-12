@@ -39,7 +39,7 @@ function system_body(props: IMessageProps, LL: Accessor<TranslationFunctions>, l
             let user = props.msg.msg.author.id,
                 idx = fnv1a(user) % (loadedLocales[locale()].main.system.welcome as any).length;
 
-            return LL().main.system.welcome[idx as unknown as '0']({ user });
+            return LL().main.system.welcome[idx as unknown as "0"]({ user });
         }
         case MessageKind.Unavailable: {
             return LL().main.system.unavailable();

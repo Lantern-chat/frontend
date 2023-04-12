@@ -1,8 +1,5 @@
-import { createEffect, createMemo, createSignal, onCleanup, Show, untrack, useContext } from "solid-js";
+import { createEffect, createMemo, createSignal, onCleanup, onMount, Show, untrack, useContext } from "solid-js";
 import { useStructuredSelector } from "solid-mutant";
-
-import { createRef } from "ui/hooks/createRef";
-import { createReducer } from "ui/hooks/createReducer";
 
 import { IS_MOBILE } from "lib/user_agent";
 
@@ -46,11 +43,13 @@ export function MessageBox() {
 
     let [debug, setDebug] = /*#__PURE__*/ createSignal("");
 
-    let ta = createRef<HTMLTextAreaElement>();
+    let ref: HTMLTextAreaElement | undefined;
     let [tac, setTAC] = createController<IMsgTextareaController>();
     let [fc, setFC] = createController<IFileUploadController>();
 
     let [value, setValue] = createSignal("");
+    let [selection, setSelection] = createSignal(0);
+    let [completing, setCompleting] = createSignal(false);
     let ts = 0, skip = false;
 
     let [show_focus_border, setShowFocusBorder] = createSignal(false);
@@ -63,15 +62,16 @@ export function MessageBox() {
     // Load up any available draft, set the textarea to that,
     // then setup a callback to store the new draft when navigating away
     let store = useRootStore();
+
     createEffect(() => {
-        if(ta.current && state.active_room) {
+        if(state.active_room) {
             __DEV__ && console.log("Loading Draft");
 
             let room = state.active_room;
 
             onCleanup(() => {
                 __DEV__ && console.log("Storing Draft", value());
-                ta.current && dispatch({ type: Type.MESSAGE_DRAFT, room, draft: value() });
+                dispatch({ type: Type.MESSAGE_DRAFT, room, draft: value() });
             });
 
             skip = true; // skip the change event this will emit
@@ -83,7 +83,7 @@ export function MessageBox() {
     });
 
     useMainHotkey(Hotkey.FocusTextArea, () => {
-        if(ta.current && state.active_room) {
+        if(ref && state.active_room) {
             tac()?.focus(); setShowFocusBorder(true);
         }
     });
@@ -134,14 +134,19 @@ export function MessageBox() {
     let on_keydown = (e: KeyboardEvent) => {
         setShowFocusBorder(false);
 
-        if(e.key == 'Enter') { do_send(); }
+        if(e.key == "Enter") {
+            if(completing()) {
+
+            }
+            do_send();
+        }
 
         if(__DEV__) {
             setDebug(
-                (e.ctrlKey ? 'Ctrl+' : '') +
-                (e.altKey ? 'Alt+' : '') +
-                (e.shiftKey ? 'Shift+' : '') +
-                (e.key === ' ' ? 'Spacebar' : e.key)
+                (e.ctrlKey ? "Ctrl+" : "") +
+                (e.altKey ? "Alt+" : "") +
+                (e.shiftKey ? "Shift+" : "") +
+                (e.key === " " ? "Spacebar" : e.key)
             );
         }
     };
@@ -179,24 +184,28 @@ export function MessageBox() {
         <>
             <div class="ln-msg-box__wrapper"
                 classList={{
-                    'with-footers': state.showing_footers,
-                    'focused': show_focus_border(),
-                    'ln-msg-box--disabled': !state.active_room,
+                    "with-footers": state.showing_footers,
+                    "focused": show_focus_border(),
+                    "ln-msg-box--disabled": !state.active_room,
                 }}
             >
                 <UploadPanel onChange={(c, s) => setFiles([c, s])} fc={setFC} />
 
                 <div class="ln-typing ln-typing__top">
-                    {() => prefs.UseMobileView() && <UsersTyping />}
+                    <Show when={prefs.UseMobileView()}>
+                        <UsersTyping />
+                    </Show>
                 </div>
 
-                <div on:click={on_click_focus} class="ln-msg-box">
+                <div onClick={on_click_focus} class="ln-msg-box">
+                    {/* <AutoComplete value={value()} pos={selection()} onChange={setCompleting} /> */}
+
                     <EmotePicker onPick={on_pick_emote} />
 
                     <MsgTextarea
                         onBlur={on_blur}
                         onFocus={on_focus}
-                        ta={/*@once*/ta}
+                        ref={r => ref = r}
                         tac={setTAC}
                         onKeyDown={on_keydown}
                         onChange={on_change}
@@ -213,26 +222,30 @@ export function MessageBox() {
                     </div>
 
                     <div class="ln-msg-box__send" onClick={on_send_click} title={LL().main.SEND_MESSAGE()}
-                        classList={{ 'visible': !is_empty() }}
+                        classList={{ "visible": !is_empty() }}
                     >
                         <VectorIcon id={Icons.Send} />
                     </div>
 
-                    {() => !state.active_room && <span class="ln-msg-box__disable" />}
+                    <Show when={!state.active_room}>
+                        <span class="ln-msg-box__disable" />
+                    </Show>
                 </div>
             </div>
 
             <div class="ln-typing ln-typing__bottom">
-                {() => !prefs.UseMobileView() && <UsersTyping />}
+                <Show when={!prefs.UseMobileView()}>
+                    <UsersTyping />
+                </Show>
 
                 <span class="ui-text" id="file-upload-meta"
                     textContent={f().bytes(files()[1])}
-                    style={{ display: files()[1] ? '' : 'none' }}
+                    style={{ display: files()[1] ? "" : "none" }}
                 />
             </div>
 
         </>
-    )
+    );
 }
 
 function UsersTyping() {
@@ -273,11 +286,11 @@ function UsersTyping() {
                     selected.push(remaining);
                 }
 
-                return LL().main.USERS_TYPING[selected.length - 1](...selected);
+                return (LL().main.USERS_TYPING as any)[selected.length - 1](...selected);
             }
         }
 
-        return '';
+        return "";
     });
 
     return <UserText class="ui-text" text={formatted()} />;

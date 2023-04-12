@@ -30,12 +30,12 @@ import type { ZxcvbnResult } from "@zxcvbn-ts/core";
 
 type zxcvbn_fn = (input: string) => ZxcvbnResult;
 
-var zxcvbn: { zxcvbn: zxcvbn_fn } | (() => Promise<{ default: zxcvbn_fn }>) = () => import('lib/password');
+let zxcvbn: { zxcvbn: zxcvbn_fn } | (() => Promise<{ default: zxcvbn_fn }>) = () => import("lib/password");
 
 // var PRELOADED: boolean = false;
 // function preloadLogin() {
 //     if(!PRELOADED) {
-//         import(/* webpackChunkName: 'LoginView' */ "../login");
+//         import(/* webpackChunkName: "LoginView" */ "../login");
 //         PRELOADED = true;
 //     }
 // }
@@ -80,13 +80,13 @@ interface RegisterAction {
 }
 
 function calculateDays(dob: IDob): number {
-    let num_days = new Date(dob.y || 1970, dob.m || 12, 0).getDate();
+    const num_days = new Date(dob.y || 1970, dob.m || 12, 0).getDate();
     dob.d = (dob.d == null || num_days < dob.d) ? null : dob.d;
     return num_days;
 }
 
 function calc_pass_strength(pwd: string): number {
-    return typeof zxcvbn === 'object' ? Math.max(zxcvbn.zxcvbn(pwd).score, 1) : 0;
+    return typeof zxcvbn === "object" ? Math.max(zxcvbn.zxcvbn(pwd).score, 1) : 0;
 }
 
 function register_state_reducer(state: RegisterState, { value, type }: RegisterAction): RegisterState {
@@ -102,15 +102,15 @@ function register_state_reducer(state: RegisterState, { value, type }: RegisterA
             return { ...state, pass: value! };
         }
         case RegisterActionType.UpdateYear: {
-            let dob = { ...state.dob, y: parseInt(value!) };
+            const dob = { ...state.dob, y: parseInt(value!) };
             return { ...state, dob, days: calculateDays(dob) };
         }
         case RegisterActionType.UpdateMonth: {
-            let dob = { ...state.dob, m: parseInt(value!) };
+            const dob = { ...state.dob, m: parseInt(value!) };
             return { ...state, dob, days: calculateDays(dob) };
         }
         case RegisterActionType.UpdateDay: {
-            let dob = { ...state.dob, d: parseInt(value!) };
+            const dob = { ...state.dob, d: parseInt(value!) };
             return { ...state, dob };
         }
         case RegisterActionType.Register: {
@@ -125,10 +125,10 @@ function register_state_reducer(state: RegisterState, { value, type }: RegisterA
 
 import { CircleEmptyInfoIcon } from "lantern-icons";
 
-var SETUP_THEN = false;
+let SETUP_THEN = false;
 
 // TODO: i18n these
-const HCAPTCHA_ERRORS = {
+const HCAPTCHA_ERRORS: { [key: string]: string } = {
     "rate-limited": "Too Many hCaptcha Requests",
     "network-error": "hCaptcha Network Error",
     "invalid-data": "Invalid hCaptcha Data",
@@ -140,7 +140,7 @@ const HCAPTCHA_ERRORS = {
     "internal-error": "Internal hCaptcha Error",
 };
 
-import { useI18nContext } from 'ui/i18n/i18n-solid';
+import { useI18nContext } from "ui/i18n/i18n-solid";
 
 import "../login/login.scss";
 import "./register.scss";
@@ -149,11 +149,11 @@ export default function RegisterView() {
 
     setTitle(() => LL().REGISTER());
 
-    let dispatch = useRootDispatch();
+    const dispatch = useRootDispatch();
 
-    let [hcaptcha, setHCaptchaController] = createController<HCaptchaController>();
+    const [hcaptcha, setHCaptchaController] = createController<HCaptchaController>();
 
-    let [state, form_dispatch] = createReducer(register_state_reducer, {
+    const [state, form_dispatch] = createReducer(register_state_reducer, {
         email: "",
         user: "",
         pass: "",
@@ -162,11 +162,11 @@ export default function RegisterView() {
         is_registering: false,
     });
 
-    let [errorMsg, setErrorMsg] = createSignal<string | null>(null);
-    let prefs = usePrefs();
+    const [errorMsg, setErrorMsg] = createSignal<string | null>(null);
+    const prefs = usePrefs();
 
     onMount(() => {
-        if(!SETUP_THEN && typeof zxcvbn == 'function') {
+        if(!SETUP_THEN && typeof zxcvbn == "function") {
             zxcvbn().then(mod => {
                 zxcvbn = { zxcvbn: mod.default };
                 form_dispatch({ type: RegisterActionType.UpdatePassStrength, value: "" });
@@ -175,35 +175,35 @@ export default function RegisterView() {
         }
     });
 
-    let valid_email = () => state.email ? validateEmail(state.email) : null;
-    let valid_user = () => state.user ? validateUsername(state.user) : null;
-    let valid_pass = createMemo(() => state.pass ? validatePass(state.pass) : null);
+    const valid_email = () => state.email ? validateEmail(state.email) : null;
+    const valid_user = () => state.user ? validateUsername(state.user) : null;
+    const valid_pass = createMemo(() => state.pass ? validatePass(state.pass) : null);
 
-    let passwordClass = () => {
-        let pass_strength = state.pass && valid_pass() ? calc_pass_strength(state.pass) : 0;
+    const passwordClass = () => {
+        const pass_strength = state.pass && valid_pass() ? calc_pass_strength(state.pass) : 0;
 
-        let passwordClass: string = 'ln-password-';
+        let passwordClass: string = "ln-password-";
         switch(pass_strength) {
-            case 1: { passwordClass += 'weak'; break; }
-            case 2: { passwordClass += 'mid'; break; }
-            case 3: { passwordClass += 'strong'; break; }
-            case 4: { passwordClass += 'vstrong'; break; }
-            default: passwordClass += 'none';
+            case 1: { passwordClass += "weak"; break; }
+            case 2: { passwordClass += "mid"; break; }
+            case 3: { passwordClass += "strong"; break; }
+            case 4: { passwordClass += "vstrong"; break; }
+            default: passwordClass += "none";
         }
         return passwordClass;
     };
 
-    let on_submit = async (e: Event) => {
+    const on_submit = async (e: Event) => {
         e.preventDefault();
 
         let h;
         if(state.is_registering || !(h = hcaptcha())) return;
 
-        form_dispatch({ type: RegisterActionType.Register, value: '' });
+        form_dispatch({ type: RegisterActionType.Register, value: "" });
 
-        let on_error = (err: string) => {
+        const on_error = (err: string) => {
             setErrorMsg(err);
-            form_dispatch({ type: RegisterActionType.NoRegister, value: '' });
+            form_dispatch({ type: RegisterActionType.NoRegister, value: "" });
         };
 
         let res;
@@ -231,7 +231,7 @@ export default function RegisterView() {
             if(e instanceof ApiError) {
                 msg = e.message;
             } else if(e instanceof DriverError) {
-                msg = LL().NETWORK_ERROR() + ': ' + e.msg();
+                msg = LL().NETWORK_ERROR() + ": " + e.msg();
             } else {
                 msg = LL().UNKNOWN_ERROR();
             }
@@ -239,9 +239,9 @@ export default function RegisterView() {
         }
     };
 
-    let on_change = (e: Event, type: RegisterActionType) => form_dispatch({ type, value: (e.currentTarget as HTMLInputElement).value });
+    const on_change = (e: Event, type: RegisterActionType) => form_dispatch({ type, value: (e.currentTarget as HTMLInputElement).value });
 
-    let on_email_change = (e: InputEvent) => on_change(e, RegisterActionType.UpdateEmail),
+    const on_email_change = (e: InputEvent) => on_change(e, RegisterActionType.UpdateEmail),
         on_username_change = (e: InputEvent) => on_change(e, RegisterActionType.UpdateUser),
         on_password_change = (e: InputEvent) => on_change(e, RegisterActionType.UpdatePass),
         on_year_change = (e: Event) => on_change(e, RegisterActionType.UpdateYear),
@@ -270,7 +270,7 @@ export default function RegisterView() {
             <FormGroup>
                 <FormLabel for="password">
                     {LL().PASSWORD()}
-                    <span class="ln-tooltip" style={{ 'margin-inline-start': '0.2em' }}>
+                    <span class="ln-tooltip" style={{ "margin-inline-start": "0.2em" }}>
                         <VectorIcon src={CircleEmptyInfoIcon} />
                     </span>
                 </FormLabel>
@@ -319,11 +319,11 @@ export default function RegisterView() {
             <hr />
 
             <FormGroup>
-                <div style={{ display: 'flex', padding: '0 1em' }}>
+                <div style={{ display: "flex", padding: "0 1em" }}>
                     <button
                         class="ln-btn ui-text"
-                        classList={{ 'ln-btn--loading-icon': state.is_registering }}
-                        style={{ "margin-inline-end": 'auto' }}
+                        classList={{ "ln-btn--loading-icon": state.is_registering }}
+                        style={{ "margin-inline-end": "auto" }}
                         onClick={() => setErrorMsg(null)}
                     >
                         <Show when={state.is_registering} fallback={LL().REGISTER()}>
@@ -356,29 +356,27 @@ export default function RegisterView() {
     );
 }
 
+const re = /([^<]+)|<[@#](.+?)>/g;
+
 function HCaptchaTerms() {
-    let { LL } = useI18nContext();
+    const { LL } = useI18nContext();
 
     return createMemo(() => {
-        let t = LL().hCaptcha();
-        let segments: Array<JSX.Element> = [];
-        let re = /([^<]+)|<[@#](.+?)>/g, match;
+        let t = LL().hCaptcha(), segments: Array<JSX.Element> = [], match;
 
-        do {
-            match = re.exec(t);
-            if(match) {
-                let [m, p1, p2] = match;
+        // eslint-disable-next-line no-cond-assign
+        while(match = re.exec(t)) {
+            const [m, p1, p2] = match;
 
-                if(p1) {
-                    segments.push(p1);
-                } else if(p2) {
-                    let href = "https://hcaptcha.com/" + (m.startsWith('<@') ? "privacy" : "terms");
+            if(p1) {
+                segments.push(p1);
+            } else if(p2) {
+                const href = "https://hcaptcha.com/" + (m.startsWith("<@") ? "privacy" : "terms");
 
-                    segments.push(<a target="_blank" href={href}>{p2}</a>);
-                }
+                segments.push(<a target="_blank" href={href}>{p2}</a>);
             }
-        } while(match);
+        }
 
         return segments;
-    });
+    }) as unknown as JSX.Element;
 }

@@ -65,11 +65,11 @@ export async function resize_image(url: string, width: number, height: number, l
     img.src = url;
 
     let decoding = img.decode(),
-        src: HTMLCanvasElement | HTMLImageElement = document.createElement('canvas'),
-        dst = document.createElement('canvas');
+        src: HTMLCanvasElement | HTMLImageElement = document.createElement("canvas"),
+        dst = document.createElement("canvas");
 
     try {
-        let [{ default: pica }] = await Promise.all([import('pica'), decoding]),
+        let [{ default: pica }] = await Promise.all([import("pica"), decoding]),
             p = new pica();
 
         let nw = img.naturalWidth, nh = img.naturalHeight,
@@ -88,7 +88,7 @@ export async function resize_image(url: string, width: number, height: number, l
             src.width = w;
             src.height = h;
 
-            let ctx = src.getContext('2d');
+            let ctx = src.getContext("2d");
             if(!ctx) { return; }
 
             ctx.drawImage(img, x, y, w, h, 0, 0, w, h);
@@ -109,10 +109,10 @@ export async function resize_image(url: string, width: number, height: number, l
             dst = src as HTMLCanvasElement;
         }
 
-        let ctx = dst.getContext('2d');
+        let ctx = dst.getContext("2d");
         if(!ctx) return;
 
-        let format = (!lossy || has_alpha(ctx)) ? 'image/png' : 'image/jpeg';
+        let format = (!lossy || has_alpha(ctx)) ? "image/png" : "image/jpeg";
         return p.toBlob(dst, format, 95);
 
     } finally {

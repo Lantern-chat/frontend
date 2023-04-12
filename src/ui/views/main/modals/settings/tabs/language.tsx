@@ -29,7 +29,7 @@ function LangPicker() {
 
         await Promise.all([
             loadLocaleAsync(which),
-            loadNamespaceAsync(which, 'main'),
+            loadNamespaceAsync(which, "main"),
             //__DEV__ && new Promise(resolve => {
             //    setTimeout(() => resolve(null), 1000000);
             //}),

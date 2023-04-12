@@ -54,7 +54,7 @@ export function MessageUserName(props: IUserNameProps) {
     );
 }
 
-export function MessageUserAvatar(props: Omit<IUserNameProps, 'msg'>) {
+export function MessageUserAvatar(props: Omit<IUserNameProps, "msg">) {
     let [show, main_click_props] = createSimpleToggleOnClick();
     let prefs = usePrefs();
 
@@ -72,7 +72,7 @@ export function MessageUserAvatar(props: Omit<IUserNameProps, 'msg'>) {
         <Avatar
             username={props.name}
             text={props.name.charAt(0)}
-            url={avatar_url() && asset_url('user', props.user.id, avatar_url()!, 'avatar', prefs.LowBandwidthMode())}
+            url={avatar_url() && asset_url("user", props.user.id, avatar_url()!, "avatar", prefs.LowBandwidthMode())}
             backgroundColor={color()}
             rounded={bits()?.roundedness}
             props={main_click_props}

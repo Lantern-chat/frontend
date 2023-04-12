@@ -79,7 +79,7 @@ export function chatMutator(root: RootState, action: Action) {
     if(!state) {
         state = root.chat = {
             rooms: {},
-            active_party: '@me', // @me as a default will avoid odd behavior when loaded into a non-channel/non-home page
+            active_party: "@me", // @me as a default will avoid odd behavior when loaded into a non-channel/non-home page
         }
     }
 
@@ -91,7 +91,7 @@ export function chatMutator(root: RootState, action: Action) {
         case Type.REFRESH_ACTIVE:
         case Type.HISTORY_UPDATE: {
             let parts = action.ctx.parts;
-            if(parts[0] === 'channels') {
+            if(parts[0] === "channels") {
                 state.active_party = parts[1];
                 state.active_room = parts[2];
             }
@@ -307,7 +307,7 @@ export function chatMutator(root: RootState, action: Action) {
                         if(msg) {
                             msg.msg.reactions ||= [];
 
-                            let reaction_idx = msg.msg.reactions.findIndex(r => 'emote' in r ? r.emote == emote['emote'] : r.emoji == emote['emoji']),
+                            let reaction_idx = msg.msg.reactions.findIndex(r => "emote" in r ? r.emote == emote["emote"] : r.emoji == emote["emoji"]),
                                 reaction: Reaction | undefined = msg.msg.reactions[reaction_idx],
                                 own_reaction = user_id == root.user.user!.id,
                                 added = event.o == ServerMsgOpcode.MessageReactionAdd;

@@ -5,8 +5,8 @@ import { useI18nContext } from "ui/i18n/i18n-solid";
 function on_spoiler_click(e: MouseEvent) {
     let el = e.currentTarget as HTMLSpanElement;
     el.classList.toggle("hidden", false);
-    el.title = '';
-    el.removeEventListener('click', on_spoiler_click);
+    el.title = "";
+    el.removeEventListener("click", on_spoiler_click);
 }
 
 import "./spoiler.scss";

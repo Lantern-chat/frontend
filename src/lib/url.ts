@@ -10,11 +10,11 @@ const ROOT: UrlParts = { path: [], dir: true };
 const URL_REGEX: RegExp = /^((\/[^\/#?]+)+)(\/?)(\?[^#]+)?(#.*)?$/;
 
 export function parseUrl(url: string): UrlParts | null {
-    if(url == '/') return ROOT;
+    if(url == "/") return ROOT;
     let m = URL_REGEX.exec(url);
     return m == null ? null : {
-        path: m[1].split('/').slice(1),
-        dir: m[3] == '/',
+        path: m[1].split("/").slice(1),
+        dir: m[3] == "/",
         query: m[4],
         hash: m[5],
     };

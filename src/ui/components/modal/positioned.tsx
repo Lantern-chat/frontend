@@ -2,7 +2,7 @@ import { createEffect, createMemo, createSignal, JSX, onCleanup } from "solid-js
 import { px } from "ui/utils";
 import { Modal } from "./";
 
-export type ModalRect = Partial<DOMRect> & Pick<DOMRect, 'top' | 'left'>;
+export type ModalRect = Partial<DOMRect> & Pick<DOMRect, "top" | "left">;
 
 export interface IPositionedModalProps {
     children?: any,
@@ -29,12 +29,12 @@ export function PositionedModal(props: IPositionedModalProps) {
 
     createEffect(() => {
         let listener = () => setDim(dimSelector());
-        window.addEventListener('resize', listener);
-        onCleanup(() => window.removeEventListener('resize', listener));
+        window.addEventListener("resize", listener);
+        onCleanup(() => window.removeEventListener("resize", listener));
     });
 
     let eaten = () => {
-        let eaten = {};
+        let eaten: { [key: string]: any } = {};
 
         if(Array.isArray(props.eat) && props.eat.length) {
             for(let event of props.eat) {
@@ -53,37 +53,37 @@ export function PositionedModal(props: IPositionedModalProps) {
             on_top = top < (d.height * 0.5),
             on_left = left < (d.width * 0.5),
             style: any = {
-                position: 'absolute'
-            }, cnp = 'ln-modal-', cns = [];
+                position: "absolute"
+            }, cnp = "ln-modal-", cns = [];
 
-        cns.push(cnp + (on_top ? 'top' : 'bottom'));
-        cns.push(cnp + (on_left ? 'left' : 'right'));
+        cns.push(cnp + (on_top ? "top" : "bottom"));
+        cns.push(cnp + (on_left ? "left" : "right"));
 
         if(on_top) {
             if(r.bottom !== undefined) {
                 top = r.bottom;
             }
 
-            style.top = '0%';
+            style.top = "0%";
         } else {
-            style.bottom = '100%';
+            style.bottom = "100%";
         }
 
         if(on_left) {
-            style.left = '0%';
+            style.left = "0%";
         } else {
-            style.right = '100%';
+            style.right = "100%";
         }
 
         let wrapper_props = {
             style: {
-                position: 'absolute',
-                '--modal-left': px(left),
-                '--modal-top': px(top),
-                left: 'var(--modal-left)',
-                top: 'var(--modal-top)',
+                position: "absolute",
+                "--modal-left": px(left),
+                "--modal-top": px(top),
+                left: "var(--modal-left)",
+                top: "var(--modal-top)",
             } as JSX.CSSProperties,
-            class: cns.join(' '),
+            class: cns.join(" "),
         };
 
         return {

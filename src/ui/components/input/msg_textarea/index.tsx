@@ -1,13 +1,12 @@
-import { createMemo, createSignal, JSX, Show, splitProps, untrack } from 'solid-js';
+import { createSignal, JSX, onCleanup, Show, splitProps, untrack } from "solid-js";
 
-import { TextareaAutosize, TextareaHeightChangeMeta } from 'ui/components/input/textarea';
+import { TextareaAutosize, TextareaHeightChangeMeta } from "ui/components/input/textarea";
 
-import { useI18nContext } from 'ui/i18n/i18n-solid';
+import { useI18nContext } from "ui/i18n/i18n-solid";
 
-import type { SetController } from 'ui/hooks/createController';
-import { createShallowMemo } from 'ui/hooks/createShallowMemo';
+import type { SetController } from "ui/hooks/createController";
+import { createShallowMemo } from "ui/hooks/createShallowMemo";
 import { parseHotkey, Hotkey } from "ui/hooks/useMain";
-import { Ref } from 'ui/hooks/createRef';
 
 export interface IMsgTextareaProps {
     disabled?: boolean,
@@ -21,7 +20,7 @@ export interface IMsgTextareaProps {
     onContextMenu(e: MouseEvent): void;
     onSelectionChange?(ta: HTMLTextAreaElement, in_code: boolean): void;
 
-    ta: Ref<HTMLTextAreaElement | undefined>;
+    ref?: (el: HTMLTextAreaElement) => void;
     tac?: SetController<IMsgTextareaController>,
 }
 
@@ -29,37 +28,46 @@ export interface IMsgTextareaController {
     focus(): void;
     setValue(value: string, change?: boolean): void;
     append(value: string): void;
+    splice(start: number, remove: number, insert: string): void;
 }
 
 import "./textarea.scss";
 export function MsgTextarea(props: IMsgTextareaProps) {
-    let ta = props.ta;
+    let ref: HTMLTextAreaElement | undefined;
+
+    onCleanup(() => ref = undefined);
 
     let { LL } = useI18nContext();
 
-    let [local, taprops] = splitProps(props, ['mobile', 'spellcheck', 'onChange', 'onKeyDown', 'onSelectionChange', 'tac', 'ta']);
+    let [local, taprops] = splitProps(props, ["mobile", "spellcheck", "onChange", "onKeyDown", "onSelectionChange", "tac", "ref"]);
 
     let setValue = (value: string, change: boolean = true) => {
-        if(ta.current) {
-            ta.current.value = value;
-
-            // triggers a 'change' event that in-turn triggers a resize
-            change && (ta.current.dispatchEvent(new Event('change', { bubbles: false })), props.onChange(value));
+        if(ref) {
+            ref.value = value;
+            // triggers a "change" event that in-turn triggers a resize
+            change && (ref!.dispatchEvent(new Event("change", { bubbles: false })), props.onChange(value));
         }
     };
 
     local.tac?.({
-        setValue: (value, change) => untrack(() => setValue(value, change)),
+        setValue,
         focus() {
-            untrack(() => ta.current?.focus());
+            ref?.focus()
         },
         append(value: string) {
-            untrack(() => {
-                if(ta.current) {
-                    setValue(ta.current.value + value);
-                }
-            })
-        }
+            if(ref) {
+                setValue(ref.value + value);
+            }
+        },
+        splice(start, remove = 0, insert = "") {
+            if(ref) {
+                let value = ref.value,
+                    prefix = value.slice(0, start),
+                    suffix = value.slice(start + remove);
+
+                setValue(prefix + insert + suffix);
+            }
+        },
     });
 
     let [spellcheck, setSpellcheck] = createSignal(!!local.spellcheck),
@@ -78,7 +86,7 @@ export function MsgTextarea(props: IMsgTextareaProps) {
     let onInput = (e: InputEvent) => {
         let ta = e.target as HTMLTextAreaElement;
 
-        local.onChange(ta.value = ta.value.replace(/^\n+/, '')); // remove leading whitespace and trigger change
+        local.onChange(ta.value = ta.value.replace(/^\n+/, "")); // remove leading whitespace and trigger change
         onSelectionChange(e);
     };
 
@@ -102,7 +110,7 @@ export function MsgTextarea(props: IMsgTextareaProps) {
             bubble = true;
 
         switch(e.key) {
-            case 'Enter': {
+            case "Enter": {
                 let do_not_send = mobile || e.shiftKey || isInsideCodeBlock(ta);
 
                 if(do_not_send) {
@@ -114,11 +122,11 @@ export function MsgTextarea(props: IMsgTextareaProps) {
 
                 break;
             }
-            case 'Tab': {
+            case "Tab": {
                 prevent_default = true;
 
                 if(e.shiftKey || isInsideCodeBlock(ta)) {
-                    ta.value = value.slice(0, cursor) + '\t' + value.slice(cursor);
+                    ta.value = value.slice(0, cursor) + "\t" + value.slice(cursor);
                     modified = true;
 
                     ta.selectionEnd = ta.selectionStart = cursor + 1;
@@ -129,8 +137,8 @@ export function MsgTextarea(props: IMsgTextareaProps) {
 
             // HOTKEY allowances
 
-            case 'PageUp':
-            case 'PageDown': {
+            case "PageUp":
+            case "PageDown": {
                 stop_prop = false;
                 break;
             }
@@ -151,7 +159,7 @@ export function MsgTextarea(props: IMsgTextareaProps) {
 
     let style = () => {
         if(rows() < max_rows()) {
-            return { 'overflow-y': 'hidden' } as JSX.CSSProperties;
+            return { "overflow-y": "hidden" } as JSX.CSSProperties;
         }
         return;
     };
@@ -160,9 +168,9 @@ export function MsgTextarea(props: IMsgTextareaProps) {
     return (
         <div class="ln-msg-textarea">
             <TextareaAutosize
-                ta={/*@once*/ta}
+                ref={r => (ref = r, props.ref?.(r))}
                 {...taprops} // onBlur, onFocus, onContextMenu, disabled, etc.
-                placeholder={LL().main.MESSAGE() + '...'}
+                placeholder={LL().main.MESSAGE() + "..."}
                 spellcheck={spellcheck()}
                 style={style()}
                 cacheMeasurements={false}
@@ -174,7 +182,9 @@ export function MsgTextarea(props: IMsgTextareaProps) {
                 maxlength={5000}
             />
 
-            {() => taprops.disabled && <span class="ln-msg-textarea__disable" />}
+            <Show when={taprops.disabled}>
+                <span class="ln-msg-textarea__disable" />
+            </Show>
         </div>
     );
 }

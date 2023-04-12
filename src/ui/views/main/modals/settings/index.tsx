@@ -22,7 +22,7 @@ import "./tabs/_tab.scss";
 export function SettingsModal() {
     let [closing, setClosing] = createSignal(false);
 
-    let return_path = useRootSelector(state => room_url(activeParty(state) || '@me', activeRoom(state)));
+    let return_path = useRootSelector(state => room_url(activeParty(state) || "@me", activeRoom(state)));
 
     let do_return = () => {
         if(!closing()) {
@@ -32,14 +32,14 @@ export function SettingsModal() {
     };
 
     onMount(() => {
-        let listener = (e: KeyboardEvent) => { if(e.key == 'Escape') { do_return(); } };
-        window.addEventListener('keyup', listener);
-        onCleanup(() => window.removeEventListener('keyup', listener));
+        let listener = (e: KeyboardEvent) => { if(e.key == "Escape") { do_return(); } };
+        window.addEventListener("keyup", listener);
+        onCleanup(() => window.removeEventListener("keyup", listener));
     });
 
     return (
-        <Modal class={"ln-modal ln-settings ln-settings--" + (closing() ? 'closing' : 'opened')}>
-            <Suspense fallback={Fallback}>
+        <Modal class={"ln-modal ln-settings ln-settings--" + (closing() ? "closing" : "opened")}>
+            <Suspense fallback={Fallback()}>
                 <SettingsTabs do_return={do_return} />
             </Suspense>
         </Modal>
@@ -58,29 +58,29 @@ import { LanguageSettingsTab } from "./tabs/language";
 import { NamespaceMainTranslation } from "ui/i18n/i18n-types";
 
 interface TabMap {
-    n: keyof Pick<NamespaceMainTranslation['settings'],
-        | 'ACCOUNT'
-        | 'PROFILE'
-        | 'PRIVACY'
-        | 'NOTIFICATIONS'
-        | 'APPEARANCE'
-        | 'ACCESSIBILITY'
-        | 'TEXT_AND_MEDIA'
-        | 'LANGUAGE'
+    n: keyof Pick<NamespaceMainTranslation["settings"],
+        | "ACCOUNT"
+        | "PROFILE"
+        | "PRIVACY"
+        | "NOTIFICATIONS"
+        | "APPEARANCE"
+        | "ACCESSIBILITY"
+        | "TEXT_AND_MEDIA"
+        | "LANGUAGE"
     >,
     p: string,
     c: Component,
 }
 
 const TABS: Array<TabMap> = [
-    { n: 'ACCOUNT', p: 'account', c: AccountSettingsTab },
-    { n: 'PROFILE', p: 'profile', c: ProfileSettingsTab },
-    { n: 'PRIVACY', p: 'privacy', c: PrivacySettingsTab },
-    { n: 'NOTIFICATIONS', p: 'notifications', c: NotificationsSettingsTab },
-    { n: 'APPEARANCE', p: 'appearance', c: AppearanceSettingsTab },
-    { n: 'ACCESSIBILITY', p: 'accessibility', c: AccessibilitySettingsTab },
-    { n: 'TEXT_AND_MEDIA', p: 'media', c: MediaSettingsTab },
-    { n: 'LANGUAGE', p: 'language', c: LanguageSettingsTab },
+    { n: "ACCOUNT", p: "account", c: AccountSettingsTab },
+    { n: "PROFILE", p: "profile", c: ProfileSettingsTab },
+    { n: "PRIVACY", p: "privacy", c: PrivacySettingsTab },
+    { n: "NOTIFICATIONS", p: "notifications", c: NotificationsSettingsTab },
+    { n: "APPEARANCE", p: "appearance", c: AppearanceSettingsTab },
+    { n: "ACCESSIBILITY", p: "accessibility", c: AccessibilitySettingsTab },
+    { n: "TEXT_AND_MEDIA", p: "media", c: MediaSettingsTab },
+    { n: "LANGUAGE", p: "language", c: LanguageSettingsTab },
 ];
 
 interface ISettingsTabsProps {
@@ -127,7 +127,7 @@ function SettingsTabs(props: ISettingsTabsProps) {
                                 let name = createMemo(() => LL().main.settings[n]());
 
                                 return (
-                                    <li classList={{ 'selected': is_tab_selected(p) && !state.use_mobile_view && !!state.active_tab }}>
+                                    <li classList={{ "selected": is_tab_selected(p) && !state.use_mobile_view && !!state.active_tab }}>
                                         <Link href={`/settings/${p}`} title={name()}> <div><span>{name()}</span></div> </Link>
                                     </li>
                                 );

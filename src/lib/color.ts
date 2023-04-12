@@ -325,7 +325,7 @@ export const unpack_rgb = (rgb: number): RGBColor => ({
 export const pack_rgb = ({ r, g, b }: RGBColor): number => (b | (g << 8) | (r << 16));
 
 export const parseRgb = (hex: string): RGBColor =>
-    unpack_rgb(parseInt(hex.startsWith('#') ? hex.slice(1) : hex, 16));
+    unpack_rgb(parseInt(hex.startsWith("#") ? hex.slice(1) : hex, 16));
 
 export function formatRGB(c: RGBColor, alpha?: number, srgb?: boolean): string {
     if(__DEV__) {
@@ -335,14 +335,14 @@ export function formatRGB(c: RGBColor, alpha?: number, srgb?: boolean): string {
 
     let { r, g, b } = float2u8(srgb ? linear2srgb(c) : c),
         rgb = [r, g, b],
-        prefix = 'rgb';
+        prefix = "rgb";
 
     if(alpha !== undefined) {
         rgb.push(alpha);
-        prefix += 'a';
+        prefix += "a";
     }
 
-    return prefix + `(${rgb.join(',')})`;
+    return prefix + `(${rgb.join(",")})`;
 }
 
 export function formatRGBHex(c: RGBColor, srgb?: boolean): string {
@@ -354,10 +354,10 @@ export function formatRGBHex(c: RGBColor, srgb?: boolean): string {
     let { r, g, b } = float2u8(srgb ? linear2srgb(c) : c),
         rgb = [r, g, b];
 
-    return '#' + rgb.map(c => c.toString(16).padStart(2, '0')).join('');
+    return "#" + rgb.map(c => c.toString(16).padStart(2, "0")).join("");
 }
 
 export function formatRgbBinary(value: number): string {
     let { r, g, b } = unpack_rgb(value);
-    return 'rgb(' + [r, g, b].join(',') + ')';
+    return "rgb(" + [r, g, b].join(",") + ")";
 }

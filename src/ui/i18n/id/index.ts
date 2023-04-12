@@ -1,4 +1,4 @@
-import type { Translation } from '../i18n-types';
+import type { Translation } from "../i18n-types";
 
 // @stringify
 const id: Translation = {
@@ -35,7 +35,7 @@ const id: Translation = {
         nextDay: "[Besok pada] LT",
         nextWeek: "dddd [pada] LT",
         lastWeek: "dddd [kemarin pada] LT",
-        sameElse: 'L'
+        sameElse: "L"
     },
     // this is one sentence, split by HTML
     hCaptcha: "Situs ini dilindungi oleh hCaptcha dan <@Privacy Policy> dan <#Terms of Service> berlaku.",

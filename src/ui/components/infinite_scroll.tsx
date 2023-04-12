@@ -1,10 +1,9 @@
-import { JSX, createContext, useContext, createSignal, onCleanup, createEffect, onMount, Accessor, createMemo, createRenderEffect } from "solid-js";
+import { JSX, createContext, useContext, createSignal, onCleanup, createEffect, onMount, Accessor, createMemo, createRenderEffect, Setter } from "solid-js";
 
 import ResizeObserverPolyfill from "resize-observer-polyfill";
 
 import { SUPPORTS_PASSIVE } from "lib/features";
 import { IS_IOS_SAFARI } from "lib/user_agent";
-import { createRef, Ref } from "ui/hooks/createRef";
 import { SetController } from "ui/hooks/createController";
 import { runBatched } from "ui/hooks/runBatched";
 
@@ -59,18 +58,15 @@ const OBSERVER_OPTIONS: ResizeObserverOptions = { box: "border-box" };
 
 export const InfiniteScrollContext = /*#__PURE__*/ createContext<Accessor<InfiniteScrollController>>(null! as Accessor<InfiniteScrollController>);
 
-export function createInfiniteScrollIntersection<T extends HTMLElement>(
-    ref: Ref<T | undefined>,
-    opts: Pick<IntersectionObserverInit, 'rootMargin' | 'threshold'> = {},
-    enable: Accessor<boolean> = () => true,
+export function infiniteScrollIntersection<T extends HTMLElement>(
+    ref: T,
+    setVisible: Setter<boolean>,
+    opts: Pick<IntersectionObserverInit, "rootMargin" | "threshold"> = {},
+    enable?: Accessor<boolean>,
 ) {
-    let [visible, setVisible] = createSignal(false);
-
-    // using createEffect will re-run (and cleanup) when enable(), ifs or ref.current change
-    createEffect(() => {
-        if(enable() && ref.current) {
-            let ifs = useContext(InfiniteScrollContext);
-            let observer = new IntersectionObserver(entries => {
+    let observe = () => {
+        let ifs = useContext(InfiniteScrollContext),
+            observer = new IntersectionObserver(entries => {
                 let visible = false;
                 for(let entry of entries) {
                     if(visible ||= entry.intersectionRatio > 0) break;
@@ -78,49 +74,46 @@ export function createInfiniteScrollIntersection<T extends HTMLElement>(
                 entries.length && runBatched(() => setVisible(visible), 0);
             }, { ...opts, root: ifs().container });
 
-            observer.observe(ref.current);
-            onCleanup(() => observer.disconnect());
-        }
-    });
+        observer.observe(ref);
+        onCleanup(() => observer.disconnect());
+    };
 
-    return visible;
+    if(typeof enable === 'function') {
+        createRenderEffect(() => enable() && observe());
+    } else {
+        observe();
+    }
 }
 
-export function createInfiniteScrollIntersectionTrigger<T extends HTMLElement>(
-    ref: Ref<T | undefined>,
-    opts: Pick<IntersectionObserverInit, 'rootMargin' | 'threshold'> = {},
+export function infiniteScrollIntersectionTrigger<T extends HTMLElement>(
+    ref: T,
+    setVisible: Setter<boolean>,
+    opts: Pick<IntersectionObserverInit, "rootMargin" | "threshold"> = {},
 ) {
-    let [visible, setVisible] = createSignal(false);
+    let ifs = useContext(InfiniteScrollContext),
+        o: { o?: IntersectionObserver } = {},
+        set_visible = () => setVisible(true),
+        do_batch = false, // only batch if not visible on observer "mount"
+        cleanup = () => {
+            o.o?.disconnect();
+            o.o = undefined;
+        };
 
-    createRenderEffect(() => {
-        if(ref.current) {
-            let ifs = useContext(InfiniteScrollContext),
-                o: { o?: IntersectionObserver } = {},
-                set_visible = () => setVisible(true),
-                do_batch = false, // only batch if not visible on observer "mount"
-                cleanup = () => {
-                    o.o?.disconnect();
-                    o.o = undefined;
-                };
-
-            o.o = new IntersectionObserver(entries => {
-                for(let entry of entries) {
-                    if(entry.intersectionRatio > 0) {
-                        do_batch ? runBatched(set_visible) : set_visible();
-                        return cleanup();
-                    }
-                }
-
-                do_batch = true;
-            }, { ...opts, root: ifs().container });
-
-            o.o.observe(ref.current);
-            onCleanup(cleanup);
+    o.o = new IntersectionObserver(entries => {
+        for(let entry of entries) {
+            if(entry.intersectionRatio > 0) {
+                do_batch ? runBatched(set_visible) : set_visible();
+                return cleanup();
+            }
         }
-    });
 
-    return visible;
+        do_batch = true;
+    }, { ...opts, root: ifs().container });
+
+    o.o.observe(ref);
+    onCleanup(cleanup);
 }
+
 
 const doTimeout = (cb: () => void) => setTimeout(cb, 50);
 const doNow = (cb: () => void) => cb();
@@ -151,8 +144,8 @@ import "./infinite_scroll.scss";
 export function InfiniteScroll(props: IInfiniteScrollProps) {
     let reduce_motion = usePrefs().ReduceAnimations;
 
-    let container_ref = createRef<HTMLDivElement>(),
-        wrapper_ref = createRef<HTMLDivElement>();
+    let container_ref: HTMLDivElement | undefined,
+        wrapper_ref: HTMLDivElement | undefined;
 
     let paused = false;
 
@@ -171,12 +164,12 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
         polling = false;
         velocity = 0;
 
-        let container = container_ref.current!,
+        let container = container_ref!,
             new_cheight = container.clientHeight,
             new_height = container.scrollHeight;
 
         // don't adjust position if the container height is the same
-        // OR even if it did change don't fix if it's not at the start.
+        // OR even if it did change don"t fix if it"s not at the start.
         let ignore_cheight_change = cheight == new_cheight || anchor != props.start;
 
         if((ignore_cheight_change && new_height == height) || paused) {
@@ -199,19 +192,10 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
 
         if(top != container.scrollTop) {
             if(diff != 0) {
-                if(IS_IOS_SAFARI) {
-                    //container.style['-webkit-overflow-scrolling'] = 'auto';
-                    container.style['overflow-y'] = 'hidden';
-                    container.scrollBy({ top: diff, behavior: 'instant' as any });
-                    container.style['overflow-y'] = 'scroll';
-                    //container.style['-webkit-overflow-scrolling'] = 'touch';
-                } else {
-                    // relative positioning (sane version)
-                    container.scrollBy({ top: diff, behavior: 'instant' as any });
-                }
+                container.scrollBy({ top: diff, behavior: "instant" as any });
             } else {
                 // absolute positioning to start
-                container.scrollTo({ top, behavior: 'instant' as any });
+                container.scrollTo({ top, behavior: "instant" as any });
             }
 
             anchor = compute_at(container, top);
@@ -275,7 +259,7 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
     let do_scroll = (now: number) => {
         if(load_pending) return;
 
-        let container = container_ref.current!,
+        let container = container_ref!,
             new_pos = container.scrollTop,
             new_anchor = compute_at(container, new_pos),
             reached_top = new_anchor == Anchor.Top && anchor != Anchor.Top,
@@ -332,7 +316,7 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
     let on_scroll = () => {
         if(load_pending || fixing) return;
 
-        let new_pos = container_ref.current!.scrollTop;
+        let new_pos = container_ref!.scrollTop;
 
         if(new_pos != pos) {
             start_time = performance.now();
@@ -347,10 +331,10 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
     };
 
     let scroll_by = (top: number) => {
-        let container = container_ref.current!;
+        let container = container_ref!;
         container.scrollBy({
             top: container.clientHeight * top,
-            behavior: reduce_motion() ? 'auto' : 'smooth'
+            behavior: reduce_motion() ? "auto" : "smooth"
         });
     };
 
@@ -362,8 +346,8 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
         fix_position();
 
         for(let entry of entries) {
-            if(entry.target === container_ref.current) {
-                setClientRect(container_ref.current.getBoundingClientRect());
+            if(entry.target === container_ref) {
+                setClientRect(container_ref.getBoundingClientRect());
                 break;
             }
         }
@@ -376,19 +360,19 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
     onMount(() => {
         fix_position();
 
-        let container = container_ref.current!;
+        let container = container_ref!;
 
         observer = new ResizeObserverPolyfill(on_resize);
 
         observer.observe(container, OBSERVER_OPTIONS);
-        observer.observe(wrapper_ref.current!, OBSERVER_OPTIONS);
+        observer.observe(wrapper_ref!, OBSERVER_OPTIONS);
 
-        container.addEventListener('scroll', on_scroll, SUPPORTS_PASSIVE ? { passive: true } : false);
+        container.addEventListener("scroll", on_scroll, SUPPORTS_PASSIVE ? { passive: true } : false);
 
         onCleanup(() => {
             __DEV__ && console.log("Cleaning up IFS");
             observer.disconnect();
-            container?.removeEventListener('scroll', on_scroll);
+            container?.removeEventListener("scroll", on_scroll);
             polling = false;
         });
     });
@@ -406,14 +390,14 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
         scrollArrowUp() { scroll_by(-0.2); }, // 1/5
         scrollArrowDown() { scroll_by(0.2); }, // 1/5
         get at_start() { return anchor == props.start; },
-        get container() { return container_ref.current!; },
-        get wrapper() { return wrapper_ref.current!; },
+        get container() { return container_ref!; },
+        get wrapper() { return wrapper_ref!; },
         clientRect,
         scrollHeight,
         clientHeight: createMemo(() => { return clientRect().height; }),
         clientWidth: createMemo(() => { return clientRect().width; }),
         gotoStartSmooth() {
-            let container = container_ref.current!;
+            let container = container_ref!;
 
             let clientHeight = container.clientHeight,
                 scrollHeight = container.scrollHeight,
@@ -432,12 +416,12 @@ export function InfiniteScroll(props: IInfiniteScrollProps) {
                 page_border = scrollHeight - clientHeight * 2;
             }
 
-            container.scrollTo({ top: page_border, behavior: 'instant' as any });
+            container.scrollTo({ top: page_border, behavior: "instant" as any });
             do_laterish(() => {
-                container.scrollTo({ top: page_end(), behavior: 'smooth' });
+                container.scrollTo({ top: page_end(), behavior: "smooth" });
 
                 do_laterish(() => {
-                    container.scrollTo({ top: page_end(), behavior: 'smooth' })
+                    container.scrollTo({ top: page_end(), behavior: "smooth" })
                 });
             });
         }

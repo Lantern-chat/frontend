@@ -20,7 +20,7 @@ interface IFileUploadOptions {
 export function sendFile(opts: IFileUploadOptions): Promise<Snowflake | undefined> {
     let { file, preview, width, height } = opts.file,
         name = file.name,
-        mime = file.type.includes('/') ? file.type : undefined;
+        mime = file.type.includes("/") ? file.type : undefined;
 
     return CLIENT.upload_stream({
         filename: name,
@@ -34,7 +34,7 @@ export function sendFile(opts: IFileUploadOptions): Promise<Snowflake | undefine
 export function sendBlob(filename: string, blob: Blob): Promise<Snowflake | undefined> {
     return CLIENT.upload_stream({
         filename,
-        mime: blob.type.includes('/') ? blob.type : undefined,
+        mime: blob.type.includes("/") ? blob.type : undefined,
     }, blob);
 }
 

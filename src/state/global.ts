@@ -50,7 +50,7 @@ interface IGlobalState {
 
 // use `window` to avoid duplicates in edge-cases
 // all this code should only run once
-export const GLOBAL: IGlobalState = window['LANTERN_GLOBAL'] = window['LANTERN_GLOBAL'] || (function(): IGlobalState {
+export const GLOBAL: IGlobalState = window["LANTERN_GLOBAL"] = window["LANTERN_GLOBAL"] || (function(): IGlobalState {
     let history = createBrowserHistory() as IHistoryExt;
     history.pm = IS_MOBILE ? history.replace : history.push;
 
@@ -83,22 +83,22 @@ export const GLOBAL: IGlobalState = window['LANTERN_GLOBAL'] = window['LANTERN_G
         ctx: recomputeHistoryContext(history)
     }));
 
-    window.addEventListener('resize', () => store.dispatch({ type: Type.WINDOW_RESIZE }));
+    window.addEventListener("resize", () => store.dispatch({ type: Type.WINDOW_RESIZE }));
 
-    window.addEventListener('beforeunload', () => {
+    window.addEventListener("beforeunload", () => {
         // quick way to prevent reconnecting before unloading is to make the gateway stop existing
         GLOBAL.gateway = undefined;
     });
 
-    const ACCEPTABLE_PATHS = ['login', 'register', 'channels', 'verify', 'reset', 'invite', 'settings'];
-    let first_part = history.location.pathname.slice(1).split('/', 1)[0];
+    const ACCEPTABLE_PATHS = ["login", "register", "channels", "verify", "reset", "invite", "settings"];
+    let first_part = history.location.pathname.slice(1).split("/", 1)[0];
 
     if(!ACCEPTABLE_PATHS.includes(first_part)) {
         __DEV__ && console.log("Redirecting to either main or login");
 
-        history.replace(session != null ? DEFAULT_LOGGED_IN_CHANNEL : '/login');
+        history.replace(session != null ? DEFAULT_LOGGED_IN_CHANNEL : "/login");
 
-    } else if(['login', 'register'].includes(first_part) && session != null) {
+    } else if(["login", "register"].includes(first_part) && session != null) {
         __DEV__ && console.log("Redirecting to main because login/register have no point here");
 
         history.replace(DEFAULT_LOGGED_IN_CHANNEL);

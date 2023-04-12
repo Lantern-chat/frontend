@@ -1,7 +1,7 @@
 import { Accessor, Context, createContext, createMemo, createSignal, JSX, mergeProps, splitProps, useContext } from "solid-js";
-import { History, State, Location } from 'history';
+import { History, State, Location } from "history";
 
-import { HISTORY, IHistoryExt } from 'state/global';
+import { HISTORY, IHistoryExt } from "state/global";
 import { Dynamic } from "solid-js/web";
 import { MainContext } from "ui/hooks/useMain";
 

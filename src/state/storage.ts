@@ -24,5 +24,5 @@ export function storeSession(session: ISession | null) {
 
 export function loadPrefs(): UserPreferences {
     let prefs = localStorage.getItem(StorageKey.PREFS), dp = default_prefs();
-    return prefs ? { ...dp, ...JSON.parse(prefs) } : dp;
+    return prefs ? { ...dp, ...(JSON.parse(prefs) as UserPreferences) } : dp;
 }

@@ -99,25 +99,27 @@ export function MessageFeed() {
                 onScroll={on_scroll}
                 load_prev={on_load_prev}
                 containerClassList={{
-                    'has-timeline': has_timeline(),
-                    'compact': prefs.CompactView(),
-                    'group-lines': prefs.GroupLines(),
+                    "has-timeline": has_timeline(),
+                    "compact": prefs.CompactView(),
+                    "group-lines": prefs.GroupLines(),
                 }}
             >
                 <InfiniteScrollContext.Provider value={ifs as any}>
                     <ul class="ln-msg-list" id="ln-msg-list" >
-                        {() => state.room?.fully_loaded && (
+                        <Show when={state.room?.fully_loaded}>
                             <TopOfChannel name={state.room!.room.name} />
-                        )}
+                        </Show>
 
                         <For each={feed()}>
-                            {msg => <Message msg={msg} />}
+                            {msg => (
+                                <Message msg={msg} />
+                            )}
                         </For>
                     </ul>
                 </InfiniteScrollContext.Provider>
             </InfiniteScroll>
 
-            <div class="ln-feed-footers" classList={{ 'has-timeline': has_timeline() }}>
+            <div class="ln-feed-footers" classList={{ "has-timeline": has_timeline() }}>
                 <Show when={goto()}>
                     <GotoBottomFooter onClick={on_goto_click} use_mobile_view={prefs.UseMobileView()} />
                 </Show>
@@ -148,16 +150,18 @@ interface IGotoBottomFooterProps {
 function GotoBottomFooter(props: IGotoBottomFooterProps) {
     let { LL } = useI18nContext();
 
-    return () => props.use_mobile_view ? (
-        <span id="goto-now" onClick={() => props.onClick()}>
-            <VectorIcon id={Icons.ChevronDown} />
-        </span>
-    ) : (
-        <div class="ln-feed-footer ui-text" onClick={() => props.onClick()}>
-            <span textContent={LL().main.VIEWING_OLDER()} />
-            <span id="goto-now">
-                {LL().main.GOTO_NOW()} <VectorIcon id={Icons.ChevronDown} />
+    return (
+        <Show when={!props.use_mobile_view} fallback={
+            <span id="goto-now" onClick={() => props.onClick()}>
+                <VectorIcon id={Icons.ChevronDown} />
             </span>
-        </div>
+        }>
+            <div class="ln-feed-footer ui-text" onClick={() => props.onClick()}>
+                <span textContent={LL().main.VIEWING_OLDER()} />
+                <span id="goto-now">
+                    {LL().main.GOTO_NOW()} <VectorIcon id={Icons.ChevronDown} />
+                </span>
+            </div>
+        </Show>
     );
 }

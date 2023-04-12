@@ -1,5 +1,6 @@
-import { Accessor, createContext, createEffect, createMemo, createSignal, onCleanup, onMount, Setter, useContext } from "solid-js";
-import { createRef, Ref } from "./createRef";
+import { ReactiveEventEmitter } from "lib/event_emitter";
+import { Accessor, createContext, createSignal, onCleanup, onMount, Setter, useContext } from "solid-js";
+import { MainEventEmitter } from "ui/views/main/state";
 
 export const enum Hotkey {
     __NONE = 1,// start at 1 to simplify logic
@@ -150,61 +151,48 @@ export function parseHotkey(e: KeyboardEvent): Hotkey | undefined {
     return;
 }
 
+export type NavEvent = [url: string | undefined, wait_until: (p: Promise<boolean>) => void];
+
 export type OnClickHandler = (e: MouseEvent) => void;
 export type OnKeyHandler = (e: KeyboardEvent) => void;
-export type OnNavHandler = (url: string | undefined) => (boolean | Promise<boolean>);
+export type OnNavHandler = (e: NavEvent) => void;
 
 export interface IMainContext {
-    main: Ref<HTMLElement | undefined>,
+    main: () => HTMLDivElement,
+    events: MainEventEmitter,
 
-    addOnClick(listener: OnClickHandler): void;
-    removeOnClick(listener: OnClickHandler): void;
-    addOnHotkey(hotkey: Hotkey, listener: OnKeyHandler): void;
-    removeOnHotkey(hotkey: Hotkey, listener: OnKeyHandler): void;
-
-    clickAll(e: MouseEvent): void;
     triggerHotkey(hotkey: Hotkey, e: KeyboardEvent): void;
     triggerAnyHotkey(e: KeyboardEvent): void;
     hasKey(key: string): boolean;
     consumeKey(key: string): boolean;
-
-    addOnNav(listener: OnNavHandler): void;
-    removeOnNav(listener: OnNavHandler): void;
 
     tryNav(url: string | undefined): boolean | Promise<boolean>;
 }
 
 const noop = () => { };
 export const MainContext = createContext<IMainContext>({
-    main: createRef(),
-    addOnClick: noop,
-    removeOnClick: noop,
-    clickAll: noop,
-    addOnHotkey: noop,
-    removeOnHotkey: noop,
+    main: () => null!,
+    events: new MainEventEmitter(),
     triggerHotkey: noop,
     triggerAnyHotkey: noop,
     hasKey: () => false,
     consumeKey: () => false,
-    addOnNav: noop,
-    removeOnNav: noop,
     tryNav: () => true,
 });
 
-export function useOnNav(cb: OnNavHandler) {
-    let main = useContext(MainContext);
+export function useOnNavAsync(cb: (url: string | undefined) => Promise<boolean>) {
+    useOnNav(([url, wait_until]) => wait_until(cb(url)));
+}
 
-    onMount(() => {
-        main.addOnNav(cb);
-        onCleanup(() => main.removeOnNav(cb));
-    });
+export function useOnNav(cb: OnNavHandler) {
+    useContext(MainContext).events.on("nav", cb);
 }
 
 const EVENTS = {
-    'onClick': 'onClick',
-    'onContextMenu': 'onContextMenu',
-    'onTouch': 'on:touch',
-} as const;
+    "onClick": "onClick",
+    "onContextMenu": "onContextMenu",
+    "onTouch": "on:touch",
+};
 
 type ClickEventHandlers = {
     [K in keyof typeof EVENTS]?: OnClickHandler;
@@ -223,10 +211,10 @@ export function useMainClick(opt: IMainClickOptions, main: IMainContext = useCon
     let props: ClickEventProps = {};
 
     for(let key in EVENTS) {
-        let cb: OnClickHandler | undefined = opt[key];
+        let cb: OnClickHandler | undefined = opt[key as keyof typeof EVENTS];
         if(cb) {
-            props[EVENTS[key]] = (e: MouseEvent) => {
-                if(!main.consumeKey('Shift')) {
+            props[EVENTS[key as keyof typeof EVENTS]] = (e: MouseEvent) => {
+                if(!main.consumeKey("Shift")) {
                     cb!(e);
                 } else {
                     e.stopPropagation();
@@ -235,43 +223,19 @@ export function useMainClick(opt: IMainClickOptions, main: IMainContext = useCon
         }
     }
 
-    createEffect(() => {
-        if(opt.active()) {
-            let listener = (e: MouseEvent) => opt.onMainClick(e);
-            main.addOnClick(listener);
-            onCleanup(() => main.removeOnClick(listener));
-        }
-    });
+    main.events.on('click', opt.onMainClick, opt.active);
 
     return props;
 }
 
 export function useMainHotkey(hotkey: Hotkey, cb: OnKeyHandler) {
-    let main = useContext(MainContext);
-
-    createEffect(() => {
-        let listener = (e: KeyboardEvent) => cb(e);
-        main.addOnHotkey(hotkey, listener);
-        onCleanup(() => main.removeOnHotkey(hotkey, listener));
-    });
+    useContext(MainContext).events.on(hotkey, cb);
 }
 
 export function useMainHotkeys(hotkeys: Hotkey[], cb: (hotkey: Hotkey, e: KeyboardEvent) => void) {
     let main = useContext(MainContext);
 
-    createEffect(() => {
-        let listeners = hotkeys.map((k): [Hotkey, OnKeyHandler] => [k, (e: KeyboardEvent) => cb(k, e)]);
-
-        for(let [k, listener] of listeners) {
-            main.addOnHotkey(k, listener);
-        }
-
-        onCleanup(() => {
-            for(let [k, listener] of listeners) {
-                main.removeOnHotkey(k, listener);
-            }
-        })
-    });
+    hotkeys.forEach((key) => main.events.on(key, (e: KeyboardEvent) => cb(key, e)));
 }
 
 export interface Position {

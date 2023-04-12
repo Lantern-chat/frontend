@@ -1,7 +1,6 @@
 import { createEffect, createMemo, createSignal, For } from "solid-js";
 import { createStore } from "solid-js/store";
 import { useStructuredSelector } from "solid-mutant";
-import { createRef } from "ui/hooks/createRef";
 
 import throttle from "lodash/throttle";
 import { mix } from "lib/math";
@@ -49,7 +48,7 @@ export const AppearanceSettingsTab = () => {
 };
 
 function ThemeSetting() {
-    let input = createRef<HTMLInputElement>(),
+    let input: HTMLInputElement | undefined,
         prefs = usePrefs(),
         dispatch = useRootDispatch(),
         [interactive, setInteractive] = createStore({ ...prefs.Theme() }),
@@ -65,13 +64,11 @@ function ThemeSetting() {
         };
 
     let onTempTouchMove = throttle((e: TouchEvent) => {
-        if(input.current) {
-            let { width, x } = input.current.getBoundingClientRect();
-            let touch = e.touches[0].clientX - x;
-            if(touch < 0 || touch > width) return;
-            let t = touch / width, temperature = mix(MIN_TEMP, MAX_TEMP, t);
-            doSetTheme(temperature, interactive.is_light, interactive.oled);
-        }
+        let { width, x } = input!.getBoundingClientRect();
+        let touch = e.touches[0].clientX - x;
+        if(touch < 0 || touch > width) return;
+        let t = touch / width, temperature = mix(MIN_TEMP, MAX_TEMP, t);
+        doSetTheme(temperature, interactive.is_light, interactive.oled);
     }, 50, { trailing: true });
 
     let { LL } = useI18nContext();
@@ -86,8 +83,8 @@ function ThemeSetting() {
                         ["light", LL().main.settings.appearance.LIGHT_THEME()],
                         ["dark", LL().main.settings.appearance.DARK_THEME()]
                     ]}
-                    selected={interactive.is_light ? 'light' : 'dark'}
-                    onChange={value => doSetTheme(interactive.temperature, value == 'light', interactive.oled)}
+                    selected={interactive.is_light ? "light" : "dark"}
+                    onChange={value => doSetTheme(interactive.temperature, value == "light", interactive.oled)}
                 />
             </div>
 
@@ -117,7 +114,7 @@ function ViewSelector() {
         dispatch = useRootDispatch(),
         [compact, setCompact] = createSignal(prefs.CompactView()),
         onChange = (value: string) => {
-            let compact = value == 'compact';
+            let compact = value == "compact";
 
             setCompact(compact);
             dispatch([
@@ -137,7 +134,7 @@ function ViewSelector() {
                     ["cozy", LL().main.settings.appearance.COZY()],
                     ["compact", LL().main.settings.appearance.COMPACT()]
                 ]}
-                selected={compact() ? 'compact' : 'cozy'}
+                selected={compact() ? "compact" : "cozy"}
                 onChange={onChange}
             />
         </div>
@@ -145,12 +142,12 @@ function ViewSelector() {
 }
 
 interface IFontSelectorProps {
-    which: 'chat' | 'ui',
+    which: "chat" | "ui",
 }
 
 function FontSelector(props: IFontSelectorProps) {
-    let prefs_key = createMemo(() => props.which == 'chat' ? 'chat_font' : 'ui_font');
-    let size_prefs_key = createMemo(() => props.which == 'ui' ? 'ui_font_size' : 'chat_font_size');
+    let prefs_key = createMemo(() => props.which == "chat" ? "chat_font" : "ui_font");
+    let size_prefs_key = createMemo(() => props.which == "ui" ? "ui_font_size" : "chat_font_size");
 
     let state = useStructuredSelector({
         current_font: (state: RootState) => state.prefs[prefs_key()],
@@ -188,7 +185,7 @@ function FontSelector(props: IFontSelectorProps) {
         <>
             <div class="ln-settings-font">
                 <label for={prefs_key()}>
-                    {props.which == 'chat' ?
+                    {props.which == "chat" ?
                         LL().main.settings.appearance.CHAT_FONT_FAMILY() :
                         LL().main.settings.appearance.UI_FONT_FAMILY()}
                 </label>
@@ -199,21 +196,21 @@ function FontSelector(props: IFontSelectorProps) {
                             <For each={Object.keys(FONT_NAMES)}>
                                 {font => (
                                     <option value={font} class={"ln-font-" + font.toLowerCase()}>
-                                        {FONT_NAMES[font]}
+                                        {FONT_NAMES[font as keyof typeof FONT_NAMES]}
                                     </option>
                                 )}
                             </For>
                         </FormSelect>
                     </div>
 
-                    <div class={"ln-settings-font__example ln-font-" + font().toLowerCase()} style={{ 'font-size': `${size() / 16}em` }}>
+                    <div class={"ln-settings-font__example ln-font-" + font().toLowerCase()} style={{ "font-size": `${size() / 16}em` }}>
                         {LL().main.settings.appearance.FONT_EXAMPLE()}
                     </div>
                 </div>
             </div>
 
             <SizeSlider for={size_prefs_key()} value={size()} onInput={onSizeInput}
-                label={props.which == 'chat' ?
+                label={props.which == "chat" ?
                     LL().main.settings.appearance.CHAT_FONT_SIZE() :
                     LL().main.settings.appearance.UI_FONT_SIZE()}
                 min={8} max={32} step={1} steps={[8, 12, 16, 20, 24, 32]} />

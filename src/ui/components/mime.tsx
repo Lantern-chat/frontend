@@ -25,5 +25,5 @@ export function MimeIcon(props: { category: MimeCategory }) {
         }
     };
 
-    return (<VectorIcon id={icon()} extra={{ 'data-category': MimeCategory[props.category].toLowerCase() }} />);
+    return (<VectorIcon id={icon()} extra={{ "data-category": MimeCategory[props.category].toLowerCase() }} />);
 }

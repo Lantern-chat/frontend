@@ -19,12 +19,12 @@ export function RoomIcon(props: IRoomIconProps) {
     return (
         <div class="ln-channel-list__icon">
             <div class="ln-channel-list__icon-wrapper">
-                {() => props.room.avatar ? (
-                    <Avatar url={asset_url('room', props.room.id, props.room.avatar!, 'avatar', prefs.LowBandwidthMode())}
-                        username={props.room.name} />
-                ) : (
+                <Show when={props.room.avatar} fallback={
                     <RoomHashIcon room={props.room} />
-                )}
+                }>
+                    <Avatar url={asset_url("room", props.room.id, props.room.avatar!, "avatar", prefs.LowBandwidthMode())}
+                        username={props.room.name} />
+                </Show>
             </div>
         </div>
     );

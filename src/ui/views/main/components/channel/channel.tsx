@@ -1,9 +1,8 @@
-import { createRenderEffect } from "solid-js";
+import { createEffect, onMount, children, onCleanup } from "solid-js";
 import { ErrorBoundary, Show } from "solid-js/web";
 import { useStructuredSelector } from "solid-mutant";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
-import { createRef } from "ui/hooks/createRef";
 
 import { RootState, useRootSelector } from "state/root";
 import { activeRoom } from "state/selectors/active";
@@ -23,19 +22,17 @@ export function Channel() {
         show_user_list: (state: RootState) => state.window.show_user_list,
     });
 
-    let wrapper = createRef<HTMLDivElement>(), feed = <Feed /> as HTMLElement;
+    let wrapper: HTMLDivElement | undefined, feed = <Feed /> as HTMLElement;
 
     // Instead of recreating the feed on mobile/desktop change,
     // just move the node around and adjust the wrapper style.
-    createRenderEffect(() => {
-        let w = wrapper.current;
-        if(w) {
-            w.style['display'] = state.use_mobile_view ?
-                // append to ln-channel
-                (w.parentNode!.appendChild(feed), 'none') :
-                // insert before sentinel span
-                (w.insertBefore(feed, w.firstChild), '');
-        }
+    createEffect(() => {
+        let w = wrapper!;
+        w.style["display"] = state.use_mobile_view ?
+            // append to ln-channel
+            (w.parentNode!.appendChild(feed), "none") :
+            // insert before sentinel span
+            (w.insertBefore(feed, w.firstChild), "");
     });
 
     // TODO: Revisit this to avoid the sentinel span?
@@ -47,13 +44,13 @@ export function Channel() {
                 <div ref={wrapper} class="ln-channel__wrapper" >
                     {/* Desktop Feed goes here */}
 
-                    <span style={{ display: 'none' }} /> {/* Sentinel span to avoid clashing with member list */}
+                    <span style={{ display: "none" }} /> {/* Sentinel span to avoid clashing with member list */}
 
-                    {() => !state.use_mobile_view && state.show_user_list && (
+                    <Show when={!state.use_mobile_view && state.show_user_list}>
                         <div class="ln-channel__members">
                             <MemberList />
                         </div>
-                    )}
+                    </Show>
                 </div>
 
                 {/* Mobile Feed goes here */}
@@ -71,7 +68,11 @@ function Feed() {
                 {__DEV__ && <DevBanner />}
             </div>
 
-            {() => !!active_room() ? <MessageFeed /> : <div class="ln-center-standalone">Loading...</div>}
+            <Show when={active_room()} fallback={
+                <div class="ln-center-standalone">Loading...</div>
+            }>
+                <MessageFeed />
+            </Show>
 
             <MessageBox />
         </div>

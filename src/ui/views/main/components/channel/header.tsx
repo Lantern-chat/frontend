@@ -75,7 +75,7 @@ export function ChannelHeader() {
                     </span>
                 </div>
 
-                {() => (__VERSION__ != latest_version()) && (
+                <Show when={__VERSION__ != latest_version()}>
                     <div class="ln-channel-header__version"
                         title={LL().main.RELOAD_PAGE()}
                         onClick={() => (location.reload as any)(true)}>
@@ -83,7 +83,7 @@ export function ChannelHeader() {
                             <VectorIcon id={Icons.Refresh} />
                         </span>
                     </div>
-                )}
+                </Show>
             </div>
         </div>
     )

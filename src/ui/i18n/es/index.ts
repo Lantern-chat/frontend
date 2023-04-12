@@ -1,4 +1,4 @@
-import type { Translation } from '../i18n-types';
+import type { Translation } from "../i18n-types";
 
 // @stringify
 const es: Translation = {
@@ -35,7 +35,7 @@ const es: Translation = {
         nextDay: "[Mañana a las] LT",
         nextWeek: "dddd [a las] LT",
         lastWeek: "[El] dddd [pasado a las] LT",
-        sameElse: 'L'
+        sameElse: "L"
     },
     // NOTE: Special syntax for privacy and tos sections
     hCaptcha: "Este sitio está protegido por hCaptcha y se aplican su <@Política de Privacidad> y <#Términos de Servicio>.",

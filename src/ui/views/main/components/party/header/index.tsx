@@ -22,17 +22,19 @@ export function PartyHeader() {
 
     let [show, main_click_props] = createSimpleToggleOnClick();
 
-    return () => party() && (
-        <header class="ln-party-header" classList={{ 'active': show() }} {...main_click_props}>
-            <div class="ln-party-header__name">
-                <UIText text={party()!.party.name} />
-            </div>
+    return (
+        <Show when={party()}>
+            <header class="ln-party-header" classList={{ "active": show() }} {...main_click_props}>
+                <div class="ln-party-header__name">
+                    <UIText text={party()!.party.name} />
+                </div>
 
-            <VectorIcon id={show() ? Icons.Close : Icons.ChevronDown} />
+                <VectorIcon id={show() ? Icons.Close : Icons.ChevronDown} />
 
-            <AnchoredModal show={show()}>
-                <PartyOptionsDropdown />
-            </AnchoredModal>
-        </header>
+                <AnchoredModal show={show()}>
+                    <PartyOptionsDropdown />
+                </AnchoredModal>
+            </header>
+        </Show>
     );
 }

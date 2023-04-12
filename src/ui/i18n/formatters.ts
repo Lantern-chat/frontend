@@ -16,7 +16,7 @@ export interface ExtendedFormatters extends Formatters, BaseFormatters {
 	calendar: FormatterFunction<number | Date | undefined, string> & ((t: DateParams, ref?: Date | number) => string),
 	relative: FormatterFunction<number, string>,
 	/// Percent with zero decimals
-	percent0: Formatters['percent'],
+	percent0: Formatters["percent"],
 	bytes: FormatterFunction<number, string>,
 }
 

@@ -14,8 +14,7 @@ import { sendBlob } from "state/commands/sendfile";
 import { selectCachedUser } from "state/selectors/selectCachedUser";
 
 import { useLocale } from "ui/i18n";
-import { useOnNav } from "ui/hooks/useMain";
-import { createRef } from "ui/hooks/createRef";
+import { useOnNav, useOnNavAsync } from "ui/hooks/useMain";
 import { createOnPredicate } from "ui/hooks/createOnChange";
 import { FullscreenModal } from "ui/components/modal";
 import { UIText } from "ui/components/common/ui-text";
@@ -28,8 +27,10 @@ import "./profile.scss";
 export function ProfileSettingsTab() {
     let store = useRootStore();
 
-    return () => !!store.state.user.user && (
-        <ProfileSettingsTabInner />
+    return (
+        <Show when={!!store.state.user.user}>
+            <ProfileSettingsTabInner />
+        </Show>
     );
 }
 
@@ -62,8 +63,8 @@ function ProfileSettingsTabInner() {
     let [localAvatarUrl, avatarFile, setAvatarFile] = createFileUrl();
     let [localBannerUrl, bannerFile, setBannerFile] = createFileUrl();
 
-    let avatar_input = createRef();
-    let banner_input = createRef();
+    let avatar_input: HTMLInputElement | undefined;
+    let banner_input: HTMLInputElement | undefined;
 
     let can_show_remove_avatar = () => localAvatarUrl() !== null && (localAvatarUrl() || cached_user().profile?.avatar);
     let can_show_remove_banner = () => localBannerUrl() !== null && (localBannerUrl() || cached_user().profile?.banner);
@@ -79,7 +80,7 @@ function ProfileSettingsTabInner() {
     let wait_for_not_saving = createOnPredicate(saving, v => !v);
     let canceled_nav = false;
 
-    useOnNav(async (url) => {
+    useOnNavAsync(async (url) => {
         // may as well just avoid extra navigation...
         if(url == '/settings/profile') {
             return false;
@@ -297,7 +298,7 @@ function ProfileSettingsTabInner() {
                         bannerCover={(
                             <>
                                 <div class="banner-cover"
-                                    onClick={e => banner_input.current?.click()}
+                                    onClick={() => banner_input!.click()}
                                     textContent={llp().CHANGE_BANNER()}
                                 />
                                 <div class="remove-buttons ui-text">
@@ -312,7 +313,7 @@ function ProfileSettingsTabInner() {
                         )}
                         avatarCover={(
                             <div class="avatar-cover"
-                                onClick={e => avatar_input.current?.click()}
+                                onClick={() => avatar_input!.click()}
                                 style={{ 'border-radius': br(roundness() / 127) }}
                                 textContent={llp().CHANGE_AVATAR()}
                             />

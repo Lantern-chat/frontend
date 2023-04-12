@@ -1,4 +1,4 @@
-import type { BaseTranslation } from '../i18n-types';
+import type { BaseTranslation } from "../i18n-types";
 
 // @stringify
 const enUS: BaseTranslation = {
@@ -35,7 +35,7 @@ const enUS: BaseTranslation = {
 		nextDay: "[Tomorrow at] LT",
 		nextWeek: "dddd [at] LT",
 		lastWeek: "[Last] dddd [at] LT",
-		sameElse: 'L'
+		sameElse: "L"
 	},
 	// this is one sentence, split by HTML
 	hCaptcha: "This site is protected by hCaptcha and its <@Privacy Policy> and <#Terms of Service> apply.",

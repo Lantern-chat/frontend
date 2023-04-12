@@ -1,6 +1,5 @@
 import { createEffect, createMemo, createSignal, onCleanup, onMount, splitProps } from "solid-js";
 import { SetController } from "ui/hooks/createController";
-import { createRef } from "ui/hooks/createRef";
 
 export interface ExecuteResponse {
     response: string;
@@ -65,7 +64,7 @@ const HCAPTCHA_ON_LOAD: string = "hcaptchaOnLoad";
 function mountCaptchaScript(params: HCaptchaParams) {
     apiScriptRequested = true;
     // Create global onload callback
-    window[HCAPTCHA_ON_LOAD] = () => {
+    (window as any)[HCAPTCHA_ON_LOAD] = () => {
         // Iterate over onload listeners, call each listener
         onLoadListeners = onLoadListeners.filter(listener => {
             listener();
@@ -73,7 +72,7 @@ function mountCaptchaScript(params: HCaptchaParams) {
         });
     };
 
-    if(typeof params.recaptchacompat === 'undefined') {
+    if(typeof params.recaptchacompat === "undefined") {
         params.recaptchacompat = "off";
     }
 
@@ -85,7 +84,10 @@ function mountCaptchaScript(params: HCaptchaParams) {
     script.async = true;
 
     // clean params
-    Object.keys(params).forEach(key => !(params[key] || params[key] === false) && delete params[key]);
+    Object.keys(params).forEach(key =>
+        !(params[key as keyof HCaptchaParams] || params[key as keyof HCaptchaParams] as any === false) &&
+        delete params[key as keyof HCaptchaParams]
+    );
 
     const query = new URLSearchParams(params as any).toString();
     script.src += query !== "" ? `&${query}` : "";
@@ -94,13 +96,12 @@ function mountCaptchaScript(params: HCaptchaParams) {
 }
 
 export function HCaptcha(props: HCaptchaProps) {
+    let div: HTMLDivElement | undefined;
 
-    let div = createRef<HTMLDivElement>();
-
-    let [isApiReady, setIsApiReady] = createSignal(typeof hcaptcha !== 'undefined');
+    let [isApiReady, setIsApiReady] = createSignal(typeof hcaptcha !== "undefined");
 
     let [isRemoved, setIsRemoved] = createSignal(false);
-    let [captchaId, setCaptchaId] = createSignal('');
+    let [captchaId, setCaptchaId] = createSignal("");
 
     let isReady = createMemo(() => isApiReady() && !isRemoved());
 
@@ -142,7 +143,7 @@ export function HCaptcha(props: HCaptchaProps) {
             "callback": onSubmit,
         }, props.params);
 
-        let id = hcaptcha.render(div.current, params);
+        let id = hcaptcha.render(div, params);
 
         setIsRemoved(false);
         setCaptchaId(id);

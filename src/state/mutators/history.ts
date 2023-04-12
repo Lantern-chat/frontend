@@ -11,7 +11,7 @@ export interface IHistoryState {
 
 export function recomputeHistoryContext(history: IHistoryExt): IHistoryState {
     let location = history.location,
-        parts = location.pathname.slice(1).split('/');
+        parts = location.pathname.slice(1).split("/");
 
     return { history, location, parts };
 }

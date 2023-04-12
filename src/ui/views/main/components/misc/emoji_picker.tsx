@@ -4,7 +4,6 @@ import { usePrefs } from "state/contexts/prefs";
 import { EmojiLite } from "ui/components/common/emoji_lite";
 import { VectorIcon } from "ui/components/common/icon";
 import { Icons } from "lantern-icons";
-import { createRef } from "ui/hooks/createRef";
 import { Snowflake } from "state/models"
 
 import { cleanedEvent } from "ui/directives/bugs";
@@ -14,7 +13,7 @@ export interface IEmojiPickerProps {
     onPick(emoji: string | null, emote: Snowflake | null): void;
 }
 
-const unkebab = (c: string): string => c.replace(/\b[a-z]/g, m => m.toUpperCase()).replace(/\-/g, ' ');
+const unkebab = (c: string): string => c.replace(/\b[a-z]/g, m => m.toUpperCase()).replace(/\-/g, " ");
 
 interface IFormattedCategory {
     p: string, c: string,
@@ -42,8 +41,8 @@ export function EmojiPicker(props: IEmojiPickerProps) {
 
     const prefs = usePrefs();
 
-    let [tone, setTone] = createSignal<SKIN_TONE_MODIFIER>(JSON.parse(localStorage.getItem('SKIN_TONE') || '0') as SKIN_TONE_MODIFIER);
-    createEffect(() => localStorage.setItem('SKIN_TONE', JSON.stringify(tone())));
+    let [tone, setTone] = createSignal<SKIN_TONE_MODIFIER>(JSON.parse(localStorage.getItem("SKIN_TONE") || "0") as SKIN_TONE_MODIFIER);
+    createEffect(() => localStorage.setItem("SKIN_TONE", JSON.stringify(tone())));
 
     let [category, setCategory] = createSignal(0);
     let [search, setSearch] = createSignal("");
@@ -56,16 +55,16 @@ export function EmojiPicker(props: IEmojiPickerProps) {
 
     let on_category = (idx: number) => batch(() => {
         setCategory(idx);
-        setSearch('');
+        setSearch("");
     });
 
     let clear_search = () => {
-        setSearch('');
+        setSearch("");
         input?.focus();
     };
 
     let on_esc = (e: KeyboardEvent) => {
-        if(e.key == 'Escape') { setSearch(''); }
+        if(e.key == "Escape") { setSearch(""); }
     };
 
     let has_search = createMemo(() => !!search());
@@ -101,7 +100,7 @@ export function EmojiPicker(props: IEmojiPickerProps) {
                     {FORMATTED_CATEGORIES.map(({ p, e }, idx) => {
                         return (
                             <div title={p} onClick={() => on_category(idx)} classList={{
-                                'selected': selected(idx) && !search(),
+                                "selected": selected(idx) && !search(),
                             }}>
                                 <EmojiLite value={emoji_with_skin_tone(e[0].e, tone())} />
                             </div>
@@ -128,7 +127,7 @@ function PickerCategory(props: IEmojiPickerProps & { c: number, all?: boolean, s
 
         if(filter) {
             e = e.filter(x => {
-                x.b ||= (x.t ? x.t.concat(x.a) : x.a).join(' ');
+                x.b ||= (x.t ? x.t.concat(x.a) : x.a).join(" ");
                 return x.b.includes(filter);
             });
         }
@@ -143,7 +142,7 @@ function PickerCategory(props: IEmojiPickerProps & { c: number, all?: boolean, s
                     aria-label={/*@once*/et}
                     data-emoji={/*@once*/et}
                     title={/*@once*/format_emoji_shortcode(et, !e.s || !tone)}
-                    data-search={/*@once*/e.b || (e.t ? e.t.concat(e.a) : e.a).join(' ')}
+                    data-search={/*@once*/e.b || (e.t ? e.t.concat(e.a) : e.a).join(" ")}
                 >
                     <svg aria-role="img" aria-labelledby="e">
                         <desc id="e">{/*@once*/et}</desc>
@@ -154,13 +153,15 @@ function PickerCategory(props: IEmojiPickerProps & { c: number, all?: boolean, s
         });
     });
 
+    let ref: HTMLDivElement | undefined;
+
     // simple event delegation to avoid adding listeners on every single emoji
     // the DOM here is incredibly shallow, so the number of iterations is likely usually less than 2
     let find_emoji = (t: HTMLElement, cb: (emoji: string | null, emote: Snowflake | null, element: HTMLElement) => void) => {
-        while(t && t != ref.current) {
-            let a = t.dataset['emoji'];
+        while(t && t != ref) {
+            let a = t.dataset["emoji"];
             if(a) { return cb(a, null, t); }
-            if(a = t.dataset['emote']) { return cb(null, a, t); }
+            if(a = t.dataset["emote"]) { return cb(null, a, t); }
             t = t.parentElement!;
         }
     };
@@ -170,29 +171,27 @@ function PickerCategory(props: IEmojiPickerProps & { c: number, all?: boolean, s
     // // lazily fill in the titles on hover
     // let on_hover = (e: Event) => find_emoji(e.target as HTMLElement, (e, h) => {
     //     if(!h.title) {
-    //         h.title = format_emoji_shortcode(e) || '';
+    //         h.title = format_emoji_shortcode(e) || "";
     //     }
     // });
 
-    let ref = createRef<HTMLDivElement>();
-
     // whenever the category changes, reset scroll to top
-    createRenderEffect(() => {
+    createEffect(() => {
         props.c, props.search;
-        ref.current?.scrollTo({ top: 0, behavior: 'instant' as any });
+        ref!.scrollTo({ top: 0, behavior: "instant" as any });
     });
 
     let is_filtered = false;
 
     let [none, setNone] = createSignal(false);
 
-    createRenderEffect(() => {
+    createEffect(() => {
         // ensure filter is applied whenever the emoji list refreshes, too.
         // by using emojis() rather than props.tone or such, this forces emojis() higher up in the graph
         // and gives it a chance to be inserted into the DOM *first*
         emojis();
 
-        let children = ref.current?.children, search = props.search;
+        let children = ref!.children, search = props.search;
 
         // if there are children to filter and a search to be done or it needs to be cleared
         if(children && (search || is_filtered)) {
@@ -200,10 +199,10 @@ function PickerCategory(props: IEmojiPickerProps & { c: number, all?: boolean, s
 
             for(let i = 0; i < children.length; i++) {
                 let child = children[i] as HTMLElement,
-                    matches = child.dataset?.['search']?.includes(search);
+                    matches = child.dataset?.["search"]?.includes(search);
 
                 if(matches != null) {
-                    let new_display = matches ? '' : 'none';
+                    let new_display = matches ? "" : "none";
 
                     if(child.style.display != new_display) {
                         child.style.display = new_display;
@@ -220,7 +219,7 @@ function PickerCategory(props: IEmojiPickerProps & { c: number, all?: boolean, s
 
     return (
         // NOTE: This must use on:click for custom delegation
-        <div ref={ref} use:cleanedEvent={[['click', on_click]]} class="ln-emoji-picker__listing ln-scroll-y ln-scroll-fixed" data-search={props.search}>
+        <div ref={ref} use:cleanedEvent={[["click", on_click]]} class="ln-emoji-picker__listing ln-scroll-y ln-scroll-fixed" data-search={props.search}>
             {emojis()}
 
             <Show when={none()}>

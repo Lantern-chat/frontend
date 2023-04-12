@@ -3,7 +3,7 @@ import { minimize } from "lib/emoji_lite";
 //import { usePrefs } from "state/contexts/prefs";
 import { Snowflake, AssetFlags, asset_flags } from "state/models";
 
-const PROTOCOL = window.config.secure ? 'https://' : (window.location.protocol + '//');
+const PROTOCOL = window.config.secure ? "https://" : (window.location.protocol + "//");
 
 const CDN_URL =
     (__DEV__ && window.config.cdn == window.location.hostname) ?
@@ -16,11 +16,11 @@ function gen_formats(lbm: boolean): AssetFlags {
     return DEFAULT_FORMATS | (SUPPORTS_AVIF() ? AssetFlags.FORMAT_AVIF : 0) | (SUPPORTS_WEBM() ? AssetFlags.FORMAT_WEBM : 0);
 }
 
-export function asset_url(category: 'user' | 'party' | 'room' | 'role' | 'emote', id: Snowflake, hash: string, asset_kind: 'avatar' | 'banner', lbm: boolean): string {
+export function asset_url(category: "user" | "party" | "room" | "role" | "emote", id: Snowflake, hash: string, asset_kind: "avatar" | "banner", lbm: boolean): string {
     return `${CDN_URL}/${category}/${id}/${asset_kind}${hash && '/'}${hash}?f=` + asset_flags(lbm ? 0 : 90, gen_formats(lbm), true, true);
 }
 
-export function emote_url(category: 'emote' | 'sticker', id: Snowflake, lbm: boolean): string {
+export function emote_url(category: "emote" | "sticker", id: Snowflake, lbm: boolean): string {
     return `${CDN_URL}/${category}/${id}?f=` + asset_flags(lbm ? 0 : 90, gen_formats(lbm), true, true);
 }
 

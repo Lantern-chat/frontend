@@ -78,19 +78,19 @@ var CACHE: Record<string, { [key: string]: Intl.DateTimeFormat }> = {};
 const D = Intl.DateTimeFormat;
 function component(l: string, c: string): Intl.DateTimeFormat {
     switch(c) {
-        case 'MM': return new D(l, { month: 'numeric' });
-        case 'MM': return new D(l, { month: '2-digit' });
-        case 'MMM': return new D(l, { month: 'short' });
-        case 'MMMM': return new D(l, { month: 'long' });
-        case 'dd': // weekday: "narrow" is just one letter, so fallback to short format
-        case 'ddd': return new D(l, { weekday: "short" });
-        case 'dddd': return new D(l, { weekday: "long" });
-        case 'LT': return new D(l, { minute: '2-digit', hour: 'numeric' });
-        case 'LTS': return new D(l, { minute: '2-digit', hour: 'numeric', second: '2-digit' });
-        case 'L': return new D(l, { month: '2-digit', day: '2-digit', year: 'numeric' });
-        case 'LL': return new D(l, { month: 'long', day: '2-digit', year: 'numeric' });
-        case 'LLL': return new D(l, { month: 'long', day: '2-digit', year: 'numeric', minute: '2-digit', hour: 'numeric' });
-        case 'LLLL': return new D(l, { month: 'long', day: '2-digit', year: 'numeric', minute: '2-digit', hour: 'numeric', weekday: 'long' })
+        case "M": return new D(l, { month: "numeric" });
+        case "MM": return new D(l, { month: "2-digit" });
+        case "MMM": return new D(l, { month: "short" });
+        case "MMMM": return new D(l, { month: "long" });
+        case "dd": // weekday: "narrow" is just one letter, so fallback to short format
+        case "ddd": return new D(l, { weekday: "short" });
+        case "dddd": return new D(l, { weekday: "long" });
+        case "LT": return new D(l, { minute: "2-digit", hour: "numeric" });
+        case "LTS": return new D(l, { minute: "2-digit", hour: "numeric", second: "2-digit" });
+        case "L": return new D(l, { month: "2-digit", day: "2-digit", year: "numeric" });
+        case "LL": return new D(l, { month: "long", day: "2-digit", year: "numeric" });
+        case "LLL": return new D(l, { month: "long", day: "2-digit", year: "numeric", minute: "2-digit", hour: "numeric" });
+        case "LLLL": return new D(l, { month: "long", day: "2-digit", year: "numeric", minute: "2-digit", hour: "numeric", weekday: "long" })
         default: return { format() { } } as any;
     }
 }
@@ -100,7 +100,7 @@ export type DateParams = Date | number | string | null | undefined;
 export function format(locale: string, s: string, t: DateParams): string {
     let cache = CACHE[locale] || (CACHE[locale] = {});
     t = new Date(t!);
-    return s.replace(FORMAT, (m, $1) => $1 || (cache[m] || (cache[m] = component(locale, m))).format(t as Date) || '');
+    return s.replace(FORMAT, (m, $1) => $1 || (cache[m] || (cache[m] = component(locale, m))).format(t as Date) || "");
 }
 
 const SECONDS_A_MINUTE = 60;
@@ -124,12 +124,12 @@ export interface ICalendarTable {
 }
 
 const DEFAULT_CALENDAR_FORMAT: ICalendarTable = {
-    lastDay: '[Yesterday at] LT',
-    sameDay: '[Today at] LT',
-    nextDay: '[Tomorrow at] LT',
-    nextWeek: 'dddd [at] LT',
-    lastWeek: '[Last] dddd [at] LT',
-    sameElse: 'L',
+    lastDay: "[Yesterday at] LT",
+    sameDay: "[Today at] LT",
+    nextDay: "[Tomorrow at] LT",
+    nextWeek: "dddd [at] LT",
+    lastWeek: "[Last] dddd [at] LT",
+    sameElse: "L",
 };
 
 export function calendar(
@@ -141,24 +141,24 @@ export function calendar(
     let then = new Date(t!).setHours(0, 0, 0, 0);
     let diff = (then - +ref) / MILLISECONDS_A_DAY;
 
-    let which: keyof ICalendarTable = diff < -6 ? 'sameElse' :
-        diff < -1 ? 'lastWeek' :
-            diff < 0 ? 'lastDay' :
-                diff < 1 ? 'sameDay' :
-                    diff < 2 ? 'nextDay' :
-                        diff < 7 ? 'nextWeek' : 'sameElse';
+    let which: keyof ICalendarTable = diff < -6 ? "sameElse" :
+        diff < -1 ? "lastWeek" :
+            diff < 0 ? "lastDay" :
+                diff < 1 ? "sameDay" :
+                    diff < 2 ? "nextDay" :
+                        diff < 7 ? "nextWeek" : "sameElse";
 
     return format(locale, table[which], t);
 }
 
 const INCREMENTS: Array<[Intl.RelativeTimeFormatUnit, number]> = [
-    ['second', 1],
+    ["second", 1],
     [`minute`, 60],
-    ['hour', 60 * 60],
-    ['day', 60 * 60 * 24],
-    ['week', 60 * 60 * 24 * 7],
-    ['month', 60 * 60 * 24 * 30.437], // average days in month
-    ['year', 60 * 60 * 24 * 365.25] // average days in year
+    ["hour", 60 * 60],
+    ["day", 60 * 60 * 24],
+    ["week", 60 * 60 * 24 * 7],
+    ["month", 60 * 60 * 24 * 30.437], // average days in month
+    ["year", 60 * 60 * 24 * 365.25] // average days in year
 ];
 
 export function relative(
@@ -176,7 +176,7 @@ export function relative(
 
 export function months(locale: string): string[] {
     // arbitrary date to avoid odd month aliasing issue
-    let d = new Date(1550124000000), months = [], c = component(locale, 'MMMM');
+    let d = new Date(1550124000000), months = [], c = component(locale, "MMMM");
 
     for(let m = 0; m < 12; m++) {
         d.setMonth(m, 1);

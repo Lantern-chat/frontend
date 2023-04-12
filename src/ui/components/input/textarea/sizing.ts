@@ -1,27 +1,27 @@
 const SIZING_STYLE = [
-    'borderBottomWidth',
-    'borderLeftWidth',
-    'borderRightWidth',
-    'borderTopWidth',
-    'boxSizing',
-    'fontFamily',
-    'fontSize',
-    'fontStyle',
-    'fontWeight',
-    'letterSpacing',
-    'lineHeight',
-    'paddingBottom',
-    'paddingLeft',
-    'paddingRight',
-    'paddingTop',
+    "borderBottomWidth",
+    "borderLeftWidth",
+    "borderRightWidth",
+    "borderTopWidth",
+    "boxSizing",
+    "fontFamily",
+    "fontSize",
+    "fontStyle",
+    "fontWeight",
+    "letterSpacing",
+    "lineHeight",
+    "paddingBottom",
+    "paddingLeft",
+    "paddingRight",
+    "paddingTop",
     // non-standard
-    'tabSize',
-    'textIndent',
+    "tabSize",
+    "textIndent",
     // non-standard
-    'textRendering',
-    'textTransform',
-    'width',
-    'wordBreak',
+    "textRendering",
+    "textTransform",
+    "width",
+    "wordBreak",
 ] as const;
 
 type SizingProps = Extract<
@@ -37,7 +37,7 @@ export type SizingData = {
     borderSize: number;
 };
 
-const isIE = typeof document !== 'undefined' ? !!(document.documentElement as any).currentStyle : false;
+const isIE = typeof document !== "undefined" ? !!(document.documentElement as any).currentStyle : false;
 
 export const pick = <Obj extends { [key: string]: any }, Key extends keyof Obj>(
     props: Key[],
@@ -54,20 +54,20 @@ export function getSizingData(node: HTMLElement): SizingData | null {
     let sizingStyle = pick((SIZING_STYLE as unknown) as SizingProps[], style), { boxSizing } = sizingStyle;
 
     // probably node is detached from DOM, can't read computed dimensions
-    if(boxSizing === '') {
+    if(boxSizing === "") {
         return null;
     }
 
     // IE (Edge has already correct behaviour) returns content width as computed width
     // so we need to add manually padding and border widths
-    if(isIE && boxSizing === 'border-box') {
+    if(isIE && boxSizing === "border-box") {
         sizingStyle.width =
             parseFloat(sizingStyle.width!) +
             parseFloat(sizingStyle.borderRightWidth!) +
             parseFloat(sizingStyle.borderLeftWidth!) +
             parseFloat(sizingStyle.paddingRight!) +
             parseFloat(sizingStyle.paddingLeft!) +
-            'px';
+            "px";
     }
 
     const paddingSize =

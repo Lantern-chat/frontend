@@ -1,6 +1,7 @@
 import { batch, createEffect, createRenderEffect, createSignal, onCleanup, onMount, Show } from "solid-js";
 import { useStructuredSelector } from "solid-mutant";
 
+import { Home } from "../home";
 import { ChannelList } from "./channel_list";
 import { MemberList } from "./member_list";
 import { Channel } from "../channel/channel";
@@ -12,8 +13,6 @@ import { Snowflake } from "state/models";
 import { RootState, Type, useRootDispatch } from "state/root";
 import { activeParty, activeRoom } from "state/selectors/active";
 import { Panel } from "state/mutators/window";
-
-import { createRef } from "ui/hooks/createRef";
 
 import "./party.scss";
 export function Party() {
@@ -103,52 +102,39 @@ export function Party() {
         }
     }));
 
-    let party_ref = createRef<HTMLDivElement>();
+    let party_ref: HTMLDivElement | undefined;
 
     // prevent swiping when a user is trying to select text
-    createEffect(() => {
+    onMount(() => {
         // all of these relate to the swiping with the mobile view
-        if(state.use_mobile_view && party_ref.current) {
-            document.addEventListener('selectionchange', cancel_touch);
+        if(state.use_mobile_view) {
+            document.addEventListener("selectionchange", cancel_touch);
+            onCleanup(() => document.removeEventListener("selectionchange", cancel_touch));
 
             let e = {
-                'touchstart': on_touch_start,
-                'touchend': on_touch_end,
-                'touchcancel': cancel_touch,
-                'contextmenu': cancel_touch,
+                "touchstart": on_touch_start,
+                "touchend": on_touch_end,
+                "touchcancel": cancel_touch,
+                "contextmenu": cancel_touch,
             };
-
-            let el = party_ref.current;
-
-            for(let name in e) { el.addEventListener(name, e[name]); }
-
-            onCleanup(() => {
-                document.removeEventListener('selectionchange', cancel_touch);
-
-                for(let name in e) { el.removeEventListener(name, e[name]); }
-            });
+            for(let name in e) { party_ref!.addEventListener(name, e[name as keyof typeof e]); }
         }
     });
 
     return (
         <div class="ln-party" ref={party_ref}>
-            {() => showLeft() && (
+            <Show when={showLeft()}>
                 <div
                     class="ln-party__sidebar"
                     classList={{ "ln-party__sidebar--closed": state.use_mobile_view && state.show_panel == Panel.Main }}
                 >
-                    {state.active_party != '@me' ? (
-                        <>
-                            <PartyHeader />
-                            <ChannelList />
-                        </>
-                    ) : (
-                        <HomeSideBar />
-                    )}
-
+                    <Show when={state.active_party != "@me"} fallback={<HomeSideBar />}>
+                        <PartyHeader />
+                        <ChannelList />
+                    </Show>
                     <PartyFooter />
                 </div>
-            )}
+            </Show>
 
             <div
                 class="ln-party__channel"
@@ -157,26 +143,33 @@ export function Party() {
                     "ln-party__channel--expanded-left": state.use_mobile_view && state.show_panel == Panel.LeftRoomList,
                 }}
             >
-                {/*NOTE: This is clear element that covers the chat when on the side */}
-                {() => state.use_mobile_view && state.show_panel != Panel.Main && (
+                <Show when={
+                    /*NOTE: This is clear element that covers the chat when on the side */
+                    state.use_mobile_view && state.show_panel != Panel.Main
+                }>
                     <div class="ln-channel__cover" onClick={() => dispatch({ type: Type.WINDOW_SET_PANEL, panel: Panel.Main })} />
-                )}
+                </Show>
 
-                {/*NOTE: active_party may be null */}
-                {() => state.active_party && state.active_party != '@me' && <Channel />}
+                <Show when={/*NOTE: active_party may be null */ state.active_party}>
+                    {active_party => (
+                        <Show when={active_party() == "@me"} fallback={<Channel />}>
+                            <Home />
+                        </Show>
+                    )}
+                </Show>
             </div>
 
-            {() => showRight() && (
+            <Show when={showRight()}>
                 <div
                     class="ln-party__user-list"
                     classList={{ "ln-party__user-list--closed": state.show_panel == Panel.Main }}
                 >
                     {/* TODO: Put something else here instead of member list on home */}
-                    {state.active_party && state.active_party != '@me' && (
+                    <Show when={state.active_party && state.active_party != "@me"}>
                         <MemberList />
-                    )}
+                    </Show>
                 </div>
-            )}
+            </Show>
         </div>
     );
 }

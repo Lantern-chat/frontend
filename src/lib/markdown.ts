@@ -20,7 +20,7 @@ const INSIDE_EMOTE: number = 1 << 3;
 const ESCAPED: number = 1 << 4;
 
 const DEFAULT_FREE_FLAGS: number = INSIDE_INLINE_CODE | INSIDE_SPOILER | INSIDE_INLINE_CODE;
-const DEFAULT_PREFIXES: string[] = ['<', '\\', ':'];
+const DEFAULT_PREFIXES: string[] = ["<", "\\", ":"];
 
 export function create(prefixes: string[] = DEFAULT_PREFIXES): FreeState {
     return { cs: 0, cc: 0, f: 0, p: 0, r: prefixes };
@@ -40,11 +40,11 @@ export function incr(self: FreeState, input: string, new_position: number) {
 
         c = input[i];
 
-        if(c == '\\') {
+        if(c == "\\") {
             f |= ESCAPED; continue;
         }
 
-        if(c == '`') {
+        if(c == "`") {
             cc++;
         } else {
             // if this character is not part of a code token,
@@ -57,7 +57,7 @@ export function incr(self: FreeState, input: string, new_position: number) {
             cc = 0;
         }
 
-        if(c == '|') {
+        if(c == "|") {
             cs++;
         } else {
             cs = 0;
@@ -84,7 +84,7 @@ export function incr(self: FreeState, input: string, new_position: number) {
 
             // if not in any code
             if(!(f & INSIDE_ANY_CODE)) {
-                if(c == ':') {
+                if(c == ":") {
                     f ^= INSIDE_EMOTE;
                 } else if(!VALID_EMOTE_CHAR.test(c)) {
                     f &= ~INSIDE_EMOTE;
@@ -140,7 +140,7 @@ export function is_inside_spoiler(input: string, position: number): boolean {
 export function emote_start(input: string, position: number): number {
     let start = position;
 
-    while(start > 0 && input[start] != ':') { start--; }
+    while(start > 0 && input[start] != ":") { start--; }
 
     let is_valid = /^:[\w\-]*$/.test(input.slice(start, position)) &&
         input.slice(0, position).match(/:/g)!.length % 2 == 1;

@@ -22,7 +22,7 @@ export function EmotePicker(props: IEmotePickerProps) {
     };
 
     return (
-        <div title="Emoji" class="ln-msg-box__emoji" classList={{ 'active': show() }} {...main_click_props}>
+        <div title="Emoji" class="ln-msg-box__emoji" classList={{ "active": show() }} {...main_click_props}>
             <VectorIcon id={Icons.SmileyHalf} />
 
             <AnchoredModal show={show()} eat={["onClick"]}>

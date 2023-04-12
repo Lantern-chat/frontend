@@ -16,7 +16,7 @@ export function requestPermission() {
     return REQ_PERM_PROMISE;
 }
 
-const HAS_QUERY = typeof navigator.permissions?.query === 'function';
+const HAS_QUERY = typeof navigator.permissions?.query === "function";
 
 /*
     Behaviors:
@@ -39,15 +39,15 @@ export function NotificationsSettingsTab() {
 
     if(HAS_NOTIFICATIONS) {
         onMount(() => {
-            if(Notification.permission !== 'granted') {
+            if(Notification.permission !== "granted") {
                 setPerm(Notification.permission);
             }
 
             if(HAS_QUERY) {
                 // only if already allowed, update value. This acts as a latch to only go to denied.
-                let set = (value: NotificationPermission) => stored() === 'granted' && setPerm(value);
+                let set = (value: NotificationPermission) => stored() === "granted" && setPerm(value);
 
-                navigator.permissions.query({ name: 'notifications' }).then(res => {
+                navigator.permissions.query({ name: "notifications" }).then(res => {
                     set(res.state as NotificationPermission);
                     // use function() to allow `this` from `res`
                     res.onchange = function() { set(this.state as NotificationPermission); };
@@ -57,7 +57,7 @@ export function NotificationsSettingsTab() {
 
         on_change = (checked: boolean) => {
             // eagerly assume denied until fully granted
-            setPerm('denied');
+            setPerm("denied");
 
             if(checked) { requestPermission().then(res => setPerm(res)); }
         };
@@ -70,7 +70,7 @@ export function NotificationsSettingsTab() {
 
     let label = () => {
         let offset = HAS_NOTIFICATIONS ? (HAS_QUERY ? 0 : 1) : 2;
-        return LL().main.settings.notifications.ENABLE_DESKTOP_NOTIFICATIONS[offset]();
+        return (LL().main.settings.notifications.ENABLE_DESKTOP_NOTIFICATIONS as any)[offset]();
     };
 
     return (
@@ -79,7 +79,7 @@ export function NotificationsSettingsTab() {
                 for="desktop_notifications"
                 label={label()}
                 onChange={on_change!}
-                checked={perm() === 'granted'}
+                checked={perm() === "granted"}
                 disabled={!HAS_NOTIFICATIONS}
             />
         </form>

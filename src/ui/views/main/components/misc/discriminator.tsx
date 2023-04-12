@@ -13,7 +13,7 @@ export function Discriminator(props: IDiscriminatorProps) {
 
     return (
         <Show when={not_streamer_mode()}>
-            <span class="discriminator">#{props.discriminator.toString(16).padStart(4, '0')}</span>
+            <span class="discriminator">#{props.discriminator.toString(16).padStart(4, "0")}</span>
         </Show>
     );
 }

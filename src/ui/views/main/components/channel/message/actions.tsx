@@ -22,8 +22,8 @@ export function ActionWidget(props: { msg: Message }) {
         let t = e.target as HTMLElement | null;
 
         dispatch: while(t && t != e.currentTarget) {
-            switch(t.dataset['action']) {
-                case 'react': {
+            switch(t.dataset["action"]) {
+                case "react": {
                     on_react_click!(e);
                     break dispatch;
                 }

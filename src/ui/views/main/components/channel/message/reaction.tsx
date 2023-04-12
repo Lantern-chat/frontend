@@ -29,9 +29,9 @@ export function Reactions(props: IReactionsProps) {
             d: string | undefined;
 
         while(t && t != e.currentTarget) {
-            d = t.dataset['emote'];
+            d = t.dataset["emote"];
             if(d) { emote = d; break; }
-            d = t.dataset['emoji'];
+            d = t.dataset["emoji"];
             if(d) { emoji = d; break; }
 
             t = t.parentElement;
@@ -39,7 +39,7 @@ export function Reactions(props: IReactionsProps) {
 
         if(emote || emoji) {
             let msg = props.msg, args = { room_id: msg.room_id, msg_id: msg.id, e: emoji ? { emoji } : { emote: emote! } };
-            CLIENT.execute(t?.classList.contains('me') ? DeleteOwnReaction(args) : PutReaction(args));
+            CLIENT.execute(t?.classList.contains("me") ? DeleteOwnReaction(args) : PutReaction(args));
         }
     };
 
@@ -47,7 +47,7 @@ export function Reactions(props: IReactionsProps) {
         <div class="ln-reaction__wrapper" onClick={on_click}>
             <For each={props.msg.reactions}>
                 {(reaction: any) => (
-                    <span class="ln-reaction" classList={{ 'me': reaction.me }}
+                    <span class="ln-reaction" classList={{ "me": reaction.me }}
                         data-emote={reaction.emote} data-emoji={reaction.emoji}
                     >
                         {/* emote is immutable here, so a regular branch is fine */}
@@ -57,7 +57,7 @@ export function Reactions(props: IReactionsProps) {
                 )}
             </For>
 
-            <span class="ln-reaction ln-reaction--add" classList={{ 'active': show() }} {...main_click_props}>
+            <span class="ln-reaction ln-reaction--add" classList={{ "active": show() }} {...main_click_props}>
                 <VectorIcon id={Icons.SmileyHalf} />
 
                 <AnchoredModal show={show()} eat={["onClick"]}>

@@ -31,11 +31,11 @@ export type ILanguages = {
 
 // @stringify
 export const LANGUAGES: ILanguages = {
-    'en-US': { n: "English (American)", e: "🇺🇸", d: 'en', nsi: 1 },
-    'en-GB': { n: "English (Traditional)", e: "🇬🇧", d: 'en-gb' },
+    "en-US": { n: "English (American)", e: "🇺🇸", d: "en", nsi: 1 },
+    "en-GB": { n: "English (Traditional)", e: "🇬🇧", d: "en-gb" },
     es: { n: "Español", e: "🇪🇸" },
-    id: { n: "Indonesia", e: "🇮🇩", d: 'id' },
-    owo: { n: "OwO (English)", e: "😺", d: 'en', nsi: 1 }
+    id: { n: "Indonesia", e: "🇮🇩", d: "id" },
+    owo: { n: "OwO (English)", e: "😺", d: "en", nsi: 1 }
 };
 
 export const LANGUAGE_KEYS = Object.keys(LANGUAGES).sort(compareString) as Array<Locales>;

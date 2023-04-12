@@ -20,7 +20,7 @@ export function MediaPreview(props: IMediaPreviewProps) {
         return src;
     });
 
-    let mt = createMemo(() => errored() ? '' : props.file.type);
+    let mt = createMemo(() => errored() ? "" : props.file.type);
 
     return (
         <Switch>
@@ -29,15 +29,15 @@ export function MediaPreview(props: IMediaPreviewProps) {
                 <Fallback {...props} />
             </Match>
 
-            <Match when={mt().startsWith('image/')}>
+            <Match when={mt().startsWith("image/")}>
                 <img class="ln-media" src={src()} on:error={on_error} />;
             </Match>
 
-            <Match when={mt().startsWith('video/')}>
+            <Match when={mt().startsWith("video/")}>
                 <video class="ln-media" src={src()} controls loop on:error={on_error} />;
             </Match>
 
-            <Match when={mt().startsWith('audio/')}>
+            <Match when={mt().startsWith("audio/")}>
                 <audio class="ln-media" src={src()} controls on:error={on_error} />;
             </Match>
         </Switch>

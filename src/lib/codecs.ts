@@ -10,8 +10,8 @@ const [SUPPORTS_WEBM, setWebM] = createSignal(false);
 }
 
 {
-    let v = document.createElement('video');
-    setWebM('' != v.canPlayType('video/webm; codecs="vp8, vorbis"'));
+    let v = document.createElement("video");
+    setWebM("" != v.canPlayType('video/webm; codecs="vp8, vorbis"'));
     v.remove();
 }
 

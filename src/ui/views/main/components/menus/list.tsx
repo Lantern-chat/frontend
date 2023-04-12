@@ -1,5 +1,4 @@
-import { For, JSX } from "solid-js";
-import { useChildrenArray } from "ui/hooks/useChildrenArray";
+import { For, JSX, children } from "solid-js";
 
 export interface IContextMenuProps {
     children: JSX.Element,
@@ -9,11 +8,11 @@ export interface IContextMenuProps {
 
 import "./list.scss";
 export function ContextMenu(props: IContextMenuProps) {
-    let items = useChildrenArray(() => props.children);
+    let items = children(() => props.children);
 
     return (
         <ul class="ln-contextmenu ln-cm-pos" classList={{ dark: props.dark }} style={props.style}>
-            <For each={items()}>{item => <li>{item}</li>}</For>
+            <For each={items.toArray()}>{item => <li>{item}</li>}</For>
         </ul>
     );
 }

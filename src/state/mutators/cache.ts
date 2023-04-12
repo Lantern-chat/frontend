@@ -21,7 +21,7 @@ export interface ICacheState {
 }
 
 export function cache_key(user_id: Snowflake, party_id?: Snowflake): string {
-    return (party_id && party_id != '@me') ? (party_id + '_' + user_id) : user_id;
+    return (party_id && party_id != "@me") ? (party_id + "_" + user_id) : user_id;
 }
 
 export const DEFAULT_PROFILE_BITS: UserProfileSplitBits = {
@@ -63,7 +63,7 @@ export function cacheMutator(root: RootState, action: Action) {
                 cached: CachedUser | undefined = cache.users[key];
 
             if(cached) {
-                merge(cached, 'profile', profile);
+                merge(cached, "profile", profile);
                 cached.bits = split_profile_bits(profile);
                 cached.last_active = get_last_active(user.presence);
                 cached.presence = user.presence;
@@ -114,10 +114,10 @@ export function cacheMutator(root: RootState, action: Action) {
                         cached = cache.users[key];
 
                     if(cached) {
-                        merge(cached, 'user', user);
+                        merge(cached, "user", user);
 
                         if(user.profile) {
-                            merge(cached, 'profile', user.profile);
+                            merge(cached, "profile", user.profile);
                         } else if(user.profile === null) {
                             // will only be truly null if there is no profile whatsoever
                             cached.profile = null;

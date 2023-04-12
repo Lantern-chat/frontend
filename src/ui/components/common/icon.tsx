@@ -1,5 +1,5 @@
 import { Icons, path as icon_path } from "lantern-icons";
-import { createEffect, createMemo, createResource, JSX, untrack } from "solid-js";
+import { createEffect, createResource, untrack, Show } from "solid-js";
 
 import "./icon.scss";
 
@@ -30,22 +30,20 @@ function select_comp(props: IVectorIconProps) {
 }
 
 // Similar workings to `<Dynamic>` but simpler for faster rendering
-export function VectorIcon(props: IVectorIconProps): JSX.Element {
-    return () => {
-        let comp = select_comp(props);
-        if(comp) {
-            return untrack(() => comp!(props as any));
-        }
-        return;
-    };
+export function VectorIcon(props: IVectorIconProps) {
+    return (
+        <Show keyed when={select_comp(props)}>
+            {comp => untrack(() => comp(props as any))}
+        </Show>
+    )
 }
 
-const ICON_PATH = icon_path + '#';
+const ICON_PATH = icon_path + "#";
 
 function IdVectorIcon(props: IRefVectorIconProps & IGeneralVectorIconProps) {
     return (
         <div class="ln-icon" {...props.extra}>
-            <span class="ln-icon__wrapper" style={props.absolute ? { position: 'absolute' } : void 0}>
+            <span class="ln-icon__wrapper" style={props.absolute ? { position: "absolute" } : void 0}>
                 <svg><use href={ICON_PATH + props.id} /></svg>
             </span>
         </div>
@@ -55,7 +53,7 @@ function IdVectorIcon(props: IRefVectorIconProps & IGeneralVectorIconProps) {
 function InlineVectorIcon(props: IStaticVectorIconProps & IGeneralVectorIconProps) {
     return (
         <div class="ln-icon" {...props.extra}>
-            <span class="ln-icon__wrapper" innerHTML={props.src} style={props.absolute ? { position: 'absolute' } : void 0} />
+            <span class="ln-icon__wrapper" innerHTML={props.src} style={props.absolute ? { position: "absolute" } : void 0} />
         </div>
     );
 }

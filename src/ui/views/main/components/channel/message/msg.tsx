@@ -22,7 +22,7 @@ export function Message(props: MessageProps) {
             {content => (
                 <Markdown source={content}
                     class="ln-msg"
-                    classList={{ 'ln-msg--editing': !!props.editing }}
+                    classList={{ "ln-msg--editing": !!props.editing }}
                     extra={props.extra}
                 />
             )}

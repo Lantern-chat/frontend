@@ -3,7 +3,7 @@ import "lib/polyfills";
 import { render, DelegatedEvents } from "solid-js/web";
 
 DelegatedEvents.clear();
-for(let e of ['click', 'contextmenu', 'dblclick', 'keydown', 'keyup']) {
+for(let e of ["click", "contextmenu", "dblclick", "keydown", "keyup"]) {
     DelegatedEvents.add(e);
 }
 

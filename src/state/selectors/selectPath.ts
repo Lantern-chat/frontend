@@ -1,6 +1,6 @@
-import { Accessor } from 'solid-js';
-import { composeSelectors, createStructuredSelector } from 'solid-mutant';
-import { RootState } from 'state/root';
+import { Accessor } from "solid-js";
+import { composeSelectors, createStructuredSelector } from "solid-mutant";
+import { RootState } from "state/root";
 
 //export interface ISelectedPath {
 //    path: string,
@@ -9,5 +9,5 @@ import { RootState } from 'state/root';
 
 export const selectPath = composeSelectors<RootState>()([state => state.history.location.pathname], createStructuredSelector({
     path: (path: Accessor<string>) => path(),
-    parts: (path: Accessor<string>) => path().slice(1).split('/')
+    parts: (path: Accessor<string>) => path().slice(1).split("/")
 }));

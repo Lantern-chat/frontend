@@ -12,7 +12,6 @@ import { UIText } from "ui/components/common/ui-text";
 import { MimeIcon } from "ui/components/mime";
 import { FullscreenModal } from "ui/components/modal";
 import { SetController } from "ui/hooks/createController";
-import { createRef, Ref } from "ui/hooks/createRef";
 import { useLocale } from "ui/i18n";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 
@@ -47,7 +46,6 @@ interface IFileMeta {
 
 interface IMappedFile {
     file: File,
-    ref: Ref<HTMLImageElement | HTMLVideoElement | undefined>,
 }
 
 var COUNTER = 0;
@@ -73,7 +71,7 @@ export function UploadPanel(props: IUploadPanelProps) {
 
         for(let file of new_files) {
             let id = COUNTER++;
-            files.set(id, { file, ref: createRef() });
+            files.set(id, { file });
             new_arr.push({ id, progress: 0, spoiler: file.name.startsWith(SPOILER) });
         }
 
@@ -90,10 +88,10 @@ export function UploadPanel(props: IUploadPanelProps) {
 
     let inputs: HTMLDivElement | undefined, newest_input: HTMLInputElement;
     let add_input = () => {
-        newest_input = document.createElement('input');
-        newest_input.type = 'file';
+        newest_input = document.createElement("input");
+        newest_input.type = "file";
         newest_input.multiple = true;
-        newest_input.addEventListener('input', on_file_input);
+        newest_input.addEventListener("input", on_file_input);
 
         inputs!.appendChild(newest_input);
     };
@@ -147,7 +145,7 @@ export function UploadPanel(props: IUploadPanelProps) {
                     meta: {
                         width: meta.width,
                         height: meta.height,
-                        mime: file.type.includes('/') ? file.type : undefined,
+                        mime: file.type.includes("/") ? file.type : undefined,
                         filename: name,
                     },
                     stream: file,
@@ -277,11 +275,11 @@ function UploadPreview(props: IUploadPreviewProps) {
 
     let title = () => {
         let t = file().type, b = f().bytes(file().size);
-        return t ? (t + ' - ' + b) : b;
+        return t ? (t + " - " + b) : b;
     };
 
     return (
-        <li class="ln-attachment-preview" classList={{ 'removing': removing(), 'uploading': props.uploading }}>
+        <li class="ln-attachment-preview" classList={{ "removing": removing(), "uploading": props.uploading }}>
             <div class="ln-attachment-preview__controls">
                 <div class="ln-attachment-preview__spoiler" title={LL().main.SPOILER(props.meta.spoiler)}
                     onClick={() => props.onSpoiler(props.meta.id, !props.meta.spoiler)}>
@@ -293,36 +291,37 @@ function UploadPreview(props: IUploadPreviewProps) {
             </div>
 
             <div class="ln-attachment-preview__preview"
-                classList={{ 'spoilered': props.meta.spoiler }}
+                classList={{ "spoilered": props.meta.spoiler }}
                 title={title()}
             >
                 {/* <Show when={!errored()} fallback={icon}>
                     <Switch fallback={icon}>
-                        <Match when={mime_prefix() === 'image'}>
+                        <Match when={mime_prefix() === "image"}>
                             <img {...common} src={src()} />
                         </Match>
 
-                        <Match when={mime_prefix() === 'video'}>
+                        <Match when={mime_prefix() === "video"}>
                             <video {...common} src={src() + "#t=0.0001"} controls={false} muted />
                         </Match>
                     </Switch>
                 </Show> */}
 
-                {() => {
-                    switch(!errored() && mime_prefix()) {
-                        case 'image': return <img {...common} src={src()} />;
-                        case 'video': return <video {...common} src={src() + "#t=0.0001"} controls={false} muted
-                            use:cleanedEvent={[['mouseenter', on_video_hover], ['mouseleave', on_video_out]]} />;
-                        default: return icon();
-                    }
-                }}
+                <Switch fallback={icon()}>
+                    <Match when={!errored() && mime_prefix() == "image"}>
+                        <img {...common} src={src()} />
+                    </Match>
+                    <Match when={!errored() && mime_prefix() == "video"}>
+                        <video {...common} src={src() + "#t=0.0001"} controls={false} muted
+                            use:cleanedEvent={[["mouseenter", on_video_hover], ["mouseleave", on_video_out]]} />
+                    </Match>
+                </Switch>
             </div>
 
             <span class="ui-text" textContent={file().name} title={file().name} />
 
             <span class="ln-attachment-preview__progress"
-                style={{ 'display': props.meta.progress > 0 ? 'inline-block' : 'none' }}>
-                <span style={{ width: Math.round(props.meta.progress * 100) + '%' }} />
+                style={{ "display": props.meta.progress > 0 ? "inline-block" : "none" }}>
+                <span style={{ width: Math.round(props.meta.progress * 100) + "%" }} />
             </span>
         </li>
     )
@@ -370,15 +369,15 @@ function UploadDropper(props: IUploadDropperProps) {
 
     onMount(() => {
         let d = document.body, e = {
-            'dragenter': on_enter,
-            'dragover': on_over,
-            'dragend': on_end,
-            'dragleave': on_end,
+            "dragenter": on_enter,
+            "dragover": on_over,
+            "dragend": on_end,
+            "dragleave": on_end,
         };
 
-        for(let name in e) { d.addEventListener(name, e[name]); }
+        for(let name in e) { d.addEventListener(name, e[name as keyof typeof e]); }
         onCleanup(() => {
-            for(let name in e) { d.removeEventListener(name, e[name]); }
+            for(let name in e) { d.removeEventListener(name, e[name as keyof typeof e]); }
         });
     });
 

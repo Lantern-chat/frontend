@@ -1,6 +1,6 @@
 import { createSignal, onMount, onCleanup, batch } from "solid-js";
 
-import type { SignalOptions } from "solid-js/types/reactive/signal";
+import type { SignalOptions } from "solid-js";
 
 export type Refable = HTMLElement | undefined;
 
@@ -31,12 +31,12 @@ export function createRef<T extends Refable>(initial?: T, options?: SignalOption
     } as Ref<T>;
 
     return Object.defineProperties(ref, {
-        'current': { get, enumerable: true, },
-        '_override': { set },
-        '_reset': { value: () => { set(initial as any); } }
+        "current": { get, enumerable: true, },
+        "_override": { set },
+        "_reset": { value: () => { set(initial as any); } }
     });
 
-    //return Object.defineProperty(ref, 'current', { get, enumerable: true });
+    //return Object.defineProperty(ref, "current", { get, enumerable: true });
 }
 
 export type AnyRef<T extends Refable> = Ref<T> | ((value: T) => void);
@@ -52,8 +52,8 @@ export function composeRefs<T extends Refable>(...maybe_refs: Array<AnyRef<T> | 
     let simple: Array<AnyRef<T>> = [], complex: Array<FullRef<T>> = [];
 
     for(let ref of maybe_refs) {
-        if(typeof ref === 'function') {
-            if('_override' in ref) {
+        if(typeof ref === "function") {
+            if("_override" in ref) {
                 complex.push(ref as FullRef<T>);
             } else {
                 simple.push(ref);
@@ -94,8 +94,8 @@ export function composeRefs<T extends Refable>(...maybe_refs: Array<AnyRef<T> | 
     } as Ref<T>;
 
     return Object.defineProperties(ref, {
-        'current': { enumerable: true, get: () => own.current },
-        '_override': { set: override_complex },
-        '_reset': { value: reset_complex }
+        "current": { enumerable: true, get: () => own.current },
+        "_override": { set: override_complex },
+        "_reset": { value: reset_complex }
     });
 }

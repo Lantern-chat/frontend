@@ -21,7 +21,7 @@ import { activeParty, activeRoom } from "state/selectors/active";
 import { setTheme } from "lib/theme";
 import { displayNotification } from "lib/notification";
 
-const GATEWAY_ENABLED_ROUTES = ['channels', 'settings', 'invite'];
+const GATEWAY_ENABLED_ROUTES = ["channels", "settings", "invite"];
 
 function connect_gateway(state: RootState) {
     GLOBAL.gateway!.postCmd({
@@ -45,15 +45,15 @@ export function mainEffect(state: RootState, action: Action, dispatch: Dispatch<
                 pad = getPad(prefs),
                 font_changed = false;
 
-            de.classList.toggle('ln-enhanced-contrast', hasUserPrefFlag(prefs, UserPreferenceFlags.ForceColorConstrast));
-            de.classList.toggle('ln-grey-img-bg', hasUserPrefFlag(prefs, UserPreferenceFlags.ShowGreyImageBg));
-            de.classList.toggle('ln-small-attachments', hasUserPrefFlag(prefs, UserPreferenceFlags.SmallerAttachments));
+            de.classList.toggle("ln-enhanced-contrast", hasUserPrefFlag(prefs, UserPreferenceFlags.ForceColorConstrast));
+            de.classList.toggle("ln-grey-img-bg", hasUserPrefFlag(prefs, UserPreferenceFlags.ShowGreyImageBg));
+            de.classList.toggle("ln-small-attachments", hasUserPrefFlag(prefs, UserPreferenceFlags.SmallerAttachments));
 
             // 16px == 1em, /2 for both sides
-            de.style.setProperty('--ln-chat-group-padding', (pad / 32).toFixed(2) + 'em');
+            de.style.setProperty("--ln-chat-group-padding", (pad / 32).toFixed(2) + "em");
 
             if(chat_font !== undefined) {
-                let chat_ff_var = font_to_css(chat_font), chat_ff_key = '--ln-chat-font-family';
+                let chat_ff_var = font_to_css(chat_font), chat_ff_key = "--ln-chat-font-family";
 
                 if(de.style.getPropertyValue(chat_ff_key) != chat_ff_var) {
                     de.style.setProperty(chat_ff_key, chat_ff_var);
@@ -61,15 +61,15 @@ export function mainEffect(state: RootState, action: Action, dispatch: Dispatch<
                 }
             }
 
-            if(typeof prefs.chat_font_size == 'number' || chat_font) {
+            if(typeof prefs.chat_font_size == "number" || chat_font) {
                 let fs = prefs.chat_font_size / 16;
 
-                de.style.setProperty('--ln-chat-font-size', `${fs}rem`);
-                de.style.setProperty('--ln-chat-font-size-adjust', `${font_size(chat_font)}`);
+                de.style.setProperty("--ln-chat-font-size", `${fs}rem`);
+                de.style.setProperty("--ln-chat-font-size-adjust", `${font_size(chat_font)}`);
             }
 
             if(ui_font !== undefined) {
-                let ui_ff_var = font_to_css(ui_font), ui_ff_key = '--ln-ui-font-family';
+                let ui_ff_var = font_to_css(ui_font), ui_ff_key = "--ln-ui-font-family";
 
                 if(de.style.getPropertyValue(ui_ff_key) != ui_ff_var) {
                     de.style.setProperty(ui_ff_key, ui_ff_var);
@@ -77,15 +77,15 @@ export function mainEffect(state: RootState, action: Action, dispatch: Dispatch<
                 }
             }
 
-            if(typeof prefs.ui_font_size == 'number' || ui_font) {
+            if(typeof prefs.ui_font_size == "number" || ui_font) {
                 let fs = prefs.ui_font_size / 16;
 
-                de.style.setProperty('--ln-ui-font-size', `${fs}rem`);
-                de.style.setProperty('--ln-ui-font-size-adjust', `${font_size(ui_font)}em`);
+                de.style.setProperty("--ln-ui-font-size", `${fs}rem`);
+                de.style.setProperty("--ln-ui-font-size-adjust", `${font_size(ui_font)}em`);
             }
 
-            if(typeof prefs.tab_size == 'number') {
-                let ts_var = prefs.tab_size.toString(), ts_key = '--ln-chat-tabsize';
+            if(typeof prefs.tab_size == "number") {
+                let ts_var = prefs.tab_size.toString(), ts_key = "--ln-chat-tabsize";
 
                 if(de.style.getPropertyPriority(ts_key) != ts_var) {
                     de.style.setProperty(ts_key, ts_var);
@@ -94,9 +94,9 @@ export function mainEffect(state: RootState, action: Action, dispatch: Dispatch<
 
             let reduce_motion = hasUserPrefFlag(prefs, UserPreferenceFlags.ReduceAnimations);
             if(!reduce_motion) {
-                de.classList.add('ln-enable-motion');
+                de.classList.add("ln-enable-motion");
             } else {
-                de.classList.remove('ln-enable-motion');
+                de.classList.remove("ln-enable-motion");
             }
 
             // NOTE: Because this runs after the reducers, and the prefs reducer fills in defaults, this is the full prefs
@@ -126,7 +126,7 @@ export function mainEffect(state: RootState, action: Action, dispatch: Dispatch<
         case Type.PARTY_LOADED: {
             let [channels, party_id, room_id] = state.history.parts;
 
-            if(channels !== 'channels' || party_id != action.party_id) break;
+            if(channels !== "channels" || party_id != action.party_id) break;
 
             let room = room_id && action.rooms.find(room => room.id == room_id), chat_room;
 
@@ -152,7 +152,7 @@ export function mainEffect(state: RootState, action: Action, dispatch: Dispatch<
             let parts = action.ctx.parts;
 
             if(!GATEWAY_ENABLED_ROUTES.includes(parts[0])) {
-                // if the history updated and we're now on a page that doesn't need the gateway, disconnect
+                // if the history updated and we"re now on a page that doesn"t need the gateway, disconnect
                 GLOBAL.gateway.postCmd({ t: GatewayCommandDiscriminator.Disconnect });
             } else {
                 const CONNECTABLE = [GatewayStatus.Disconnected, GatewayStatus.Initialized];
@@ -160,7 +160,7 @@ export function mainEffect(state: RootState, action: Action, dispatch: Dispatch<
                 if(CONNECTABLE.includes(state.gateway.status) && state.user.session) {
                     // if the history updated and we're now on a page that needs the gateway, connect
                     connect_gateway(state);
-                } else if(parts[0] == 'channels') {
+                } else if(parts[0] == "channels") {
                     // if the history updated and gateway is good, load
                     // any new messages for the now-active channel
                     let room_id = activeRoom(state),
@@ -227,7 +227,7 @@ export function mainEffect(state: RootState, action: Action, dispatch: Dispatch<
                         dispatch(activateParty(active_party, active_room));
                     } else {
                         // TODO: Expand upon this or remove it entirely.
-                        if(!['settings', '@me', 'invite'].includes(state.history.parts[0])) {
+                        if(!["settings", "@me", "invite"].includes(state.history.parts[0])) {
                             __DEV__ && console.log("Ready event received but no party is active, redirecting to default");
                             HISTORY.replace(DEFAULT_LOGGED_IN_CHANNEL);
                         }

@@ -1,10 +1,10 @@
-import { createSignal } from "solid-js"
+import { createSignal, Show } from "solid-js"
 import { usePrefs } from "state/contexts/prefs";
 import { emoji_url } from "config/urls";
 
 import type { IEmojiProps } from "./emoji";
 
-export type IEmojiLiteProps = Pick<IEmojiProps, 'value' | 'large'>;
+export type IEmojiLiteProps = Pick<IEmojiProps, "value" | "large">;
 
 // This is a more lightweight version of the emoji component
 // that does not require any of the emoji database be present.
@@ -22,14 +22,15 @@ export function EmojiLite(props: IEmojiLiteProps) {
 
     let large = () => props.large && !prefs.CompactView();
 
-    return () => use_system() ?
-        (
-            <span class="emoji" classList={{ 'large': large() }} textContent={value()} />
-        ) : (
-            <img loading="lazy" class="emoji" classList={{ 'large': large() }}
+    return (
+        <Show when={!use_system()} fallback={
+            <span class="emoji" classList={{ "large": large() }} textContent={value()} />
+        }>
+            <img class="emoji" classList={{ "large": large() }}
                 alt={value()} aria-label={value()}
                 draggable={false} data-type="emoji"
                 src={emoji_url(value())}
                 on:error={() => setErrored(true)} />
-        );
+        </Show>
+    );
 }

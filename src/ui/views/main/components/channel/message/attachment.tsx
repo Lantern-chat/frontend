@@ -7,11 +7,10 @@ import { Message, Attachment, AttachmentFlags } from "state/models";
 import { usePrefs, UserPreferenceAccessors } from "state/contexts/prefs";
 import { message_attachment_url } from "config/urls";
 
-import { createRef } from "ui/hooks/createRef";
 import { useLocale } from "ui/i18n";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 import { MainContext, createClickEater } from "ui/hooks/useMain";
-import { createInfiniteScrollIntersectionTrigger } from "ui/components/infinite_scroll";
+import { infiniteScrollIntersectionTrigger } from "ui/components/infinite_scroll";
 
 import { cleanedEvent } from "ui/directives/bugs";
 false && cleanedEvent;
@@ -20,7 +19,6 @@ import { px } from "ui/utils";
 
 //import { LightBox } from "ui/views/main/modals/lightbox/index_img";
 import { UIText } from "ui/components/common/ui-text";
-import { ConstShow } from "ui/components/flow";
 import { AnimatedGif } from "ui/components/common/gif";
 import { VectorIcon } from "ui/components/common/icon";
 import { MimeIcon } from "ui/components/mime";
@@ -125,14 +123,14 @@ function compute_grid(msg: Message, prefs: UserPreferenceAccessors): Grid | unde
 
 export function Attachments(props: { msg: Message, prefs: UserPreferenceAccessors }) {
     return (
-        <Show keyed when={props.prefs.ShowAttachmentGrid() && compute_grid(props.msg, props.prefs)}
+        <Show when={props.prefs.ShowAttachmentGrid() && compute_grid(props.msg, props.prefs)}
             fallback={(
                 <For each={props.msg.attachments}>
                     {attachment => <MsgAttachment msg={props.msg} attachment={attachment} prefs={props.prefs} />}
                 </For>
             )}
         >
-            {(grid: Grid) => <AttachmentGrid msg={props.msg} grid={grid} prefs={props.prefs} />}
+            {(grid) => <AttachmentGrid msg={props.msg} grid={grid()} prefs={props.prefs} />}
         </Show>
     )
 }
@@ -140,7 +138,7 @@ export function Attachments(props: { msg: Message, prefs: UserPreferenceAccessor
 export function AttachmentGrid(props: { msg: Message, grid: Grid, prefs: UserPreferenceAccessors }) {
     return (
         <div class="ln-msg-attachment--grid" style={{
-            'grid-template-columns': `repeat(${props.grid.cols}, ${100 / props.grid.cols}%)`,
+            "grid-template-columns": `repeat(${props.grid.cols}, ${100 / props.grid.cols}%)`,
         }}>
             <For each={props.grid.items}>
                 {(item) => (
@@ -153,10 +151,10 @@ export function AttachmentGrid(props: { msg: Message, grid: Grid, prefs: UserPre
                         }}
                         style={{
                             // convert zero-indexed to one-indexed
-                            'grid-column-start': 1 + item.x,
-                            'grid-column-end': 1 + item.x + item.w,
-                            'grid-row-start': 1 + item.y,
-                            'grid-row-end': 1 + item.y + item.h,
+                            "grid-column-start": 1 + item.x,
+                            "grid-column-end": 1 + item.x + item.w,
+                            "grid-row-start": 1 + item.y,
+                            "grid-row-end": 1 + item.y + item.h,
                         }}
                     >
                         <MsgAttachment msg={props.msg} attachment={item.attachment} prefs={props.prefs} />
@@ -206,30 +204,36 @@ export function MsgAttachment(props: IMsgAttachmentProps) {
     let spoilered = createMemo(() => (props.attachment.filename.startsWith("SPOILER_") || 0 != (props.msg.flags & AttachmentFlags.Spoiler)) && !revealed());
 
     return (
-        <div class="ln-msg-attachment" classList={{ 'spoiler': spoilered() }} onClick={() => setRevealed(true)}>
+        <div class="ln-msg-attachment" classList={{ "spoiler": spoilered() }} onClick={() => setRevealed(true)}>
             <Show when={!errored() && !prefs.LowBandwidthMode()} fallback={<GenericAttachment {...props} />}>
                 <Switch fallback={<GenericAttachment {...props} />}>
-                    <Match when={mime_prefix() === 'image' && !unknown() && !large()}>
-                        {() => prefs.ShowMediaMetadata() && <MediaMetadata {...props} />}
+                    <Match when={mime_prefix() === "image" && !unknown() && !large()}>
+                        <Show when={prefs.ShowMediaMetadata()}>
+                            <MediaMetadata {...props} />
+                        </Show>
                         <ImageAttachment img={common()} src={src()} prefs={prefs} attachment={props.attachment} />
                     </Match>
 
-                    <Match when={mime_prefix() === 'video' && !unknown()}>
-                        {() => prefs.ShowMediaMetadata() && <MediaMetadata {...props} />}
+                    <Match when={mime_prefix() === "video" && !unknown()}>
+                        <Show when={prefs.ShowMediaMetadata()}>
+                            <MediaMetadata {...props} />
+                        </Show>
                         <VideoAttachment vid={common()} src={src()} prefs={prefs} attachment={props.attachment} />
                     </Match>
 
-                    <Match when={mime_prefix() === 'audio'}>
-                        {() => prefs.ShowMediaMetadata() && <MediaMetadata {...props} />}
+                    <Match when={mime_prefix() === "audio"}>
+                        <Show when={prefs.ShowMediaMetadata()}>
+                            <MediaMetadata {...props} />
+                        </Show>
                         <AudioAttachment audio={common()} src={src()} prefs={prefs} attachment={props.attachment} />
                     </Match>
                 </Switch>
 
-                <ConstShow when={spoilered()}>
+                <Show when={spoilered()}>
                     <span class="spoiler-label" title={LL().main.SPOILER_TITLE()}>
                         <UIText text={LL().main.SPOILER(0)} />
                     </span>
-                </ConstShow>
+                </Show>
             </Show>
         </div>
     )
@@ -244,10 +248,10 @@ function MediaMetadata(props: IMsgAttachmentProps) {
 
         // strip "image/" prefix on mobile
         if(mime && props.prefs.UseMobileView()) {
-            mime = mime.replace(/^image\//, '');
+            mime = mime.replace(/^image\//, "");
         }
 
-        return '(' + (mime ? (mime + ' - ' + bytes) : bytes) + ')';
+        return "(" + (mime ? (mime + " - " + bytes) : bytes) + ")";
     };
 
     return (
@@ -260,14 +264,14 @@ function MediaMetadata(props: IMsgAttachmentProps) {
 function GenericAttachment(props: IMsgAttachmentProps) {
     const prefs = props.prefs, { f } = useLocale();
     let url = createMemo(() => message_attachment_url(props.msg.room_id, props.attachment.id, props.attachment.filename));
-    let title = createMemo(() => (props.attachment.filename + ' (' + props.attachment.size + ')'));
+    let title = createMemo(() => (props.attachment.filename + " (" + props.attachment.size + ")"));
 
     let eat = createClickEater();
 
     let metadata = () => {
         let bytes = f().bytes(props.attachment.size);
         if(props.attachment.mime && prefs.ShowMediaMetadata()) {
-            return props.attachment.mime + ' - ' + bytes;
+            return props.attachment.mime + " - " + bytes;
         } else {
             return bytes;
         }
@@ -284,7 +288,7 @@ function GenericAttachment(props: IMsgAttachmentProps) {
                 <span class="ln-attachment-metadata" textContent={metadata()} />
             </div>
 
-            <a target="__blank" title={title()} href={url() + '?download'} class="ln-msg-attachment__download">
+            <a target="__blank" title={title()} href={url() + "?download"} class="ln-msg-attachment__download">
                 <VectorIcon id={Icons.Save} />
             </a>
         </div>
@@ -312,13 +316,12 @@ interface IAudioAttachmentProps {
     attachment: Attachment,
 }
 
-const TRIGGER_OPTS = { rootMargin: '150%' };
+const TRIGGER_OPTS = { rootMargin: "150%" };
 
 function ImageAttachment(props: IImageAttachmentProps) {
     const prefs = props.prefs;
-    let ref = createRef<HTMLImageElement>();
+    let [visible, setVisible] = createSignal(false);
     let [loaded, setLoaded] = createSignal(false);
-    let visible = createInfiniteScrollIntersectionTrigger(ref, TRIGGER_OPTS);
 
     let src = () => visible() ? props.src : undefined;
     let style = () => loaded() ? {} : computeModifiedStyle(props.img.style as JSX.CSSProperties || {}, props.attachment, prefs.UseMobileView());
@@ -326,54 +329,56 @@ function ImageAttachment(props: IImageAttachmentProps) {
     let on_load = () => visible() && setLoaded(true);
 
     // Future work
-    //createEffect(() => img.current?.classList.toggle('loading', !loaded()));
+    //createEffect(() => img.current?.classList.toggle("loading", !loaded()));
 
-    return () => {
-        //let animated_format = props.attachment.mime?.match(/gif|apng|webp|avif/i)?.[0];
+    return (
+        <img {...props.img}
+            ref={r => infiniteScrollIntersectionTrigger(r, setVisible, TRIGGER_OPTS)}
+            src={src()}
+            use:cleanedEvent={[
+                ["load", on_load],
+                ["loadedmetadata", on_load]
+            ]}
+            data-loaded={loaded()}
+            style={style()}
+        />
+    );
 
-        return (
-            <img {...props.img}
-                ref={ref}
-                src={src()}
-                use:cleanedEvent={[
-                    ['load', on_load],
-                    ['loadedmetadata', on_load]
-                ]}
-                data-loaded={loaded()}
-                style={style()}
-            />
-        );
+    //return () => {
+    //let animated_format = props.attachment.mime?.match(/gif|apng|webp|avif/i)?.[0];
 
-        // animated_format ? (
-        //     <AnimatedGif {...props.img}
-        //         src={src()}
-        //         which={animated_format as any}
-        //         img={img}
-        //         onLoad={on_load}
-        //         onLoadedMetadata={on_load}
-        //         style={style()} />
-        // )
-    };
+
+
+    // animated_format ? (
+    //     <AnimatedGif {...props.img}
+    //         src={src()}
+    //         which={animated_format as any}
+    //         img={img}
+    //         onLoad={on_load}
+    //         onLoadedMetadata={on_load}
+    //         style={style()} />
+    // )
+    //};
 }
 
 function VideoAttachment(props: IVideoAttachmentProps) {
     const prefs = props.prefs;
 
-    let ref = createRef<HTMLVideoElement>();
+    let [visible, setVisible] = createSignal(false);
     let [loaded, setLoaded] = createSignal(false);
-    let visible = createInfiniteScrollIntersectionTrigger(ref, TRIGGER_OPTS);
 
     // use modified style if not loaded
     let style = () => loaded() ? undefined :
         computeModifiedStyle(props.vid.style as JSX.CSSProperties || {}, props.attachment, prefs.UseMobileView());
 
     // the #t=0.0001 forces iOS Safari to preload the first frame and display that as a preview
-    let src = () => visible() ? (IS_MOBILE ? props.src + '#t=0.0001' : props.src) : undefined;
+    let src = () => visible() ? (IS_MOBILE ? props.src + "#t=0.0001" : props.src) : undefined;
 
     let on_load = () => setLoaded(true);
 
     return (
-        <video {...props.vid} src={src()} ref={ref}
+        <video {...props.vid} src={src()}
+            ref={r => infiniteScrollIntersectionTrigger(r, setVisible, TRIGGER_OPTS)}
             style={style()} loop muted={prefs.MuteMedia()}
             onLoadedMetadata={on_load} on:load={on_load}
             preload="metadata" controls
@@ -397,18 +402,18 @@ function computeModifiedStyle(style: JSX.CSSProperties, attachment: Attachment, 
     if(use_mobile_view) {
         if(attachment.width && attachment.height) {
             return {
-                '--aspect-ratio': (attachment.width / attachment.height).toString(),
+                "--aspect-ratio": (attachment.width / attachment.height).toString(),
                 width: `min(100%, ${attachment.width}px)`,
             };
         } else {
             // TODO: ?
-            return { height: '100em' };
+            return { height: "100em" };
         }
     } else {
         if(attachment.width && attachment.height) {
             return {};
         }
 
-        return { height: px(attachment.height) || '100em' };
+        return { height: px(attachment.height) || "100em" };
     }
 }

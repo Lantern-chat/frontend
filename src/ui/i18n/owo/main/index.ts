@@ -1,4 +1,4 @@
-import type { NamespaceMainTranslation } from '../../i18n-types'
+import type { NamespaceMainTranslation } from "../../i18n-types"
 
 const owo_main: NamespaceMainTranslation = {
 	CHANNEL: "channew >_<",

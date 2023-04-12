@@ -47,13 +47,13 @@ export function ChannelList() {
 
     let [pos, main_click_props] = createSimplePositionedContextMenu();
 
-    let rooms = createShallowMemo(() => Object.values(party().rooms || {}).sort((a, b) => a.position - b.position), 'array');
+    let rooms = createShallowMemo(() => Object.values(party().rooms || {}).sort((a, b) => a.position - b.position), "array");
 
     let is_room_selected = createSelector(() => activeRoom(state));
 
     return (
         <ul class="ln-channel-list ln-scroll-y ln-scroll-fixed" {...main_click_props} >
-            <Show when={rooms()?.length} fallback={<div style={{ height: "100%", 'padding-top': '1em' }}><Bounce size="auto" /></div>}>
+            <Show when={rooms()?.length} fallback={<div style={{ height: "100%", "padding-top": "1em" }}><Bounce size="auto" /></div>}>
                 <For each={rooms()}>
                     {room => <ListedChannel room={room} selected={is_room_selected(room.id)} onNavigate={on_navigate} />}
                 </For>
@@ -80,13 +80,13 @@ function ListedChannel(props: IListedChannelProps) {
     let [pos, main_click_props] = createSimplePositionedContextMenu();
 
     return (
-        <li classList={{ 'selected': props.selected }} {...main_click_props}
+        <li classList={{ "selected": props.selected }} {...main_click_props}
             data-room-name={props.room.name}
             data-roomid={props.room.id}
         >
             <Link
                 class="ln-channel-list__channel"
-                href={`/channels/${props.room.party_id || '@me'}/${props.room.id}`}
+                href={`/channels/${props.room.party_id || "@me"}/${props.room.id}`}
                 onNavigate={props.onNavigate}
                 noAction={props.selected}
             >
@@ -129,15 +129,13 @@ function RoomContextMenu(props: IRoomContextMenuProps) {
                 <span class="ui-text" textContent={LL().main.menus.room.EDIT()} />
             </div>
 
-            {() => dev_mode() && (
-                <>
-                    <hr />
+            <Show when={dev_mode()}>
+                <hr />
 
-                    <div onClick={() => copyText(props.room.id)}>
-                        <span class="ui-text" textContent={LL().main.menus.COPY_ID()} />
-                    </div>
-                </>
-            )}
+                <div onClick={() => copyText(props.room.id)}>
+                    <span class="ui-text" textContent={LL().main.menus.COPY_ID()} />
+                </div>
+            </Show>
         </ContextMenu>
     );
 }

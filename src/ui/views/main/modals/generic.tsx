@@ -14,11 +14,11 @@ import { Icons } from "lantern-icons";
 
 import "./modal.scss";
 export function GenericModal(props: GenericModalProps) {
-    let [closing, setClosing] = createSignal(false);
+    const [closing, setClosing] = createSignal(false);
 
-    let reduce_animations = usePrefs().ReduceAnimations;
+    const reduce_animations = usePrefs().ReduceAnimations;
 
-    let on_close = () => {
+    const on_close = () => {
         if(!closing()) {
             setClosing(true);
 
@@ -31,13 +31,13 @@ export function GenericModal(props: GenericModalProps) {
     };
 
     onMount(() => {
-        let listener = (e: KeyboardEvent) => { if(e.key == 'Escape') { on_close(); } };
-        window.addEventListener('keyup', listener);
-        onCleanup(() => window.removeEventListener('keyup', listener));
+        const listener = (e: KeyboardEvent) => { if(e.key == "Escape") { on_close(); } };
+        window.addEventListener("keyup", listener);
+        onCleanup(() => window.removeEventListener("keyup", listener));
     });
 
     return (
-        <FullscreenModal onClick={on_close} class="ln-generic-modal" classList={{ 'closing': closing() }}>
+        <FullscreenModal onClick={on_close} class="ln-generic-modal" classList={{ "closing": closing() }}>
             <div class="ln-generic-modal__inner">
                 <div class="ln-generic-modal__close" onClick={on_close}>
                     <VectorIcon id={Icons.Close} />

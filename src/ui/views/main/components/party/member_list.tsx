@@ -40,7 +40,7 @@ export function MemberList() {
     let { locale, lang } = useLocale();
 
     // NOTE: Ensure it uses the real locale
-    let collator = createMemo(() => new Intl.Collator(lang().d || locale(), { sensitivity: 'base' }));
+    let collator = createMemo(() => new Intl.Collator(lang().d || locale(), { sensitivity: "base" }));
 
     // name changes are rare, so sort these first
     let sorted_members = createMemo(() => {
@@ -104,29 +104,27 @@ export function MemberList() {
 
     return (
         <div class="ln-member-list ln-scroll-y ln-scroll-fixed">
-            {() => state.party && (
-                <>
-                    <For each={grouped_members().hoisted}>
-                        {hoisted => <RoleMemberList
-                            role={hoisted.role.name}
-                            party_id={state.party!.party.id}
-                            members={hoisted.members}
-                            owner={state.party!.party.owner} />}
-                    </For>
-
-                    <RoleMemberList
-                        role={LL().main.ONLINE()}
+            <Show when={state.party}>
+                <For each={grouped_members().hoisted}>
+                    {hoisted => <RoleMemberList
+                        role={hoisted.role.name}
                         party_id={state.party!.party.id}
-                        members={grouped_members().online}
-                        owner={state.party!.party.owner} />
+                        members={hoisted.members}
+                        owner={state.party!.party.owner} />}
+                </For>
 
-                    <RoleMemberList
-                        role={LL().main.OFFLINE()}
-                        party_id={state.party!.party.id}
-                        members={grouped_members().offline}
-                        owner={state.party!.party.owner} />
-                </>
-            )}
+                <RoleMemberList
+                    role={LL().main.ONLINE()}
+                    party_id={state.party!.party.id}
+                    members={grouped_members().online}
+                    owner={state.party!.party.owner} />
+
+                <RoleMemberList
+                    role={LL().main.OFFLINE()}
+                    party_id={state.party!.party.id}
+                    members={grouped_members().offline}
+                    owner={state.party!.party.owner} />
+            </Show>
         </div>
     )
 }
@@ -142,15 +140,17 @@ interface IRoleMemberListProps {
 function RoleMemberList(props: IRoleMemberListProps) {
     let { LL } = useI18nContext();
 
-    return () => props.members.length > 0 && (
-        <div>
-            <h4 class="ui-text" textContent={LL().main.member_list.ROLE({ role: props.role, length: props.members.length })} />
-            <ul>
-                <For each={props.members}>
-                    {member => <ListedMember member={member} owner={props.owner} party_id={props.party_id} />}
-                </For>
-            </ul>
-        </div>
+    return (
+        <Show when={props.members.length > 0}>
+            <div>
+                <h4 class="ui-text" textContent={LL().main.member_list.ROLE({ role: props.role, length: props.members.length })} />
+                <ul>
+                    <For each={props.members}>
+                        {member => <ListedMember member={member} owner={props.owner} party_id={props.party_id} />}
+                    </For>
+                </ul>
+            </div>
+        </Show>
     );
 }
 
@@ -209,16 +209,16 @@ function ListedMember(props: IListedMemberProps) {
                         </span>
                     </div>
 
-                    {() => cached_user().user.id == props.owner && (
-                        <>
-                            <div class="ln-member__spacer" />
-                            <div class="ln-member__crown" title={LL().main.OWNER()}>
-                                <VectorIcon id={Icons.Crown} />
-                            </div>
-                        </>
-                    )}
+                    <Show when={cached_user().user.id == props.owner}>
+                        <div class="ln-member__spacer" />
+                        <div class="ln-member__crown" title={LL().main.OWNER()}>
+                            <VectorIcon id={Icons.Crown} />
+                        </div>
+                    </Show>
 
-                    {() => user_is_bot(cached_user().user) && <BotLabel />}
+                    <Show when={user_is_bot(cached_user().user)}>
+                        <BotLabel />
+                    </Show>
                 </div>
 
                 <Show when={presence().status != PresenceStatus.Offline && cached_user().profile?.status} keyed>

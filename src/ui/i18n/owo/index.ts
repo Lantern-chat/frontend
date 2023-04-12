@@ -1,4 +1,4 @@
-import type { Translation } from '../i18n-types';
+import type { Translation } from "../i18n-types";
 
 // @stringify
 const owo: Translation = {
@@ -35,7 +35,7 @@ const owo: Translation = {
         nextDay: "[tomowwow at] LT",
         nextWeek: "dddd [at] LT",
         lastWeek: "[wast] dddd [at] LT",
-        sameElse: 'L'
+        sameElse: "L"
     },
     // unchanged to respect hCaptcha
     hCaptcha: "This site is protected by hCaptcha and its <@Privacy Policy> and <#Terms of Service> apply.",

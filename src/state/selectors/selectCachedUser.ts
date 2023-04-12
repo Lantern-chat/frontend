@@ -10,7 +10,7 @@ export function selectCachedUser(state: RootState, user_id: Snowflake, party_id?
 
     if(!cached) {
         // try to find a valid party with a member entry to take from
-        if(party_id && party_id != '@me') {
+        if(party_id && party_id != "@me") {
             let member = state.party.parties[party_id]?.members[user_id];
 
             if(member) {

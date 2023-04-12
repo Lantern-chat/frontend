@@ -153,7 +153,7 @@ export interface ModalCloseCreateParty {
 import type { IToast } from "ui/components/toast";
 export interface OpenToast {
     type: Type.OPEN_TOAST,
-    toast: PartialBy<IToast, 'id'>,
+    toast: PartialBy<IToast, "id">,
 }
 
 export interface ClearToast {

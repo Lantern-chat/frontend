@@ -37,7 +37,7 @@ export function CompactMessage(props: IMessageProps) {
     });
 
     return (
-        <div class="ln-msg--compact" classList={{ 'no-text': !props.msg.msg.content }}>
+        <div class="ln-msg--compact" classList={{ "no-text": !props.msg.msg.content }}>
             <div class="ln-msg__title">
                 <div class="ln-msg__side">
                     <div class="ln-msg__sidets" title={f().timestamp(props.msg.ts) as string}>

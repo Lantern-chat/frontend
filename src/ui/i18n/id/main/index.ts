@@ -1,4 +1,4 @@
-import type { NamespaceMainTranslation } from '../../i18n-types';
+import type { NamespaceMainTranslation } from "../../i18n-types";
 
 // @stringify
 const idID_main: NamespaceMainTranslation = {

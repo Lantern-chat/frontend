@@ -152,8 +152,8 @@ export function setThemeColors(colors: IThemeColors, animate: boolean, is_light:
         de.classList.add("ln-theme-transition");
     }
 
-    de.classList.toggle('ln-dark-theme', !is_light);
-    de.classList.toggle('ln-light-theme', is_light);
+    de.classList.toggle("ln-dark-theme", !is_light);
+    de.classList.toggle("ln-light-theme", is_light);
 
     let metaThemeColor = document.querySelector("meta[name=theme-color]");
     let appleThemeColor = document.querySelector("meta[name=apple-mobile-web-app-status-bar-style]");
@@ -162,16 +162,16 @@ export function setThemeColors(colors: IThemeColors, animate: boolean, is_light:
     metaThemeColor?.setAttribute("content", color);
 
     if(oled && !is_light) {
-        de.classList.add('ln-oled-theme');
+        de.classList.add("ln-oled-theme");
         appleThemeColor?.setAttribute("content", "black");
     } else {
-        de.classList.remove('ln-oled-theme');
+        de.classList.remove("ln-oled-theme");
         appleThemeColor?.setAttribute("content", color);
     }
 
     for(let key in colors) {
-        let varname = "--ln-" + key.replace(/_/g, '-');
-        let value = formatRGB(colors[key]);
+        let varname = "--ln-" + key.replace(/_/g, "-");
+        let value = formatRGB(colors[key as keyof IThemeColors]);
 
         //console.log("Setting %s to %s", varname, value);
         de.style.setProperty(varname, value);

@@ -1,4 +1,4 @@
-import type { Translations } from '../i18n-types';
+import type { Translations } from "../i18n-types";
 
 import enUS from "../en-US";
 
@@ -12,7 +12,7 @@ const enGB: Translations = {
 		nextDay: "[Tomorrow at] LT",
 		nextWeek: "dddd [at] LT",
 		lastWeek: "[Last] dddd [at] LT",
-		sameElse: 'L'
+		sameElse: "L"
 	},
 };
 

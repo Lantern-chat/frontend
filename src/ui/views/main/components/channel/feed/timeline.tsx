@@ -1,6 +1,5 @@
-import { createEffect, on } from "solid-js";
+import { createRenderEffect, on, onMount } from "solid-js";
 
-import { Ref, createRef } from "ui/hooks/createRef";
 import { createResizeObserver } from "ui/hooks/createResizeObserver";
 
 export interface ITimelineProps {
@@ -11,10 +10,10 @@ export interface ITimelineProps {
 function render_timeline(
     props: ITimelineProps,
     { width = 0, height = 0 }: { width?: number, height?: number },
-    canvas_ref: Ref<HTMLCanvasElement | undefined>) {
+    canvas: HTMLCanvasElement | undefined
+) {
 
-    if(!canvas_ref.current) { return; }
-    let canvas = canvas_ref.current;
+    if(!canvas) { return; }
 
     let ctx = canvas.getContext("2d");
     if(!ctx) { return; }
@@ -51,18 +50,20 @@ function render_timeline(
 
 import "./timeline.scss";
 export function Timeline(props: ITimelineProps) {
-    let wrapper_ref = createRef<HTMLDivElement>(),
-        canvas_ref = createRef<HTMLCanvasElement>();
+    let wrapper: HTMLDivElement | undefined,
+        canvas: HTMLCanvasElement | undefined;
 
-    let rect = createResizeObserver(wrapper_ref);
+    onMount(() => {
+        let rect = createResizeObserver(wrapper!);
 
-    // as the requestAnimationFrame happens outside of reactive scope, track
-    // rect separately with `on`.
-    createEffect(on(rect, () => requestAnimationFrame(() => render_timeline(props, rect(), canvas_ref))));
+        // as the requestAnimationFrame happens outside of reactive scope, track
+        // rect separately with `on`.
+        createRenderEffect(on(rect, () => requestAnimationFrame(() => render_timeline(props, rect(), canvas))));
+    });
 
     return (
-        <div class="ln-msg-list__timeline" ref={wrapper_ref}>
-            <canvas ref={canvas_ref} />
+        <div class="ln-msg-list__timeline" ref={wrapper}>
+            <canvas ref={canvas} />
         </div>
     );
 }
@@ -71,13 +72,13 @@ export function Timeline(props: ITimelineProps) {
 
 import React, { useLayoutEffect, useEffect, createRef } from "react";
 
-import ReactResizeDetectorNative from 'react-resize-detector';
+import ReactResizeDetectorNative from "react-resize-detector";
 
-const ReactResizeDetectorPolyfill = React.lazy(() => import('react-resize-detector/build/withPolyfill'));
+const ReactResizeDetectorPolyfill = React.lazy(() => import("react-resize-detector/build/withPolyfill"));
 
 const ReactResizeDetector = window.ResizeObserver ? ReactResizeDetectorNative : ReactResizeDetectorPolyfill;
 
-import { useResizeDetector } from 'react-resize-detector';
+import { useResizeDetector } from "react-resize-detector";
 //import { useResizeDetector as useResizeDetectorPolyfill } from "react-resize-detector/build/withPolyfill";
 
 export interface ITimelineProps {

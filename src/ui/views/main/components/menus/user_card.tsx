@@ -71,14 +71,14 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
     let banner_url = () => {
         let banner, url = props.banner_url;
         if(url === undefined && (banner = props.profile?.banner)) {
-            url = asset_url('user', props.user.id, banner, 'banner', prefs.LowBandwidthMode());
+            url = asset_url("user", props.user.id, banner, "banner", prefs.LowBandwidthMode());
         }
         return url && `url("${url}")`;
     };
     let avatar_url = () => {
         if(props.avatar_url !== undefined) return props.avatar_url;
         let avatar = props.profile?.avatar;
-        return avatar && asset_url('user', props.user.id, avatar, 'avatar', prefs.LowBandwidthMode());
+        return avatar && asset_url("user", props.user.id, avatar, "avatar", prefs.LowBandwidthMode());
     };
     let color = () => {
         if(props.color) {
@@ -93,27 +93,27 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
 
     return (
         <div class="ln-user-card ln-contextmenu"
-            classList={{ 'has-banner': !!banner_url(), 'has-avatar': !!avatar_url() }}
+            classList={{ "has-banner": !!banner_url(), "has-avatar": !!avatar_url() }}
         >
             <div class="ln-user-card__header">
                 <div class="banner"
                     style={{
                         "background-color": color(),
-                        'background-image': props.hideBanner ? null : banner_url() as any,
+                        "background-image": props.hideBanner ? null : banner_url() as any,
                     }}
                 >
                     {props.bannerCover}
 
-                    {() => !!props.last_active && !props.bannerCover && props.presence?.flags == 0 && (
+                    <Show when={!!props.last_active && !props.bannerCover && props.presence?.flags == 0}>
                         <div class="ln-user-last-active">
                             <span class="ui-text">
-                                {f().relative(props.last_active * -10)}
+                                {f().relative(props.last_active! * -10)}
                             </span>
                         </div>
-                    )}
+                    </Show>
                 </div>
 
-                <div class="avatar-box" style={{ 'border-radius': br(roundness()) }}>
+                <div class="avatar-box" style={{ "border-radius": br(roundness()) }}>
                     <UserAvatar nickname={props.nick || props.user.username}
                         user_id={props.user.id}
                         profile={props.profile}
@@ -131,13 +131,17 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
                     <Show when={props.nick && props.nick != props.user.username} fallback={
                         <h4>
                             {props.user.username}<Discriminator discriminator={props.user.discriminator} />
-                            {() => user_is_bot(props.user) && <BotLabel />}
+                            <Show when={user_is_bot(props.user)}>
+                                <BotLabel />
+                            </Show>
                         </h4>
                     }>
                         <h4><UserText text={props.nick!} /></h4>
                         <span>
                             {props.user.username}<Discriminator discriminator={props.user.discriminator} />
-                            {() => user_is_bot(props.user) && <BotLabel />}
+                            <Show when={user_is_bot(props.user)}>
+                                <BotLabel />
+                            </Show>
                         </span>
                     </Show>
                 </div>

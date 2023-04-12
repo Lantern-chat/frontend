@@ -1,4 +1,4 @@
-import { createSignal, Show } from 'solid-js';
+import { createSignal, Show } from "solid-js";
 
 import "./code.scss";
 
@@ -27,7 +27,7 @@ export default function Code(props: ICodeProps) {
         language = lang; // setup signal to trigger refresh
 
         // resolve alias
-        if(typeof loader === 'string') {
+        if(typeof loader === "string") {
             pending_language = loader;
             loader = LANGUAGES[loader] as LanguageLoader;
         }
@@ -42,8 +42,9 @@ export default function Code(props: ICodeProps) {
     }
 
     return (
-        <Show when={hasLang(language())} keyed
-            fallback={<pre class="hljs"><code textContent={/* @once */props.src.trim()} /></pre>}>
+        <Show when={hasLang(language())} keyed fallback={
+            <pre class="hljs"><code textContent={/* @once */props.src.trim()} /></pre>
+        }>
             {language => {
                 let compiled = hljs.highlight(props.src, { language });
 
@@ -57,7 +58,7 @@ export default function Code(props: ICodeProps) {
     );
 }
 
-import type { LanguageFn } from 'highlight.js';
+import type { LanguageFn } from "highlight.js";
 
 type LanguageLoader = () => Promise<{ default: LanguageFn }>;
 
@@ -307,6 +308,7 @@ const LANGUAGES: { [language: string]: string | LanguageLoader } = {
     "re": "reasonml",
     "mikrotik": "routeros",
     "rs": "rust",
+    "scm": "scheme",
     "sci": "scilab",
     "st": "smalltalk",
     "stanfuncs": "stan",

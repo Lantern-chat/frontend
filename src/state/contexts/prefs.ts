@@ -23,7 +23,7 @@ export function UserPrefsProvider(props: { children: JSX.Element }) {
 
     for(let key in UserPreferenceFlags) {
         let flag = UserPreferenceFlags[key] as string | number;
-        if(typeof flag === 'number') {
+        if(typeof flag === "number") {
             accessors[key] = createMemo(() => hasUserPrefFlag(store.state.prefs, flag as UserPreferenceFlags));
         }
     }
@@ -32,8 +32,8 @@ export function UserPrefsProvider(props: { children: JSX.Element }) {
         accessors[to_pascal_case(key)] = () => store.state.prefs[key];
     }
 
-    accessors['UseMobileView'] = () => store.state.window.use_mobile_view;
-    accessors['Theme'] = (): ITheme => ({
+    accessors["UseMobileView"] = () => store.state.window.use_mobile_view;
+    accessors["Theme"] = (): ITheme => ({
         temperature: (accessors as UserPreferenceAccessors).Temp(),
         is_light: (accessors as UserPreferenceAccessors).LightMode(),
         oled: (accessors as UserPreferenceAccessors).OledMode(),

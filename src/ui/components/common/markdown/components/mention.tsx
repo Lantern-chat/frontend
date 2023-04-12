@@ -4,7 +4,7 @@ import { useRootSelector } from "state/root";
 import { Link } from "ui/components/history";
 
 export interface IMentionProps {
-    prefix: '@' | '#',
+    prefix: "@" | "#",
     id: Snowflake,
 }
 
@@ -17,12 +17,12 @@ export function Mention(props: IMentionProps) {
     });
 
     switch(props.prefix) {
-        case '@': return (
+        case "@": return (
             <Show keyed when={party()?.members[props.id]} fallback={<span textContent={`<@${/*@once*/props.id}>`} />}>
                 {member => <span class="ln-user-mention">@{member.user.profile?.nick || member.user.username}</span>}
             </Show>
         );
-        case '#': return (
+        case "#": return (
             <Show keyed when={party()?.rooms[props.id]} fallback={<span textContent={`<#${/*@once*/props.id}>`} />}>
                 {room => <Link class="ln-channel-mention" href={`/channels/${room.party_id}/${room.id}`}>#{room.name}</Link>}
             </Show>

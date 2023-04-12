@@ -18,21 +18,21 @@ import { Logo } from "ui/views/login/components/logo";
 import LoginView from "./views/login";
 import RegisterView from "./views/register";
 
-const MainView = lazy(() => import(/* webpackChunkName: 'MainView' */ "./views/main"));
+const MainView = lazy(() => import(/* webpackChunkName: "MainView" */ "./views/main"));
 
 const Fallback = () => <div class="ln-center-standalone"><Ripple size={120} /></div>;
 
-const LOGIN_ROUTES = ['login', 'register'] as const; //, 'register', 'verify', 'reset'] as const;
-const MAIN_ROUTES = ['channels', 'invite', 'settings'] as const;
+const LOGIN_ROUTES = ["login", "register"] as const; //, "register", "verify", "reset"] as const;
+const MAIN_ROUTES = ["channels", "invite", "settings"] as const;
 
 function LoginRoutes(props: { which: typeof LOGIN_ROUTES[number] }) {
     let View = () => {
         switch(props.which) {
-            case 'login': return LoginView;
-            case 'register': return RegisterView;
-            //case 'register': View = RegisterView; break;
-            //case 'verify': View = VerifyView; break;
-            //case 'reset': View = ResetView; break;
+            case "login": return LoginView;
+            case "register": return RegisterView;
+            //case "register": View = RegisterView; break;
+            //case "verify": View = VerifyView; break;
+            //case "reset": View = ResetView; break;
         }
     };
 
@@ -46,8 +46,8 @@ function LoginRoutes(props: { which: typeof LOGIN_ROUTES[number] }) {
             {__DEV__ && <div class="ln-dev-banner" textContent={useI18nContext().LL().DEV_BANNER()} />}
 
             <div class="ln-box ln-scroll-y">
-                <div class="ln-login-container ln-centered" style={{ 'z-index': 1 }}>
-                    <Suspense fallback={Fallback}>
+                <div class="ln-login-container ln-centered" style={{ "z-index": 1 }}>
+                    <Suspense fallback={Fallback()}>
                         <Dynamic component={View()} />
                         <Logo />
                     </Suspense>
@@ -71,7 +71,7 @@ const MainWrapper = {
         // setup an effect to load the main namespace on locale changes
         createRenderEffect(() => {
             if(!loadedLocales[locale()].main) {
-                loadNamespaceAsync(locale(), 'main').then(() => {
+                loadNamespaceAsync(locale(), "main").then(() => {
                     __DEV__ && console.log("Loaded main namespace for locale", locale());
                     setLocale(locale());
                 })
@@ -86,7 +86,7 @@ const MainLoader = lazy(async () => {
     // TODO: Figure out how to include the english translation inside main itself
     await Promise.all([
         // NOTE: THis will have been set by the render effect below
-        loadNamespaceAsync(localStorage.getItem(StorageKey.LOCALE) as Locales, 'main'),
+        loadNamespaceAsync(localStorage.getItem(StorageKey.LOCALE) as Locales, "main"),
         MainView.preload(),
     ]);
 
@@ -117,8 +117,8 @@ function AppInner() {
 
     createRenderEffect(() => {
         let l = locale(), lang = LANGUAGES[l], rtl = !!lang.rtl;
-        document.body.classList.toggle('ln-rtl', rtl);
-        document.body.classList.toggle('ln-ltr', !rtl);
+        document.body.classList.toggle("ln-rtl", rtl);
+        document.body.classList.toggle("ln-ltr", !rtl);
 
         // STORING LOCALE
         __DEV__ && console.log("Storing locale", l);
@@ -146,7 +146,7 @@ let initial_locale = localStorage.getItem(StorageKey.LOCALE) as Locales || /*#__
 
 // sanitize locale
 if(!(initial_locale in LANGUAGES)) {
-    initial_locale = 'en-US';
+    initial_locale = "en-US";
 }
 
 // start pre-loading locale immediately upon script execution, not rendering

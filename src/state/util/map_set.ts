@@ -57,7 +57,7 @@ export type OrderedKey = number | string;
 
 export function ArraySet<K extends OrderedKey>(set: Array<K> = []): ArraySet<K> {
     // TODO: Determine if we should `set.slice()` to improve performance with proxies
-    let search = typeof set[0] === 'number'
+    let search = typeof set[0] === "number"
         ? (v: K) => binarySearch(set, t => (t as number) - (v as number))
         : (v: K) => binarySearch(set, t => v == t ? 0 : (v < t ? 1 : -1));
 

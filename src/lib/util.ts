@@ -17,7 +17,7 @@ export function split<T>(values: Array<T>, pred: (a: T) => boolean): [Array<T>, 
 }
 
 export function countLines(str: string): number {
-    return (str.match(/\n/g) || '').length + 1;
+    return (str.match(/\n/g) || "").length + 1;
 }
 
 export interface Ok<T> { ok: T }

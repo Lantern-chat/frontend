@@ -1,17 +1,15 @@
 import { encodeUTF8toBase64 } from "client-sdk/src/lib/base64";
 import { Icons } from "lantern-icons";
 import { IS_MOBILE } from "lib/user_agent";
-import { Accessor, createEffect, createSelector, createSignal, For, Match, on, Show, Switch } from "solid-js";
+import { Accessor, createEffect, createSelector, createSignal, For, JSX, Match, on, Show, Switch } from "solid-js";
 import { usePrefs, UserPreferenceAccessors } from "state/contexts/prefs";
 import { Embed, EmbedAuthor, EmbedFlags, EmbedFooter, EmbedMedia, EmbedProvider, Message, RoomFlags } from "state/models";
 import { EmbedType } from "state/models";
 import { VectorIcon } from "ui/components/common/icon";
-import { ConstShow } from "ui/components/flow";
 import { Atom, createAtom } from "ui/hooks/createAtom";
-import { createRef } from "ui/hooks/createRef";
 import { useI18nContext } from "ui/i18n/i18n-solid";
 import type { IMessageProps } from "./common";
-import { createInfiniteScrollIntersectionTrigger } from "ui/components/infinite_scroll";
+import { infiniteScrollIntersectionTrigger } from "ui/components/infinite_scroll";
 
 import { SUPPORTS_WEBM } from "lib/codecs";
 
@@ -29,9 +27,9 @@ export function Embeds(props: { msg: Message, prefs: UserPreferenceAccessors, ro
             {embed => (
                 // If the embed itself is adult, then check if the room is nsfw and then if it should be hidden
                 // order of operations here is important to avoid unnecessary dependencies
-                <ConstShow when={!((embed.f! & EmbedFlags.Adult) && !(props.room_flags()! & RoomFlags.Nsfw)) || !props.prefs.HideNsfwEmbeds()}>
+                <Show when={!((embed.f! & EmbedFlags.Adult) && !(props.room_flags()! & RoomFlags.Nsfw)) || !props.prefs.HideNsfwEmbeds()}>
                     <Embedded msg={props.msg} embed={embed} prefs={props.prefs} />
-                </ConstShow>
+                </Show>
             )}
         </For>
     )
@@ -76,7 +74,7 @@ export function should_hide_message(
     if(content && embeds?.length) {
         // if all embeds have titles and embed urls match content (sans spoilers)
         let allow_hide = !!embeds.reduce((a, e) => a && e.t?.length! > 20, true)
-            && content.trim().replace(/\|\|/g, '') == embeds.filter(e => e.u).map(e => e.u).join(' ');
+            && content.trim().replace(/\|\|/g, "") == embeds.filter(e => e.u).map(e => e.u).join(" ");
 
         // if we were going to hide, double-check if nsfw filtering is enabled
         if(allow_hide && !(room_flags()! & RoomFlags.Nsfw) && prefs.HideNsfwEmbeds()) {
@@ -104,7 +102,7 @@ function trim_text(text: string | undefined, max_len: number): string | undefine
         }
 
         // trim any remaining whitespace or punctuation
-        text = text.replace(/[\s,!.]+$/, '') + ELLIPSIS;
+        text = text.replace(/[\s,!.]+$/, "") + ELLIPSIS;
     }
 
     return text;
@@ -119,12 +117,12 @@ function Embedded(props: EmbedProps) {
 
     let width = () => {
         if(prefs.UseMobileView()) {
-            return '100%';
+            return "100%";
         }
 
         // embeds with no complex fields can be rendered as-is
         if(is_simple_embed(props.embed)) {
-            return 'fit-content';
+            return "fit-content";
         }
 
         let use_smaller = prefs.SmallerAttachments(),
@@ -152,24 +150,24 @@ function Embedded(props: EmbedProps) {
     return (
         <div class="ln-embed ui-text"
             style={{
-                '--embed-ac': props.embed.ac != null ? '#' + props.embed.ac.toString(16).padStart(6, '0') : 'var(--ln-accent-color)',
-                'width': width(),
-                'max-width': prefs.UseMobileView() ? '100%' : '70%'
+                "--embed-ac": props.embed.ac != null ? "#" + props.embed.ac.toString(16).padStart(6, "0") : "var(--ln-accent-color)",
+                "width": width(),
+                "max-width": prefs.UseMobileView() ? "100%" : "70%"
             }}
         >
-            {/* <span>{dim().join(', ')} = {width()}</span> */}
+            {/* <span>{dim().join(", ")} = {width()}</span> */}
             {/* FLOATING */}
-            <ConstShow when={props.embed.thumb &&
+            <Show when={props.embed.thumb &&
                 !(props.embed.img && props.embed.vid && props.embed.vid.m == "text/html")}
             >
                 <div class="ln-embed__thumb">
                     <EmbeddedMediaSingle media={props.embed.thumb!} />
                 </div>
-            </ConstShow>
+            </Show>
 
-            <ConstShow keyed when={props.embed.au}>
+            <Show keyed when={props.embed.au}>
                 {author => <EmbeddedAuthor author={author} />}
-            </ConstShow>
+            </Show>
 
             <a target="_blank" onContextMenu={eat} rel="noreferrer" class="ln-embed__title" href={props.embed.u}>
                 {trim_text(props.embed.t, MAX_TITLE_LEN)}
@@ -183,24 +181,24 @@ function Embedded(props: EmbedProps) {
                 <EmbeddedMedia {...props} dim={dim} />
             </div>
 
-            <ConstShow when={spoilered()}>
+            <Show when={spoilered()}>
                 <div class="ln-embed__spoiler" title={LL().main.SPOILER_TITLE()} onClick={() => setSpoilered(false)}>
                     <span textContent={LL().main.SPOILER(0)} />
                 </div>
-            </ConstShow>
+            </Show>
 
-            <ConstShow keyed when={props.embed.p}>
+            <Show keyed when={props.embed.p}>
                 {provider => <EmbeddedProvider pro={provider} u={props.embed.u} />}
-            </ConstShow>
+            </Show>
 
-            <ConstShow keyed when={props.embed.footer}>
+            <Show keyed when={props.embed.footer}>
                 {footer => <EmbeddedFooter footer={footer} />}
-            </ConstShow>
+            </Show>
         </div>
     )
 }
 
-const CDN_URL = (window.config.secure ? 'https' : 'http') + `://${window.config.cdn}/`;
+const CDN_URL = (window.config.secure ? "https" : "http") + `://${window.config.cdn}/`;
 
 function make_camo_url(media: EmbedMedia | undefined, fallback?: boolean): string | undefined {
     let url = media?.u;
@@ -209,13 +207,13 @@ function make_camo_url(media: EmbedMedia | undefined, fallback?: boolean): strin
         // encode to base64 and convert to url-safe
         let name = url.match(/(?:.+\/)(.+?)(?:\?|#|$)/), encoded_url = encodeUTF8toBase64(url).replace(/[=+\/]/g, s => {
             switch(s) {
-                case '+': return '-';
-                case '/': return '_';
-                default: return '';
+                case "+": return "-";
+                case "/": return "_";
+                default: return "";
             }
         });
 
-        url = `${CDN_URL + (fallback ? 'camo2' : 'camo')}/${encoded_url}/${media!.s}/${name?.[1] || ''}`;
+        url = `${CDN_URL + (fallback ? "camo2" : "camo")}/${encoded_url}/${media!.s}/${name?.[1] || ""}`;
     }
 
     return url;
@@ -235,11 +233,11 @@ function EmbeddedAuthor(props: { author: EmbedAuthor }) {
 
     return (
         <div class="ln-embed__author" title={props.author.n}>
-            <ConstShow keyed when={props.author.i}>
+            <Show keyed when={props.author.i}>
                 {media => <EmbeddedMediaSingle media={media} />}
-            </ConstShow>
+            </Show>
 
-            <ConstShow keyed when={url()} fallback={
+            <Show keyed when={url()} fallback={
                 <span>{trim_text(props.author.n, MAX_AUTHOR_LEN)}</span>
             }>
                 {url => (
@@ -247,7 +245,7 @@ function EmbeddedAuthor(props: { author: EmbedAuthor }) {
                         {trim_text(props.author.n, MAX_AUTHOR_LEN)}
                     </a>
                 )}
-            </ConstShow>
+            </Show>
         </div>
     )
 }
@@ -257,34 +255,34 @@ function EmbeddedProvider(props: { pro: EmbedProvider, u: string | undefined }) 
 
     return (
         <div class="ln-embed__provider">
-            <ConstShow when={props.pro.u} fallback={
+            <Show when={props.pro.u} fallback={
                 <span>{trim_text(name(), MAX_PROVIDER_LEN)}</span>
             } >
                 <a target="_blank" onContextMenu={eat} rel="noreferrer" href={props.pro.u}>
                     {trim_text(name(), MAX_PROVIDER_LEN)}
                 </a>
-            </ConstShow>
+            </Show>
 
-            <ConstShow keyed when={props.pro.i}>
+            <Show keyed when={props.pro.i}>
                 {media => <EmbeddedMediaSingle media={media} />}
-            </ConstShow>
+            </Show>
         </div>
     )
 }
 
 function EmbeddedMediaSingle(props: { media: EmbedMedia }) {
-    return () => {
-        let media = props.media, m = media.m || 'image/';
+    return (() => {
+        let media = props.media, m = media.m || "image/";
 
-        if(m.startsWith('video/')) {
+        if(m.startsWith("video/")) {
             return <EmbeddedVideo media={media} />;
         }
-        if(m.startsWith('image/')) {
+        if(m.startsWith("image/")) {
             return <EmbeddedImg media={media} />
         }
 
         return null;
-    }
+    }) as unknown as JSX.Element;
 }
 
 function EmbeddedMedia(props: EmbedProps & { dim?: Dims }) {
@@ -301,11 +299,11 @@ function EmbeddedMedia(props: EmbedProps & { dim?: Dims }) {
             </Match>
 
             <Match when={ty(EmbedType.Vid) && props.embed.vid}>
-                <ConstShow when={props.embed.vid!.m == "text/html" && props.embed.vid!.u} fallback={
+                <Show when={props.embed.vid!.m == "text/html" && props.embed.vid!.u} fallback={
                     <EmbeddedVideo url={props.embed.u} media={props.embed.vid!} dim={props.dim} />
                 }>
                     <EmbeddedHtmlWithConsent media={props.embed.vid!} embed={props.embed} dim={props.dim} />
-                </ConstShow>
+                </Show>
             </Match>
 
             <Match when={ty(EmbedType.Html) && props.embed.obj}>
@@ -330,7 +328,7 @@ function EmbeddedHtmlWithConsentFallbackImg(props: { media: EmbedMedia, dim?: Di
 
     return (
         <div class="ln-embed__play-bg" style={{
-            'aspect-ratio': aspect_ratio(props.media, props.dim)
+            "aspect-ratio": aspect_ratio(props.media, props.dim)
         }}><div /></div>
     )
 }
@@ -350,11 +348,10 @@ function first_dims(m: EmbedMedia, dim: undefined | Dims) {
     }
 }
 
-const TRIGGER_OPTS = { rootMargin: '150%' };
+const TRIGGER_OPTS = { rootMargin: "150%" };
 
 function EmbeddedImg(props: { url?: string, media: EmbedMedia, dim?: Dims, onClick?: (() => void) }) {
-    let ref = createRef<HTMLImageElement>();
-    let visible = createInfiniteScrollIntersectionTrigger(ref, TRIGGER_OPTS);
+    let [visible, setVisible] = createSignal(false);
     let [errored, setErrored] = createSignal(false);
     let [loaded, setLoaded] = createSignal(false);
 
@@ -370,16 +367,17 @@ function EmbeddedImg(props: { url?: string, media: EmbedMedia, dim?: Dims, onCli
 
     return (
         <>
-            <ConstShow when={props.dim && visible() && !loaded()}>
+            <Show when={props.dim && visible() && !loaded()}>
                 <div class="ln-embed__media-loading" />
-            </ConstShow>
-            <img ref={ref} src={src()} onError={() => setErrored(true)}
+            </Show>
+            <img src={src()} onError={() => setErrored(true)}
+                ref={r => infiniteScrollIntersectionTrigger(r, setVisible, TRIGGER_OPTS)}
                 title={props.media.d}
                 onContextMenu={eat}
                 width={props.media.w}
                 height={props.media.h}
                 onLoad={on_load}
-                onClick={props.onClick} style={{ 'aspect-ratio': aspect_ratio(props.media, props.dim) }}
+                onClick={props.onClick} style={{ "aspect-ratio": aspect_ratio(props.media, props.dim) }}
             />
         </>
     );
@@ -387,8 +385,7 @@ function EmbeddedImg(props: { url?: string, media: EmbedMedia, dim?: Dims, onCli
 
 function EmbeddedVideo(props: { url?: string, media: EmbedMedia, dim?: Dims, onClick?: (() => void) }) {
     const prefs = usePrefs();
-    let ref = createRef<HTMLVideoElement>();
-    let visible = createInfiniteScrollIntersectionTrigger(ref, TRIGGER_OPTS);
+    let [visible, setVisible] = createSignal(false);
     let [errored, setErrored] = createSignal(false);
     let [loaded, setLoaded] = createSignal(false);
 
@@ -396,12 +393,12 @@ function EmbeddedVideo(props: { url?: string, media: EmbedMedia, dim?: Dims, onC
     let src = () => {
         if(visible()) {
             let media = props.media;
-            if(media.m?.includes('webm') && !SUPPORTS_WEBM()) {
+            if(media.m?.includes("webm") && !SUPPORTS_WEBM()) {
                 media = media.a || media;
             }
 
             let src = make_camo_url(media, errored());
-            return IS_MOBILE ? src + '#t=0.0001' : src;
+            return IS_MOBILE ? src + "#t=0.0001" : src;
         }
         return;
     };
@@ -416,17 +413,18 @@ function EmbeddedVideo(props: { url?: string, media: EmbedMedia, dim?: Dims, onC
 
     return (
         <>
-            <ConstShow when={props.dim && visible() && !loaded()}>
+            <Show when={props.dim && visible() && !loaded()}>
                 <div class="ln-embed__media-loading" />
-            </ConstShow>
-            <video ref={ref} preload="metadata" loop controls muted={prefs.MuteMedia()}
+            </Show>
+            <video preload="metadata" loop controls muted={prefs.MuteMedia()}
+                ref={r => infiniteScrollIntersectionTrigger(r, setVisible, TRIGGER_OPTS)}
                 src={src()} onError={() => setErrored(true)}
                 title={props.media.d}
                 onContextMenu={eat}
                 width={props.media.w}
                 height={props.media.h}
                 onLoadedMetadata={on_load}
-                onClick={props.onClick} style={{ 'aspect-ratio': aspect_ratio(props.media, props.dim) }}
+                onClick={props.onClick} style={{ "aspect-ratio": aspect_ratio(props.media, props.dim) }}
             />
         </>
     );
@@ -459,11 +457,11 @@ function EmbeddedHtmlWithConsent(props: { media: EmbedMedia, embed: Embed, dim?:
         <Show when={!playing()} fallback={<EmbeddedHtml media={props.media} dim={props.dim} />}>
             <span class="ln-embed__consent" />
 
-            <ConstShow keyed when={props.embed.img || (is_large_media(props.embed.thumb) ? props.embed.thumb : undefined)} fallback={
+            <Show keyed when={props.embed.img || (is_large_media(props.embed.thumb) ? props.embed.thumb : undefined)} fallback={
                 <EmbeddedHtmlWithConsentFallbackImg media={props.media} dim={props.dim} />
             }>
                 {img => <EmbeddedImg url={props.embed.u} media={img} dim={props.dim} />}
-            </ConstShow>
+            </Show>
 
             <div class="ln-embed__play-icon" onClick={() => setPlaying(true)}>
                 <VectorIcon id={Icons.Play} />
@@ -482,7 +480,7 @@ function EmbeddedHtml(props: { media: EmbedMedia, dim?: Dims }) {
         if(url) {
             url += (url.includes("?") ? "&" : "?") + `autoplay=1&parent=${window.location.hostname}`;
             if(prefs.MuteMedia()) {
-                url += '&mute=1';
+                url += "&mute=1";
             }
         }
         return url;
@@ -491,11 +489,11 @@ function EmbeddedHtml(props: { media: EmbedMedia, dim?: Dims }) {
     first_dims(props.media, props.dim);
 
     return (
-        <ConstShow when={!errored()}>
+        <Show when={!errored()}>
             {/* <div class="ln-embed__iframe" > */}
-            {/* style={{ 'aspect-ratio': aspect_ratio(props.media, props.dim) }} */}
+            {/* style={{ "aspect-ratio": aspect_ratio(props.media, props.dim) }} */}
             <iframe src={url()}
-                style={{ 'aspect-ratio': aspect_ratio(props.media, props.dim) }}
+                style={{ "aspect-ratio": aspect_ratio(props.media, props.dim) }}
                 on:error={() => setErrored(true)}
                 width={props.dim?.()[0]}
                 height={props.dim?.()[1]}
@@ -503,16 +501,16 @@ function EmbeddedHtml(props: { media: EmbedMedia, dim?: Dims }) {
                 sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
             />
             {/* </div> */}
-        </ConstShow>
+        </Show>
     );
 }
 
 function EmbeddedFooter(props: { footer: EmbedFooter }) {
     return (
         <div class="ln-embed__footer">
-            <ConstShow keyed when={props.footer.i}>
+            <Show keyed when={props.footer.i}>
                 {media => <EmbeddedMediaSingle media={media} />}
-            </ConstShow>
+            </Show>
 
             <span>{props.footer.t}</span>
         </div>

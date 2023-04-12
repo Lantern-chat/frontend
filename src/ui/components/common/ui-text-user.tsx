@@ -8,15 +8,15 @@ false && cleanedEvent;
 
 export interface UITextProps {
     text: string,
-    class?: 'ui-text' | 'chat-text',
+    class?: "ui-text" | "chat-text",
 }
 
 function on_hover(e: Event) {
-    let el = e.currentTarget as HTMLElement, emoji = el.getAttribute('aria-label');
+    let el = e.currentTarget as HTMLElement, emoji = el.getAttribute("aria-label");
     if(emoji) { el.title = format_emoji_shortcode(emoji)!; }
 
     // remove self
-    el.removeEventListener('mouseover', on_hover);
+    el.removeEventListener("mouseover", on_hover);
 }
 
 import "./emoji.scss";
@@ -25,15 +25,15 @@ export function UserText(props: UITextProps) {
     let prefs = lazy(() => usePrefs());
 
     let inner = () => split_user_text(props.text)
-        .map(n => typeof n === 'string' ? n : (
+        .map(n => typeof n === "string" ? n : (
             prefs().UsePlatformEmojis() ? (
                 <span class="emoji" draggable={false}
                     data-type="emoji" aria-label={/*@once*/n.e}
-                    textContent={/*@once*/n.e} use:cleanedEvent={[['mouseover', on_hover]]}
+                    textContent={/*@once*/n.e} use:cleanedEvent={[["mouseover", on_hover]]}
                 />) : (
                 <img class="emoji" alt={/*@once*/n.e} draggable={false}
                     data-type="emoji" aria-label={/*@once*/n.e}
-                    src={/*@once*/emoji_url(n.e)} use:cleanedEvent={[['mouseover', on_hover]]}
+                    src={/*@once*/emoji_url(n.e)} use:cleanedEvent={[["mouseover", on_hover]]}
                 />
             )));
 
@@ -42,9 +42,9 @@ export function UserText(props: UITextProps) {
         : <>{inner()}</>;
 };
 
-const EMOJI_REG: RegExp = new RegExp('(?:' + EMOJI_RE.source + ')', EMOJI_RE.flags + 'g');
+const EMOJI_REG: RegExp = new RegExp("(?:" + EMOJI_RE.source + ")", EMOJI_RE.flags + "g");
 
-window['split_user_text'] = split_user_text;
+window["split_user_text"] = split_user_text;
 
 type ENode = string | { e: string };
 function split_user_text(text: string): Array<ENode> {

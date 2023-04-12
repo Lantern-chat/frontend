@@ -1,5 +1,4 @@
 import { createEffect, createMemo, createRenderEffect, createSignal, onCleanup, Show, JSX } from "solid-js";
-import { createRef } from "ui/hooks/createRef";
 import { PositionedModal } from "./positioned";
 
 export interface IAnchoredModalProps {
@@ -11,7 +10,7 @@ export interface IAnchoredModalProps {
 
 import "../context_menu/context_menu.scss";
 export function AnchoredModal(props: IAnchoredModalProps) {
-    let anchor = createRef<HTMLSpanElement>();
+    let anchor: HTMLSpanElement | undefined;
 
     let [show, setShow] = createSignal(props.show);
     //let [closing, setClosing] = createSignal(false);
@@ -32,9 +31,9 @@ export function AnchoredModal(props: IAnchoredModalProps) {
         <>
             <span ref={anchor} class="ln-context-anchor" />
 
-            <Show keyed when={show() && anchor.current?.getBoundingClientRect()}>
+            <Show when={show() && anchor!.getBoundingClientRect()}>
                 {rect => (
-                    <PositionedModal eat={props.eat} rect={rect}>
+                    <PositionedModal eat={props.eat} rect={rect()}>
                         {props.children}
                     </PositionedModal>
                 )}

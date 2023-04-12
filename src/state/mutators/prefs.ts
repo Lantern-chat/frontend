@@ -2,7 +2,7 @@ import { Font, hasUserPrefFlag, UserPreferenceFlags, UserPreferences } from "sta
 import { RootState } from "state/root";
 import { Action, Type } from "../actions";
 
-export type IPrefsState = PartialBy<UserPreferences, 'pad'>;
+export type IPrefsState = PartialBy<UserPreferences, "pad">;
 
 export const default_prefs = (): IPrefsState => ({
     locale: 0,

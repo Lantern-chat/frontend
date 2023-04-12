@@ -30,7 +30,7 @@ export function setSession(new_session: ISession | Session | null): Dispatchable
             dispatch({ type: Type.SESSION_EXPIRED });
 
             CLIENT.set_auth(null);
-            HISTORY.pm('/login');
+            HISTORY.pm("/login");
         }
     }
 };

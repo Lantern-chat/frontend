@@ -1,6 +1,5 @@
-import { createMemo, createUniqueId, JSX, Show } from "solid-js";
+import { createEffect, createSignal, createUniqueId, JSX, Show } from "solid-js";
 import { Modal } from "ui/components/modal";
-import { createRef } from "ui/hooks/createRef";
 import { createTrigger } from "ui/hooks/createTrigger";
 import { px } from "ui/utils";
 
@@ -13,8 +12,8 @@ const REFRESH_EVENTS: string[] = ["resize", "scroll"];
 
 import "./context_menu.scss";
 export function ContextMenu(props: IContextMenuProps) {
-    let anchor_ref = createRef<HTMLSpanElement>(),
-        [track, dirty] = createTrigger();
+    let anchor_ref: HTMLSpanElement | undefined,
+        [track, dirty] = createTrigger(), [modal, setModal] = createSignal<ComputedModal>();
 
     //createRenderEffect(() => {
     //    if(props.show) {
@@ -24,9 +23,12 @@ export function ContextMenu(props: IContextMenuProps) {
     //    }
     //});
 
-    let modal = createMemo(() => {
-        let rect = anchor_ref.current?.getBoundingClientRect();
-        if(props.show && rect) {
+    createEffect(() => {
+        if(!props.show) {
+            setModal();
+        } else {
+            let rect = anchor_ref!.getBoundingClientRect();
+
             track();
 
             let { top, left, bottom } = rect,
@@ -36,30 +38,29 @@ export function ContextMenu(props: IContextMenuProps) {
             let on_left = left < (width * 0.5);
 
             let style: any = {
-                position: 'relative'
+                position: "relative"
             };
 
             if(on_top) {
-                style.top = '0%';
+                style.top = "0%";
             } else {
-                style.bottom = '0%';
+                style.bottom = "0%";
             }
 
             if(on_left) {
-                style.left = '100%';
+                style.left = "100%";
             } else {
-                style.right = '100%';
+                style.right = "100%";
             }
 
-            return { style, bottom, left } as ComputedModal;
+            setModal({ style, bottom, left } as ComputedModal);
         }
-        return;
     });
 
     return (
         <>
             <Show when={modal()}>
-                <ContextMenuInner {...modal()!} children={props.children} />
+                {modal => <ContextMenuInner {...modal()} children={props.children} />}
             </Show>
 
             <span ref={anchor_ref} class="ln-context-anchor" />
@@ -74,7 +75,7 @@ interface ComputedModal {
 function ContextMenuInner(props: ComputedModal & { children: any }) {
     return (
         <Modal>
-            <div style={{ position: 'absolute', top: px(props.bottom), left: px(props.left) }}>
+            <div style={{ position: "absolute", top: px(props.bottom), left: px(props.left) }}>
                 <div style={props.style}>{props.children}{createUniqueId()}</div>
             </div>
         </Modal>

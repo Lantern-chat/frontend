@@ -25,7 +25,7 @@ import { DriverError } from "client-sdk/src/driver";
 //var PRELOADED: boolean = false;
 //function preloadRegister() {
 //    if(!PRELOADED) {
-//        import(/* webpackChunkName: 'RegisterView' */ "../register");
+//        import(/* webpackChunkName: "RegisterView" */ "../register");
 //        PRELOADED = true;
 //    }
 //}
@@ -81,7 +81,7 @@ function login_state_reducer(state: LoginState, { value, type }: LoginAction): L
     }
 }
 
-import { useI18nContext } from 'ui/i18n/i18n-solid';
+import { useI18nContext } from "ui/i18n/i18n-solid";
 
 import "./login.scss";
 export default function LoginView() {
@@ -89,10 +89,10 @@ export default function LoginView() {
 
     setTitle(() => LL().LOGIN());
 
-    let dispatch = useRootDispatch();
+    const dispatch = useRootDispatch();
 
     // TODO: Don't bother with reducer?
-    let [state, form_dispatch] = createReducer(login_state_reducer, {
+    const [state, form_dispatch] = createReducer(login_state_reducer, {
         email: "",
         pass: "",
         totp: "",
@@ -101,14 +101,14 @@ export default function LoginView() {
         have_2fa: false,
     });
 
-    let [errorMsg, setErrorMsg] = createSignal<string | null>(null);
+    const [errorMsg, setErrorMsg] = createSignal<string | null>(null);
 
-    let on_submit = async (e: Event) => {
+    const on_submit = async (e: Event) => {
         e.preventDefault();
 
         if(state.is_logging_in) return;
 
-        form_dispatch({ type: LoginActionType.Login, value: '' });
+        form_dispatch({ type: LoginActionType.Login, value: "" });
 
         try {
             dispatch(setSession(await CLIENT.execute(UserLogin({
@@ -122,7 +122,7 @@ export default function LoginView() {
             let msg;
             if(e instanceof ApiError) {
                 if(e.code == ApiErrorCode.TOTPRequired) {
-                    return form_dispatch({ type: LoginActionType.TOTPRequired, value: '' });
+                    return form_dispatch({ type: LoginActionType.TOTPRequired, value: "" });
                 } else {
                     msg = e.message;
                 }
@@ -133,30 +133,30 @@ export default function LoginView() {
             }
 
             setErrorMsg(msg);
-            form_dispatch({ type: LoginActionType.NoLogin, value: '' });
+            form_dispatch({ type: LoginActionType.NoLogin, value: "" });
         }
     };
 
-    let on_input = (e: InputEvent, type: LoginActionType) => form_dispatch({ type, value: (e.target as HTMLInputElement).value });
+    const on_input = (e: InputEvent, type: LoginActionType) => form_dispatch({ type, value: (e.target as HTMLInputElement).value });
 
-    let on_email_change = (e: InputEvent) => on_input(e, LoginActionType.UpdateEmail),
+    const on_email_change = (e: InputEvent) => on_input(e, LoginActionType.UpdateEmail),
         on_password_change = (e: InputEvent) => on_input(e, LoginActionType.UpdatePass),
         on_totp_change = (e: InputEvent) => on_input(e, LoginActionType.UpdatedTOTP);
 
-    let mfa_toggle = () => {
-        let mfa_toggle_text = LL().MFA_TOGGLE_TEXT({ h: state.have_2fa as any }),
+    const mfa_toggle = () => {
+        const mfa_toggle_text = LL().MFA_TOGGLE_TEXT({ h: state.have_2fa as any }),
             mfa_toggle_flavor = LL().MFA_TOGGLE_FLAVOR({ h: state.have_2fa as any });
 
         return (
             <div id="mfa_toggle"
-                title={mfa_toggle_text + ' ' + mfa_toggle_flavor}
-                onClick={() => form_dispatch({ type: LoginActionType.IHave2FA, value: '' })}
+                title={mfa_toggle_text + " " + mfa_toggle_flavor}
+                onClick={() => form_dispatch({ type: LoginActionType.IHave2FA, value: "" })}
                 textContent={mfa_toggle_text}
             />
         );
     };
 
-    let valid_email = createMemo(() => validateEmail(state.email));
+    const valid_email = createMemo(() => validateEmail(state.email));
 
     return (
         <form class="ln-form ln-login-form ui-text" onSubmit={on_submit}>
@@ -165,8 +165,8 @@ export default function LoginView() {
             </div>
 
             <Show when={state.totp_required}>
-                <FullscreenModal style={{ 'background-color': 'rgba(0, 0, 0, 0.6)' }}>
-                    <div class="ln-center-standalone" style={{ color: 'white' }}>
+                <FullscreenModal style={{ "background-color": "rgba(0, 0, 0, 0.6)" }}>
+                    <div class="ln-center-standalone" style={{ color: "white" }}>
                         TOTP Required
                     </div>
                 </FullscreenModal>
@@ -214,11 +214,11 @@ export default function LoginView() {
             <hr />
 
             <FormGroup>
-                <div style={{ display: 'flex', padding: '0 1em' }}>
+                <div style={{ display: "flex", padding: "0 1em" }}>
                     <button
                         class="ln-btn ui-text"
-                        classList={{ 'ln-btn--loading-icon': state.is_logging_in }}
-                        style={{ 'margin-inline-end': 'auto' }}
+                        classList={{ "ln-btn--loading-icon": state.is_logging_in }}
+                        style={{ "margin-inline-end": "auto" }}
                         onClick={() => setErrorMsg(null)}
                     >
                         <Show when={state.is_logging_in} fallback={LL().LOGIN()}>

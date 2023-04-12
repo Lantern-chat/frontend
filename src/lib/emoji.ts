@@ -17,10 +17,10 @@ export function find_emoji(s: string, re: RegExp = EMOJI_RE): RegExpExecArray | 
     return m;
 }
 
-//export const EMOJI_RE = new RegExp(EMOJI_RE_BASE.source.replace(/\\p\{Emoji\}/g, EMOJI.source), 'u');
+//export const EMOJI_RE = new RegExp(EMOJI_RE_BASE.source.replace(/\\p\{Emoji\}/g, EMOJI.source), "u");
 
 // above, but matches the start of the line
-export const EMOJI_RE0: RegExp = new RegExp('^(?:' + EMOJI_RE.source + ')', EMOJI_RE.flags);
+export const EMOJI_RE0: RegExp = new RegExp("^(?:" + EMOJI_RE.source + ")", EMOJI_RE.flags);
 
 export interface IEmoji {
     e: string,
@@ -43,10 +43,10 @@ export function decode_emojis() {
     if(EMOJIS.length == 0) {
         let fully_packed_emojis = RAW_EMOJIS.e;
 
-        for(let packed_emoji of fully_packed_emojis.split('|')) {
-            let [e, c, aliases, tags] = packed_emoji.split(',') as [e: string, c: number, aliases: string, tags?: string];
+        for(let packed_emoji of fully_packed_emojis.split("|")) {
+            let [e, c, aliases, tags] = packed_emoji.split(",") as [e: string, c: number, aliases: string, tags?: string];
 
-            let emoji = { e, c: Math.abs(c) - 1, s: c < 0, a: aliases.split(' '), t: tags?.split(' ') };
+            let emoji = { e, c: Math.abs(c) - 1, s: c < 0, a: aliases.split(" "), t: tags?.split(" ") };
 
             EMOJIS.push(emoji);
             NORM_EMOJIS_MAP.set(minimize(emoji.e), emoji);
@@ -68,8 +68,8 @@ export function get_emoji(e: string): IEmoji | undefined {
     return NORM_EMOJIS_MAP.get(minimize(e));
 }
 
-export const SKIN_TONES = ['', "🏻", "🏼", "🏽", "🏾", "🏿"];
-export const SKIN_TONES_HEX = ['#FFDC5D', '#F7DECE', '#F3D2A2', '#D5AB88', '#AF7E57', '#7C533E'];
+export const SKIN_TONES = ["", "🏻", "🏼", "🏽", "🏾", "🏿"];
+export const SKIN_TONES_HEX = ["#FFDC5D", "#F7DECE", "#F3D2A2", "#D5AB88", "#AF7E57", "#7C533E"];
 
 export type SKIN_TONE_MODIFIER = undefined | 0 | 1 | 2 | 3 | 4 | 5;
 
@@ -87,7 +87,7 @@ export function emoji_with_skin_tone(e: string, tone?: SKIN_TONE_MODIFIER): stri
     return e;
 }
 
-const ENDS_WITH_SKIN_TONE = new RegExp(`(${SKIN_TONES.slice(1).join('|')})$`);
+const ENDS_WITH_SKIN_TONE = new RegExp(`(${SKIN_TONES.slice(1).join("|")})$`);
 
 export function emoji_without_skin_tone(e: string): [emoji: string, modifier?: SKIN_TONE_MODIFIER] {
     let m = ENDS_WITH_SKIN_TONE.exec(e);
@@ -97,14 +97,14 @@ export function emoji_without_skin_tone(e: string): [emoji: string, modifier?: S
 export function format_emoji_shortcode(value: string, no_modifier: boolean = false): string | undefined {
     decode_emojis();
 
-    let p = ':', s = p, // prefix and suffix
+    let p = ":", s = p, // prefix and suffix
         [v, modifier] = no_modifier ? [value] : emoji_without_skin_tone(value),
         e = NORM_EMOJIS_MAP.get(minimize(v));
 
     if(e?.a.length) {
         if(modifier) {
             // set suffix
-            s = '::skin-tone-' + modifier.toString() + s;
+            s = "::skin-tone-" + modifier.toString() + s;
         }
 
         return p + e.a[0] + s;

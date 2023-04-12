@@ -8,8 +8,8 @@ export interface SpinnerProps {
 
 export function makeSpinnerStyle(props: SpinnerProps): JSX.CSSProperties {
     let size = props.size || 80;
-    if(typeof size === 'string' && size.includes('em')) {
-        return { width: '1em', height: '1em', "font-size": size };
+    if(typeof size === "string" && size.includes("em")) {
+        return { width: "1em", height: "1em", "font-size": size };
     }
     return { width: px(size), height: px(size) };
 }

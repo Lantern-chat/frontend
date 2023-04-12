@@ -9,7 +9,7 @@ export function fetch_profile(user_id: Snowflake, party_id?: Snowflake): Dispatc
     return async (dispatch) => {
         try {
             let user_or_member = await (party_id ? CLIENT.execute(GetMember({ party_id, user_id })) : CLIENT.execute(GetUser({ user_id })));
-            let user = 'user' in user_or_member ? user_or_member.user : user_or_member;
+            let user = "user" in user_or_member ? user_or_member.user : user_or_member;
 
             dispatch({
                 type: Type.USER_FETCHED,

@@ -1,12 +1,13 @@
-import { createEffect, onCleanup, Show } from "solid-js";
-import throttle from 'lodash/throttle';
+import { onCleanup, onMount, Show } from "solid-js";
+import throttle from "lodash/throttle";
 
 import { Action, useRootStore } from "state/root";
 import { mainMutator, Type } from "state/main";
 import { GLOBAL, STORE, HISTORY, type IGatewayWorker } from "state/global";
 import { mainEffect } from "state/effects/main";
-import type { IHistoryState } from 'state/mutators';
-import type { ISession } from 'lib/session';
+import type { IHistoryState } from "state/mutators";
+import type { ISession } from "lib/session";
+import { MainEventEmitter } from "./state";
 
 if(!GLOBAL.patched_main) {
     STORE.replaceEffect(mainEffect);
@@ -26,7 +27,7 @@ if(!GLOBAL.patched_main) {
         actions.push({ type: Type.SESSION_LOGIN, session: session as ISession })
     } else {
         // otherwise, main view should never have been loaded so redirect to login
-        HISTORY.replace('/login');
+        HISTORY.replace("/login");
     }
 
     STORE.dispatch(actions); // batched
@@ -56,10 +57,9 @@ if(!GLOBAL.gateway) {
 
 import { setPresence } from "state/commands/presence";
 
-import { Hotkey, IMainContext, MainContext, OnClickHandler, OnKeyHandler, OnNavHandler, parseHotkey, useMainHotkey } from "ui/hooks/useMain";
+import { Hotkey, IMainContext, MainContext, NavEvent, OnClickHandler, OnKeyHandler, OnNavHandler, parseHotkey, useMainHotkey } from "ui/hooks/useMain";
 import { TimeProvider } from "ui/hooks/createTimestamp";
 
-import { createRef } from "ui/hooks/createRef";
 import { Panel } from "state/mutators/window";
 import { PartyList } from "./components/party_list";
 import { Party } from "./components/party/party";
@@ -90,7 +90,7 @@ export default function Main() {
     /// AWAY/ONLINE PRESENCE SETUP
 
     let w = window, away_timer: number, set_away = () => dispatch(setPresence(true));
-    let activity_events = ['mousemove', 'keydown', 'touchstart'];
+    let activity_events = ["mousemove", "keydown", "touchstart"];
 
     let away_listener = throttle(() => {
         dispatch(setPresence(false));
@@ -103,78 +103,40 @@ export default function Main() {
 
     /// MAIN CONTEXT SETUP
 
-    let click_listeners: OnClickHandler[] = [];
-    let key_listeners: { [key: number]: OnKeyHandler[] } = {};
-    let nav_listeners: OnNavHandler[] = [];
+    let events = new MainEventEmitter();
 
-    let addOnNav = (listener: OnNavHandler) => {
-        nav_listeners.push(listener);
-    };
-    let removeOnNav = (listener: OnNavHandler) => {
-        nav_listeners = nav_listeners.filter(l => l != listener);
-    };
-    let tryNav = (url: string | undefined) => {
-        if(nav_listeners.length == 0) {
+    let tryNav = (url: string | undefined): boolean | Promise<boolean> => {
+        if(!events.has('nav')) {
             return true;
         }
 
-        let tries = nav_listeners.map(l => l(url));
+        return new Promise((resolve) => {
+            // an array of the first arguments given to nav_event's wait_until callback
+            let waiters: Array<Parameters<NavEvent[1]>[0]> = [];
+            let args: NavEvent = [url, (p) => waiters.push(p)];
 
-        for(let t of tries) {
-            if(typeof t !== 'boolean') {
-                return Promise.all(tries).then(tries => tries.reduce((a, b) => a && b, true));
-            }
-        }
-
-        return tries.reduce((a, b) => a && b, true);
-    };
-
-    let addOnClick = (listener: OnClickHandler) => {
-        click_listeners.push(listener);
-    };
-
-    let addOnHotkey = (hotkey: Hotkey, listener: OnKeyHandler) => {
-        let listeners = key_listeners[hotkey];
-        if(!listeners) {
-            listeners = key_listeners[hotkey] = [];
-        }
-        listeners.push(listener);
-    };
-
-    let removeOnClick = (listener: OnClickHandler) => {
-        click_listeners = click_listeners.filter(l => l != listener);
-    };
-
-    let removeOnHotkey = (hotkey: Hotkey, listener: OnKeyHandler) => {
-        let listeners;
-        if(listeners = key_listeners[hotkey]) {
-            key_listeners[hotkey] = listeners.filter(l => l != listener);
-        }
+            events.emit("nav", args, () => {
+                Promise.all(waiters).then((tries) => {
+                    resolve(tries.reduce((a, b) => a && b, true));
+                });
+            });
+        });
     };
 
     let clickAll = (e: MouseEvent) => {
         //__DEV__ && console.log(click_listeners);
-
-        for(let listener of click_listeners) {
-            listener(e);
-        }
+        events.emit('click', e);
     };
 
     let triggerHotkey = (hotkey: Hotkey, e: KeyboardEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
 
-        let listeners = key_listeners[hotkey];
-        if(listeners) {
-            for(let listener of listeners) {
-                listener(e);
-            }
-        }
+        events.emit(hotkey, e);
     };
 
     let triggerAnyHotkey = (e: KeyboardEvent) => {
         let hotkey = parseHotkey(e);
-        if(hotkey) { triggerHotkey(hotkey, e); }
+        if(hotkey) { triggerHotkey(hotkey, e) }
     }
 
     var keys: Set<string> = new Set();
@@ -184,7 +146,7 @@ export default function Main() {
 
     let on_keyup = (e: KeyboardEvent) => {
         if(parseHotkey(e)) {
-            e.preventDefault(); e.stopPropagation();
+            e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
         }
 
         consumeKey(e.key);
@@ -195,42 +157,34 @@ export default function Main() {
         triggerAnyHotkey(e);
     };
 
-    let main = createRef<HTMLDivElement>();
+    let main: HTMLDivElement | undefined;
 
     let main_value: IMainContext = {
-        main,
-        addOnClick,
-        addOnHotkey,
-        removeOnClick,
-        removeOnHotkey,
-        clickAll,
+        main: () => main!,
+        events,
         triggerHotkey,
         triggerAnyHotkey,
         hasKey,
         consumeKey,
-        addOnNav,
-        removeOnNav,
         tryNav,
     };
 
-    createEffect(() => {
-        if(main.current) {
-            let blur = () => main.current?.click();
+    onMount(() => {
+        let blur = () => main!.click();
 
-            __DEV__ || w.addEventListener('blur', blur);
-            w.addEventListener('keydown', on_keydown);
-            w.addEventListener('keyup', on_keyup);
+        __DEV__ || w.addEventListener("blur", blur);
+        w.addEventListener("keydown", on_keydown);
+        w.addEventListener("keyup", on_keyup);
 
-            onCleanup(() => {
-                __DEV__ || w.removeEventListener('blur', blur);
-                w.removeEventListener('keydown', on_keydown);
-                w.removeEventListener('keyup', on_keyup);
-            });
-        }
+        onCleanup(() => {
+            __DEV__ || w.removeEventListener("blur", blur);
+            w.removeEventListener("keydown", on_keydown);
+            w.removeEventListener("keyup", on_keyup);
+        });
     });
 
     let onContextMenu = (e: MouseEvent) => {
-        if(!e.shiftKey && !hasKey('Shift')) { e.preventDefault(); }
+        if(!e.shiftKey && !hasKey("Shift")) { e.preventDefault(); }
     };
 
     let is_right_view = () => state.window.use_mobile_view && state.window.show_panel == Panel.RightUserList;

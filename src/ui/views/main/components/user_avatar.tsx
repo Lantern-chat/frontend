@@ -1,16 +1,16 @@
-import { Accessor, createMemo, JSXElement, Show } from 'solid-js';
-import { useI18nContext } from 'ui/i18n/i18n-solid';
+import { Accessor, createMemo, JSXElement, Show } from "solid-js";
+import { useI18nContext } from "ui/i18n/i18n-solid";
 
-import { pickColorFromHash } from 'lib/palette';
-import { formatRgbBinary } from 'lib/color';
+import { pickColorFromHash } from "lib/palette";
+import { formatRgbBinary } from "lib/color";
 
-import { parse_presence, PresenceStatus, Snowflake, User, UserPresence, UserProfile } from 'state/models';
+import { parse_presence, PresenceStatus, Snowflake, User, UserPresence, UserProfile } from "state/models";
 
-import { asset_url } from 'config/urls';
-import { usePrefs } from 'state/contexts/prefs';
+import { asset_url } from "config/urls";
+import { usePrefs } from "state/contexts/prefs";
 
-import { Avatar } from 'ui/components/common/avatar';
-import { VectorIcon } from 'ui/components/common/icon';
+import { Avatar } from "ui/components/common/avatar";
+import { VectorIcon } from "ui/components/common/icon";
 
 import { Icons } from "lantern-icons";
 
@@ -45,7 +45,7 @@ export function UserAvatar(props: IUserAvatarProps) {
         let url = props.url, backgroundColor = props.color, profile = props.profile;
 
         if(props.profile?.avatar && url === undefined) {
-            url = asset_url('user', props.user_id, props.profile.avatar, 'avatar', prefs.LowBandwidthMode());
+            url = asset_url("user", props.user_id, props.profile.avatar, "avatar", prefs.LowBandwidthMode());
         } else if(!url && !props.color) {
             backgroundColor = (profile && (profile.bits & (1 << 7)))
                 ? formatRgbBinary(profile.bits >> 8)
@@ -79,11 +79,11 @@ export function UserAvatar(props: IUserAvatarProps) {
             {props.cover}
 
             <div class="ln-user-status" title={status()[0]}>
-                {(presence().status == PresenceStatus.Online && presence().is_mobile) ? (
-                    <VectorIcon id={Icons.MobilePhone} />
-                ) : (
+                <Show when={presence().status == PresenceStatus.Online && presence().is_mobile} fallback={
                     <span class={status()[1]} />
-                )}
+                }>
+                    <VectorIcon id={Icons.MobilePhone} />
+                </Show>
             </div>
         </div>
     );

@@ -14,7 +14,7 @@ export interface IMarkdownProps {
 import "./markdown.scss";
 
 let classes = (cn?: string) => {
-    return ["ln-markdown ln-markdown-full", cn].join(' ');
+    return ["ln-markdown ln-markdown-full", cn].join(" ");
 };
 
 export function Markdown(props: IMarkdownProps) {

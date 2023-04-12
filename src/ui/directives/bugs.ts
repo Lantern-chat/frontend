@@ -8,7 +8,7 @@ export function cleanedEvent(el: HTMLElement, events: Accessor<Array<[event: str
         el.addEventListener(event, listener);
     }
 
-    if('chrome' in window) {
+    if("chrome" in window) {
         onCleanup(() => {
             console.log("Cleaning up chrome events...");
             for(let [event, listener] of evs) {

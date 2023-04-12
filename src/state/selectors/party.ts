@@ -6,7 +6,7 @@ var COLOR_CACHE: Map<number, string> = new Map();
 
 export function computeRoleColor(role: Role): string | undefined {
     let color = role.color;
-    if(typeof color !== 'number') return;
+    if(typeof color !== "number") return;
 
     let cached = COLOR_CACHE.get(color);
     if(!cached) {

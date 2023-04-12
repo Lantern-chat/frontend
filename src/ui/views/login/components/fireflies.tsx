@@ -1,4 +1,3 @@
-import { Ref, createRef } from "ui/hooks/createRef";
 import { onCleanup, onMount } from "solid-js";
 
 import "./fireflies.scss";
@@ -25,7 +24,7 @@ function gen_gradient({ r, g, b }: color.RGBColor, stops: number): GradientStop[
         let x = i / stops;
         gradient.push({ x, v: `rgba(${r}, ${g}, ${b}, ${gaussian2(x, 0.25)})` });
     }
-    gradient.push({ x: 1, v: 'rgba(0, 0, 0, 0)' }); // ensure it ends in black/transparent
+    gradient.push({ x: 1, v: "rgba(0, 0, 0, 0)" }); // ensure it ends in black/transparent
     return gradient;
 }
 
@@ -110,9 +109,8 @@ function desiredCount(w: number, h: number, density: number): number {
     return (w * h) / (density * density);
 }
 
-function render_fireflies(state: IFireflyState, canvas_ref: Ref<HTMLCanvasElement | undefined>, time_ms: number) {
-    if(!canvas_ref.current) { return; }
-    let canvas = canvas_ref.current;
+function render_fireflies(state: IFireflyState, canvas: HTMLCanvasElement | undefined, time_ms: number) {
+    if(!canvas) { return; }
 
     let ctx = canvas.getContext("2d");
     if(!ctx) { return; }
@@ -237,9 +235,9 @@ function render_fireflies(state: IFireflyState, canvas_ref: Ref<HTMLCanvasElemen
             return gradient;
         });
 
-        //gradient.addColorStop(0, 'rgba(255, 255, 0, 0.9)');
-        //gradient.addColorStop(0.2, 'rgba(255, 255, 0, 0.5)');
-        //gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        //gradient.addColorStop(0, "rgba(255, 255, 0, 0.9)");
+        //gradient.addColorStop(0.2, "rgba(255, 255, 0, 0.5)");
+        //gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
 
         let dying: number[] = [];
         let len = state.ff.length;
@@ -282,14 +280,14 @@ function render_fireflies(state: IFireflyState, canvas_ref: Ref<HTMLCanvasElemen
     state.just_unpaused = false;
     state.time = time;
 
-    state.frame = requestAnimationFrame((new_time: number) => render_fireflies(state, canvas_ref, new_time));
+    state.frame = requestAnimationFrame((new_time: number) => render_fireflies(state, canvas, new_time));
 }
 
-const MOUSE_EVENTS = ['mousemove', 'movedown', 'mouseup'];
+const MOUSE_EVENTS = ["mousemove", "movedown", "mouseup"];
 
 // TODO: Check for reduce-motion
 export function Fireflies(props: IFireflyProps) {
-    let canvas_ref = createRef<HTMLCanvasElement>();
+    let canvas: HTMLCanvasElement | undefined;
 
     onMount(() => {
         let state: IFireflyState = { ff: [], paused: false, m: [1e9, 1e9, false], density: props.density || 175 },
@@ -301,7 +299,7 @@ export function Fireflies(props: IFireflyProps) {
                 }
             }, 1 / ANGLE_INTERVAL);
 
-        let mouse_listener = (e: MouseEvent) => { state.m = [e.x, e.y, e.buttons == 1]; }
+        let mouse_listener = (e: MouseEvent) => { state.m = [e.x, e.y, e.buttons == 1]; };
         for(let e of MOUSE_EVENTS) {
             window.addEventListener(e, mouse_listener);
         }
@@ -317,7 +315,7 @@ export function Fireflies(props: IFireflyProps) {
             onCleanup(() => document.removeEventListener(visibilityChange!, hidden_listener));
         }
 
-        state.frame = requestAnimationFrame((time: number) => render_fireflies(state, canvas_ref, time));
+        state.frame = requestAnimationFrame((time: number) => render_fireflies(state, canvas, time));
 
         onCleanup(() => {
             // cancel animation first
@@ -329,5 +327,5 @@ export function Fireflies(props: IFireflyProps) {
         });
     });
 
-    return (<canvas id="ln-fireflies" ref={canvas_ref} />);
+    return (<canvas id="ln-fireflies" ref={canvas} />);
 }

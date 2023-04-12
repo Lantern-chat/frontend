@@ -34,7 +34,7 @@ export function PartyAvatar(props: IPartyAvatarProps) {
     let prefs = usePrefs();
 
     let last = () => props.last_channel[props.party.id],
-        url = () => props.party.avatar ? asset_url('party', props.party.id, props.party.avatar, 'avatar', prefs.LowBandwidthMode()) : void 0,
+        url = () => props.party.avatar ? asset_url("party", props.party.id, props.party.avatar, "avatar", prefs.LowBandwidthMode()) : void 0,
         should_navigate = () => props.can_navigate && props.party.id != props.active_party;
 
     let on_navigate = () => { should_navigate() && dispatch(activateParty(props.party.id, last())) };
@@ -42,7 +42,7 @@ export function PartyAvatar(props: IPartyAvatarProps) {
     let [pos, main_click_props] = createSimplePositionedContextMenu();
 
     return (
-        <li classList={{ 'selected': props.is_active }} {...main_click_props}
+        <li classList={{ "selected": props.is_active }} {...main_click_props}
             data-party-name={props.party.name}
         >
             <Link noAction href={room_url(props.party.id, last())} onNavigate={on_navigate}>
@@ -83,15 +83,13 @@ function ListedPartyMenu(props: IListedPartyMenuProps) {
                 <UIText text={LL().main.menus.INVITE_PEOPLE()} />
             </div>
 
-            {() => dev_mode() && (
-                <>
-                    <hr />
+            <Show when={dev_mode()}>
+                <hr />
 
-                    <div onClick={() => copyText(props.party.id)}>
-                        <UIText text={LL().main.menus.COPY_ID()} />
-                    </div>
-                </>
-            )}
+                <div onClick={() => copyText(props.party.id)}>
+                    <UIText text={LL().main.menus.COPY_ID()} />
+                </div>
+            </Show>
         </ContextMenu>
     );
 }

@@ -1,5 +1,4 @@
 import { createStore } from "solid-js/store";
-import { createRef } from "ui/hooks/createRef";
 import { useRootDispatch, useRootSelector } from "state/root";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
@@ -13,13 +12,13 @@ import { MIN_TEMP, MAX_TEMP } from "lib/theme";
 import { VectorIcon } from "ui/components/common/icon";
 import { SunIcon, MoonIcon } from "lantern-icons";
 
-import throttle from 'lodash/throttle';
+import throttle from "lodash/throttle";
 
 import "./theme_widget.scss";
 export function ThemeWidget() {
     let { LL } = useI18nContext();
 
-    let input = createRef<HTMLInputElement>(),
+    let input: HTMLInputElement | undefined,
         prefs = usePrefs(),
         dispatch = useRootDispatch();
 
@@ -36,18 +35,16 @@ export function ThemeWidget() {
     };
 
     let onTempTouchMove = throttle((e: TouchEvent) => {
-        if(input.current) {
-            let { width, x } = input.current.getBoundingClientRect();
-            let touch = e.touches[0].clientX - x;
+        let { width, x } = input!.getBoundingClientRect();
+        let touch = e.touches[0].clientX - x;
 
-            if(touch < 0 || touch > width) {
-                return;
-            }
-
-            let t = touch / width, temperature = mix(MIN_TEMP, MAX_TEMP, t);
-
-            doSetTheme(temperature, interactive.is_light);
+        if(touch < 0 || touch > width) {
+            return;
         }
+
+        let t = touch / width, temperature = mix(MIN_TEMP, MAX_TEMP, t);
+
+        doSetTheme(temperature, interactive.is_light);
     }, 50, { trailing: true });
 
     return (

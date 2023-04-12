@@ -74,9 +74,11 @@ function Toast(props: IToastProps) {
 
     return (
         <li class="ln-toast" onClick={clearToast}
-            classList={{ 'cleared': cleared(), [props.level]: true }}
+            classList={{ "cleared": cleared(), [props.level]: true }}
         >
-            {props.title && <h3 textContent={props.title} />}
+            <Show when={props.title}>
+                {title => <h3 textContent={title()} />}
+            </Show>
             <span>{props.text}</span>
         </li>
     );

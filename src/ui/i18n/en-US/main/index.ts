@@ -1,4 +1,4 @@
-import type { BaseTranslation } from '../../i18n-types';
+import type { BaseTranslation } from "../../i18n-types";
 
 // @stringify
 const enUS_main: BaseTranslation = {

@@ -8,7 +8,7 @@ export interface ITimestampProps {
     format?: string,
 }
 
-export type ICalendarProps = Omit<ITimestampProps, 'format'>;
+export type ICalendarProps = Omit<ITimestampProps, "format">;
 
 export function UICalendar(props: ICalendarProps): JSX.Element {
     let ts = createCalendar(() => props.time);

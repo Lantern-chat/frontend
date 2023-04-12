@@ -1,14 +1,14 @@
-import { Dynamic } from 'solid-js/web';
+import { Dynamic } from "solid-js/web";
 
-import { useRootSelector } from 'state/root';
+import { useRootSelector } from "state/root";
 
-import { InviteModal } from './invite';
-import { SettingsModal } from './settings';
+import { InviteModal } from "./invite";
+import { SettingsModal } from "./settings";
 
 export default function MainModals() {
-    let path = useRootSelector(state => state.history.parts[0]);
+    const path = useRootSelector(state => state.history.parts[0]);
 
-    let comp = () => {
+    const comp = () => {
         switch(path()) {
             case "settings": return SettingsModal;
             case "invite": return InviteModal;

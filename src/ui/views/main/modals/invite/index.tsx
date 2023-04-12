@@ -16,7 +16,7 @@ import { VectorIcon } from "ui/components/common/icon";
 import { GenericModal } from "../generic";
 
 export function InviteModal() {
-    let return_path = useRootSelector(state => room_url(activeParty(state) || '@me', activeRoom(state)));
+    let return_path = useRootSelector(state => room_url(activeParty(state) || "@me", activeRoom(state)));
 
     return (
         <GenericModal onClose={() => HISTORY.pm(return_path())}>

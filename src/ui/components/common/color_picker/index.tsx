@@ -1,6 +1,5 @@
 import { Color, HSLColor, hsv, hsv2hsl, hsv2rgb, HSVColor, float2u8, parseRgb, rgb2hsl, rgb2hsv, RGBColor, u82float } from "lib/color";
 import { createEffect, createMemo, createRenderEffect, createSignal, splitProps } from "solid-js";
-import { createRef } from "ui/hooks/createRef";
 
 export interface IColorPickerProps<C extends Color> {
     value: C,
@@ -13,14 +12,14 @@ export interface IColorPickerProps<C extends Color> {
 import "./color_picker.scss";
 
 export function SaturationValuePicker(props: IColorPickerProps<HSVColor>) {
-    let controller = createRef<HTMLDivElement>();
+    let controller: HTMLDivElement | undefined;
 
     let [moving, setMoving] = createSignal(false);
 
     createEffect(() => moving() ? props.onStartEdit?.() : props.onEndEdit?.());
 
     let compute = (x: number, y: number) => {
-        let rect = controller.current!.getBoundingClientRect();
+        let rect = controller!.getBoundingClientRect();
         x = Math.min(1, Math.max(0, (x - rect.left) / rect.width));
         y = Math.min(1, Math.max(0, (y - rect.top) / rect.height));
 
@@ -56,7 +55,7 @@ export function SaturationValuePicker(props: IColorPickerProps<HSVColor>) {
             onMouseUp={stop_edit}
             onMouseLeave={stop_edit}
             onTouchMove={onTouch}
-            style={{ cursor: moving() ? 'grabbing' : 'pointer' }}
+            style={{ cursor: moving() ? "grabbing" : "pointer" }}
         >
             <div class="sl-controller"
                 ref={controller}
@@ -64,16 +63,16 @@ export function SaturationValuePicker(props: IColorPickerProps<HSVColor>) {
                 onTouchStart={onTouch}
             >
                 <div class="hsv">
-                    <div class="hue" style={{ 'background-color': `hsl(${props.value.h}, 100%, 50%)` }} />
+                    <div class="hue" style={{ "background-color": `hsl(${props.value.h}, 100%, 50%)` }} />
                     <div class="saturation" />
                     <div class="value" />
                 </div>
                 <div class="sl-cursor" style={{
-                    left: props.value.s * 100 + '%',
-                    bottom: props.value.v * 100 + '%',
-                    cursor: moving() ? 'grabbing' : 'grab'
+                    left: props.value.s * 100 + "%",
+                    bottom: props.value.v * 100 + "%",
+                    cursor: moving() ? "grabbing" : "grab"
                 }}>
-                    <div><span style={{ 'background-color': hsl() }} /></div>
+                    <div><span style={{ "background-color": hsl() }} /></div>
                 </div>
             </div>
         </div>
@@ -81,13 +80,14 @@ export function SaturationValuePicker(props: IColorPickerProps<HSVColor>) {
 }
 
 export function HuePicker(props: IColorPickerProps<HSVColor>) {
-    let controller = createRef<HTMLDivElement>();
+    let controller: HTMLDivElement | undefined;
+
     let [moving, setMoving] = createSignal(false);
 
     createEffect(() => moving() ? props.onStartEdit?.() : props.onEndEdit?.());
 
     let compute = (x: number) => {
-        let rect = controller.current!.getBoundingClientRect();
+        let rect = controller!.getBoundingClientRect();
         x = Math.min(1, Math.max(0, (x - rect.left) / rect.width));
 
         props.onChange?.({ h: x * 360, s: props.value.s, v: props.value.v });
@@ -117,17 +117,17 @@ export function HuePicker(props: IColorPickerProps<HSVColor>) {
             onMouseUp={stop_edit}
             onMouseLeave={stop_edit}
             onTouchMove={onTouch}
-            style={{ cursor: moving() ? 'grabbing' : 'pointer' }}
+            style={{ cursor: moving() ? "grabbing" : "pointer" }}
         >
             <div class="h-controller" ref={controller}
                 onMouseDown={e => { setMoving(true); onMouse(e) }}
                 onTouchStart={onTouch}
             >
                 <div class="h-cursor" style={{
-                    left: (props.value.h / 360 * 100) + '%',
-                    cursor: moving() ? 'grabbing' : 'grab'
+                    left: (props.value.h / 360 * 100) + "%",
+                    cursor: moving() ? "grabbing" : "grab"
                 }}>
-                    <div><span style={{ 'background-color': `hsl(${props.value.h}, 100%, 50%)` }} /></div>
+                    <div><span style={{ "background-color": `hsl(${props.value.h}, 100%, 50%)` }} /></div>
                 </div>
             </div>
         </div>
@@ -168,7 +168,7 @@ export function HueSaturationPicker(props: IColorPickerProps) {
                     <div class="hue" />
                     <div class="saturation" />
                     <div class="lightness" style={{
-                        'background-color': lightness() < 0.5 ? 'black' : 'white',
+                        "background-color": lightness() < 0.5 ? "black" : "white",
                         opacity: Math.abs(lightness() - 0.5) * 2,
                     }} />
                 </div>
@@ -202,13 +202,13 @@ export function ColorPicker(props: IColorPickerProps<RGBColor>) {
         }
     });
 
-    let [hsv_props] = splitProps(props, ['onStartEdit', 'onEndEdit']);
+    let [hsv_props] = splitProps(props, ["onStartEdit", "onEndEdit"]);
 
     return (
         <div class="ln-color-picker">
-            <div style={{ height: '10em' }}><SaturationValuePicker {...hsv_props} value={hsv()} onChange={update_hsv} /></div>
+            <div style={{ height: "10em" }}><SaturationValuePicker {...hsv_props} value={hsv()} onChange={update_hsv} /></div>
 
-            <div style={{ height: '2em' }}><HuePicker {...hsv_props} value={hsv()} onChange={update_hsv} /></div>
+            <div style={{ height: "2em" }}><HuePicker {...hsv_props} value={hsv()} onChange={update_hsv} /></div>
 
             <RGBInput {...props} />
         </div>
@@ -219,14 +219,14 @@ function RGBInput(props: IColorPickerProps<RGBColor>) {
     let rgb = createMemo(() => float2u8(props.value));
     let hex = () => {
         let { r, g, b } = rgb();
-        return '#' + [r, g, b].map(c => c.toString(16).padStart(2, '0')).join('').toUpperCase();
+        return "#" + [r, g, b].map(c => c.toString(16).padStart(2, "0")).join("").toUpperCase();
     };
 
     let on_change = (rgb: RGBColor) => props.onChange?.(u82float(rgb));
 
-    let on_rgb_value = (w: 'r' | 'g' | 'b', value: string) => {
+    let on_rgb_value = (w: "r" | "g" | "b", value: string) => {
         let c = rgb();
-        c[w] = Math.max(0, Math.min(255, parseInt('0' + value, 10)));
+        c[w] = Math.max(0, Math.min(255, parseInt("0" + value, 10)));
         on_change(c);
     };
 
@@ -249,7 +249,7 @@ function RGBInput(props: IColorPickerProps<RGBColor>) {
         props.onStartEdit?.();
 
         let i = e.currentTarget as HTMLInputElement;
-        let c = rgb(), k = i.parentElement!.id;
+        let c = rgb(), k = i.parentElement!.id as keyof typeof c;
         c[k] = Math.max(0, Math.min(255, c[k] + (e.deltaY < 0 ? 1 : -1)));
         on_change(c);
 
@@ -269,9 +269,9 @@ function RGBInput(props: IColorPickerProps<RGBColor>) {
 
     return (
         <div class="rgb_input">
-            <span id="r">R<input pattern="^\\d{0,3}$" type="text" value={rgb().r.toFixed(0).padStart(3, '0')} placeholder="128" onInput={on_rgb_input} onWheel={on_scroll} onClick={select_all} /></span>
-            <span id="g">G<input pattern="^\\d{0,3}$" type="text" value={rgb().g.toFixed(0).padStart(3, '0')} placeholder="128" onInput={on_rgb_input} onWheel={on_scroll} onClick={select_all} /></span>
-            <span id="b">B<input pattern="^\\d{0,3}$" type="text" value={rgb().b.toFixed(0).padStart(3, '0')} placeholder="128" onInput={on_rgb_input} onWheel={on_scroll} onClick={select_all} /></span>
+            <span id="r">R<input pattern="^\\d{0,3}$" type="text" value={rgb().r.toFixed(0).padStart(3, "0")} placeholder="128" onInput={on_rgb_input} onWheel={on_scroll} onClick={select_all} /></span>
+            <span id="g">G<input pattern="^\\d{0,3}$" type="text" value={rgb().g.toFixed(0).padStart(3, "0")} placeholder="128" onInput={on_rgb_input} onWheel={on_scroll} onClick={select_all} /></span>
+            <span id="b">B<input pattern="^\\d{0,3}$" type="text" value={rgb().b.toFixed(0).padStart(3, "0")} placeholder="128" onInput={on_rgb_input} onWheel={on_scroll} onClick={select_all} /></span>
             <span><input pattern="^#?\\d{6}$" id="h" type="text" placeholder="#000000" value={hex()} onInput={on_hex_input} onClick={select_all} /></span>
         </div>
     )

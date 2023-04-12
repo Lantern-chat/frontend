@@ -32,12 +32,12 @@ class Gateway {
     connecting_timeout?: number;
 
     constructor() {
-        let ws = this.ws = new GatewaySocket();
+        const ws = this.ws = new GatewaySocket();
 
-        ws.on('error', err => this.on_error(err));
-        ws.on('msg', msg => this.on_msg(msg));
-        ws.on('open', () => this.on_open());
-        ws.on('close', ev => this.on_close(ev));
+        ws.on("error", err => this.on_error(err));
+        ws.on("msg", msg => this.on_msg(msg));
+        ws.on("open", () => this.on_open());
+        ws.on("close", ev => this.on_close(ev));
     }
 
     connect() {
@@ -47,15 +47,15 @@ class Gateway {
             return this.retry_now();
         }
 
-        let delay = this.attempt ? 1000 : 0;
+        const delay = this.attempt ? 1000 : 0;
 
         __DEV__ && console.log("DELAY: ", delay);
 
         if(delay > 0) {
-            postMsg({ t: GatewayMessageDiscriminator.Waiting, p: Date.now() + delay })
+            postMsg({ t: GatewayMessageDiscriminator.Waiting, p: Date.now() + delay });
         }
 
-        this.connecting_timeout = <any>setTimeout(() => this.do_connect(), delay);
+        this.connecting_timeout = setTimeout(() => this.do_connect(), delay);
         this.attempt += 1;
 
     }
@@ -63,10 +63,10 @@ class Gateway {
     do_connect() {
         postMsg({ t: GatewayMessageDiscriminator.Connecting });
 
-        let protocol = 'wss:';
+        let protocol = "wss:";
 
-        if(__DEV__ && self.location.protocol.startsWith('http')) {
-            protocol = self.location.protocol.replace('http', 'ws');
+        if(__DEV__ && self.location.protocol.startsWith("http")) {
+            protocol = self.location.protocol.replace("http", "ws");
         }
 
         this.ws.connect(`${protocol}//${self.location.host}/api/v1/gateway?compress=true&encoding=json`);
@@ -183,14 +183,14 @@ class Gateway {
     }
 }
 
-var GATEWAY: Gateway = new Gateway();
+const GATEWAY: Gateway = new Gateway();
 
 postMsg({ t: GatewayMessageDiscriminator.Initialized });
 
-ctx.addEventListener('message', msg => {
+ctx.addEventListener("message", msg => {
     let data: GatewayCommand = msg.data;
-    if(typeof data === 'string') {
-        data = JSON.parse(data);
+    if(typeof data === "string") {
+        data = JSON.parse(data) as GatewayCommand;
     }
 
     switch(data.t) {

@@ -2,7 +2,7 @@ import { shallowEqualArrays } from "lib/compare";
 import { Accessor, createMemo } from "solid-js";
 
 export function createArrayMemo<T>(arr: T[] | Accessor<T[]>, cmp?: (a: T, b: T) => number): Accessor<T[]> {
-    if(typeof arr !== 'function') {
+    if(typeof arr !== "function") {
         return () => arr;
     }
 

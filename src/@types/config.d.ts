@@ -1,5 +1,8 @@
 import type { ServerConfig } from "client-sdk/src/models";
 
 declare global {
-    interface Window { readonly config: ServerConfig; }
+    interface Window {
+        readonly config: ServerConfig;
+        LANTERN_GLOBAL: any,
+    }
 }

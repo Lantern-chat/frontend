@@ -37,9 +37,9 @@ interface IFormInputProps extends JSX.InputHTMLAttributes<HTMLInputElement> {
 export function FormInput(props: IFormInputProps) {
     return (
         <span class="ln-form-control-wrapper" classList={{
-            [props.class || '']: true,
-            'ln-success': props.isValid === true,
-            'ln-error': props.isValid === false,
+            [props.class || ""]: true,
+            "ln-success": props.isValid === true,
+            "ln-error": props.isValid === false,
         }}>
             <input {...props} class="ln-form-control ui-text" />
         </span>
