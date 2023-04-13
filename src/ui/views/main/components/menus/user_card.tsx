@@ -1,4 +1,6 @@
 import { createEffect, createMemo, JSXElement, onMount, Show } from "solid-js";
+import { ShowBool } from "ui/components/flow";
+
 import { PartyMember, Snowflake, User, parse_presence, UserPreferenceFlags, user_is_bot, PresenceStatus, UserProfile, split_profile_bits, UserPresence, UserProfileSplitBits } from "state/models";
 import { RootState, useRootDispatch, useRootSelector, useRootStore } from "state/root";
 import { selectCachedUser } from "state/selectors/selectCachedUser";
@@ -131,17 +133,17 @@ export function SimpleUserCard(props: ISimpleUserCardProps) {
                     <Show when={props.nick && props.nick != props.user.username} fallback={
                         <h4>
                             {props.user.username}<Discriminator discriminator={props.user.discriminator} />
-                            <Show when={user_is_bot(props.user)}>
+                            <ShowBool when={user_is_bot(props.user)}>
                                 <BotLabel />
-                            </Show>
+                            </ShowBool>
                         </h4>
                     }>
                         <h4><UserText text={props.nick!} /></h4>
                         <span>
                             {props.user.username}<Discriminator discriminator={props.user.discriminator} />
-                            <Show when={user_is_bot(props.user)}>
+                            <ShowBool when={user_is_bot(props.user)}>
                                 <BotLabel />
-                            </Show>
+                            </ShowBool>
                         </span>
                     </Show>
                 </div>

@@ -1,5 +1,5 @@
 import { Icons, path as icon_path } from "lantern-icons";
-import { createEffect, createResource, untrack, Show } from "solid-js";
+import { createEffect, createResource, untrack, Show, JSX } from "solid-js";
 
 import "./icon.scss";
 
@@ -31,11 +31,13 @@ function select_comp(props: IVectorIconProps) {
 
 // Similar workings to `<Dynamic>` but simpler for faster rendering
 export function VectorIcon(props: IVectorIconProps) {
-    return (
-        <Show keyed when={select_comp(props)}>
-            {comp => untrack(() => comp(props as any))}
-        </Show>
-    )
+    return (() => {
+        let comp = select_comp(props);
+        if(comp) {
+            return untrack(() => comp!(props as any));
+        }
+        return;
+    }) as unknown as JSX.Element;
 }
 
 const ICON_PATH = icon_path + "#";

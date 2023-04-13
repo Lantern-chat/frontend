@@ -1,5 +1,7 @@
-import { CATEGORIES, decode_emojis, EMOJIS, emoji_with_skin_tone, format_emoji_shortcode, IEmoji, SKIN_TONES_HEX, SKIN_TONE_MODIFIER } from "lib/emoji";
 import { batch, createEffect, createMemo, createRenderEffect, createSelector, createSignal, onMount, Show } from "solid-js";
+import { ShowBool } from "ui/components/flow";
+
+import { CATEGORIES, decode_emojis, EMOJIS, emoji_with_skin_tone, format_emoji_shortcode, IEmoji, SKIN_TONES_HEX, SKIN_TONE_MODIFIER } from "lib/emoji";
 import { usePrefs } from "state/contexts/prefs";
 import { EmojiLite } from "ui/components/common/emoji_lite";
 import { VectorIcon } from "ui/components/common/icon";
@@ -75,11 +77,11 @@ export function EmojiPicker(props: IEmojiPickerProps) {
                 <div class="ln-emoji-picker__search-input">
                     <input ref={input} type="text" placeholder="Search" value={search()}
                         onInput={e => setSearch(e.currentTarget.value.trim().toLowerCase())} onKeyUp={on_esc} />
-                    <Show when={has_search()}>
+                    <ShowBool when={has_search()}>
                         <span onClick={clear_search}>
                             <VectorIcon id={Icons.Close} />
                         </span>
-                    </Show>
+                    </ShowBool>
                 </div>
 
                 <div class="ln-emoji-picker__tone">
@@ -222,9 +224,9 @@ function PickerCategory(props: IEmojiPickerProps & { c: number, all?: boolean, s
         <div ref={ref} use:cleanedEvent={[["click", on_click]]} class="ln-emoji-picker__listing ln-scroll-y ln-scroll-fixed" data-search={props.search}>
             {emojis()}
 
-            <Show when={none()}>
+            <ShowBool when={none()}>
                 There are no emojis matching your search!
-            </Show>
+            </ShowBool>
         </div>
     );
 }

@@ -1,4 +1,5 @@
-import { createSignal, Show } from "solid-js"
+import { createSignal } from "solid-js"
+import { ShowBool } from "../flow";
 import { usePrefs } from "state/contexts/prefs";
 import { emoji_url } from "config/urls";
 import { LAZY_ATTR } from "lib/user_agent";
@@ -24,7 +25,7 @@ export function EmojiLite(props: IEmojiLiteProps) {
     let large = () => props.large && !prefs.CompactView();
 
     return (
-        <Show when={!use_system()} fallback={
+        <ShowBool when={!use_system()} fallback={
             <span class="emoji" classList={{ "large": large() }} textContent={value()} />
         }>
             <img class="emoji" classList={{ "large": large() }}
@@ -33,6 +34,6 @@ export function EmojiLite(props: IEmojiLiteProps) {
                 draggable={false} data-type="emoji"
                 src={emoji_url(value())}
                 on:error={() => setErrored(true)} />
-        </Show>
+        </ShowBool>
     );
 }

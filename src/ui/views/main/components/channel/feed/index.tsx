@@ -89,9 +89,7 @@ export function MessageFeed() {
                 <Timeline direction={0} position={0} />
             </Show> */}
 
-            <Show when={__DEV__ && state.room?.locked}>
-                Room is Loading
-            </Show>
+            {__DEV__ && state.room?.locked && <>Room is Loading</>}
 
             <InfiniteScroll
                 start={Anchor.Bottom}

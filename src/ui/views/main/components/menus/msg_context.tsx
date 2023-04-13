@@ -1,4 +1,5 @@
 import { createEffect, createSignal, Show } from "solid-js";
+import { ShowBool } from "ui/components/flow";
 
 import { copyText } from "lib/clipboard";
 
@@ -68,14 +69,14 @@ export function MsgContextMenu(props: IMsgContextMenuProps) {
 
     return (
         <ContextMenu>
-            <Show when={!!selected}>
+            <ShowBool when={!!selected}>
                 <div onClick={copy_selection}>
                     <VectorIcon id={Icons.Clipboard} />
                     <UIText text={LL().main.menus.msg.COPY_SEL()} />
                 </div>
 
                 <hr />
-            </Show>
+            </ShowBool>
 
             <div>
                 <VectorIcon id={Icons.Pencil} /> <UIText text={LL().main.menus.msg.EDIT()} />
@@ -102,14 +103,14 @@ export function MsgContextMenu(props: IMsgContextMenuProps) {
                 <UIText text={shownConfirmation() ? LL().main.menus.msg.CONFIRM() : LL().main.menus.msg.DELETE()} />
             </div>
 
-            <Show when={dev_mode()}>
+            <ShowBool when={dev_mode()}>
                 <hr />
 
                 <div onClick={() => copyText(props.msg.msg.id)}>
                     <VectorIcon id={Icons.ChatMessage} />
                     <UIText text={LL().main.menus.COPY_ID()} />
                 </div>
-            </Show>
+            </ShowBool>
         </ContextMenu>
     )
 }

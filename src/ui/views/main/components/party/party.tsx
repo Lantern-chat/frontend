@@ -1,5 +1,6 @@
 import { batch, createEffect, createRenderEffect, createSignal, onCleanup, onMount, Show } from "solid-js";
 import { useStructuredSelector } from "solid-mutant";
+import { ShowBool } from "ui/components/flow";
 
 import { Home } from "../home";
 import { ChannelList } from "./channel_list";
@@ -123,7 +124,7 @@ export function Party() {
 
     return (
         <div class="ln-party" ref={party_ref}>
-            <Show when={showLeft()}>
+            <ShowBool when={showLeft()}>
                 <div
                     class="ln-party__sidebar"
                     classList={{ "ln-party__sidebar--closed": state.use_mobile_view && state.show_panel == Panel.Main }}
@@ -134,7 +135,7 @@ export function Party() {
                     </Show>
                     <PartyFooter />
                 </div>
-            </Show>
+            </ShowBool>
 
             <div
                 class="ln-party__channel"
@@ -159,7 +160,7 @@ export function Party() {
                 </Show>
             </div>
 
-            <Show when={showRight()}>
+            <ShowBool when={showRight()}>
                 <div
                     class="ln-party__user-list"
                     classList={{ "ln-party__user-list--closed": state.show_panel == Panel.Main }}
@@ -169,7 +170,7 @@ export function Party() {
                         <MemberList />
                     </Show>
                 </div>
-            </Show>
+            </ShowBool>
         </div>
     );
 }

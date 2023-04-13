@@ -1,5 +1,6 @@
 import { createMemo, For, Show } from "solid-js";
 import { useStructuredSelector } from "solid-mutant";
+import { ShowBool } from "ui/components/flow";
 
 import { useI18nContext } from "ui/i18n/i18n-solid";
 import { useLocale } from "ui/i18n";
@@ -216,15 +217,15 @@ function ListedMember(props: IListedMemberProps) {
                         </div>
                     </Show>
 
-                    <Show when={user_is_bot(cached_user().user)}>
+                    <ShowBool when={user_is_bot(cached_user().user)}>
                         <BotLabel />
-                    </Show>
+                    </ShowBool>
                 </div>
 
-                <Show when={presence().status != PresenceStatus.Offline && cached_user().profile?.status} keyed>
+                <Show when={presence().status != PresenceStatus.Offline && cached_user().profile?.status}>
                     {status => (
                         <div class="ln-member__status">
-                            <UserText class="chat-text" text={status} />
+                            <UserText class="chat-text" text={status()} />
                         </div>
                     )}
                 </Show>

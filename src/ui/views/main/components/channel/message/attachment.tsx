@@ -1,4 +1,5 @@
 import { createMemo, createSignal, For, JSX, Match, Show, Switch } from "solid-js";
+import { ShowBool } from "ui/components/flow";
 
 import { IS_MOBILE } from "lib/user_agent";
 import { categorize_mime } from "lib/mime";
@@ -208,32 +209,32 @@ export function MsgAttachment(props: IMsgAttachmentProps) {
             <Show when={!errored() && !prefs.LowBandwidthMode()} fallback={<GenericAttachment {...props} />}>
                 <Switch fallback={<GenericAttachment {...props} />}>
                     <Match when={mime_prefix() === "image" && !unknown() && !large()}>
-                        <Show when={prefs.ShowMediaMetadata()}>
+                        <ShowBool when={prefs.ShowMediaMetadata()}>
                             <MediaMetadata {...props} />
-                        </Show>
+                        </ShowBool>
                         <ImageAttachment img={common()} src={src()} prefs={prefs} attachment={props.attachment} />
                     </Match>
 
                     <Match when={mime_prefix() === "video" && !unknown()}>
-                        <Show when={prefs.ShowMediaMetadata()}>
+                        <ShowBool when={prefs.ShowMediaMetadata()}>
                             <MediaMetadata {...props} />
-                        </Show>
+                        </ShowBool>
                         <VideoAttachment vid={common()} src={src()} prefs={prefs} attachment={props.attachment} />
                     </Match>
 
                     <Match when={mime_prefix() === "audio"}>
-                        <Show when={prefs.ShowMediaMetadata()}>
+                        <ShowBool when={prefs.ShowMediaMetadata()}>
                             <MediaMetadata {...props} />
-                        </Show>
+                        </ShowBool>
                         <AudioAttachment audio={common()} src={src()} prefs={prefs} attachment={props.attachment} />
                     </Match>
                 </Switch>
 
-                <Show when={spoilered()}>
+                <ShowBool when={spoilered()}>
                     <span class="spoiler-label" title={LL().main.SPOILER_TITLE()}>
                         <UIText text={LL().main.SPOILER(0)} />
                     </span>
-                </Show>
+                </ShowBool>
             </Show>
         </div>
     )

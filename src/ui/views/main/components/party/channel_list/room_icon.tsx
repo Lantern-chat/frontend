@@ -47,10 +47,10 @@ function RoomHashIcon(props: IRoomIconProps) {
         <>
             <VectorIcon id={Icons.Hash} />
 
-            <Show keyed when={subicon()}>
+            <Show when={subicon()}>
                 {icon => (
                     <div class="ln-channel-list__subicon">
-                        <VectorIcon id={icon} />
+                        <VectorIcon id={icon()} />
                     </div>
                 )}
             </Show>

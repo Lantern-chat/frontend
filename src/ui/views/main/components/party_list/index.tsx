@@ -1,5 +1,6 @@
 import { createMemo, createSelector, createSignal, For, Show } from "solid-js";
 import { useStructuredSelector } from "solid-mutant";
+import { ShowBool } from "ui/components/flow";
 
 import { RootState } from "state/root";
 import { activeParty } from "state/selectors/active";
@@ -88,11 +89,11 @@ function CreateParty(props: { can_navigate: boolean }) {
                 }}
             />
 
-            <Show when={show()}>
+            <ShowBool when={show()}>
                 <GenericModal onClose={() => setShow(false)}>
                     <CreatePartyModal />
                 </GenericModal>
-            </Show>
+            </ShowBool>
         </li>
     )
 }

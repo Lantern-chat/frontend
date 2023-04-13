@@ -1,7 +1,9 @@
+import { Accessor, createEffect, createSelector, createSignal, For, JSX, Match, on, Show, Switch } from "solid-js";
+import { ShowBool } from "ui/components/flow";
+
 import { encodeUTF8toBase64 } from "client-sdk/src/lib/base64";
 import { Icons } from "lantern-icons";
 import { IS_MOBILE } from "lib/user_agent";
-import { Accessor, createEffect, createSelector, createSignal, For, JSX, Match, on, Show, Switch } from "solid-js";
 import { usePrefs, UserPreferenceAccessors } from "state/contexts/prefs";
 import { Embed, EmbedAuthor, EmbedFlags, EmbedFooter, EmbedMedia, EmbedProvider, Message, RoomFlags } from "state/models";
 import { EmbedType } from "state/models";
@@ -165,8 +167,8 @@ function Embedded(props: EmbedProps) {
                 </div>
             </Show>
 
-            <Show keyed when={props.embed.au}>
-                {author => <EmbeddedAuthor author={author} />}
+            <Show when={props.embed.au}>
+                {author => <EmbeddedAuthor author={author()} />}
             </Show>
 
             <a target="_blank" onContextMenu={eat} rel="noreferrer" class="ln-embed__title" href={props.embed.u}>
@@ -181,18 +183,18 @@ function Embedded(props: EmbedProps) {
                 <EmbeddedMedia {...props} dim={dim} />
             </div>
 
-            <Show when={spoilered()}>
+            <ShowBool when={spoilered()}>
                 <div class="ln-embed__spoiler" title={LL().main.SPOILER_TITLE()} onClick={() => setSpoilered(false)}>
                     <span textContent={LL().main.SPOILER(0)} />
                 </div>
+            </ShowBool>
+
+            <Show when={props.embed.p}>
+                {provider => <EmbeddedProvider pro={provider()} u={props.embed.u} />}
             </Show>
 
-            <Show keyed when={props.embed.p}>
-                {provider => <EmbeddedProvider pro={provider} u={props.embed.u} />}
-            </Show>
-
-            <Show keyed when={props.embed.footer}>
-                {footer => <EmbeddedFooter footer={footer} />}
+            <Show when={props.embed.footer}>
+                {footer => <EmbeddedFooter footer={footer()} />}
             </Show>
         </div>
     )
@@ -233,15 +235,15 @@ function EmbeddedAuthor(props: { author: EmbedAuthor }) {
 
     return (
         <div class="ln-embed__author" title={props.author.n}>
-            <Show keyed when={props.author.i}>
-                {media => <EmbeddedMediaSingle media={media} />}
+            <Show when={props.author.i}>
+                {media => <EmbeddedMediaSingle media={media()} />}
             </Show>
 
-            <Show keyed when={url()} fallback={
+            <Show when={url()} fallback={
                 <span>{trim_text(props.author.n, MAX_AUTHOR_LEN)}</span>
             }>
                 {url => (
-                    <a target="_blank" onContextMenu={eat} rel="noreferrer" href={url}>
+                    <a target="_blank" onContextMenu={eat} rel="noreferrer" href={url()}>
                         {trim_text(props.author.n, MAX_AUTHOR_LEN)}
                     </a>
                 )}
@@ -263,8 +265,8 @@ function EmbeddedProvider(props: { pro: EmbedProvider, u: string | undefined }) 
                 </a>
             </Show>
 
-            <Show keyed when={props.pro.i}>
-                {media => <EmbeddedMediaSingle media={media} />}
+            <Show when={props.pro.i}>
+                {media => <EmbeddedMediaSingle media={media()} />}
             </Show>
         </div>
     )
@@ -457,10 +459,10 @@ function EmbeddedHtmlWithConsent(props: { media: EmbedMedia, embed: Embed, dim?:
         <Show when={!playing()} fallback={<EmbeddedHtml media={props.media} dim={props.dim} />}>
             <span class="ln-embed__consent" />
 
-            <Show keyed when={props.embed.img || (is_large_media(props.embed.thumb) ? props.embed.thumb : undefined)} fallback={
+            <Show when={props.embed.img || (is_large_media(props.embed.thumb) ? props.embed.thumb : undefined)} fallback={
                 <EmbeddedHtmlWithConsentFallbackImg media={props.media} dim={props.dim} />
             }>
-                {img => <EmbeddedImg url={props.embed.u} media={img} dim={props.dim} />}
+                {img => <EmbeddedImg url={props.embed.u} media={img()} dim={props.dim} />}
             </Show>
 
             <div class="ln-embed__play-icon" onClick={() => setPlaying(true)}>
@@ -489,7 +491,7 @@ function EmbeddedHtml(props: { media: EmbedMedia, dim?: Dims }) {
     first_dims(props.media, props.dim);
 
     return (
-        <Show when={!errored()}>
+        <ShowBool when={!errored()}>
             {/* <div class="ln-embed__iframe" > */}
             {/* style={{ "aspect-ratio": aspect_ratio(props.media, props.dim) }} */}
             <iframe src={url()}
@@ -501,15 +503,15 @@ function EmbeddedHtml(props: { media: EmbedMedia, dim?: Dims }) {
                 sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
             />
             {/* </div> */}
-        </Show>
+        </ShowBool>
     );
 }
 
 function EmbeddedFooter(props: { footer: EmbedFooter }) {
     return (
         <div class="ln-embed__footer">
-            <Show keyed when={props.footer.i}>
-                {media => <EmbeddedMediaSingle media={media} />}
+            <Show when={props.footer.i}>
+                {media => <EmbeddedMediaSingle media={media()} />}
             </Show>
 
             <span>{props.footer.t}</span>

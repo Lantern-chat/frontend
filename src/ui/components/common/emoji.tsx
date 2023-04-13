@@ -1,4 +1,5 @@
-import { createEffect, createMemo, createSignal, onCleanup, Show } from "solid-js"
+import { createEffect, createMemo, createSignal, onCleanup } from "solid-js"
+import { ShowBool } from "../flow";
 import { usePrefs } from "state/contexts/prefs";
 import { ALIASES_REV, EMOJI_RE, emoji_with_skin_tone, SKIN_TONE_MODIFIER, format_emoji_shortcode, decode_emojis } from "lib/emoji";
 import type { Snowflake } from "state/models";
@@ -66,7 +67,7 @@ export function Emoji(props: IEmojiProps) {
     };
 
     return (
-        <Show when={!use_system()} fallback={
+        <ShowBool when={!use_system()} fallback={
             <span class="emoji" classList={{ "large": large() }} textContent={value()} ref={ref} title={title()} />
         }>
             <img class="emoji" classList={{ "large": large() }}
@@ -78,7 +79,7 @@ export function Emoji(props: IEmojiProps) {
                     ["error", () => setErrored(true)]
                 ]}
                 title={title()} ref={ref as any} />
-        </Show>
+        </ShowBool>
     );
 }
 

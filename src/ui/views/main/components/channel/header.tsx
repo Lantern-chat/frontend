@@ -1,4 +1,5 @@
 import { Show } from "solid-js";
+import { ShowBool } from "ui/components/flow";
 
 import { Type } from "state/main";
 import { Panel } from "state/mutators/window";
@@ -58,10 +59,14 @@ export function ChannelHeader() {
                         <span class="ln-channel-info__name ui-text" textContent={room().name} />
 
                         <Show when={room().topic}>
-                            <span class="ln-vert">&nbsp;</span>
-                            <span class="ln-channel-info__topic ui-text">
-                                <SimpleMarkdown source={room().topic!} inline />
-                            </span>
+                            {topic => (
+                                <>
+                                    <span class="ln-vert">&nbsp;</span>
+                                    <span class="ln-channel-info__topic ui-text">
+                                        <SimpleMarkdown source={topic()} inline />
+                                    </span>
+                                </>
+                            )}
                         </Show>
                     </div>
                 </div>
@@ -75,7 +80,7 @@ export function ChannelHeader() {
                     </span>
                 </div>
 
-                <Show when={__VERSION__ != latest_version()}>
+                <ShowBool when={__VERSION__ != latest_version()}>
                     <div class="ln-channel-header__version"
                         title={LL().main.RELOAD_PAGE()}
                         onClick={() => (location.reload as any)(true)}>
@@ -83,7 +88,7 @@ export function ChannelHeader() {
                             <VectorIcon id={Icons.Refresh} />
                         </span>
                     </div>
-                </Show>
+                </ShowBool>
             </div>
         </div>
     )

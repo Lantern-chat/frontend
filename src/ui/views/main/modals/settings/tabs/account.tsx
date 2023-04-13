@@ -38,10 +38,10 @@ export const AccountSettingsTab = () => {
             <div>Change Password</div>
             <div>2-Factor Authentication</div>
 
-            <Show when={quota()} keyed>
+            <Show when={quota()}>
                 {quota => (
                     <div>
-                        <span>{LL().main.settings.account.QUOTA(quota)}</span>
+                        <span>{LL().main.settings.account.QUOTA(quota())}</span>
                     </div>
                 )}
             </Show>

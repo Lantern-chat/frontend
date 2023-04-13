@@ -1,4 +1,5 @@
 import { createMemo, createSignal, Show } from "solid-js";
+import { ShowBool } from "ui/components/flow";
 
 import { setSession } from "state/commands";
 
@@ -164,13 +165,13 @@ export default function LoginView() {
                 <h2>{LL().LOGIN()}</h2>
             </div>
 
-            <Show when={state.totp_required}>
+            <ShowBool when={state.totp_required}>
                 <FullscreenModal style={{ "background-color": "rgba(0, 0, 0, 0.6)" }}>
                     <div class="ln-center-standalone" style={{ color: "white" }}>
                         TOTP Required
                     </div>
                 </FullscreenModal>
-            </Show>
+            </ShowBool>
 
             <FormGroup>
                 <FormLabel for="email">{LL().EMAIL_ADDRESS()}</FormLabel>
@@ -183,12 +184,12 @@ export default function LoginView() {
                 <FormInput value={state.pass} type="password" name="password" placeholder={LL().PASSWORD().toLocaleLowerCase(locale())} required
                     onInput={on_password_change} />
 
-                <Show when={!state.have_2fa}>
+                <ShowBool when={!state.have_2fa}>
                     {mfa_toggle()}
-                </Show>
+                </ShowBool>
             </FormGroup>
 
-            <Show when={state.have_2fa}>
+            <ShowBool when={state.have_2fa}>
                 <FormGroup>
                     <FormLabel for="totp">
                         <span>{LL().MFA_CODE()}</span>
@@ -201,7 +202,7 @@ export default function LoginView() {
 
                     {mfa_toggle()}
                 </FormGroup>
-            </Show>
+            </ShowBool>
 
             <Show when={errorMsg()}>
                 <FormGroup>
@@ -221,9 +222,9 @@ export default function LoginView() {
                         style={{ "margin-inline-end": "auto" }}
                         onClick={() => setErrorMsg(null)}
                     >
-                        <Show when={state.is_logging_in} fallback={LL().LOGIN()}>
+                        <ShowBool when={state.is_logging_in} fallback={LL().LOGIN()}>
                             <Spinner size="2em" />
-                        </Show>
+                        </ShowBool>
                     </button>
 
                     <Link class="ln-btn" href="/register">{LL().REGISTER()}</Link>

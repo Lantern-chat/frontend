@@ -1,4 +1,5 @@
 import { Show } from "solid-js";
+import { ShowBool } from "ui/components/flow";
 
 import { copyText } from "lib/clipboard";
 
@@ -51,9 +52,9 @@ export function PartyAvatar(props: IPartyAvatarProps) {
                     backgroundColor={pickColorFromHash(props.party.id, prefs.LightMode())} />
             </Link>
 
-            <Show keyed when={pos()}>
+            <Show when={pos()}>
                 {pos => (
-                    <PositionedModal rect={pos}>
+                    <PositionedModal rect={pos()}>
                         <ListedPartyMenu party={props.party} />
                     </PositionedModal>
                 )}
@@ -83,13 +84,13 @@ function ListedPartyMenu(props: IListedPartyMenuProps) {
                 <UIText text={LL().main.menus.INVITE_PEOPLE()} />
             </div>
 
-            <Show when={dev_mode()}>
+            <ShowBool when={dev_mode()}>
                 <hr />
 
                 <div onClick={() => copyText(props.party.id)}>
                     <UIText text={LL().main.menus.COPY_ID()} />
                 </div>
-            </Show>
+            </ShowBool>
         </ContextMenu>
     );
 }

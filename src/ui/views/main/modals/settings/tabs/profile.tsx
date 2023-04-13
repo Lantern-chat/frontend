@@ -1,4 +1,5 @@
 import { createSignal, onMount, createMemo, Show, createEffect, Accessor, onCleanup, Setter, JSX, on } from "solid-js";
+import { ShowBool } from "ui/components/flow";
 
 import { resize_image } from "lib/image";
 import { unpack_rgb, u82float, RGBColor, pack_rgb, float2u8 } from "lib/color";
@@ -66,8 +67,8 @@ function ProfileSettingsTabInner() {
     let avatar_input: HTMLInputElement | undefined;
     let banner_input: HTMLInputElement | undefined;
 
-    let can_show_remove_avatar = () => localAvatarUrl() !== null && (localAvatarUrl() || cached_user().profile?.avatar);
-    let can_show_remove_banner = () => localBannerUrl() !== null && (localBannerUrl() || cached_user().profile?.banner);
+    let can_show_remove_avatar = () => localAvatarUrl() !== null && !!(localAvatarUrl() || cached_user().profile?.avatar);
+    let can_show_remove_banner = () => localBannerUrl() !== null && !!(localBannerUrl() || cached_user().profile?.banner);
 
     let [editingColor, setEditingColor] = createSignal(false);
 
@@ -215,7 +216,7 @@ function ProfileSettingsTabInner() {
             <input type="file" ref={avatar_input} onChange={e => on_file(e, setAvatarFile)} accept="image/*" />
             <input type="file" ref={banner_input} onChange={e => on_file(e, setBannerFile)} accept="image/*" />
 
-            <Show when={pendingAction()}>
+            <ShowBool when={pendingAction()}>
                 <FullscreenModal blur>
                     <div class="ln-settings-profile__confirm">
                         <div>
@@ -237,7 +238,7 @@ function ProfileSettingsTabInner() {
                         </div>
                     </div>
                 </FullscreenModal>
-            </Show>
+            </ShowBool>
 
             <form>
                 <div class="ln-settings-profile__inner">
@@ -302,12 +303,12 @@ function ProfileSettingsTabInner() {
                                     textContent={llp().CHANGE_BANNER()}
                                 />
                                 <div class="remove-buttons ui-text">
-                                    <Show when={can_show_remove_avatar()}>
+                                    <ShowBool when={can_show_remove_avatar()}>
                                         <div onClick={() => setAvatarFile(null)} textContent={llp().REMOVE_AVATAR()} />
-                                    </Show>
-                                    <Show when={can_show_remove_banner()}>
+                                    </ShowBool>
+                                    <ShowBool when={can_show_remove_banner()}>
                                         <div onClick={() => setBannerFile(null)} textContent={llp().REMOVE_BANNER()} />
-                                    </Show>
+                                    </ShowBool>
                                 </div>
                             </>
                         )}

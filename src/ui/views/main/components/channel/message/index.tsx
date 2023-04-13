@@ -66,10 +66,10 @@ export function Message(props: { msg: IMessageState }) {
                 <div class="ln-msg__wrapper" role="article">
                     <Dynamic component={System || (prefs.CompactView() ? CompactMessage : CozyMessage)} {...props} />
 
-                    <Show keyed when={pos()}>
+                    <Show when={pos()}>
                         {pos => (
-                            <PositionedModal rect={pos}>
-                                <MsgContextMenu msg={props.msg} pos={pos} onConfirmChange={(pending: boolean) => setWarn(pending)} />
+                            <PositionedModal rect={pos()}>
+                                <MsgContextMenu msg={props.msg} pos={pos()} onConfirmChange={(pending: boolean) => setWarn(pending)} />
                             </PositionedModal>
                         )}
                     </Show>

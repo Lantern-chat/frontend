@@ -1,4 +1,5 @@
 import { createMemo, createSelector, For, Show } from "solid-js";
+import { ShowBool } from "ui/components/flow";
 
 import { copyText } from "lib/clipboard";
 
@@ -59,9 +60,9 @@ export function ChannelList() {
                 </For>
             </Show>
 
-            <Show keyed when={!!party().party_id && pos()}>
+            <Show when={!!party().party_id && pos()}>
                 {pos => (
-                    <PositionedModal rect={pos}>
+                    <PositionedModal rect={pos()}>
                         <RoomListContextMenu party_id={party().party_id!} />
                     </PositionedModal>
                 )}
@@ -97,9 +98,9 @@ function ListedChannel(props: IListedChannelProps) {
                 </div>
             </Link>
 
-            <Show keyed when={pos()}>
+            <Show when={pos()}>
                 {pos => (
-                    <PositionedModal rect={pos}>
+                    <PositionedModal rect={pos()}>
                         <RoomContextMenu room={props.room} />
                     </PositionedModal>
                 )}
@@ -129,13 +130,13 @@ function RoomContextMenu(props: IRoomContextMenuProps) {
                 <span class="ui-text" textContent={LL().main.menus.room.EDIT()} />
             </div>
 
-            <Show when={dev_mode()}>
+            <ShowBool when={dev_mode()}>
                 <hr />
 
                 <div onClick={() => copyText(props.room.id)}>
                     <span class="ui-text" textContent={LL().main.menus.COPY_ID()} />
                 </div>
-            </Show>
+            </ShowBool>
         </ContextMenu>
     );
 }

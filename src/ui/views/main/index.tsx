@@ -1,4 +1,5 @@
-import { onCleanup, onMount, Show } from "solid-js";
+import { onCleanup, onMount } from "solid-js";
+import { ShowBool } from "ui/components/flow";
 import throttle from "lodash/throttle";
 
 import { Action, useRootStore } from "state/root";
@@ -202,9 +203,9 @@ export default function Main() {
         >
             <MainContext.Provider value={main_value}>
                 <TimeProvider>
-                    <Show when={!is_right_view()}>
+                    <ShowBool when={!is_right_view()}>
                         <PartyList />
-                    </Show>
+                    </ShowBool>
 
                     <Party />
 

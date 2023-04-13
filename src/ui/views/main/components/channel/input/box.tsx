@@ -1,4 +1,5 @@
 import { createEffect, createMemo, createSignal, onCleanup, onMount, Show, untrack, useContext } from "solid-js";
+import { ShowBool } from "ui/components/flow";
 import { useStructuredSelector } from "solid-mutant";
 
 import { IS_MOBILE } from "lib/user_agent";
@@ -192,9 +193,9 @@ export function MessageBox() {
                 <UploadPanel onChange={(c, s) => setFiles([c, s])} fc={setFC} />
 
                 <div class="ln-typing ln-typing__top">
-                    <Show when={prefs.UseMobileView()}>
+                    <ShowBool when={prefs.UseMobileView()}>
                         <UsersTyping />
-                    </Show>
+                    </ShowBool>
                 </div>
 
                 <div onClick={on_click_focus} class="ln-msg-box">
@@ -234,9 +235,9 @@ export function MessageBox() {
             </div>
 
             <div class="ln-typing ln-typing__bottom">
-                <Show when={!prefs.UseMobileView()}>
+                <ShowBool when={!prefs.UseMobileView()}>
                     <UsersTyping />
-                </Show>
+                </ShowBool>
 
                 <span class="ui-text" id="file-upload-meta"
                     textContent={f().bytes(files()[1])}

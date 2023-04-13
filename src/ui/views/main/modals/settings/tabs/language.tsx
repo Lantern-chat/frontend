@@ -1,4 +1,6 @@
 import { createSelector, createSignal, For, Show } from "solid-js";
+import { ShowBool } from "ui/components/flow";
+
 import type { Locales } from "ui/i18n/i18n-types";
 
 export const LanguageSettingsTab = () => {
@@ -56,11 +58,11 @@ function LangPicker() {
                         >
                             <div class="lang-emoji"><EmojiLite value={lang.e} /></div>
                             <div class="lang-name">{lang.n}</div>
-                            <Show when={selecting(key)}>
+                            <ShowBool when={selecting(key)}>
                                 <div class="lang-spinner">
                                     <Spinner size="1.5em"></Spinner>
                                 </div>
-                            </Show>
+                            </ShowBool>
                         </li>
                     )
                 }}
