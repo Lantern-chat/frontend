@@ -1,6 +1,7 @@
 import { createRenderEffect, createSignal, JSX, Show } from "solid-js";
 import { runBatched } from "ui/hooks/runBatched";
 import { br } from "ui/utils";
+import { LAZY_ATTR } from "lib/user_agent";
 
 export interface IAvatarProps {
     rounded?: number | boolean,
@@ -41,7 +42,7 @@ export function Avatar(props: IAvatarProps) {
 
     // let on_load_img = (e: Event) => {
     //     let skeleton = (e.target as HTMLImageElement).previousElementSibling! as HTMLDivElement;
-    //     skeleton.style.display = 'none';
+    //     skeleton.style.display = "none";
     // };
 
     return (
@@ -49,25 +50,25 @@ export function Avatar(props: IAvatarProps) {
             <div class="ln-avatar__wrapper" {...props.wrapper} title={props.username}>
                 {/* <div class="ln-avatar__skel" /> */}
 
-                {() => props.url ? (
-                    <img src={props.url}
-                        loading="lazy"
-                        class="ln-avatar__image"
-                        // on:load={on_load_img}
-                        alt={props.username}
-                        style={{ 'border-radius': br(props.rounded) }}
-                    />
-                ) : (
+                <Show when={props.url} fallback={
                     <span
                         class="ln-avatar__text"
                         style={{
                             "background-color": props.backgroundColor,
-                            'border-radius': br(props.rounded)
+                            "border-radius": br(props.rounded)
                         }}
                     >
-                        {props.children || props.text || '?'}
+                        {(props.children || props.text || "?")}
                     </span>
-                )}
+                }>
+                    <img src={props.url!}
+                        class="ln-avatar__image"
+                        loading={LAZY_ATTR}
+                        // on:load={on_load_img}
+                        alt={props.username}
+                        style={{ "border-radius": br(props.rounded) }}
+                    />
+                </Show>
             </div>
 
             {props.anchor}

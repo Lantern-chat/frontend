@@ -3,6 +3,7 @@ import { usePrefs } from "state/contexts/prefs";
 import { ALIASES_REV, EMOJI_RE, emoji_with_skin_tone, SKIN_TONE_MODIFIER, format_emoji_shortcode, decode_emojis } from "lib/emoji";
 import type { Snowflake } from "state/models";
 import { emote_url, emoji_url } from "config/urls";
+import { LAZY_ATTR } from "lib/user_agent";
 
 import { cleanedEvent } from "ui/directives/bugs";
 false && cleanedEvent;
@@ -70,6 +71,7 @@ export function Emoji(props: IEmojiProps) {
         }>
             <img class="emoji" classList={{ "large": large() }}
                 aria-label={value()} draggable={false} data-type="emoji"
+                loading={LAZY_ATTR}
                 src={emoji_url(value())}
                 use:cleanedEvent={[
                     ["load", (e) => { (e.target as HTMLImageElement).alt = value(); }],
@@ -87,6 +89,7 @@ export function CustomEmote(props: { id: Snowflake, large?: boolean, name: strin
 
     return (
         <img class="emoji" classList={{ "large": large() }}
+            loading={LAZY_ATTR}
             draggable={false} data-type="emoji" title={props.name}
             src={emote_url("emote", props.id, prefs.LowBandwidthMode())}
             alt={`<:${props.name}:${props.id}>`}

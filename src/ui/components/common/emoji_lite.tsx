@@ -1,6 +1,7 @@
 import { createSignal, Show } from "solid-js"
 import { usePrefs } from "state/contexts/prefs";
 import { emoji_url } from "config/urls";
+import { LAZY_ATTR } from "lib/user_agent";
 
 import type { IEmojiProps } from "./emoji";
 
@@ -27,6 +28,7 @@ export function EmojiLite(props: IEmojiLiteProps) {
             <span class="emoji" classList={{ "large": large() }} textContent={value()} />
         }>
             <img class="emoji" classList={{ "large": large() }}
+                loading={LAZY_ATTR}
                 alt={value()} aria-label={value()}
                 draggable={false} data-type="emoji"
                 src={emoji_url(value())}

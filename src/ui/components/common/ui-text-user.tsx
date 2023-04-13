@@ -2,6 +2,7 @@ import { EMOJI_RE, find_emoji, format_emoji_shortcode } from "lib/emoji";
 import { usePrefs } from "state/contexts/prefs";
 import { emoji_url } from "config/urls";
 import { lazy } from "lib/util";
+import { LAZY_ATTR } from "lib/user_agent";
 
 import { cleanedEvent } from "ui/directives/bugs";
 false && cleanedEvent;
@@ -31,7 +32,7 @@ export function UserText(props: UITextProps) {
                     data-type="emoji" aria-label={/*@once*/n.e}
                     textContent={/*@once*/n.e} use:cleanedEvent={[["mouseover", on_hover]]}
                 />) : (
-                <img class="emoji" alt={/*@once*/n.e} draggable={false}
+                <img class="emoji" alt={/*@once*/n.e} draggable={false} loading={LAZY_ATTR}
                     data-type="emoji" aria-label={/*@once*/n.e}
                     src={/*@once*/emoji_url(n.e)} use:cleanedEvent={[["mouseover", on_hover]]}
                 />
@@ -44,7 +45,7 @@ export function UserText(props: UITextProps) {
 
 const EMOJI_REG: RegExp = new RegExp("(?:" + EMOJI_RE.source + ")", EMOJI_RE.flags + "g");
 
-window["split_user_text"] = split_user_text;
+//window["split_user_text"] = split_user_text;
 
 type ENode = string | { e: string };
 function split_user_text(text: string): Array<ENode> {
