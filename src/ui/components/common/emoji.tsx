@@ -23,11 +23,13 @@ export interface IEmojiProps {
     tone?: SKIN_TONE_MODIFIER;
 }
 
+const EGGS: Record<string, string> = {
+    "🍪": "https://orteil.dashnet.org/cookieclicker/",
+};
+
 import "./emoji.scss";
 export function Emoji(props: IEmojiProps) {
     const prefs = usePrefs();
-
-    let ref: HTMLElement | ((el: HTMLElement) => void) | undefined;
 
     let value = createMemo(() => {
         let e = props.value;
@@ -40,18 +42,20 @@ export function Emoji(props: IEmojiProps) {
         return emoji_with_skin_tone(e, props.tone);
     });
 
-    // // zero-cost easter egg
-    // // TODO: Use regular `onClick` for event-delegation
-    // if(!props.ui && value() == "🍪") {
-    //     ref = createRef();
-    //     createEffect(() => {
-    //         let c = 0, listener = () => {
-    //             if(++c == 5) { window.open("https://orteil.dashnet.org/cookieclicker/"); c = 0; }
-    //         }; (ref as Ref<HTMLElement>).current?.addEventListener("click", listener);
+    let ref: HTMLElement | undefined, egg: string | undefined;
 
-    //         onCleanup(() => (ref as Ref<HTMLElement>).current?.removeEventListener("click", listener));
-    //     });
-    // }
+    // zero-cost easter egg
+    if(!props.ui && (egg = EGGS[value()])) {
+        createEffect(() => {
+            let c = 0, listener = (e: MouseEvent) => {
+                if(++c == 5) { window.open(egg); c = 0; }
+                ref!.style.userSelect = c > 0 ? 'none' : 'auto';
+            };
+
+            ref!.addEventListener("click", listener);
+            onCleanup(() => ref!.removeEventListener("click", listener));
+        });
+    }
 
     let [errored, setErrored] = createSignal(false);
 
