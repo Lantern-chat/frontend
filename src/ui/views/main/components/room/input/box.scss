@@ -10,7 +10,7 @@
         margin-inline-start: auto;
     }
 
-    @media (max-width: $ln-max-channel-width) {
+    @media (max-width: $ln-max-room-width) {
         padding-inline: 1rem;
 
         &__bottom {
@@ -19,7 +19,7 @@
     }
 
     &__top {
-        @media (min-width: $ln-min-channel-width) {
+        @media (min-width: $ln-min-room-width) {
             display: none;
         }
 
@@ -66,7 +66,7 @@
         }
 
         // TODO: Fix textarea background color bleeding over border-radius in mobile-view and showing the sidebar
-        @media (min-width: $ln-min-channel-width) {
+        @media (min-width: $ln-min-room-width) {
             border-radius: 0.5rem;
             margin-inline: 1rem;
 

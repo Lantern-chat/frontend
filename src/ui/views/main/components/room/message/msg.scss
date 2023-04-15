@@ -252,7 +252,7 @@
         //padding-right: 0.6em;
         //text-align: center;
 
-        @media (min-width: $ln-min-channel-width) {
+        @media (min-width: $ln-min-room-width) {
             min-width: 4.425em;
             padding-inline-start: 1em; // padding-left
             //padding-right: 0.8em;
@@ -270,7 +270,7 @@
     }
 
     //max-width: calc(100% - 4.025em);
-    //@media (min-width: $ln-min-channel-width) {
+    //@media (min-width: $ln-min-room-width) {
     //    max-width: calc(100% - 4.425em);
     //}
 
@@ -303,7 +303,7 @@
             display: inline-flex;
         }
 
-        @media (max-width: $ln-max-channel-width) {
+        @media (max-width: $ln-max-room-width) {
             font-size: min(4.5vw, 1.3em);
         }
     }

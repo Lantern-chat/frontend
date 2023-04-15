@@ -2,7 +2,7 @@ import type { BaseTranslation } from "../../i18n-types";
 
 // @stringify
 const enUS_main: BaseTranslation = {
-    CHANNEL: "Channel",
+    ROOM: "Room",
     PARTY: "Party",
     DIRECT_MESSAGE: "Direct Message",
     CREATE_DIRECT_MESSAGE: "Create Direct Message",
@@ -47,7 +47,7 @@ const enUS_main: BaseTranslation = {
         "{0:string}, {1:string}, and {2:string} are typing...", // 3 users
         "{0:string}, {1:string}, {2:string}, and {3:number} others are typing...", // 4+ users
     ],
-    channel: {
+    room: {
         TOP1: "You have reached the top of #{0}!",
         TOP2: "Congrats on making it this far."
     },
@@ -64,10 +64,10 @@ const enUS_main: BaseTranslation = {
             REPORT: "Report Message",
         },
         room: {
-            EDIT: "Edit Channel",
+            EDIT: "Edit Room",
         },
         room_list: {
-            CREATE: "Create Channel",
+            CREATE: "Create Room",
         }
     },
     member_list: {

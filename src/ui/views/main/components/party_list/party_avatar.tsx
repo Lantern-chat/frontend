@@ -24,7 +24,7 @@ import { asset_url, room_url } from "config/urls";
 
 interface IPartyAvatarProps {
     party: Party,
-    last_channel: Record<Snowflake, Snowflake>,
+    last_room: Record<Snowflake, Snowflake>,
     can_navigate: boolean,
     is_active?: boolean,
     active_party?: Snowflake,
@@ -34,7 +34,7 @@ export function PartyAvatar(props: IPartyAvatarProps) {
     let dispatch = useRootDispatch();
     let prefs = usePrefs();
 
-    let last = () => props.last_channel[props.party.id],
+    let last = () => props.last_room[props.party.id],
         url = () => props.party.avatar ? asset_url("party", props.party.id, props.party.avatar, "avatar", prefs.LowBandwidthMode()) : void 0,
         should_navigate = () => props.can_navigate && props.party.id != props.active_party;
 

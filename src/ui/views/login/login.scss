@@ -41,7 +41,7 @@
             text-decoration: underline;
         }
 
-        @media (max-width: $ln-max-channel-width) {
+        @media (max-width: $ln-max-room-width) {
             padding-top: 1em;
             padding-bottom: 0.5em;
         }

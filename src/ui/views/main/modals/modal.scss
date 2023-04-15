@@ -39,7 +39,7 @@
         border-radius: 1rem;
 
         // mobile view
-        @media (max-width: $ln-max-channel-width) {
+        @media (max-width: $ln-max-room-width) {
             border-radius: 0;
             padding: 1rem 0;
             margin: 0;

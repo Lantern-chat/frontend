@@ -167,7 +167,7 @@ export type NamespaceMainTranslation = {
 	/**
 	 * C​h​a​n​n​e​l
 	 */
-	CHANNEL: string
+	ROOM: string
 	/**
 	 * P​a​r​t​y
 	 */
@@ -345,7 +345,7 @@ export type NamespaceMainTranslation = {
 		 */
 		'3': RequiredParams<'0' | '1' | '2' | '3'>
 	}
-	channel: {
+	room: {
 		/**
 		 * Y​o​u​ ​h​a​v​e​ ​r​e​a​c​h​e​d​ ​t​h​e​ ​t​o​p​ ​o​f​ ​#​{​0​}​!
 		 * @param {unknown} 0
@@ -873,9 +873,9 @@ export type TranslationFunctions = {
 	}
 	main: {
 		/**
-		 * Channel
+		 * Room
 		 */
-		CHANNEL: () => LocalizedString
+		ROOM: () => LocalizedString
 		/**
 		 * Party
 		 */
@@ -1042,7 +1042,7 @@ export type TranslationFunctions = {
 			 */
 			'3': (arg0: string, arg1: string, arg2: string, arg3: number) => LocalizedString
 		}
-		channel: {
+		room: {
 			/**
 			 * You have reached the top of #{0}!
 			 */
@@ -1093,13 +1093,13 @@ export type TranslationFunctions = {
 			}
 			room: {
 				/**
-				 * Edit Channel
+				 * Edit Room
 				 */
 				EDIT: () => LocalizedString
 			}
 			room_list: {
 				/**
-				 * Create Channel
+				 * Create Room
 				 */
 				CREATE: () => LocalizedString
 			}

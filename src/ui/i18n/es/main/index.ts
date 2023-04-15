@@ -2,7 +2,7 @@ import type { NamespaceMainTranslation } from "../../i18n-types"
 
 // @stringify
 const es_main: NamespaceMainTranslation = {
-	CHANNEL: "Habitación",
+	ROOM: "Habitación",
 	PARTY: "Partido",
 	DIRECT_MESSAGE: "Mensaje Directo",
 	CREATE_DIRECT_MESSAGE: "Crear Mensaje Directo",
@@ -43,7 +43,7 @@ const es_main: NamespaceMainTranslation = {
 		"{0}, {1}, y {2} están escribiendo...", // 3 users
 		"{0}, {1}, {2}, y {3} más están escribiendo...", // 4+ users, parameter 3 is a number
 	],
-	channel: {
+	room: {
 		TOP1: "¡Has llegado a la cima de #{0}!",
 		TOP2: "Felicidades por llegar tan lejos."
 	},

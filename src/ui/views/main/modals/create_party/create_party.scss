@@ -4,7 +4,7 @@
     text-align: center;
 
     // desktop view
-    @media (min-width: $ln-min-channel-width) {
+    @media (min-width: $ln-min-room-width) {
         width: 30rem;
     }
 

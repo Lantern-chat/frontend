@@ -53,11 +53,11 @@
     }
 
     &--opened {
-        @media (min-width: $ln-min-channel-width) {
+        @media (min-width: $ln-min-room-width) {
             animation-name: settings-zoom-in, settings-fade-in;
         }
 
-        @media (max-width: $ln-max-channel-width) {
+        @media (max-width: $ln-max-room-width) {
             animation-name: settings-fade-in;
         }
     }
@@ -65,11 +65,11 @@
     &--closing {
         animation-fill-mode: forwards;
 
-        @media (min-width: $ln-min-channel-width) {
+        @media (min-width: $ln-min-room-width) {
             animation-name: settings-zoom-out, settings-fade-out;
         }
 
-        @media (max-width: $ln-max-channel-width) {
+        @media (max-width: $ln-max-room-width) {
             animation-name: settings-fade-out;
         }
     }
@@ -82,7 +82,7 @@
     display: flex;
     flex-wrap: nowrap;
 
-    @media (min-width: $ln-min-channel-width) {
+    @media (min-width: $ln-min-room-width) {
         &__categories {
             min-width: 15rem;
             flex: 1 0 auto;
@@ -93,7 +93,7 @@
         }
     }
 
-    @media (max-width: $ln-max-channel-width) {
+    @media (max-width: $ln-max-room-width) {
         &__categories,
         &__page {
             width: 100%;

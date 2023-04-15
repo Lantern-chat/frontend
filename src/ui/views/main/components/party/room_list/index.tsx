@@ -20,8 +20,8 @@ import { PositionedModal } from "ui/components/modal/positioned";
 import { ContextMenu } from "../../menus/list";
 import { RoomIcon } from "./room_icon";
 
-import "./channel_list.scss";
-export function ChannelList() {
+import "./room_list.scss";
+export function RoomList() {
     let { dispatch, state } = useRootStore();
 
     let party = createMemo(() => {
@@ -40,7 +40,7 @@ export function ChannelList() {
     });
 
     let on_navigate = () => {
-        // if on the room list, go to main to display channel.
+        // if on the room list, go to main to display room.
         if(state.window.show_panel == Panel.LeftRoomList) {
             dispatch({ type: Type.WINDOW_SET_PANEL, panel: Panel.Main });
         }
@@ -53,10 +53,10 @@ export function ChannelList() {
     let is_room_selected = createSelector(() => activeRoom(state));
 
     return (
-        <ul class="ln-channel-list ln-scroll-y ln-scroll-fixed" {...main_click_props} >
+        <ul class="ln-room-list ln-scroll-y ln-scroll-fixed" {...main_click_props} >
             <Show when={rooms()?.length} fallback={<div style={{ height: "100%", "padding-top": "1em" }}><Bounce size="auto" /></div>}>
                 <For each={rooms()}>
-                    {room => <ListedChannel room={room} selected={is_room_selected(room.id)} onNavigate={on_navigate} />}
+                    {room => <ListedRoom room={room} selected={is_room_selected(room.id)} onNavigate={on_navigate} />}
                 </For>
             </Show>
 
@@ -71,13 +71,13 @@ export function ChannelList() {
     );
 }
 
-interface IListedChannelProps {
+interface IListedRoomProps {
     room: Room,
     selected: boolean,
     onNavigate?: () => void,
 }
 
-function ListedChannel(props: IListedChannelProps) {
+function ListedRoom(props: IListedRoomProps) {
     let [pos, main_click_props] = createSimplePositionedContextMenu();
 
     return (
@@ -86,14 +86,14 @@ function ListedChannel(props: IListedChannelProps) {
             data-roomid={props.room.id}
         >
             <Link
-                class="ln-channel-list__channel"
-                href={`/channels/${props.room.party_id || "@me"}/${props.room.id}`}
+                class="ln-room-list__room"
+                href={`/rooms/${props.room.party_id || "@me"}/${props.room.id}`}
                 onNavigate={props.onNavigate}
                 noAction={props.selected}
             >
                 <RoomIcon room={props.room} />
 
-                <div class="ln-channel-list__name">
+                <div class="ln-room-list__name">
                     <UserText class="ui-text" text={props.room.name} />
                 </div>
             </Link>

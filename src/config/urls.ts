@@ -29,7 +29,7 @@ export function message_attachment_url(room_id: Snowflake, attachment_id: Snowfl
 }
 
 export function room_url(party_id: Snowflake, room_id?: Snowflake): string {
-    let url = `/channels/${party_id}/`;
+    let url = `/rooms/${party_id}/`;
     return room_id ? (url + room_id) : url;
 }
 

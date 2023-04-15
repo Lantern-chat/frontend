@@ -2,7 +2,7 @@ import type { NamespaceMainTranslation } from "../../i18n-types";
 
 // @stringify
 const idID_main: NamespaceMainTranslation = {
-    CHANNEL: "Channel",
+    ROOM: "Room",
     PARTY: "Pesta",
     DIRECT_MESSAGE: "Pesan Langsung",
     CREATE_DIRECT_MESSAGE: "Buat Pesan Langsung",
@@ -32,7 +32,7 @@ const idID_main: NamespaceMainTranslation = {
         "{0}, {1}, dan {2} sedang mengekit...", // 3 users
         "{0}, {1}, {2}, dan {3} lainnya sedang mengekit...", // 4+ users
     ],
-    channel: {
+    room: {
         TOP1: "Anda telah mencapai puncak dari #{0}!",
         TOP2: "Terima kasih telah mencapai sini."
     },
@@ -49,10 +49,10 @@ const idID_main: NamespaceMainTranslation = {
             REPORT: "Laporkan Pesan",
         },
         room: {
-            EDIT: "Suting Channel",
+            EDIT: "Suting Room",
         },
         room_list: {
-            CREATE: "Buat Channel",
+            CREATE: "Buat Room",
         }
     },
     member_list: {

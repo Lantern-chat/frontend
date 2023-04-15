@@ -26,7 +26,7 @@ export function PartyList() {
         parties: (state: RootState) => Object.values(state.party.parties).map(party => party.party).sort((a, b) => a.position - b.position),
         use_mobile_view: (state: RootState) => state.window.use_mobile_view,
         user_object: (state: RootState) => state.user.user,
-        last_channel: (state: RootState) => state.party.last_channel,
+        last_room: (state: RootState) => state.party.last_room,
         gateway_status: (state: RootState) => state.gateway.status,
         active_party: activeParty,
     });
@@ -50,7 +50,7 @@ export function PartyList() {
                 <Show when={state.user_object && !GATEWAY_PENDING.includes(state.gateway_status)} fallback={Connecting()}>
                     <For each={state.parties}>
                         {party => <PartyAvatar
-                            party={party} last_channel={state.last_channel}
+                            party={party} last_room={state.last_room}
                             can_navigate={can_navigate()}
                             active_party={state.active_party}
                             is_active={is_party_active(party.id)}

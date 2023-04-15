@@ -15,7 +15,7 @@ $active: #47c05b;
 
     max-width: 35rem;
 
-    @media (max-width: $ln-max-channel-width) {
+    @media (max-width: $ln-max-room-width) {
         max-width: 100%;
     }
 

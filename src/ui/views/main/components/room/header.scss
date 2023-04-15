@@ -1,6 +1,6 @@
 @import "lib/variables";
 
-.ln-channel-header {
+.ln-room-header {
     width: 100%;
     padding: 0.5em;
     text-align: center;
@@ -31,7 +31,7 @@
         display: flex;
         flex-wrap: nowrap;
 
-        @media (min-width: $ln-min-channel-width) {
+        @media (min-width: $ln-min-room-width) {
             text-align: start;
         }
     }
@@ -64,7 +64,7 @@
             padding-inline-start: 0;
         }
 
-        @media (min-width: $ln-min-channel-width) {
+        @media (min-width: $ln-min-room-width) {
             display: none;
         }
     }
@@ -106,23 +106,23 @@
     border-left: 1px solid rgba(128, 128, 128, 0.5);
 }
 
-.ln-channel-icon {
+.ln-room-icon {
     font-size: 1.6em;
     margin: auto 0;
     margin-inline-start: 0.1em;
     flex: 0 0 auto;
 
-    @media (max-width: $ln-max-channel-width) {
+    @media (max-width: $ln-max-room-width) {
         margin-inline-end: 0;
     }
 }
 
-.ln-channel-info {
+.ln-room-info {
     line-height: normal;
     color: $lnx-secondary-text-color;
     text-align: start;
 
-    @media (min-width: $ln-min-channel-width) {
+    @media (min-width: $ln-min-room-width) {
         max-width: calc(97vw - 35.2rem); // 4.2 + 14*2 + 3
     }
 

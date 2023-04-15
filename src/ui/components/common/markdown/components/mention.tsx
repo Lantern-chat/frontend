@@ -24,7 +24,7 @@ export function Mention(props: IMentionProps) {
         );
         case "#": return (
             <Show keyed when={party()?.rooms[props.id]} fallback={<span textContent={`<#${/*@once*/props.id}>`} />}>
-                {room => <Link class="ln-channel-mention" href={`/channels/${room.party_id}/${room.id}`}>#{room.name}</Link>}
+                {room => <Link class="ln-room-mention" href={`/rooms/${room.party_id}/${room.id}`}>#{room.name}</Link>}
             </Show>
         );
         default: return null;

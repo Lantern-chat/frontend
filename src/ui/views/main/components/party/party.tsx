@@ -3,9 +3,9 @@ import { useStructuredSelector } from "solid-mutant";
 import { ShowBool } from "ui/components/flow";
 
 import { Home } from "../home";
-import { ChannelList } from "./channel_list";
+import { RoomList } from "./room_list";
 import { MemberList } from "./member_list";
-import { Channel } from "../channel/channel";
+import { Room } from "../room/room";
 import { HomeSideBar } from "../home/sidebar";
 import { PartyHeader } from "./header";
 import { PartyFooter } from "./footer";
@@ -56,7 +56,7 @@ export function Party() {
 
                 switch(state.show_panel) {
                     case Panel.Main: {
-                        // swiped right on main, go to channel list
+                        // swiped right on main, go to room list
                         dispatch({ type: Type.WINDOW_SET_PANEL, panel: Panel.LeftRoomList });
                         break;
                     }
@@ -75,7 +75,7 @@ export function Party() {
                         break;
                     }
                     case Panel.LeftRoomList: {
-                        // swiped left on channels, go to main
+                        // swiped left on rooms, go to main
                         dispatch({ type: Type.WINDOW_SET_PANEL, panel: Panel.Main });
                         break;
                     }
@@ -131,29 +131,29 @@ export function Party() {
                 >
                     <Show when={state.active_party != "@me"} fallback={<HomeSideBar />}>
                         <PartyHeader />
-                        <ChannelList />
+                        <RoomList />
                     </Show>
                     <PartyFooter />
                 </div>
             </ShowBool>
 
             <div
-                class="ln-party__channel"
+                class="ln-party__room"
                 classList={{
-                    "ln-party__channel--expanded-right": state.use_mobile_view && state.show_panel == Panel.RightUserList,
-                    "ln-party__channel--expanded-left": state.use_mobile_view && state.show_panel == Panel.LeftRoomList,
+                    "ln-party__room--expanded-right": state.use_mobile_view && state.show_panel == Panel.RightUserList,
+                    "ln-party__room--expanded-left": state.use_mobile_view && state.show_panel == Panel.LeftRoomList,
                 }}
             >
                 <Show when={
                     /*NOTE: This is clear element that covers the chat when on the side */
                     state.use_mobile_view && state.show_panel != Panel.Main
                 }>
-                    <div class="ln-channel__cover" onClick={() => dispatch({ type: Type.WINDOW_SET_PANEL, panel: Panel.Main })} />
+                    <div class="ln-room__cover" onClick={() => dispatch({ type: Type.WINDOW_SET_PANEL, panel: Panel.Main })} />
                 </Show>
 
                 <Show when={/*NOTE: active_party may be null */ state.active_party}>
                     {active_party => (
-                        <Show when={active_party() == "@me"} fallback={<Channel />}>
+                        <Show when={active_party() == "@me"} fallback={<Room />}>
                             <Home />
                         </Show>
                     )}

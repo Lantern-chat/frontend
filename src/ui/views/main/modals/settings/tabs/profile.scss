@@ -45,7 +45,7 @@
             max-width: 70vw;
             flex-wrap: wrap;
 
-            @media (max-width: $ln-max-channel-width) {
+            @media (max-width: $ln-max-room-width) {
                 flex-direction: column;
             }
         }

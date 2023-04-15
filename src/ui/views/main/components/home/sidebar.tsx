@@ -9,8 +9,8 @@ export function HomeSideBar() {
         <div class="ln-home-sidebar">
             <ul class="ln-home-tabs">
                 <li>
-                    <Link href="/channels/@me/friends">
-                        <VectorIcon id={Icons.Family} />
+                    <Link href="/rooms/@me">
+                        <VectorIcon id={Icons.Friends} />
                         <span class="ui-text">Friends</span>
                     </Link>
                 </li>
@@ -19,10 +19,6 @@ export function HomeSideBar() {
             <h4 id="dm-header">
                 <span class="ui-text">Direct Messages</span>
             </h4>
-
-            <ul>
-                <li>You have no friends :(</li>
-            </ul>
         </div>
     );
 }

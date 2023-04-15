@@ -8,15 +8,27 @@ import { RootState, useRootSelector } from "state/root";
 import { activeRoom } from "state/selectors/active";
 import { Snowflake } from "state/models";
 
-import { ChannelHeader } from "./header";
+import { RoomHeader } from "./header";
 import { MessageFeed } from "./feed";
 import { MessageBox } from "./input/box";
 import { DisplayError } from "ui/components/common/error";
 import { MemberList } from "../party/member_list";
 
+function clearInner(node: Node | null) {
+    while(node?.hasChildNodes()) {
+        clear(node.firstChild);
+    }
+}
 
-import "./channel.scss";
-export function Channel() {
+function clear(node: Node | null) {
+    while(node?.hasChildNodes()) {
+        clear(node.firstChild);
+    }
+    node?.parentNode?.removeChild(node);
+}
+
+import "./room.scss";
+export function Room() {
     let state = useStructuredSelector({
         use_mobile_view: (state: RootState) => state.window.use_mobile_view,
         show_user_list: (state: RootState) => state.window.show_user_list,
@@ -29,25 +41,27 @@ export function Channel() {
     createEffect(() => {
         let w = wrapper!;
         w.style["display"] = state.use_mobile_view ?
-            // append to ln-channel
+            // append to ln-room
             (w.parentNode!.appendChild(feed), "none") :
             // insert before sentinel span
             (w.insertBefore(feed, w.firstChild), "");
     });
 
+    //onCleanup(() => (clearInner(feed), feed.remove()));
+
     // TODO: Revisit this to avoid the sentinel span?
     return (
-        <div class="ln-channel">
+        <div class="ln-room">
             <ErrorBoundary fallback={err => <DisplayError error={err} />}>
-                <ChannelHeader />
+                <RoomHeader />
 
-                <div ref={wrapper} class="ln-channel__wrapper" >
+                <div ref={wrapper} class="ln-room__wrapper" >
                     {/* Desktop Feed goes here */}
 
                     <span style={{ display: "none" }} /> {/* Sentinel span to avoid clashing with member list */}
 
                     <Show when={!state.use_mobile_view && state.show_user_list}>
-                        <div class="ln-channel__members">
+                        <div class="ln-room__members">
                             <MemberList />
                         </div>
                     </Show>
@@ -63,8 +77,8 @@ function Feed() {
     let active_room = useRootSelector(activeRoom);
 
     return (
-        <div class="ln-channel__feed">
-            <div class="ln-channel__banners">
+        <div class="ln-room__feed">
+            <div class="ln-room__banners">
                 {__DEV__ && <DevBanner />}
             </div>
 

@@ -14,7 +14,7 @@ export function Home(props: IHomeProps) {
 
     return (
         <li id="user-home" class={"@me" == props.active_party ? "selected" : ""} ref={ref}>
-            <Link title="Home" href="/channels/@me" >
+            <Link title="Home" href="/rooms/@me" >
                 <Avatar rounded username="Home">
                     <VectorIcon id={Icons.Home} />
                 </Avatar>

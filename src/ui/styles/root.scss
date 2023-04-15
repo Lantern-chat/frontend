@@ -79,7 +79,7 @@ body {
     //padding-bottom: env(safe-area-inset-bottom);
     //padding-left: env(safe-area-inset-left);
 
-    @media (max-width: $ln-max-channel-width) {
+    @media (max-width: $ln-max-room-width) {
         position: fixed;
         inset: 0;
     }

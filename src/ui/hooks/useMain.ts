@@ -17,9 +17,9 @@ export const enum Hotkey {
     // Cltr+Alt+ArrowDown
     NextParty,
 
-    PrevTextChannel, // previous channel in party, in order
-    NextTextChannel, // next channel in party, in order
-    ReturnChannel, // return to previous channel, history-wise
+    PrevTextRoom, // previous room in party, in order
+    NextTextRoom, // next room in party, in order
+    ReturnRoom, // return to previous room, history-wise
 
     ToggleEmotePicker,
     ToggleLightTheme,
@@ -67,12 +67,12 @@ const HOTKEYS: IHotkeySpec[] = [
         mod: CTRL_MODIFIER | ALT_MODIFIER,
     },
     {
-        hot: Hotkey.PrevTextChannel,
+        hot: Hotkey.PrevTextRoom,
         key: "ArrowUp",
         mod: ALT_MODIFIER,
     },
     {
-        hot: Hotkey.NextTextChannel,
+        hot: Hotkey.NextTextRoom,
         key: "ArrowDown",
         mod: ALT_MODIFIER,
     },

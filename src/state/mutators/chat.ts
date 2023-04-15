@@ -79,7 +79,7 @@ export function chatMutator(root: RootState, action: Action) {
     if(!state) {
         state = root.chat = {
             rooms: {},
-            active_party: "@me", // @me as a default will avoid odd behavior when loaded into a non-channel/non-home page
+            active_party: "@me", // @me as a default will avoid odd behavior when loaded into a non-room/non-home page
         }
     }
 
@@ -91,7 +91,7 @@ export function chatMutator(root: RootState, action: Action) {
         case Type.REFRESH_ACTIVE:
         case Type.HISTORY_UPDATE: {
             let parts = action.ctx.parts;
-            if(parts[0] === "channels") {
+            if(parts[0] === "rooms") {
                 state.active_party = parts[1];
                 state.active_room = parts[2];
             }

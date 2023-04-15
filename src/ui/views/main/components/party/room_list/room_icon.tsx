@@ -17,8 +17,8 @@ export function RoomIcon(props: IRoomIconProps) {
     let prefs = usePrefs();
 
     return (
-        <div class="ln-channel-list__icon">
-            <div class="ln-channel-list__icon-wrapper">
+        <div class="ln-room-list__icon">
+            <div class="ln-room-list__icon-wrapper">
                 <Show when={props.room.avatar} fallback={
                     <RoomHashIcon room={props.room} />
                 }>
@@ -49,7 +49,7 @@ function RoomHashIcon(props: IRoomIconProps) {
 
             <Show when={subicon()}>
                 {icon => (
-                    <div class="ln-channel-list__subicon">
+                    <div class="ln-room-list__subicon">
                         <VectorIcon id={icon()} />
                     </div>
                 )}

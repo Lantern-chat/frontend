@@ -1,7 +1,7 @@
 import type { NamespaceMainTranslation } from "../../i18n-types"
 
 const owo_main: NamespaceMainTranslation = {
-	CHANNEL: "channew >_<",
+	ROOM: "channew >_<",
 	PARTY: "pawty rawr x3",
 	DIRECT_MESSAGE: "diwect message, mya",
 	CREATE_DIRECT_MESSAGE: "cweate d-diwect m-message, nyaa~~",
@@ -30,7 +30,7 @@ const owo_main: NamespaceMainTranslation = {
 		"{0}, {1}, and {2} awe typing :3", // 3 users
 		"{0}, {1}, {2}, and {3} othews awe typing /(^•ω•^)", // 4+ users, parameter 3 is a number
 	],
-	channel: {
+	room: {
 		TOP1: "You have weached the top of #{0}! OwO",
 		TOP2: "Congwats on making it this faw ^_^."
 	},

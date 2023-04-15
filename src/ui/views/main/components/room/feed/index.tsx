@@ -105,7 +105,7 @@ export function MessageFeed() {
                 <InfiniteScrollContext.Provider value={ifs as any}>
                     <ul class="ln-msg-list" id="ln-msg-list" >
                         <Show when={state.room?.fully_loaded}>
-                            <TopOfChannel name={state.room!.room.name} />
+                            <TopOfRoom name={state.room!.room.name} />
                         </Show>
 
                         <For each={feed()}>
@@ -126,15 +126,15 @@ export function MessageFeed() {
     );
 }
 
-function TopOfChannel(props: { name: string }) {
+function TopOfRoom(props: { name: string }) {
     let { LL } = useI18nContext();
 
     return (
         <li class="ln-msg__top">
             <div class="ui-text">
-                <VectorIcon id={Icons.Balloon} />{LL().main.channel.TOP1(props.name)}<VectorIcon id={Icons.Balloon} />
+                <VectorIcon id={Icons.Balloon} />{LL().main.room.TOP1(props.name)}<VectorIcon id={Icons.Balloon} />
                 <br />
-                {LL().main.channel.TOP2()}
+                {LL().main.room.TOP2()}
             </div>
         </li>
     )

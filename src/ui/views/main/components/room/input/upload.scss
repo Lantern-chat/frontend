@@ -49,7 +49,7 @@
     bottom: calc(100% + 2px);
     z-index: 2; // above typing indicator
 
-    @media (max-width: $ln-max-channel-width) {
+    @media (max-width: $ln-max-room-width) {
         bottom: calc(100% - 1px);
     }
 

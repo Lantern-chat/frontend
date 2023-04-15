@@ -3,7 +3,7 @@ import { Dispatch } from "solid-mutant";
 import { IS_MOBILE } from "lib/user_agent";
 import { loadMessages, SearchMode, activateParty, setSession } from "state/commands";
 import { checkVersion } from "state/commands/version";
-import { DEFAULT_LOGGED_IN_CHANNEL, GLOBAL, HISTORY } from "state/global";
+import { DEFAULT_LOGGED_IN_ROOM, GLOBAL, HISTORY } from "state/global";
 import { GatewayStatus } from "state/mutators/gateway";
 import { getPad, default_prefs } from "state/mutators/prefs";
 import { Action, RootState, Type } from "state/root";
@@ -21,7 +21,7 @@ import { activeParty, activeRoom } from "state/selectors/active";
 import { setTheme } from "lib/theme";
 import { displayNotification } from "lib/notification";
 
-const GATEWAY_ENABLED_ROUTES = ["channels", "settings", "invite"];
+const GATEWAY_ENABLED_ROUTES = ["rooms", "settings", "invite"];
 
 function connect_gateway(state: RootState) {
     GLOBAL.gateway!.postCmd({
@@ -124,9 +124,9 @@ export function mainEffect(state: RootState, action: Action, dispatch: Dispatch<
             break;
         }
         case Type.PARTY_LOADED: {
-            let [channels, party_id, room_id] = state.history.parts;
+            let [rooms, party_id, room_id] = state.history.parts;
 
-            if(channels !== "channels" || party_id != action.party_id) break;
+            if(rooms !== "rooms" || party_id != action.party_id) break;
 
             let room = room_id && action.rooms.find(room => room.id == room_id), chat_room;
 
@@ -160,9 +160,9 @@ export function mainEffect(state: RootState, action: Action, dispatch: Dispatch<
                 if(CONNECTABLE.includes(state.gateway.status) && state.user.session) {
                     // if the history updated and we're now on a page that needs the gateway, connect
                     connect_gateway(state);
-                } else if(parts[0] == "channels") {
+                } else if(parts[0] == "rooms") {
                     // if the history updated and gateway is good, load
-                    // any new messages for the now-active channel
+                    // any new messages for the now-active room
                     let room_id = activeRoom(state),
                         room = room_id && state.chat.rooms[room_id];
 
@@ -229,7 +229,7 @@ export function mainEffect(state: RootState, action: Action, dispatch: Dispatch<
                         // TODO: Expand upon this or remove it entirely.
                         if(!["settings", "@me", "invite"].includes(state.history.parts[0])) {
                             __DEV__ && console.log("Ready event received but no party is active, redirecting to default");
-                            HISTORY.replace(DEFAULT_LOGGED_IN_CHANNEL);
+                            HISTORY.replace(DEFAULT_LOGGED_IN_ROOM);
                         }
                     }
 

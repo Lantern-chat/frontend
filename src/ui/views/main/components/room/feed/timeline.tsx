@@ -70,7 +70,7 @@ export function Timeline(props: ITimelineProps) {
 
 /*
 
-import React, { useLayoutEffect, useEffect, createRef } from "react";
+import React, { useLayoutEffect, useEffect } from "react";
 
 import ReactResizeDetectorNative from "react-resize-detector";
 
@@ -129,7 +129,7 @@ interface ITimelineInnerProps extends ITimelineProps {
 }
 
 const TimelineInner = React.memo((props: ITimelineInnerProps) => {
-    let canvas_ref = createRef<HTMLCanvasElement>(null);
+    let canvas_ref = create Ref<HTMLCanvasElement>(null);
 
     useEffect(() => {
         requestAnimationFrame(() => render_timeline(props, canvas_ref));

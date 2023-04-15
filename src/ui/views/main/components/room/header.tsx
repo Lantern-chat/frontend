@@ -13,7 +13,7 @@ import { VectorIcon } from "ui/components/common/icon";
 import { Icons } from "lantern-icons";
 
 import "./header.scss";
-export function ChannelHeader() {
+export function RoomHeader() {
     const { LL } = useI18nContext();
 
     let dispatch = useRootDispatch();
@@ -42,27 +42,27 @@ export function ChannelHeader() {
     };
 
     return (
-        <div class="ln-channel-header">
-            <div class="ln-channel-header__wrapper">
-                <div class="ln-channel-header__hamburger">
+        <div class="ln-room-header">
+            <div class="ln-room-header__wrapper">
+                <div class="ln-room-header__hamburger">
                     <span onClick={() => toggle_sidebar(Panel.LeftRoomList)}>
                         <VectorIcon id={Icons.Menu} />
                     </span>
                 </div>
 
-                <div class="ln-channel-icon">
+                <div class="ln-room-icon">
                     <VectorIcon id={Icons.Hash} />
                 </div>
 
-                <div class="ln-channel-info__wrapper">
-                    <div class="ln-channel-info">
-                        <span class="ln-channel-info__name ui-text" textContent={room().name} />
+                <div class="ln-room-info__wrapper">
+                    <div class="ln-room-info">
+                        <span class="ln-room-info__name ui-text" textContent={room().name} />
 
                         <Show when={room().topic}>
                             {topic => (
                                 <>
                                     <span class="ln-vert">&nbsp;</span>
-                                    <span class="ln-channel-info__topic ui-text">
+                                    <span class="ln-room-info__topic ui-text">
                                         <SimpleMarkdown source={topic()} inline />
                                     </span>
                                 </>
@@ -71,7 +71,7 @@ export function ChannelHeader() {
                     </div>
                 </div>
 
-                <div class="ln-channel-header__users"
+                <div class="ln-room-header__users"
                     title={LL().main.TOGGLE_USERLIST()}
                 >
                     <span
@@ -81,7 +81,7 @@ export function ChannelHeader() {
                 </div>
 
                 <ShowBool when={__VERSION__ != latest_version()}>
-                    <div class="ln-channel-header__version"
+                    <div class="ln-room-header__version"
                         title={LL().main.RELOAD_PAGE()}
                         onClick={() => (location.reload as any)(true)}>
                         <span>

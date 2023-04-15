@@ -1,0 +1,23 @@
+@import "lib/variables";
+
+.ln-msg-ac {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(100% + 2.5px);
+    background-color: $lnx-primary-surface-color;
+    border-radius: 0.5rem;
+    z-index: 1;
+
+    li {
+        &:not(:first-child) {
+            border-top: 1px solid rgba(128, 128, 128, 0.1);
+        }
+    }
+
+    @media (max-width: $ln-max-room-width) {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        bottom: 100%;
+    }
+}

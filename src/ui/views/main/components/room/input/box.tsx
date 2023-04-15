@@ -23,6 +23,7 @@ import { IMsgTextareaController, MsgTextarea } from "ui/components/input/msg_tex
 import { EmotePicker } from "../common/emote_picker";
 import { UserText } from "ui/components/common/ui-text-user";
 import { IFileUploadController, UploadPanel } from "./upload";
+import { AutoComplete } from "./autocomplete";
 
 import { Icons } from "lantern-icons";
 import { createController } from "ui/hooks/createController";

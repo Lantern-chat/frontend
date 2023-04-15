@@ -34,7 +34,7 @@ export interface IPartyState {
     /// all roles that exist
     roles: Record<Snowflake, Role>,
 
-    last_channel: Record<Snowflake, Snowflake>,
+    last_room: Record<Snowflake, Snowflake>,
 
     active_party?: Snowflake,
     //sorted: Snowflake[]
@@ -49,7 +49,7 @@ export function partyMutator(root: RootState, action: Action) {
         state = root.party = {
             parties: {},
             roles: {},
-            last_channel: {},
+            last_room: {},
             permissions: {},
         };
     }
@@ -58,7 +58,7 @@ export function partyMutator(root: RootState, action: Action) {
         case Type.SESSION_EXPIRED: {
             state.parties = {};
             state.roles = {};
-            state.last_channel = {};
+            state.last_room = {};
             break;
         }
         case Type.PARTY_LOADED: {
@@ -73,12 +73,12 @@ export function partyMutator(root: RootState, action: Action) {
             break;
         }
         case Type.HISTORY_UPDATE: {
-            let [, party_id, channel_id] = action.ctx.parts,
+            let [, party_id, room_id] = action.ctx.parts,
                 party = state.parties[party_id];
             if(party) {
-                // if the new room exists, set last_channel
-                let room = party.rooms[channel_id];
-                if(room) { state.last_channel[party_id] = channel_id; }
+                // if the new room exists, set last_room
+                let room = party.rooms[room_id];
+                if(room) { state.last_room[party_id] = room_id; }
             }
             break;
         }

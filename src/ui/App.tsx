@@ -23,7 +23,7 @@ const MainView = lazy(() => import(/* webpackChunkName: "MainView" */ "./views/m
 const Fallback = () => <div class="ln-center-standalone"><Ripple size={120} /></div>;
 
 const LOGIN_ROUTES = ["login", "register"] as const; //, "register", "verify", "reset"] as const;
-const MAIN_ROUTES = ["channels", "invite", "settings"] as const;
+const MAIN_ROUTES = ["rooms", "invite", "settings"] as const;
 
 function LoginRoutes(props: { which: typeof LOGIN_ROUTES[number] }) {
     let View = () => {

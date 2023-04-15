@@ -1,6 +1,6 @@
 @import "lib/variables";
 
-.ln-channel-list {
+.ln-room-list {
     font-size: 1em;
     width: 100%;
     height: 100%;
@@ -20,7 +20,7 @@
     }
     background-color: $lnx-primary-surface-color;
 
-    --channel-list-background-color: #{$lnx-primary-surface-color};
+    --room-list-background-color: #{$lnx-primary-surface-color};
 
     li {
         // tiny bit of spacing below rows to add a transparent border
@@ -53,11 +53,11 @@
             color: $lnx-primary-text-color;
             background-color: $lnx-tertiary-surface-color;
 
-            --channel-list-background-color: #{$lnx-tertiary-surface-color};
+            --room-list-background-color: #{$lnx-tertiary-surface-color};
         }
     }
 
-    //&__channel,
+    //&__room,
     a,
     a:hover,
     a:active,
@@ -74,7 +74,7 @@
 
     @include scrollbar($lnx-secondary-text-color, $lnx-primary-surface-color);
 
-    &__channel {
+    &__room {
         //display: flex;
         //flex-wrap: nowrap;
         cursor: pointer;
@@ -116,9 +116,9 @@
             right: 1em;
         }
 
-        filter: drop-shadow(1px 0.5px var(--channel-list-background-color))
-            drop-shadow(-1px 0.5px var(--channel-list-background-color))
-            drop-shadow(0px -1px var(--channel-list-background-color));
+        filter: drop-shadow(1px 0.5px var(--room-list-background-color))
+            drop-shadow(-1px 0.5px var(--room-list-background-color))
+            drop-shadow(0px -1px var(--room-list-background-color));
     }
 
     &__name {

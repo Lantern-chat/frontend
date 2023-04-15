@@ -7,7 +7,7 @@
     > div {
         padding: 1em 0;
 
-        @media (min-width: $ln-min-channel-width) {
+        @media (min-width: $ln-min-room-width) {
             padding: 1em;
         }
     }

@@ -1,5 +1,5 @@
 import { ISession, parseSession } from "lib/session";
-import { CLIENT, DEFAULT_LOGGED_IN_CHANNEL, HISTORY } from "state/global";
+import { CLIENT, DEFAULT_LOGGED_IN_ROOM, HISTORY } from "state/global";
 import { DispatchableAction, Type } from "state/actions";
 import { setLongTimeout } from "lib/time";
 import { storeSession } from "state/storage";
@@ -25,7 +25,7 @@ export function setSession(new_session: ISession | Session | null): Dispatchable
 
             CLIENT.set_auth(new BearerToken(session.auth));
             dispatch({ type: Type.SESSION_LOGIN, session });
-            HISTORY.pm(DEFAULT_LOGGED_IN_CHANNEL);
+            HISTORY.pm(DEFAULT_LOGGED_IN_ROOM);
         } else {
             dispatch({ type: Type.SESSION_EXPIRED });
 
