@@ -165,7 +165,7 @@ type RootTranslation = {
 
 export type NamespaceMainTranslation = {
 	/**
-	 * C​h​a​n​n​e​l
+	 * R​o​o​m
 	 */
 	ROOM: string
 	/**
@@ -397,13 +397,13 @@ export type NamespaceMainTranslation = {
 		}
 		room: {
 			/**
-			 * E​d​i​t​ ​C​h​a​n​n​e​l
+			 * E​d​i​t​ ​R​o​o​m
 			 */
 			EDIT: string
 		}
 		room_list: {
 			/**
-			 * C​r​e​a​t​e​ ​C​h​a​n​n​e​l
+			 * C​r​e​a​t​e​ ​R​o​o​m
 			 */
 			CREATE: string
 		}
