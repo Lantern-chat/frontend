@@ -19,7 +19,7 @@ export type UserPreferenceAccessors =
 export const UserPrefsContext = createContext<UserPreferenceAccessors>(null! as UserPreferenceAccessors);
 
 export function UserPrefsProvider(props: { children: JSX.Element }) {
-    let store = useRootStore(), accessors = {};
+    let store = useRootStore(), accessors: any = {};
 
     for(let key in UserPreferenceFlags) {
         let flag = UserPreferenceFlags[key] as string | number;

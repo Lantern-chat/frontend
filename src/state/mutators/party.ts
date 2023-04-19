@@ -2,7 +2,7 @@ import { GatewayMessageDiscriminator } from "worker/gateway/msg";
 import { PartyMember, Role } from "state/models";
 import { Action, Type } from "../actions";
 
-import { Snowflake, Party, Room, ServerMsgOpcode, Permission } from "../models";
+import { Snowflake, Party, Room, ServerMsgOpcode, Permissions } from "../models";
 import { computeRoleColor } from "state/selectors/party";
 import { shallowEqualArrays } from "lib/compare";
 import { erase } from "lib/util";
@@ -40,7 +40,7 @@ export interface IPartyState {
     //sorted: Snowflake[]
 
     /// own user permissions computed per room
-    permissions: Record<Snowflake, Permission>,
+    permissions: Record<Snowflake, Permissions>,
 }
 
 export function partyMutator(root: RootState, action: Action) {
@@ -136,7 +136,7 @@ export function partyMutator(root: RootState, action: Action) {
                 case GatewayMessageDiscriminator.Ready: {
                     let p = event.p;
 
-                    let roles = {}, parties = {};
+                    let roles: Record<Snowflake, Role> = {}, parties: Record<Snowflake, IParty> = {};
 
                     for(let party of p.parties) {
                         parties[party.id] = {

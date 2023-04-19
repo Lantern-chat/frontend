@@ -3,7 +3,7 @@ import { same_day } from "lib/time";
 
 import { Action, Type } from "../actions";
 
-import { Message, Snowflake, Room, Attachment, ServerMsg, ServerMsgOpcode, Reaction, ReactionFull, ReactionShorthand } from "../models";
+import { Message, Snowflake, Room, Attachment, ServerMsg, ServerMsgOpcode, Reaction, ReactionFull, ReactionShorthand, snowflake_unix } from "../models";
 import { GatewayMessageDiscriminator } from "worker/gateway/msg";
 import { ArraySet, ObjectMap } from "state/util/map_set";
 import { SearchMode } from "state/commands/message/load";
@@ -159,7 +159,7 @@ export function chatMutator(root: RootState, action: Action) {
                         old_msgs = room.msgs,
                         new_msgs = raw_msgs.map(msg => ({
                             msg,
-                            ts: new Date(msg.created_at),
+                            ts: new Date(snowflake_unix(msg.id)),
                             et: msg.edited_at ? new Date(msg.edited_at) : null,
                         })).sort((a, b) => +a.ts - +b.ts);
 
@@ -218,7 +218,7 @@ export function chatMutator(root: RootState, action: Action) {
                 case ServerMsgOpcode.MessageCreate: {
                     let raw_msg = event.p, msg = {
                         msg: raw_msg,
-                        ts: new Date(raw_msg.created_at),
+                        ts: new Date(snowflake_unix(raw_msg.id)),
                         et: raw_msg.edited_at ? new Date(raw_msg.edited_at) : null,
                     };
 
@@ -262,7 +262,7 @@ export function chatMutator(root: RootState, action: Action) {
                     if(room) {
                         let msg: IMessageState = {
                             msg: raw_msg,
-                            ts: new Date(raw_msg.created_at),
+                            ts: new Date(snowflake_unix(raw_msg.id)),
                             et: raw_msg.edited_at ? new Date(raw_msg.edited_at) : null,
                         }, { idx, found } = binarySearch(room.msgs, m => +m.ts - +msg.ts);
 

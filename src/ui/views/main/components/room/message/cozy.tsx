@@ -77,11 +77,11 @@ export function CozyMessage(props: IMessageProps) {
                                 </span>
                             </Show>
 
-                            <ShowBool when={props.msg.msg.starred}>
+                            <Show when={props.msg.msg.flags & MessageFlags.Starred}>
                                 <span class="flags" title={LL().main.MESSAGE_STARRED()}>
                                     <VectorIcon id={Icons.StarSmall} />
                                 </span>
-                            </ShowBool>
+                            </Show>
                         </span>
 
                         <ShowBool when={user_is_bot(props.msg.msg.author)}>
