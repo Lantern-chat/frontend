@@ -138,7 +138,7 @@ export function partyMutator(root: RootState, action: Action) {
 
                     let roles: Record<Snowflake, Role> = {}, parties: Record<Snowflake, IParty> = {};
 
-                    for(let party of p.parties) {
+                    for(let { party } of p.parties) {
                         parties[party.id] = {
                             party,
                             rooms: {},

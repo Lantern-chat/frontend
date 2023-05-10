@@ -41,6 +41,16 @@ function get_last_active(presence: UserPresence | undefined): undefined | number
     return;
 }
 
+function make_cached(user: User): CachedUser {
+    return {
+        user,
+        nick: user.profile?.nick || user.username,
+        profile: user.profile,
+        bits: user.profile ? split_profile_bits(user.profile) : DEFAULT_PROFILE_BITS,
+        last_active: get_last_active(user.presence),
+    };
+}
+
 export function cacheMutator(root: RootState, action: Action) {
     let cache = root.cache;
     if(!cache) {
@@ -86,16 +96,10 @@ export function cacheMutator(root: RootState, action: Action) {
                 case ServerMsgOpcode.Ready: {
                     let user = event.p.user;
 
-                    let cached_user = cache.users[user.id] = {
-                        user,
-                        nick: user.profile?.nick || user.username,
-                        profile: user.profile,
-                        bits: user.profile ? split_profile_bits(user.profile) : DEFAULT_PROFILE_BITS,
-                        last_active: get_last_active(user.presence),
-                    };
+                    cache.users[user.id] = make_cached(user);
 
-                    for(let party of event.p.parties) {
-                        cache.users[cache_key(user.id, party.id)] = cached_user;
+                    for(let { party, me } of event.p.parties) {
+                        cache.users[cache_key(user.id, party.id)] = make_cached(me.user);
                     }
 
                     break;
