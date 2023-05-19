@@ -5,7 +5,7 @@ import { CLIENT } from "state/global";
 import { PartyMember, Snowflake, User } from "state/models";
 
 
-export function fetch_profile(user_id: Snowflake, party_id?: Snowflake): DispatchableAction {
+export function fetch_profile(user_id: Snowflake, party_id?: Snowflake, on_finish?: () => void): DispatchableAction {
     return async (dispatch) => {
         try {
             let user_or_member = await (party_id ? CLIENT.execute(GetMember({ party_id, user_id })) : CLIENT.execute(GetUser({ user_id })));
@@ -17,6 +17,8 @@ export function fetch_profile(user_id: Snowflake, party_id?: Snowflake): Dispatc
                 // graceful fallback to default profile if there is none
                 profile: user.profile || { bits: 0 }
             });
+
+            on_finish?.();
         } catch {
             __DEV__ && alert("Error getting profile");
         }
