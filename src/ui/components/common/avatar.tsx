@@ -13,6 +13,7 @@ export interface IAvatarProps {
     children?: any,
     props?: JSX.HTMLAttributes<HTMLDivElement>,
     anchor?: any,
+    ref?: (el: HTMLDivElement) => void;
 }
 
 // The skeleton system here kicks in after 100ms of load time on each avatar.
@@ -46,7 +47,7 @@ export function Avatar(props: IAvatarProps) {
     // };
 
     return (
-        <div class="ln-avatar" {...props.props}>
+        <div class="ln-avatar" {...props.props} ref={props.ref}>
             <div class="ln-avatar__wrapper" {...props.wrapper} title={props.username}>
                 {/* <div class="ln-avatar__skel" /> */}
 

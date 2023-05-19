@@ -8,8 +8,7 @@ import { activeParty } from "state/selectors/active";
 import { Avatar } from "ui/components/common/avatar";
 import { UIText } from "ui/components/common/ui-text";
 import { AnchoredModal } from "ui/components/modal/anchored";
-import { createSimpleToggleOnClick } from "ui/hooks/useMain";
-import { UserCard } from "../../menus/user_card";
+import { useAnchoredUserCard, UserCard } from "ui/views/main/components/menus/user_card";
 import { formatRgbBinary } from "lib/color";
 import { adjustUserColor } from "state/selectors/color";
 import { UserText } from "ui/components/common/ui-text-user";
@@ -25,8 +24,7 @@ interface IUserNameProps {
 }
 
 export function MessageUserName(props: IUserNameProps) {
-    let user = props.user,
-        [show, main_click_props] = createSimpleToggleOnClick();
+    let user = props.user;
 
     let color = useRootSelector(state => {
         let party_id = activeParty(state);
@@ -40,13 +38,18 @@ export function MessageUserName(props: IUserNameProps) {
         return formatRgbBinary(adjustUserColor(color)());
     });
 
+    let el: undefined | HTMLHeadingElement, [show, _, main_click_props] = useAnchoredUserCard(() => el!, () => ({
+        user_id: user.id,
+        party_id: props.party_id
+    }));
+
     return (
         <h2 class="ln-msg__username" {...main_click_props} style={{ color: color() }}
             data-username={props.user.username}
-            data-userid={props.user.id}
+            data-userid={props.user.id} ref={el}
         >
-            <AnchoredModal show={show()}>
-                <UserCard user_id={user.id} party_id={props.party_id} />
+            <AnchoredModal show={show() == 2}>
+                <UserCard prefeched user_id={user.id} party_id={props.party_id} />
             </AnchoredModal>
 
             <UserText class="ui-text" text={props.name} />
@@ -55,7 +58,6 @@ export function MessageUserName(props: IUserNameProps) {
 }
 
 export function MessageUserAvatar(props: Omit<IUserNameProps, "msg">) {
-    let [show, main_click_props] = createSimpleToggleOnClick();
     let prefs = usePrefs();
 
     let avatar_url = () => props.user.profile?.avatar;
@@ -68,8 +70,14 @@ export function MessageUserAvatar(props: Omit<IUserNameProps, "msg">) {
             : formatRgbBinary(b.color);
     };
 
+    let el: undefined | HTMLDivElement, [show, _, main_click_props] = useAnchoredUserCard(() => el!, () => ({
+        user_id: props.user.id,
+        party_id: props.party_id
+    }));
+
     return (
         <Avatar
+            ref={e => el = e}
             username={props.name}
             text={props.name.charAt(0)}
             url={avatar_url() && asset_url("user", props.user.id, avatar_url()!, "avatar", prefs.LowBandwidthMode())}
@@ -77,8 +85,8 @@ export function MessageUserAvatar(props: Omit<IUserNameProps, "msg">) {
             rounded={bits()?.roundedness}
             props={main_click_props}
             anchor={
-                <AnchoredModal show={show()}>
-                    <UserCard user_id={props.user.id} party_id={props.party_id} />
+                <AnchoredModal show={show() == 2}>
+                    <UserCard prefeched user_id={props.user.id} party_id={props.party_id} />
                 </AnchoredModal>
             }
         />

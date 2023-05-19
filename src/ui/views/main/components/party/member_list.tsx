@@ -1,4 +1,4 @@
-import { createMemo, For, Show } from "solid-js";
+import { createMemo, For, Show, createSignal } from "solid-js";
 import { useStructuredSelector } from "solid-mutant";
 import { ShowBool } from "ui/components/flow";
 
@@ -21,8 +21,7 @@ import { UserText } from "ui/components/common/ui-text-user";
 import { Icons } from "lantern-icons";
 
 import { AnchoredModal } from "ui/components/modal/anchored";
-import { UserCard } from "../menus/user_card";
-import { createSimpleToggleOnClick } from "ui/hooks/useMain";
+import { UserCard, useAnchoredUserCard } from "../menus/user_card";
 import { selectCachedUser } from "state/selectors/selectCachedUser";
 
 
@@ -165,11 +164,11 @@ interface IListedMemberProps {
 function ListedMember(props: IListedMemberProps) {
     let { LL } = useI18nContext();
 
-    let { state } = useRootStore();
+    let store = useRootStore();
 
     // only called once, don't `createMemo`
     let color = () => {
-        let party_id, party;
+        let party_id, party, state = store.state;
 
         if(party_id = activeParty(state)) {
             if(party = state.party.parties[party_id]) {
@@ -181,18 +180,21 @@ function ListedMember(props: IListedMemberProps) {
         return;
     };
 
-    let cached_user = createMemo(() => selectCachedUser(state, props.member.user.id, props.party_id)!);
+    let cached_user = createMemo(() => selectCachedUser(store.state, props.member.user.id, props.party_id)!);
     let presence = createMemo(() => parse_presence(cached_user().presence));
 
-    let [show, main_click_props] = createSimpleToggleOnClick();
+    let el: undefined | HTMLLIElement, [show, _, main_click_props] = useAnchoredUserCard(() => el!, () => ({
+        user_id: props.member.user.id,
+        party_id: props.party_id
+    }), store);
 
     return (
         <li class="ln-member-list__item" {...main_click_props}
             data-username={cached_user().user.username}
-            data-userid={props.member.user.id}
+            data-userid={props.member.user.id} ref={el}
         >
-            <AnchoredModal show={show()}>
-                <UserCard user_id={props.member.user.id} party_id={props.party_id} />
+            <AnchoredModal show={show() == 2}>
+                <UserCard prefeched user_id={props.member.user.id} party_id={props.party_id} />
             </AnchoredModal>
 
             <UserAvatar nickname={cached_user().nick}

@@ -198,7 +198,7 @@ type ClickEventHandlers = {
     [K in keyof typeof EVENTS]?: OnClickHandler;
 };
 
-type ClickEventProps = {
+export type ClickEventProps = {
     [K in keyof typeof EVENTS as typeof EVENTS[K]]?: OnClickHandler;
 };
 

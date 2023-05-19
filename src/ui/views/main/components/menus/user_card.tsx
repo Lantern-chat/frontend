@@ -1,4 +1,4 @@
-import { createEffect, createMemo, JSXElement, onMount, Show } from "solid-js";
+import { Accessor, createEffect, createMemo, createSignal, JSXElement, onMount, Show, Signal } from "solid-js";
 import { ShowBool } from "ui/components/flow";
 
 import { PartyMember, Snowflake, User, parse_presence, UserPreferenceFlags, user_is_bot, PresenceStatus, UserProfile, split_profile_bits, UserPresence, UserProfileSplitBits } from "state/models";
@@ -16,10 +16,12 @@ import { formatRgbBinary, formatRGBHex, hsv2rgb, HSVColor, RGBColor } from "lib/
 import { fetch_profile } from "state/commands/profile";
 import { Discriminator } from "../misc/discriminator";
 import { br } from "ui/utils";
+import { ClickEventProps, useMainClick } from "ui/hooks/useMain";
 
 export interface IUserCardProps {
     user_id: Snowflake,
     party_id?: Snowflake,
+    prefeched?: boolean,
 }
 
 import "./list.scss";
@@ -29,9 +31,9 @@ export function UserCard(props: IUserCardProps) {
 
     let cached_user = createMemo(() => selectCachedUser(store.state, props.user_id, props.party_id));
 
-    onMount(() => {
+    if(!props.prefeched) {
         store.dispatch(fetch_profile(props.user_id, props.party_id));
-    });
+    }
 
     return (
         <Show when={cached_user()} fallback={<span class="ui-text">User Not Found</span>}>
@@ -44,6 +46,37 @@ export function UserCard(props: IUserCardProps) {
                 presence={cached_user()!.presence} />
         </Show>
     );
+}
+
+export function useAnchoredUserCard(
+    el: Accessor<HTMLElement>,
+    props: Accessor<{ user_id: Snowflake, party_id?: Snowflake }>,
+    existing_store?: ReturnType<typeof useRootStore>
+): [...Signal<number>, ClickEventProps] {
+    let [show, setShow] = createSignal(0),
+        store = existing_store || useRootStore(),
+        main_click_props = useMainClick({
+            active: () => show() == 2,
+            onMainClick(e) {
+                if(!el().contains(e.target as Node)) { setShow(0); }
+            },
+            onClick(e) {
+                e.stopPropagation();
+
+                if(show() == 2) return;
+
+                setShow(1);
+
+                // poor-man's Promise.race
+                new Promise<void>((resolve) => {
+                    let p = props();
+                    store.dispatch(fetch_profile(p.user_id, p.party_id, resolve));
+                    setTimeout(resolve, 400);
+                }).then(() => setShow(v => v == 1 ? 2 : 0));
+            }
+        });
+
+    return [show, setShow, main_click_props];
 }
 
 export interface ISimpleUserCardProps {
