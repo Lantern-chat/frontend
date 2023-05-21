@@ -1,0 +1,1 @@
+`pywhat_regexes.json` is taken from [pyWhat](https://github.com/bee-san/pyWhat/blob/main/pywhat/Data/regex.json), and is liscened under that project's License.
