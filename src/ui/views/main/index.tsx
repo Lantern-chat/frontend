@@ -136,9 +136,9 @@ export default function Main() {
     };
 
     let triggerAnyHotkey = (e: KeyboardEvent) => {
-        let hotkey = parseHotkey(e);
-        if(hotkey) { triggerHotkey(hotkey, e) }
-    }
+        let hotkey = parseHotkey(e, state);
+        if(hotkey) { triggerHotkey(hotkey, e); }
+    };
 
     var keys: Set<string> = new Set();
 
@@ -146,7 +146,7 @@ export default function Main() {
     let consumeKey = (key: string) => keys.delete(key);
 
     let on_keyup = (e: KeyboardEvent) => {
-        if(parseHotkey(e)) {
+        if(parseHotkey(e, state)) {
             e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
         }
 

@@ -1,5 +1,6 @@
 import { ReactiveEventEmitter } from "lib/event_emitter";
 import { Accessor, createContext, createSignal, onCleanup, onMount, Setter, useContext } from "solid-js";
+import type { RootState } from "state/root";
 import { MainEventEmitter } from "ui/views/main/state";
 
 export const enum Hotkey {
@@ -45,6 +46,9 @@ interface IHotkeySpec {
     mod?: number,
     key: string,
     hot: Hotkey,
+
+    // TODO: Replace with a "Scope" system. Perhaps the listeners should obey scope as well.
+    room?: boolean,
 }
 
 const HOTKEYS: IHotkeySpec[] = [
@@ -55,6 +59,7 @@ const HOTKEYS: IHotkeySpec[] = [
     {
         hot: Hotkey.FocusTextArea,
         key: "Tab",
+        room: true,
     },
     {
         hot: Hotkey.PrevParty,
@@ -70,31 +75,38 @@ const HOTKEYS: IHotkeySpec[] = [
         hot: Hotkey.PrevTextRoom,
         key: "ArrowUp",
         mod: ALT_MODIFIER,
+        room: true,
     },
     {
         hot: Hotkey.NextTextRoom,
         key: "ArrowDown",
         mod: ALT_MODIFIER,
+        room: true,
     },
     {
         hot: Hotkey.FeedArrowUp,
         key: "ArrowUp",
+        room: true,
     },
     {
         hot: Hotkey.FeedArrowDown,
         key: "ArrowDown",
+        room: true,
     },
     {
         hot: Hotkey.FeedPageUp,
         key: "PageUp",
+        room: true,
     },
     {
         hot: Hotkey.FeedPageDown,
         key: "PageDown",
+        room: true,
     },
     {
         hot: Hotkey.FeedEnd,
         key: "End",
+        room: true,
     },
     {
         hot: Hotkey.ToggleEmotePicker,
@@ -121,7 +133,7 @@ interface IHotkeyLookupTable {
     [key: string]: Array<Hotkey | undefined>,
 }
 
-var LOOKUP: IHotkeyLookupTable = {};
+var LOOKUP: IHotkeyLookupTable = {}, REVERSE: IHotkeySpec[] = [];
 
 for(let hotkey of HOTKEYS) {
     let key = hotkey.key.toLowerCase();
@@ -130,13 +142,14 @@ for(let hotkey of HOTKEYS) {
         key_modifiers = LOOKUP[key] = new Array(ALT_MODIFIER | SHIFT_MODIFIER | CTRL_MODIFIER);
     }
     key_modifiers[hotkey.mod || 0] = hotkey.hot;
+    REVERSE[hotkey.hot] = hotkey;
 }
 
 if(__DEV__) {
     console.log(LOOKUP);
 }
 
-export function parseHotkey(e: KeyboardEvent): Hotkey | undefined {
+export function parseHotkey(e: KeyboardEvent, state: RootState): Hotkey | undefined {
     // TODO: Handle Apple keyboards?
     if(e.metaKey) return;
 
@@ -145,7 +158,13 @@ export function parseHotkey(e: KeyboardEvent): Hotkey | undefined {
     mod |= e.altKey ? ALT_MODIFIER : 0;
 
     if(key_modifiers = LOOKUP[e.key.toLowerCase()]) {
-        return key_modifiers[mod];
+        let hk = key_modifiers[mod];
+
+        if(hk && REVERSE[hk].room && (state.history.parts[0] != 'rooms' || !state.chat.active_room)) {
+            return;
+        }
+
+        return hk;
     }
 
     return;
