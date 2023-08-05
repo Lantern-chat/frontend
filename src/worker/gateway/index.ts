@@ -13,6 +13,27 @@ function postMsg(msg: GatewayMessage) {
     ctx.postMessage(msg);
 }
 
+/**
+ *
+ * For attempts 0 and 1, there is no delay. Helps resolve spurious disconnects immediately.
+ * For attempts up to and including 10, using a single second of delay
+ * For even further attempts beyond 10, 1 second + attempt * 100, so the 20th attempt will have a delay of 3 seconds.
+ *
+ * Maxiumum delay is 5 seconds.
+ *
+ * @param attempt number of attempts made
+ * @returns delay in milliseconds
+ */
+function compute_delay(attempt: number): number {
+    if(attempt <= 1) {
+        return 0;
+    } else if(attempt <= 10) {
+        return 1000;
+    } else {
+        return Math.min(5000, 1000 + attempt * 100);
+    }
+}
+
 class Gateway {
     ws: GatewaySocket;
 
@@ -40,14 +61,18 @@ class Gateway {
         ws.on("close", ev => this.on_close(ev));
     }
 
+    send(value: ClientMsg) {
+        this.ws.send(value);
+    }
+
     connect() {
-        if(this.ws.readyState === 1) return;
+        if(this.ws.readyState <= 1) return; // if 0 or 1, it's connecting or connected, so do nothing
 
         if(this.connecting_timeout !== undefined) {
             return this.retry_now();
         }
 
-        const delay = this.attempt ? 1000 : 0;
+        const delay = compute_delay(this.attempt);
 
         __DEV__ && console.log("DELAY: ", delay);
 
@@ -55,58 +80,56 @@ class Gateway {
             postMsg({ t: GatewayMessageDiscriminator.Waiting, p: Date.now() + delay });
         }
 
-        this.connecting_timeout = setTimeout(() => this.do_connect(), delay);
+        this.connecting_timeout = setTimeout(() => this._do_connect(), delay);
         this.attempt += 1;
-
     }
 
-    do_connect() {
+    _do_connect() {
         postMsg({ t: GatewayMessageDiscriminator.Connecting });
 
         let protocol = "wss:";
 
+        // if in dev-mode and http (should honestly never be otherwise)
         if(__DEV__ && self.location.protocol.startsWith("http")) {
+            // replace protocol with whatever is available, becoming ws: or wss:
             protocol = self.location.protocol.replace("http", "ws");
         }
 
         this.ws.connect(`${protocol}//${self.location.host}/api/v1/gateway?compress=true&encoding=json`);
     }
 
+    _after_close() {
+        clearTimeout(this.heartbeat_timeout);
+        clearInterval(this.heartbeat_timer);
+    }
+
     retry_now() {
         clearTimeout(this.connecting_timeout);
         this.connecting_timeout = undefined;
-        this.do_connect();
-    }
-
-    // TODO: Memoize?
-    send(value: ClientMsg) {
-        this.ws.send(value);
-    }
-
-    do_close() {
-        clearTimeout(this.heartbeat_timeout);
-        clearInterval(this.heartbeat_timer);
+        this._do_connect();
     }
 
     on_close(msg: CloseEvent) {
         __DEV__ && console.log("GATEWAY CLOSED");
 
-        this.do_close();
+        this._after_close();
         postMsg({ t: GatewayMessageDiscriminator.Disconnected, p: msg.code });
     }
 
     on_error(_err: GatewayError) {
         __DEV__ && console.log("GATEWAY ERROR: ", _err);
 
-        this.do_close();
+        this.ws.close();
+        this._after_close();
         postMsg({ t: GatewayMessageDiscriminator.Error, p: { err: "WS Error" } });
     }
 
     on_open() {
-        this.attempt = 0;
+        this.attempt = 0; // reset attempt so the next reconnect will be instant
 
         postMsg({ t: GatewayMessageDiscriminator.Connected });
-        // NOTE: Nothing else to do on open except wait for the Hello event
+
+        // Nothing else to do on open except wait for the Hello event
     }
 
     on_msg(msg: ServerMsg) {
@@ -158,12 +181,10 @@ class Gateway {
     }
 
     disconnect() {
-        if(this.ws) {
-            __DEV__ && console.log("GATEWAY DISCONNECTING!");
+        __DEV__ && console.log("GATEWAY DISCONNECTING!");
 
-            // NOTE: This should trigger `on_close`
-            this.ws.close();
-        }
+        // NOTE: This should trigger `on_close`
+        this.ws.close();
     }
 
     identify() {
