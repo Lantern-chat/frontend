@@ -4,7 +4,7 @@ import type { RootState } from "state/root";
 import { MainEventEmitter } from "ui/views/main/state";
 
 export const enum Hotkey {
-    __NONE = 1,// start at 1 to simplify logic
+    __NONE = 1, // start at 1 to simplify logic
 
 
     // Context-sensitive escape
@@ -47,8 +47,13 @@ interface IHotkeySpec {
     key: string,
     hot: Hotkey,
 
-    // TODO: Replace with a "Scope" system. Perhaps the listeners should obey scope as well.
-    room?: boolean,
+    // TODO: Move scope system into the listeners. Perhaps when they register for the event.
+    scope?: HotkeyScope,
+}
+
+export const enum HotkeyScope {
+    None,
+    Room,
 }
 
 const HOTKEYS: IHotkeySpec[] = [
@@ -59,7 +64,7 @@ const HOTKEYS: IHotkeySpec[] = [
     {
         hot: Hotkey.FocusTextArea,
         key: "Tab",
-        room: true,
+        scope: HotkeyScope.Room,
     },
     {
         hot: Hotkey.PrevParty,
@@ -75,38 +80,38 @@ const HOTKEYS: IHotkeySpec[] = [
         hot: Hotkey.PrevTextRoom,
         key: "ArrowUp",
         mod: ALT_MODIFIER,
-        room: true,
+        scope: HotkeyScope.Room,
     },
     {
         hot: Hotkey.NextTextRoom,
         key: "ArrowDown",
         mod: ALT_MODIFIER,
-        room: true,
+        scope: HotkeyScope.Room,
     },
     {
         hot: Hotkey.FeedArrowUp,
         key: "ArrowUp",
-        room: true,
+        scope: HotkeyScope.Room,
     },
     {
         hot: Hotkey.FeedArrowDown,
         key: "ArrowDown",
-        room: true,
+        scope: HotkeyScope.Room,
     },
     {
         hot: Hotkey.FeedPageUp,
         key: "PageUp",
-        room: true,
+        scope: HotkeyScope.Room,
     },
     {
         hot: Hotkey.FeedPageDown,
         key: "PageDown",
-        room: true,
+        scope: HotkeyScope.Room,
     },
     {
         hot: Hotkey.FeedEnd,
         key: "End",
-        room: true,
+        scope: HotkeyScope.Room,
     },
     {
         hot: Hotkey.ToggleEmotePicker,
@@ -133,7 +138,8 @@ interface IHotkeyLookupTable {
     [key: string]: Array<Hotkey | undefined>,
 }
 
-var LOOKUP: IHotkeyLookupTable = {}, REVERSE: IHotkeySpec[] = [];
+var LOOKUP: IHotkeyLookupTable = {};
+export var REVERSE: IHotkeySpec[] = [];
 
 for(let hotkey of HOTKEYS) {
     let key = hotkey.key.toLowerCase();
@@ -160,8 +166,8 @@ export function parseHotkey(e: KeyboardEvent, state: RootState): Hotkey | undefi
     if(key_modifiers = LOOKUP[e.key.toLowerCase()]) {
         let hk = key_modifiers[mod];
 
-        if(hk && REVERSE[hk].room && (state.history.parts[0] != 'rooms' || !state.chat.active_room)) {
-            return;
+        switch(hk && REVERSE[hk].scope) {
+            case HotkeyScope.Room: if(state.history.parts[0] != 'rooms' || !state.chat.active_room) { return; } break;
         }
 
         return hk;
