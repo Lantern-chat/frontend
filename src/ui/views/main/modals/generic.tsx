@@ -8,6 +8,10 @@ import { FullscreenModal, Modal } from "ui/components/modal";
 export interface GenericModalProps {
     children?: JSX.Element,
     onClose?: () => void,
+    blur?: boolean,
+    dim?: boolean,
+    id?: string,
+    strong?: boolean,
 }
 
 import { Icons } from "lantern-icons";
@@ -19,7 +23,7 @@ export function GenericModal(props: GenericModalProps) {
     const reduce_animations = usePrefs().ReduceAnimations;
 
     const on_close = () => {
-        if(!closing()) {
+        if(!closing() && (!__DEV__ || props.onClose)) {
             setClosing(true);
 
             if(!reduce_animations()) {
@@ -37,8 +41,11 @@ export function GenericModal(props: GenericModalProps) {
     });
 
     return (
-        <FullscreenModal onClick={on_close} class="ln-generic-modal" classList={{ "closing": closing() }}>
-            <div class="ln-generic-modal__inner">
+        <FullscreenModal onClick={props.strong ? undefined : on_close}
+            class="ln-generic-modal" classList={{ "closing": closing(), "dim": props.dim }}
+            id={props.id} blur={props.blur}
+        >
+            <div class="ln-generic-modal__inner" onClick={e => e.stopPropagation()}>
                 <div class="ln-generic-modal__close" onClick={on_close}>
                     <VectorIcon id={Icons.Close} />
                 </div>

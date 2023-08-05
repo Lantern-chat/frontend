@@ -6,6 +6,8 @@ const MODAL_ROOT = document.getElementById("ln-modal-root")!;
 import "./modal.scss";
 export function Modal(props: JSX.HTMLAttributes<HTMLDivElement>): JSX.Element {
     const container = document.createElement("div");
+    container.setAttribute('role', 'dialog');
+    container.setAttribute('aria-modal', 'true');
     spread(container, props);
     MODAL_ROOT.appendChild(container);
     onCleanup(() => MODAL_ROOT.removeChild(container));

@@ -90,7 +90,7 @@ function CreateParty(props: { can_navigate: boolean }) {
             />
 
             <ShowBool when={show()}>
-                <GenericModal onClose={() => setShow(false)}>
+                <GenericModal dim onClose={() => setShow(false)}>
                     <CreatePartyModal />
                 </GenericModal>
             </ShowBool>

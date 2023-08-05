@@ -19,7 +19,7 @@ export function InviteModal() {
     let return_path = useRootSelector(state => room_url(activeParty(state) || "@me", activeRoom(state)));
 
     return (
-        <GenericModal onClose={() => HISTORY.pm(return_path())}>
+        <GenericModal dim onClose={() => HISTORY.pm(return_path())}>
             Invite
         </GenericModal>
     );

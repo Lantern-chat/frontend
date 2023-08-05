@@ -43,7 +43,7 @@ export function SettingsModal() {
                 <SettingsTabs do_return={do_return} />
             </Suspense>
         </Modal>
-    )
+    );
 }
 
 import { ProfileSettingsTab } from "./tabs/profile";

@@ -19,7 +19,6 @@
 }
 
 .ln-generic-modal {
-    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
 
     .ln-enable-motion & {
@@ -35,8 +34,8 @@
         margin: auto auto;
         padding: 1rem 2rem;
         //padding: 1.5rem 2.5rem 1.5rem 1.5rem;
-        background-color: $lnx-tertiary-surface-color;
         border-radius: 1rem;
+        background-color: $lnx-primary-surface-color;
 
         // mobile view
         @media (max-width: $ln-max-room-width) {
@@ -44,6 +43,14 @@
             padding: 1rem 0;
             margin: 0;
             width: 100%;
+        }
+    }
+
+    &.dim {
+        background-color: rgba(0, 0, 0, 0.5);
+
+        &__inner {
+            background-color: $lnx-tertiary-surface-color;
         }
     }
 
