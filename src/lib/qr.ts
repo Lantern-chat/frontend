@@ -87,7 +87,7 @@ export class QrCode {
         minVersion: int = 1, maxVersion: int = 40,
         mask: int = -1, boostEcl: boolean = true): QrCode {
 
-        if(!(QrCode.MIN_VERSION <= minVersion && minVersion <= maxVersion && maxVersion <= QrCode.MAX_VERSION)
+        if(!(MIN_VERSION <= minVersion && minVersion <= maxVersion && maxVersion <= MAX_VERSION)
             || mask < -1 || mask > 7)
             throw new RangeError("Invalid value");
 
@@ -182,7 +182,7 @@ export class QrCode {
         msk: int) {
 
         // Check scalar arguments
-        if(version < QrCode.MIN_VERSION || version > QrCode.MAX_VERSION)
+        if(version < MIN_VERSION || version > MAX_VERSION)
             throw new RangeError("Version value out of range");
         if(msk < -1 || msk > 7)
             throw new RangeError("Mask value out of range");
@@ -364,8 +364,8 @@ export class QrCode {
             throw new RangeError("Invalid argument");
 
         // Calculate parameter numbers
-        const numBlocks: int = QrCode.NUM_ERROR_CORRECTION_BLOCKS[ecl.ordinal][ver];
-        const blockEccLen: int = QrCode.ECC_CODEWORDS_PER_BLOCK[ecl.ordinal][ver];
+        const numBlocks: int = NUM_ERROR_CORRECTION_BLOCKS[ecl.ordinal][ver];
+        const blockEccLen: int = ECC_CODEWORDS_PER_BLOCK[ecl.ordinal][ver];
         const rawCodewords: int = Math.floor(QrCode.getNumRawDataModules(ver) / 8);
         const numShortBlocks: int = numBlocks - rawCodewords % numBlocks;
         const shortBlockLen: int = Math.floor(rawCodewords / numBlocks);
@@ -467,18 +467,18 @@ export class QrCode {
                 if(this.modules[y][x] == runColor) {
                     runX++;
                     if(runX == 5)
-                        result += QrCode.PENALTY_N1;
+                        result += PENALTY_N1;
                     else if(runX > 5)
                         result++;
                 } else {
                     this.finderPenaltyAddHistory(runX, runHistory);
                     if(!runColor)
-                        result += this.finderPenaltyCountPatterns(runHistory) * QrCode.PENALTY_N3;
+                        result += this.finderPenaltyCountPatterns(runHistory) * PENALTY_N3;
                     runColor = this.modules[y][x];
                     runX = 1;
                 }
             }
-            result += this.finderPenaltyTerminateAndCount(runColor, runX, runHistory) * QrCode.PENALTY_N3;
+            result += this.finderPenaltyTerminateAndCount(runColor, runX, runHistory) * PENALTY_N3;
         }
         // Adjacent modules in column having same color, and finder-like patterns
         for(let x = 0; x < this.size; x++) {
@@ -489,18 +489,18 @@ export class QrCode {
                 if(this.modules[y][x] == runColor) {
                     runY++;
                     if(runY == 5)
-                        result += QrCode.PENALTY_N1;
+                        result += PENALTY_N1;
                     else if(runY > 5)
                         result++;
                 } else {
                     this.finderPenaltyAddHistory(runY, runHistory);
                     if(!runColor)
-                        result += this.finderPenaltyCountPatterns(runHistory) * QrCode.PENALTY_N3;
+                        result += this.finderPenaltyCountPatterns(runHistory) * PENALTY_N3;
                     runColor = this.modules[y][x];
                     runY = 1;
                 }
             }
-            result += this.finderPenaltyTerminateAndCount(runColor, runY, runHistory) * QrCode.PENALTY_N3;
+            result += this.finderPenaltyTerminateAndCount(runColor, runY, runHistory) * PENALTY_N3;
         }
 
         // 2*2 blocks of modules having same color
@@ -510,7 +510,7 @@ export class QrCode {
                 if(color == this.modules[y][x + 1] &&
                     color == this.modules[y + 1][x] &&
                     color == this.modules[y + 1][x + 1])
-                    result += QrCode.PENALTY_N2;
+                    result += PENALTY_N2;
             }
         }
 
@@ -522,7 +522,7 @@ export class QrCode {
         // Compute the smallest integer k >= 0 such that (45-5k)% <= dark/total <= (55+5k)%
         const k: int = Math.ceil(Math.abs(dark * 20 - total * 10) / total) - 1;
         assert(0 <= k && k <= 9);
-        result += k * QrCode.PENALTY_N4;
+        result += k * PENALTY_N4;
         assert(0 <= result && result <= 2568888);  // Non-tight upper bound based on default values of PENALTY_N1, ..., N4
         return result;
     }
@@ -552,7 +552,7 @@ export class QrCode {
     // all function modules are excluded. This includes remainder bits, so it might not be a multiple of 8.
     // The result is in the range [208, 29648]. This could be implemented as a 40-entry lookup table.
     private static getNumRawDataModules(ver: int): int {
-        if(ver < QrCode.MIN_VERSION || ver > QrCode.MAX_VERSION)
+        if(ver < MIN_VERSION || ver > MAX_VERSION)
             throw new RangeError("Version number out of range");
         let result: int = (16 * ver + 128) * ver + 64;
         if(ver >= 2) {
@@ -571,8 +571,8 @@ export class QrCode {
     // This stateless pure function could be implemented as a (40*4)-cell lookup table.
     private static getNumDataCodewords(ver: int, ecl: Ecc): int {
         return Math.floor(QrCode.getNumRawDataModules(ver) / 8) -
-            QrCode.ECC_CODEWORDS_PER_BLOCK[ecl.ordinal][ver] *
-            QrCode.NUM_ERROR_CORRECTION_BLOCKS[ecl.ordinal][ver];
+            ECC_CODEWORDS_PER_BLOCK[ecl.ordinal][ver] *
+            NUM_ERROR_CORRECTION_BLOCKS[ecl.ordinal][ver];
     }
 
 
@@ -664,40 +664,37 @@ export class QrCode {
         runHistory.pop();
         runHistory.unshift(currentRunLength);
     }
-
-
-    /*-- Constants and tables --*/
-
-    // The minimum version number supported in the QR Code Model 2 standard.
-    public static readonly MIN_VERSION: int = 1;
-    // The maximum version number supported in the QR Code Model 2 standard.
-    public static readonly MAX_VERSION: int = 40;
-
-    // For use in getPenaltyScore(), when evaluating which mask is best.
-    private static readonly PENALTY_N1: int = 3;
-    private static readonly PENALTY_N2: int = 3;
-    private static readonly PENALTY_N3: int = 40;
-    private static readonly PENALTY_N4: int = 10;
-
-    private static readonly ECC_CODEWORDS_PER_BLOCK: Array<Array<int>> = [
-        // Version: (note that index 0 is for padding, and is set to an illegal value)
-        //0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40    Error correction level
-        [-1, 7, 10, 15, 20, 26, 18, 20, 24, 30, 18, 20, 24, 26, 30, 22, 24, 28, 30, 28, 28, 28, 28, 30, 30, 26, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30],  // Low
-        [-1, 10, 16, 26, 18, 24, 16, 18, 22, 22, 26, 30, 22, 22, 24, 24, 28, 28, 26, 26, 26, 26, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28],  // Medium
-        [-1, 13, 22, 18, 26, 18, 24, 18, 22, 20, 24, 28, 26, 24, 20, 30, 24, 28, 28, 26, 30, 28, 30, 30, 30, 30, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30],  // Quartile
-        [-1, 17, 28, 22, 16, 22, 28, 26, 26, 24, 28, 24, 28, 22, 24, 24, 30, 28, 28, 26, 28, 30, 24, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30],  // High
-    ];
-
-    private static readonly NUM_ERROR_CORRECTION_BLOCKS: Array<Array<int>> = [
-        // Version: (note that index 0 is for padding, and is set to an illegal value)
-        //0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40    Error correction level
-        [-1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 7, 8, 8, 9, 9, 10, 12, 12, 12, 13, 14, 15, 16, 17, 18, 19, 19, 20, 21, 22, 24, 25],  // Low
-        [-1, 1, 1, 1, 2, 2, 4, 4, 4, 5, 5, 5, 8, 9, 9, 10, 10, 11, 13, 14, 16, 17, 17, 18, 20, 21, 23, 25, 26, 28, 29, 31, 33, 35, 37, 38, 40, 43, 45, 47, 49],  // Medium
-        [-1, 1, 1, 2, 2, 4, 4, 6, 6, 8, 8, 8, 10, 12, 16, 12, 17, 16, 18, 21, 20, 23, 23, 25, 27, 29, 34, 34, 35, 38, 40, 43, 45, 48, 51, 53, 56, 59, 62, 65, 68],  // Quartile
-        [-1, 1, 1, 2, 4, 4, 4, 5, 6, 8, 8, 11, 11, 16, 16, 18, 16, 19, 21, 25, 25, 25, 34, 30, 32, 35, 37, 40, 42, 45, 48, 51, 54, 57, 60, 63, 66, 70, 74, 77, 81],  // High
-    ];
-
 }
+
+/*-- Constants and tables --*/
+const ECC_CODEWORDS_PER_BLOCK: Array<Array<int>> = [
+    // Version: (note that index 0 is for padding, and is set to an illegal value)
+    //0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40    Error correction level
+    [-1, 7, 10, 15, 20, 26, 18, 20, 24, 30, 18, 20, 24, 26, 30, 22, 24, 28, 30, 28, 28, 28, 28, 30, 30, 26, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30],  // Low
+    [-1, 10, 16, 26, 18, 24, 16, 18, 22, 22, 26, 30, 22, 22, 24, 24, 28, 28, 26, 26, 26, 26, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28],  // Medium
+    [-1, 13, 22, 18, 26, 18, 24, 18, 22, 20, 24, 28, 26, 24, 20, 30, 24, 28, 28, 26, 30, 28, 30, 30, 30, 30, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30],  // Quartile
+    [-1, 17, 28, 22, 16, 22, 28, 26, 26, 24, 28, 24, 28, 22, 24, 24, 30, 28, 28, 26, 28, 30, 24, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30],  // High
+];
+
+const NUM_ERROR_CORRECTION_BLOCKS: Array<Array<int>> = [
+    // Version: (note that index 0 is for padding, and is set to an illegal value)
+    //0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40    Error correction level
+    [-1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 7, 8, 8, 9, 9, 10, 12, 12, 12, 13, 14, 15, 16, 17, 18, 19, 19, 20, 21, 22, 24, 25],  // Low
+    [-1, 1, 1, 1, 2, 2, 4, 4, 4, 5, 5, 5, 8, 9, 9, 10, 10, 11, 13, 14, 16, 17, 17, 18, 20, 21, 23, 25, 26, 28, 29, 31, 33, 35, 37, 38, 40, 43, 45, 47, 49],  // Medium
+    [-1, 1, 1, 2, 2, 4, 4, 6, 6, 8, 8, 8, 10, 12, 16, 12, 17, 16, 18, 21, 20, 23, 23, 25, 27, 29, 34, 34, 35, 38, 40, 43, 45, 48, 51, 53, 56, 59, 62, 65, 68],  // Quartile
+    [-1, 1, 1, 2, 4, 4, 4, 5, 6, 8, 8, 11, 11, 16, 16, 18, 16, 19, 21, 25, 25, 25, 34, 30, 32, 35, 37, 40, 42, 45, 48, 51, 54, 57, 60, 63, 66, 70, 74, 77, 81],  // High
+];
+
+// The minimum version number supported in the QR Code Model 2 standard.
+const MIN_VERSION: int = 1;
+// The maximum version number supported in the QR Code Model 2 standard.
+const MAX_VERSION: int = 40;
+
+// For use in getPenaltyScore(), when evaluating which mask is best.
+const PENALTY_N1: int = 3;
+const PENALTY_N2: int = 3;
+const PENALTY_N3: int = 40;
+const PENALTY_N4: int = 10;
 
 
 // Appends the given number of low-order bits of the given value
@@ -721,8 +718,6 @@ function assert(cond: boolean): void {
     if(!cond)
         throw new Error("Assertion error");
 }
-
-
 
 /*---- Data segment class ----*/
 
@@ -775,12 +770,12 @@ export class QrSegment {
         let bb: Array<bit> = [];
         let i: int;
         for(i = 0; i + 2 <= text.length; i += 2) {  // Process groups of 2
-            let temp: int = QrSegment.ALPHANUMERIC_CHARSET.indexOf(text.charAt(i)) * 45;
-            temp += QrSegment.ALPHANUMERIC_CHARSET.indexOf(text.charAt(i + 1));
+            let temp: int = ALPHANUMERIC_CHARSET.indexOf(text.charAt(i)) * 45;
+            temp += ALPHANUMERIC_CHARSET.indexOf(text.charAt(i + 1));
             appendBits(temp, 11, bb);
         }
         if(i < text.length)  // 1 character remaining
-            appendBits(QrSegment.ALPHANUMERIC_CHARSET.indexOf(text.charAt(i)), 6, bb);
+            appendBits(ALPHANUMERIC_CHARSET.indexOf(text.charAt(i)), 6, bb);
         return new QrSegment(Mode.ALPHANUMERIC, text.length, bb);
     }
 
@@ -823,7 +818,7 @@ export class QrSegment {
     // Tests whether the given string can be encoded as a segment in numeric mode.
     // A string is encodable iff each character is in the range 0 to 9.
     public static isNumeric(text: string): boolean {
-        return QrSegment.NUMERIC_REGEX.test(text);
+        return NUMERIC_REGEX.test(text);
     }
 
 
@@ -831,7 +826,7 @@ export class QrSegment {
     // A string is encodable iff each character is in the following set: 0 to 9, A to Z
     // (uppercase only), space, dollar, percent, asterisk, plus, hyphen, period, slash, colon.
     public static isAlphanumeric(text: string): boolean {
-        return QrSegment.ALPHANUMERIC_REGEX.test(text);
+        return ALPHANUMERIC_REGEX.test(text);
     }
 
 
@@ -894,24 +889,19 @@ export class QrSegment {
         }
         return result;
     }
-
-
-    /*-- Constants --*/
-
-    // Describes precisely all strings that are encodable in numeric mode.
-    private static readonly NUMERIC_REGEX: RegExp = /^[0-9]*$/;
-
-    // Describes precisely all strings that are encodable in alphanumeric mode.
-    private static readonly ALPHANUMERIC_REGEX: RegExp = /^[A-Z0-9 $%*+.\/:-]*$/;
-
-    // The set of all legal characters in alphanumeric mode,
-    // where each character value maps to the index in the string.
-    private static readonly ALPHANUMERIC_CHARSET: string = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:";
-
 }
 
+/*-- Constants --*/
 
+// Describes precisely all strings that are encodable in numeric mode.
+const NUMERIC_REGEX: RegExp = /^[0-9]*$/;
 
+// Describes precisely all strings that are encodable in alphanumeric mode.
+const ALPHANUMERIC_REGEX: RegExp = /^[A-Z0-9 $%*+.\/:-]*$/;
+
+// The set of all legal characters in alphanumeric mode,
+// where each character value maps to the index in the string.
+const ALPHANUMERIC_CHARSET: string = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:";
 
 
 /*---- Public helper enumeration ----*/
@@ -936,11 +926,7 @@ export class Ecc {
         public readonly ordinal: int,
         // (Package-private) In the range 0 to 3 (unsigned 2-bit integer).
         public readonly formatBits: int) { }
-
 }
-
-
-
 
 /*---- Public helper enumeration ----*/
 
@@ -974,6 +960,5 @@ export class Mode {
     public numCharCountBits(ver: int): int {
         return this.numBitsCharCount[Math.floor((ver + 7) / 17)];
     }
-
 }
 
