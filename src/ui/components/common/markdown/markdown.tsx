@@ -24,7 +24,7 @@ export interface SingleASTNode {
 }
 
 export interface UnTypedASTNode {
-    [prop: string]: any
+    [prop: string]: any;
 }
 
 export type ASTNode = SingleASTNode | Array<SingleASTNode>;
@@ -483,7 +483,7 @@ var EMPTY_PROPS = {};
 export function sanitizeUrl(url?: string): string | undefined {
     if(typeof url === 'string') {
         try {
-            var prot = new URL(url, 'https://localhost').protocol
+            var prot = new URL(url, 'https://localhost').protocol;
             if(prot.indexOf('javascript:') === 0 || prot.indexOf('vbscript:') === 0 || prot.indexOf('data:') === 0) {
                 return;
             }
@@ -494,7 +494,7 @@ export function sanitizeUrl(url?: string): string | undefined {
         }
         return url;
     }
-    return
+    return;
 }
 
 
@@ -776,8 +776,8 @@ function mathMatcher(source: string, state: State, isBlock: boolean) {
     // we didn't find a closing `$`
     return null;
 };
-function mathMatch(source: string, state: State) { return mathMatcher(source, state, false) };
-function blockMathMatch(source: string, state: State) { return mathMatcher(source, state, true) };
+function mathMatch(source: string, state: State) { return mathMatcher(source, state, false); };
+function blockMathMatch(source: string, state: State) { return mathMatcher(source, state, true); };
 
 const LINK_INSIDE = "(?:\\[[^\\]]*\\]|[^\\[\\]]|\\](?=[^\\[]*\\]))*";
 const LINK_HREF_AND_TITLE =
@@ -883,7 +883,7 @@ export const defaultRules: DefaultRules = {
     },
     hr: {
         o: currOrder++,
-        m: blockRegex(/^( *[-*_]){3,} *(?:\n *)+\n/),
+        m: blockRegex(/^((?:[\t ]*)[-*_]){3,}(?:[\t ]*)(?:\n(?:[\t ]*))+\n/),
         p: ignoreCapture,
         h: (node, output, state) => <hr />,
     },
@@ -891,7 +891,10 @@ export const defaultRules: DefaultRules = {
         o: currOrder++,
         //match: blockRegex(/^(?:    [^\n]+\n*)+(?:\n *)+\n/),
         //match: blockRegex(/^ *(`{3,}|~{3,}) *(?:(\S+) *)?\n([^]+?)\n?\1 *(?:\n *)+\n/),
-        m: anyScopeRegex(/^ *(`{3,}) *(?:(\S+) *)?\n([^]+?)\n?\1(?:\n+|$)/),
+
+        //m: anyScopeRegex(/^[\t ]*(`{3,})[\t ]*(?:(\S+)[\t ]*)?\n([^]+?)\n?\1(?:\n+|$)/),
+        m: anyScopeRegex(/^(?:[\t ]*)(`{3})(?:[\t ]*)(?:([^\s`]+?)(?:[\t ]*))?\n([^]+?)\1/),
+
         p: (capture, parse, state) => {
             //var c = capture[0]
             //    .replace(/^    /gm, '')
@@ -901,11 +904,16 @@ export const defaultRules: DefaultRules = {
             //    c: c
             //};
 
-            return {
-                //type: "codeBlock",
-                lang: capture[2] || undefined,
-                c: capture[3]
-            };
+            let lang = capture[2] || undefined, c = capture[3];
+
+            // if the language is obviously not a name, consider it as malformed code
+            if(!/^[-+#a-z0-9]+$/i.test(capture[2])) {
+                c = lang + '\n' + c;
+                lang = undefined;
+            }
+
+            //type: "codeBlock",
+            return { lang, c };
         },
         h: (node, output, state) => <CodeWrapper src={/* @once */node.c} language={/* @once */node.lang} />,
     },
@@ -918,10 +926,10 @@ export const defaultRules: DefaultRules = {
     blockQuote: {
         o: currOrder++,
         // NOTE: Modified from original to take up to 5 levels and require a space after >
-        m: blockRegex(/^( *>{1,5} +[^\n]+(\n[^\n]+)*\n*)+\n{2,}/),
+        m: blockRegex(/^((?:[\t ]*)>{1,5} +[^\n]+(\n[^\n]+)*\n*)+\n{2,}/),
         p: (capture, parse, state) => {
             // trim first blockquote >
-            var c = capture[0].replace(/^ *> ?/gm, '');
+            var c = capture[0].replace(/^(?:[\t ]*)> ?/gm, '');
             return {
                 c: parse(c, state)
             };
@@ -1076,11 +1084,7 @@ export const defaultRules: DefaultRules = {
                 c: capture[1],
             };
         },
-        h: (node, output, state) => {
-            return (
-                <Math src={/* @once */node.c} inline />
-            )
-        },
+        h: (node, output, state) => (<Math src={/* @once */node.c} inline />),
     },
     unescapedDollar: {
         o: currOrder++,
@@ -1198,7 +1202,7 @@ export const defaultRules: DefaultRules = {
         m: inlineRegex(/^<:(\w*):(\d+)>/),
         p: (capture, parse, state) => {
             state.had_emoji = true;
-            return { id: capture[2], name: capture[1] }
+            return { id: capture[2], name: capture[1] };
         },
         h: (node, output, state) => <CustomEmote id={/*@once*/node.id} name={/*@once*/node.name} large={/*@once*/state.no_text} />
     },
@@ -1311,7 +1315,7 @@ export const defaultRules: DefaultRules = {
         },
         h: (node, output, state) => node.c,
     }
-}
+};
 
 
 export function outputFor(
