@@ -20,6 +20,7 @@ const enUS: BaseTranslation = {
 	MFA_TOGGLE_TEXT: "{{h:Don't have|Have}} a 2FA code?",
 	MFA_TOGGLE_FLAVOR: "Click here to {{h:hide|show}} the input.",
 	MFA_CODE: "2FA Code",
+	MFA_CODE_PH: "000000",
 	GOTO_LOGIN: "Go to Login",
 	REGISTER_AGREE: "By registering, you agree to our... this will be filled in later.",
 	PASSWORD_REQS: "Password must be at least 8 characters long and contain at least one number or one special character.",

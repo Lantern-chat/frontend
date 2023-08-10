@@ -20,6 +20,7 @@ const id: Translation = {
     MFA_TOGGLE_TEXT: "{{h:Tidak memiliki|Memiliki}} kode 2FA?",
     MFA_TOGGLE_FLAVOR: "Klik disini untuk {{h:sembunyikan|tunjukkan}} input.",
     MFA_CODE: "Kode 2FA",
+    MFA_CODE_PH: "000000",
     GOTO_LOGIN: "Pergi ke halaman Login",
     REGISTER_AGREE: "Dengan registrasi, anda menyetujui.... ini akan diisi nanti.",
     PASSWORD_REQS: "Kata sandi wajib mempunyai paling tidak 8 karakter dan memiliki paling tidak satu angka dan satu karakter spesial.",

@@ -93,6 +93,10 @@ type RootTranslation = {
 	 */
 	MFA_CODE: string
 	/**
+	 * 0​0​0​0​0​0
+	 */
+	MFA_CODE_PH: string
+	/**
 	 * G​o​ ​t​o​ ​L​o​g​i​n
 	 */
 	GOTO_LOGIN: string
@@ -803,6 +807,10 @@ export type TranslationFunctions = {
 	 * 2FA Code
 	 */
 	MFA_CODE: () => LocalizedString
+	/**
+	 * 000000
+	 */
+	MFA_CODE_PH: () => LocalizedString
 	/**
 	 * Go to Login
 	 */

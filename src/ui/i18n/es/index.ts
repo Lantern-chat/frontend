@@ -20,6 +20,7 @@ const es: Translation = {
     MFA_TOGGLE_TEXT: "¿{{h:No tienes|Tiene}} un código 2FA?",
     MFA_TOGGLE_FLAVOR: "Haga clic aquí para {{h:ocultar|mostrar}} a entrada.",
     MFA_CODE: "Código 2FA",
+    MFA_CODE_PH: "000000",
     GOTO_LOGIN: "Ir a Iniciar sesión",
     REGISTER_AGREE: "Al registrarse, acepta nuestros... esto se completará más adelante.",
     PASSWORD_REQS: "La contraseña debe tener al menos 8 caracteres y contener al menos un número o un carácter especial.",

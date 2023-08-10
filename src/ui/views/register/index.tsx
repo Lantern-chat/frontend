@@ -65,7 +65,7 @@ enum RegisterActionType {
     UpdateEmail,
     UpdateUser,
     UpdatePass,
-    UpdatePassStrength,
+    RefreshPassStrength,
     UpdateYear,
     UpdateMonth,
     UpdateDay,
@@ -169,7 +169,7 @@ export default function RegisterView() {
         if(!SETUP_THEN && typeof zxcvbn == "function") {
             zxcvbn().then(mod => {
                 zxcvbn = { zxcvbn: mod.default };
-                form_dispatch({ type: RegisterActionType.UpdatePassStrength, value: "" });
+                form_dispatch({ type: RegisterActionType.RefreshPassStrength, value: "" });
             });
             SETUP_THEN = true;
         }
@@ -180,9 +180,8 @@ export default function RegisterView() {
     const valid_pass = createMemo(() => state.pass ? validatePass(state.pass) : null);
 
     const passwordClass = () => {
-        const pass_strength = state.pass && valid_pass() ? calc_pass_strength(state.pass) : 0;
-
-        let passwordClass: string = "ln-password-";
+        let pass_strength = state.pass && valid_pass() ? calc_pass_strength(state.pass) : 0,
+            passwordClass: string = "ln-password-";
         switch(pass_strength) {
             case 1: { passwordClass += "weak"; break; }
             case 2: { passwordClass += "mid"; break; }
@@ -239,14 +238,14 @@ export default function RegisterView() {
         }
     };
 
-    const on_change = (e: Event, type: RegisterActionType) => form_dispatch({ type, value: (e.currentTarget as HTMLInputElement).value });
+    const on_input = (e: Event, type: RegisterActionType) => form_dispatch({ type, value: (e.currentTarget as HTMLInputElement).value });
 
-    const on_email_change = (e: InputEvent) => on_change(e, RegisterActionType.UpdateEmail),
-        on_username_change = (e: InputEvent) => on_change(e, RegisterActionType.UpdateUser),
-        on_password_change = (e: InputEvent) => on_change(e, RegisterActionType.UpdatePass),
-        on_year_change = (e: Event) => on_change(e, RegisterActionType.UpdateYear),
-        on_month_change = (e: Event) => on_change(e, RegisterActionType.UpdateMonth),
-        on_day_change = (e: Event) => on_change(e, RegisterActionType.UpdateDay);
+    const on_email_change = (e: InputEvent) => on_input(e, RegisterActionType.UpdateEmail),
+        on_username_change = (e: InputEvent) => on_input(e, RegisterActionType.UpdateUser),
+        on_password_change = (e: InputEvent) => on_input(e, RegisterActionType.UpdatePass),
+        on_year_change = (e: Event) => on_input(e, RegisterActionType.UpdateYear),
+        on_month_change = (e: Event) => on_input(e, RegisterActionType.UpdateMonth),
+        on_day_change = (e: Event) => on_input(e, RegisterActionType.UpdateDay);
 
     return (
         <form class="ln-form ln-login-form ln-register-form ui-text" onSubmit={on_submit}>
@@ -263,7 +262,8 @@ export default function RegisterView() {
             <FormGroup>
                 <FormLabel for="username">{LL().USERNAME()}</FormLabel>
                 <FormInput value={state.user} type="text" name="username"
-                    placeholder={LL().USERNAME().toLocaleLowerCase(locale())} required isValid={valid_user()}
+                    placeholder={LL().USERNAME().toLocaleLowerCase(locale())}
+                    required isValid={valid_user()}
                     onInput={on_username_change} />
             </FormGroup>
 
@@ -274,8 +274,10 @@ export default function RegisterView() {
                         <VectorIcon src={CircleEmptyInfoIcon} />
                     </span>
                 </FormLabel>
-                <FormInput type="password" name="password" placeholder={LL().PASSWORD().toLocaleLowerCase(locale())} required isValid={valid_pass()}
-                    class={passwordClass()} onInput={on_password_change} />
+                <FormInput type="password" name="password"
+                    placeholder={LL().PASSWORD().toLocaleLowerCase(locale())}
+                    required isValid={valid_pass()} class={passwordClass()}
+                    onInput={on_password_change} />
                 <FormText>{LL().PASSWORD_REQS()}</FormText>
             </FormGroup>
 

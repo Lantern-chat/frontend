@@ -20,6 +20,7 @@ const owo: Translation = {
     MFA_TOGGLE_TEXT: "{{h:don't h-have σωσ|h-have}} a 2fa code?",
     MFA_TOGGLE_FLAVOR: "cwick hewe to {{h:hide OwO|show}} the i-input.",
     MFA_CODE: "2fa code",
+    MFA_CODE_PH: "000000",
     GOTO_LOGIN: "go to wogin",
     REGISTER_AGREE: "by w-wegistewing, 😳😳😳 you agwee t-to ouw... this w-wiww be fiwwed i-in watew.",
     PASSWORD_REQS: "passwowd must be at weast 8 chawactews w-wong and contain at weast one nyumbew o-ow one speciaw chawactew.",

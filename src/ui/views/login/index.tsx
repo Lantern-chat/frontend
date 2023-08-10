@@ -142,7 +142,10 @@ export default function LoginView() {
 
     const on_email_change = (e: InputEvent) => on_input(e, LoginActionType.UpdateEmail),
         on_password_change = (e: InputEvent) => on_input(e, LoginActionType.UpdatePass),
-        on_totp_change = (e: InputEvent) => on_input(e, LoginActionType.UpdatedTOTP);
+        on_totp_change = (e: InputEvent & { target: HTMLInputElement; }) => {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            on_input(e, LoginActionType.UpdatedTOTP);
+        };
 
     const mfa_toggle = () => {
         const mfa_toggle_text = LL().MFA_TOGGLE_TEXT({ h: state.have_2fa as any }),
@@ -195,8 +198,9 @@ export default function LoginView() {
                         <span>{LL().MFA_CODE()}</span>
                     </FormLabel>
 
-                    <FormInput id="totp_input" value={state.totp} type="number" name="totp"
-                        placeholder={LL().MFA_CODE()} min="0" pattern="[0-9]*" required
+                    <FormInput id="totp_input" value={state.totp} type="text" name="totp"
+                        isValid={/^[0-9]*$/.test(state.totp) && [0, 6].includes(state.totp.length) ? null : false}
+                        placeholder={LL().MFA_CODE_PH()} minLength={6} pattern="[0-9]+" required maxlength={6}
                         onInput={on_totp_change}
                     />
 
