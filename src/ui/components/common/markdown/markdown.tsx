@@ -174,7 +174,7 @@ export interface DefaultRules extends DefaultRulesIndexer {
     readonly blockQuote: DefaultInOutRule,
     readonly font: DefaultInOutRule,
     readonly color: DefaultInOutRule,
-    //readonly list: DefaultInOutRule,
+    readonly list: DefaultInOutRule,
     //readonly def: LenientInOutRule,
     readonly table: DefaultInOutRule,
     readonly tableSeparator: DefaultInRule,
@@ -553,11 +553,11 @@ function parseCaptureInline(capture: Capture, parse: Parser, state: State): UnTy
 function ignoreCapture(): UnTypedASTNode { return {}; }
 
 // recognize a `*` `-`, `+`, `1.`, `2.`... list bullet
-// var LIST_BULLET = "(?:[*+-]|\\d+\\.)";
+var LIST_BULLET = "(?:[*+-]|\\d+\\.)";
 // recognize the start of a list item:
 // leading space plus a bullet plus a space (`   * `)
-// var LIST_ITEM_PREFIX = "( *)(" + LIST_BULLET + ") +";
-// var LIST_ITEM_PREFIX_R = new RegExp("^" + LIST_ITEM_PREFIX);
+var LIST_ITEM_PREFIX = "( *)(" + LIST_BULLET + ") +";
+var LIST_ITEM_PREFIX_R = new RegExp("^" + LIST_ITEM_PREFIX);
 // recognize an individual list item:
 //  * hi
 //    this is part of the same item
@@ -565,29 +565,34 @@ function ignoreCapture(): UnTypedASTNode { return {}; }
 //    as is this, which is a new paragraph in the same item
 //
 //  * but this is not part of the same item
-// var LIST_ITEM_R = new RegExp(
-//     LIST_ITEM_PREFIX +
-//     "[^\\n]*(?:\\n" +
-//     "(?!\\1" + LIST_BULLET + " )[^\\n]*)*(\n|$)",
-//     "gm"
-// );
-// var BLOCK_END_R = /\n{2,}$/;
+var LIST_ITEM_R = new RegExp(
+    LIST_ITEM_PREFIX +
+    "[^\\n]*(?:\\n(?!\\1" + LIST_BULLET + " )[^\\n]*)*(\n|$)",
+    "gm",
+);
+
+var BLOCK_END_R = /\n{2,}$/;
 const INLINE_CODE_ESCAPE_BACKTICKS_R = /^ (?= *`)|(` *) $/g;
 // recognize the end of a paragraph block inside a list item:
 // two or more newlines at end end of the item
-// var LIST_BLOCK_END_R = BLOCK_END_R;
-// var LIST_ITEM_END_R = / *\n+$/;
+var LIST_BLOCK_END_R = BLOCK_END_R;
+var LIST_ITEM_END_R = / *\n+$/;
+
 // check whether a list item has paragraphs: if it does,
 // we leave the newlines at the end
-// var LIST_R = new RegExp(
-//     "^( *)(" + LIST_BULLET + ") " +
-//     "[^]+?(?:\n{2,}(?! )" +
-//     "(?!\\1" + LIST_BULLET + " )\\n*" +
-//     // the \\s*$ here is so that we can parse the inside of nested
-//     // lists, where our content might end before we receive two `\n`s
-//     "|\\s*\n*$)"
-// );
-// var LIST_LOOKBEHIND_R = /(?:^|\n)( *)$/;
+var LIST_R = new RegExp(
+    "^( *)(" +
+    LIST_BULLET +
+    ") " +
+    "[\\s\\S]+?(?:\n{2,}(?! )" +
+    "(?!\\1" +
+    LIST_BULLET +
+    " )\\n*" +
+    // the \\s*$ here is so that we can parse the inside of nested
+    // lists, where our content might end before we receive two `\n`s
+    "|\\s*\n*$)",
+);
+var LIST_LOOKBEHIND_R = /(?:^|\n)( *)$/;
 
 
 const TABLES = (function() {
@@ -935,6 +940,120 @@ export const defaultRules: DefaultRules = {
             };
         },
         h: (node, output, state) => <blockquote children={/* @once */output(node.c, state)} />,
+    },
+    list: {
+        o: currOrder++,
+        m: (source, state) => {
+            // We only want to break into a list if we are at the start of a
+            // line. This is to avoid parsing "hi * there" with "* there"
+            // becoming a part of a list.
+            // You might wonder, "but that's inline, so of course it wouldn't
+            // start a list?". You would be correct! Except that some of our
+            // lists can be inline, because they might be inside another list,
+            // in which case we can parse with inline scope, but need to allow
+            // nested lists inside this inline scope.
+            var prevCaptureStr =
+                state.prevCapture == null ? "" : state.prevCapture[0];
+            var isStartOfLineCapture = LIST_LOOKBEHIND_R.exec(prevCaptureStr);
+            var isListBlock = state._list || !state.inline;
+
+            if(isStartOfLineCapture && isListBlock) {
+                source = isStartOfLineCapture[1] + source;
+                return LIST_R.exec(source);
+            } else {
+                return null;
+            }
+        },
+        p: (capture, parse, state) => {
+            var bullet = capture[2];
+            var ordered = bullet.length > 1;
+            var start = ordered ? +bullet : undefined;
+            // @ts-expect-error [FEI-5003] - TS2322 - Type 'RegExpMatchArray | null' is not assignable to type 'string[]'.
+            var items: Array<string> = capture[0]
+                .replace(LIST_BLOCK_END_R, "\n")
+                .match(LIST_ITEM_R);
+
+            // We know this will match here, because of how the regexes are
+            // defined
+
+            var lastItemWasAParagraph = false;
+            var itemContent = items.map(function(item: string, i: number) {
+                // We need to see how far indented this item is:
+                var prefixCapture = LIST_ITEM_PREFIX_R.exec(item);
+                var space = prefixCapture ? prefixCapture[0].length : 0;
+                // And then we construct a regex to "unindent" the subsequent
+                // lines of the items by that amount:
+                var spaceRegex = new RegExp("^ {1," + space + "}", "gm");
+
+                // Before processing the item, we need a couple things
+                var content = item
+                    // remove indents on trailing lines:
+                    .replace(spaceRegex, "")
+                    // remove the bullet:
+                    .replace(LIST_ITEM_PREFIX_R, "");
+
+                // I'm not sur4 why this is necessary again?
+
+                // Handling "loose" lists, like:
+                //
+                //  * this is wrapped in a paragraph
+                //
+                //  * as is this
+                //
+                //  * as is this
+                var isLastItem = i === items.length - 1;
+                var containsBlocks = content.indexOf("\n\n") !== -1;
+
+                // Any element in a list is a block if it contains multiple
+                // newlines. The last element in the list can also be a block
+                // if the previous item in the list was a block (this is
+                // because non-last items in the list can end with \n\n, but
+                // the last item can't, so we just "inherit" this property
+                // from our previous element).
+                var thisItemIsAParagraph =
+                    containsBlocks || (isLastItem && lastItemWasAParagraph);
+                lastItemWasAParagraph = thisItemIsAParagraph;
+
+                // backup our state for restoration afterwards. We're going to
+                // want to set state._list to true, and state.inline depending
+                // on our list's looseness.
+                var oldStateInline = state.inline;
+                var oldStateList = state._list;
+                state._list = true;
+
+                // Parse inline if we're in a tight list, or block if we're in
+                // a loose list.
+                var adjustedContent;
+                if(thisItemIsAParagraph) {
+                    state.inline = false;
+                    adjustedContent = content.replace(LIST_ITEM_END_R, "\n\n");
+                } else {
+                    state.inline = true;
+                    adjustedContent = content.replace(LIST_ITEM_END_R, "");
+                }
+
+                var result = parse(adjustedContent, state);
+
+                // Restore our state before returning
+                state.inline = oldStateInline;
+                state._list = oldStateList;
+                return result;
+            });
+
+            return {
+                ordered: ordered,
+                start: start,
+                items: itemContent,
+            };
+        },
+        h: (node, output, state) => {
+            let list = document.createElement(node.ordered ? 'ol' : 'ul');
+            list.setAttribute('start', node.start);
+            insert(list, node.items.map((item: ASTNode) => (
+                <li>{/*@once*/output(item, state)}</li>
+            )));
+            return list;
+        },
     },
     table: {
         o: currOrder++,

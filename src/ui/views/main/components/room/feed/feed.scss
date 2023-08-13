@@ -44,7 +44,7 @@
         inset-inline-end: 0; // right
     }
 
-    li:last-child {
+    li.ln-msg__outer:last-child {
         margin-bottom: 1em;
 
         //@media (max-width: $ln-max-room-width) {
