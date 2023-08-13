@@ -680,10 +680,10 @@ const TABLES = (function() {
     }
 
     return {
-        parseTable: parseTable(true),
-        parseNpTable: parseTable(false),
-        TABLE_REGEX: /^ *(\|.+)\n *\|( *[-:]+[-| :]*)\n((?: *\|.*(?:\n|$))*)\n*/,
-        NPTABLE_REGEX: /^ *(\S.*\|.*)\n *([-:]+ *\|[-| :]*)\n((?:.*\|.*(?:\n|$))*)\n*/
+        pT: parseTable(true),
+        pNP: parseTable(false),
+        T: /^ *(\|.+)\n *\|( *[-:]+[-| :]*)\n((?: *\|.*(?:\n|$))*)\n*/,
+        NP: /^ *(\S.*\|.*)\n *([-:]+ *\|[-| :]*)\n((?:.*\|.*(?:\n|$))*)\n*/
     };
 })();
 
@@ -872,8 +872,8 @@ export const defaultRules: DefaultRules = {
     },
     nptable: {
         o: currOrder++,
-        m: blockRegex(TABLES.NPTABLE_REGEX),
-        p: TABLES.parseNpTable,
+        m: blockRegex(TABLES.NP),
+        p: TABLES.pNP,
         h: null,
     },
     lheading: {
@@ -1057,8 +1057,8 @@ export const defaultRules: DefaultRules = {
     },
     table: {
         o: currOrder++,
-        m: blockRegex(TABLES.TABLE_REGEX),
-        p: TABLES.parseTable,
+        m: blockRegex(TABLES.T),
+        p: TABLES.pT,
         h: (node, output, state) => {
             let getStyle = (colIndex: number): JSX.CSSProperties => {
                 return node.align[colIndex] == null ? {} : {
