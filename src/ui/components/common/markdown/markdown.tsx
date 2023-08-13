@@ -687,6 +687,9 @@ const TABLES = (function() {
     };
 })();
 
+// https://stackoverflow.com/a/17773849
+const URL_REGEX = /^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/;
+
 
 /**
  * This match function matches math in `$`s, such as:
@@ -1151,7 +1154,8 @@ export const defaultRules: DefaultRules = {
     // NOTE: Unlike regular markdown, Lantern's "autolink" still creates the <a> but won't trigger any embeds server-side
     autolink: {
         o: currOrder++,
-        m: inlineRegex(/^<(https?:\/\/[^\s<]+[^<.,:;"')\]\s])>/),
+        //m: inlineRegex(/^<(https?:\/\/[^\s<]+[^<.,:;"'\s])>/),
+        m: inlineRegex(new RegExp("^<" + URL_REGEX.source.slice(1) + ">")),
         p: (capture, parse, state) => {
             return {
                 type: "url",
@@ -1183,7 +1187,8 @@ export const defaultRules: DefaultRules = {
     },
     url: {
         o: currOrder++,
-        m: inlineRegex(/^(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/),
+        //m: inlineRegex(/^(https?:\/\/[^\s<]+[^<.,:;"'\s])/),
+        m: inlineRegex(URL_REGEX),
         p: (capture, parse, state) => {
             return {
                 // type: "link",
