@@ -893,7 +893,7 @@ export const defaultRules: DefaultRules = {
         o: currOrder++,
         m: blockRegex(/^((?:[\t ]*)[-*_]){3,}(?:[\t ]*)(?:\n(?:[\t ]*))+\n/),
         p: ignoreCapture,
-        h: (node, output, state) => <hr />,
+        h: (node, output, state) => <hr aria-hidden="true" />,
     },
     codeBlock: {
         o: currOrder++,
